@@ -17,6 +17,14 @@ phone. The number is the big cyan figure top-left and it is also on the boot car
 **"which build is he actually looking at" is half of every boot question** and the card is
 `z-index: 20` over the badge for the whole load.
 
+**PAGES IS NOT ENABLED YET AND NOTHING IN CI CAN ENABLE IT.** `enablement: true` on
+`configure-pages` was tried and came back `Create Pages site failed. Error: Resource not
+accessible by integration` — the default workflow token may deploy to a Pages site but may not
+create one. It is **Settings → Pages → Source**, once, by hand: *GitHub Actions* (the workflow
+deploys the repo root) or *Deploy from a branch → main / (root)* (no workflow needed — delete
+`.github/workflows/pages.yml` if this is the choice). Until then every push leaves a red X on
+the Actions tab and the site 404s, and **there is nothing wrong with the build**.
+
 ## Verification budget
 
 **He tests the game. You do not.** Make the change, `npm run bump`, run **`npm run check`**

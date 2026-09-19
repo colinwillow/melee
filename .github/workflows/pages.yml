@@ -19,12 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # `enablement: true` turns Pages ON for the repo if it is not already, rather than
-      # failing with "Get Pages site failed... verify that the repository has Pages enabled",
-      # which is what the first run did. It needs `pages: write`, which is granted above.
+      # PAGES HAS TO BE TURNED ON ONCE, BY HAND, AND NOTHING HERE CAN DO IT.
+      # `enablement: true` was tried and the run came back
+      #   Create Pages site failed. Error: Resource not accessible by integration
+      # -- the default workflow token is not allowed to CREATE a Pages site, only to deploy to
+      # one that exists. So: Settings -> Pages -> Source. Either option works and both deploy
+      # the same commit:
+      #   "GitHub Actions"          -> this workflow runs and deploys the repo root
+      #   "Deploy from a branch"    -> main / (root), and this workflow is redundant; delete it
+      # Until one of those is set, every push leaves a red X on the Actions tab and the site
+      # 404s. That is the whole of it -- there is nothing wrong with the build.
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .

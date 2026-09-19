@@ -5,6 +5,11 @@ map, **no build step** — `index.html` opens and runs.
 
 **Play:** https://colinwillow.github.io/melee/
 
+> **Pages needs turning on once**, by hand — the workflow token is not allowed to create the
+> site (`Resource not accessible by integration`). **Settings → Pages → Source**, then either
+> *GitHub Actions* (the workflow in `.github/workflows/` deploys the repo root) or *Deploy from
+> a branch → main / (root)*, which needs no workflow at all. Both deploy the same commit.
+
 ## Controls
 
 Two thumbs, and each pad means one thing in every state:

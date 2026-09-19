@@ -188,10 +188,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m4</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m5</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m4</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m5</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -204,7 +204,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 
-const BUILD = 'm4';
+const BUILD = 'm5';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
 /* ASSETS:END */
@@ -339,7 +339,7 @@ const CLIPS = {
 };
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
 // that starts it, never by its own damped weight -- see `playOnce`.
-const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot',
+const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_melee_charge',
   'melee_01', 'melee_03', 'Standing_Melee_Attack_360_High',
   'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_finish']);
 // EXPORTER RESIDUE. One frame, 0 bones moving -- measured, not guessed.
@@ -1001,6 +1001,10 @@ function stepKit(dt) {
   } else { p.aim = 0; p.fire = 0; }
   // ---- the hammer: hold to wind up, let go to swing ----
   if (s.charge && holding && p.grounded && !p.melee && !p.roll && !p.chargeGo) {
+    // REWOUND ON THE RISING EDGE. `weapon_melee_charge` is a ONCE clip so it holds its last
+    // frame -- a man straining rather than winding up over and over -- and a clip that holds
+    // has to be rewound BY THE STATE that starts it or the second charge never winds up.
+    if (!p.charge) playOnce(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
     p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
   } else if (!holding && p.charge) chargeRelease();
   if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / .30);
@@ -1183,7 +1187,6 @@ function rigAnim(dt) {
     // the wind-up HOLDS at the top of its clip rather than looping, so a long hold reads as
     // a man straining rather than as a man waggling a hammer
     t[CLIPS.chargeUp] = 1;
-    setScale(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
     setWeights(t, dt); return;
   }
   if (!p.grounded) {
