@@ -242,10 +242,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m12</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m13</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m12</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m13</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -278,7 +278,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm12';
+const BUILD = 'm13';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
 /* ASSETS:END */
@@ -404,6 +404,16 @@ const MELEE = {
   // arriving as two events is what "you cannot actually hit things" looks like from outside.
   at: [.34, .40, .32], finishAt: .38,
   reach: 2.3,
+  // A FLICK IN THE GENERAL DIRECTION OF SOMEBODY IS A FLICK AT HIM. Aiming at him is not
+  // enough on its own: a punch thrown at exactly the right bearing from four metres still hits
+  // air. So the lock also SOLVES the launch for the gap, which is what makes it land.
+  aimCone: .95,        // ~54 degrees either side of the flick
+  aimNear: .35,        // what a metre of distance is worth against a metre of miss
+  maxV: 15,            // the fastest a lunge may be solved to
+  arrive: 1.25,        // the gap he is solved to leave -- arm's length, not his centre
+  lockAt: .58,         // and if he never arrives, the blow swings anyway at this much of the clip
+  carryAvg: .725,      // the `carry` profile's average speed: carry + (1 - carry) / 2
+  finishRange: 15,     // the charged swing reaches about double what a strike does
   // and what each one is worth. The finisher and the charged swing put him down outright.
   power: [.45, .52, 1.0],
   window: 1.05,      // how long after a strike the next flick continues the chain
@@ -493,7 +503,12 @@ const DUMMY = {
 // world" and starts meaning "toward him, away from him, or AROUND him".
 const LOCK = {
   range: 24,        // how far he will take a target
-  cone: .95,        // and how far off the lens it may be -- about 54 degrees
+  // THE RETICLE'S SHRINKING RING *IS* THE LOCK WINDOW -- that is what it is drawing. It opens
+  // wide the moment the trigger arms and closes as the charge fills, so holding a target inside
+  // it is the thing you are actually doing while the shot winds up.
+  cone: 1.05, coneTight: .30,
+  keep: 1.45,       // and whatever is already locked keeps it on a wider cone, or the mark
+                    // flickers between two men standing shoulder to shoulder
   near: .5,         // how much nearer beats how much straighter, when two are in the cone
   face: 9,          // how fast he comes round to it
   cam: 2.4,         // and how fast the lens does
@@ -514,11 +529,32 @@ const CLIPS = {
   weap: ['weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03'],
   chargeUp: 'weapon_melee_charge', chargeGo: 'weapon_melee_finish',
 };
+// STRAFING WITH THE GUN UP IS AN OVERRIDE, NOT A BLEND -- and that distinction is the whole
+// thing. `strafe_left` is a full-body clip with his arms swinging; laying a rifle pose ON TOP
+// of it gives the arms the strafe's swing PLUS the pose, so they flip about, and the spine gets
+// twisted twice. **Averaging two clips that both key an arm does not give one arm doing both
+// things; it gives a shrug.**
+// So nothing is allowed to FIGHT over a track. Two clone families, and between them every bone
+// is claimed exactly once:
+//     `__up`    spine-up ONLY -- spine, neck, head, both arms, both hands, the weapon markers
+//     `__legs`  every spine-up track REMOVED -- root, hips, both legs, both feet
+// Played together at full weight they compose into one body: he strafes with his legs and holds
+// the gun with his arms, and neither half knows the other is there.
+// **HIPS STAYS WITH THE LEGS.** It is not a spine-up bone, and its POSITION is what carries the
+// whole body's travel and bounce -- handing it to the pose nails him to one height.
+const UPPER = /Spine|Neck|Head|Shoulder|Arm|Hand|weapon_/;
+const UP = '__up', LEGS = '__legs';
+const SPLIT = {
+  up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo'],
+  legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR'],
+};
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
 // that starts it, never by its own damped weight -- see `playOnce`.
 const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_melee_charge',
   'melee_01', 'melee_03', 'Standing_Melee_Attack_360_High',
-  'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_finish']);
+  'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_finish',
+  // the split one-shots hold their last frame exactly like the clips they came from
+  'shoot__up', 'weapon_melee_charge__up', 'weapon_melee_finish__up']);
 // EXPORTER RESIDUE. One frame, 0 bones moving -- measured, not guessed.
 const DROP = new Set(['CINEMA_4D_Main']);
 
@@ -808,6 +844,28 @@ function deriveClips(clips) {
   out.push(new THREE.AnimationClip(CLIPS.aimPose, .1, tracks));
   console.log('[melee] ' + CLIPS.aimPose + ' derived from the first frame of ' + WEAP.aimFrom +
               ' (' + tracks.length + ' tracks)');
+
+  // ---- and the two half-body families ----
+  // `KeyframeTrack.clone()` slices its own times AND values, so these are new arrays and the
+  // shared-buffer landmine cannot follow them here.
+  const half = (clip, wantUpper, suffix) => {
+    const keep = clip.tracks.filter(t => UPPER.test(t.name.split('.')[0]) === wantUpper);
+    if (!keep.length) return null;
+    return new THREE.AnimationClip(clip.name + suffix, clip.duration, keep.map(t => t.clone()));
+  };
+  const byName = {};
+  for (const c of out) byName[c.name] = c;
+  let made = 0;
+  for (const [suffix, wantUpper, keys] of [[UP, true, SPLIT.up], [LEGS, false, SPLIT.legs]]) {
+    for (const k of keys) {
+      const src = byName[CLIPS[k]];
+      if (!src) { note('NO CLIP ' + CLIPS[k]); continue; }
+      const c = half(src, wantUpper, suffix);
+      if (c) { out.push(c); made++; } else note('NO ' + suffix + ' IN ' + src.name);
+    }
+  }
+  console.log('[melee] ' + made + ' half-body clones (' + SPLIT.up.length + ' upper, ' +
+              SPLIT.legs.length + ' lower)');
   return out;
 }
 
@@ -1287,7 +1345,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
-  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0,
+  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0, melV: 0, melTgt: null,
   slot: 0,
   r: .34, hh: 1.6,
 };
@@ -1334,16 +1392,18 @@ function committed() { return !!(player.aim || player.charge); }
 function findLock() {
   if (!committed()) return null;
   const p = player;
+  // wide when the trigger first arms, tight by the time it is loaded
+  const cone = p.aim ? lerp(LOCK.cone, LOCK.coneTight, p.chg) : LOCK.cone;
   let best = null, bestS = -Infinity;
   for (const d of DUMMIES) {
     const dx = d.root.position.x - p.pos.x, dz = d.root.position.z - p.pos.z;
     const dist = Math.hypot(dx, dz);
     if (dist > LOCK.range || dist < .4) continue;
     const off = Math.abs(wrapAngle(Math.atan2(dx, dz) - cam.az));
-    if (off > LOCK.cone) continue;
+    if (off > (d === p.lock ? cone * LOCK.keep : cone)) continue;
     // straightest wins, nearest breaks it -- and BOTH terms are fractions of their own limit,
     // so "how far off" and "how far away" are comparable rather than one drowning the other
-    const sc = (1 - off / LOCK.cone) - LOCK.near * (dist / LOCK.range);
+    const sc = (1 - off / cone) - LOCK.near * (dist / LOCK.range);
     if (sc > bestS) { bestS = sc; best = d; }
   }
   return best;
@@ -1392,6 +1452,31 @@ function cycleKit() {
 
 // ---- melee ---------------------------------------------------------------------------------
 function meleeChain() { return CLIPS[slotNow().melee] || CLIPS.fist; }
+const aimAt = d => {
+  const dx = d.root.position.x - player.pos.x, dz = d.root.position.z - player.pos.z;
+  return { d, dist: Math.hypot(dx, dz), h: Math.atan2(dx, dz) };
+};
+// ONE SHOT, TAKEN ON THE FRAME OF THE FLICK AND NEVER REVISITED. There is nothing here for it
+// to flicker between, which is why this can be a hard lock where the gun's is an assist.
+// AND THE ACQUIRE RANGE IS WHAT THE MOVE CAN COVER, NOT A TYPED NUMBER. A flat range locks a
+// JAB onto a man six metres off and then cannot get him there -- and a lock that turns him
+// toward somebody he cannot reach is worse than no lock at all.
+function meleeLock(h, reachMax) {
+  let best = null, bestS = Infinity;
+  for (const d of DUMMIES) {
+    const a = aimAt(d);
+    if (a.dist > reachMax || a.dist < .3) continue;
+    const off = Math.abs(wrapAngle(a.h - h));
+    if (off > MELEE.aimCone) continue;
+    // HOW FAR OFF THE LINE OF THE FLICK HE IS, IN METRES. `dot - dist * k` reads as
+    // "straightest wins, nearest breaks the tie" and is not: the two terms are in different
+    // units and one drowns the other. `dist * sin(off)` is the miss distance, and `aimNear`
+    // then says what a metre of range is worth against a metre of miss -- same units, both.
+    const sc = a.dist * Math.sin(off) + MELEE.aimNear * a.dist;
+    if (sc < bestS) { bestS = sc; best = a; }
+  }
+  return best;
+}
 function meleeGo(h) {
   const p = player;
   if (!p.grounded || p.roll || p.chargeGo) return;
@@ -1406,6 +1491,14 @@ function meleeGo(h) {
   p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name;
   p.meleeDur = MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
   p.meleeChain = 0; p.melFired = 0;
+  const base = MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
+  // what this strike could cover at full tilt is what it is allowed to acquire inside
+  const reachMax = MELEE.maxV * p.meleeDur * MELEE.carryAvg;
+  const L = h != null ? meleeLock(h, reachMax) : null;
+  if (L) h = L.h;
+  p.melTgt = L ? L.d : null;
+  // SOLVE THE LAUNCH FOR THE GAP. A move covers `v * dur * carryAvg`, and that inverts.
+  p.melV = L ? clamp((L.dist - MELEE.arrive) / (p.meleeDur * MELEE.carryAvg), base, MELEE.maxV) : base;
   if (h != null) { p.heading = h; p.faceH = h; }
   // THE CLIP IS COMPRESSED TO THE BEAT, not the beat stretched to the clip. `melee_03` is
   // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,
@@ -1413,8 +1506,7 @@ function meleeGo(h) {
   playOnce(name, clipLen(name) / p.meleeDur);
   // and he covers ground: full speed for `carry` of the strike, then linear to zero, which
   // averages .725 rather than .5 and is what a lunge actually looks like
-  const v = MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
-  p.vel.x = Math.sin(p.faceH) * v; p.vel.z = Math.cos(p.faceH) * v;
+  p.vel.x = Math.sin(p.faceH) * p.melV; p.vel.z = Math.cos(p.faceH) * p.melV;
 }
 function rollGo(h) {
   const p = player;
@@ -1432,10 +1524,20 @@ function chargeRelease() {
   p.charge = 0; p.chargeT = 0;
   if (!full) return;                                   // a short hold is not a swing
   p.chargeGo = 1; p.chargeGoT = 0; p.melFired = 0;
+  // IT LAUNCHES AT WHOEVER HE IS LOCKED ON. That is the whole point of having orbited him:
+  // you let go and you arrive. Twice a strike's range, and the launch is solved for the gap
+  // exactly the way a strike's is.
+  const CL = p.lock ? aimAt(p.lock) : meleeLock(p.faceH, MELEE.finishRange);
+  if (CL && CL.dist <= MELEE.finishRange) { p.faceH = p.heading = CL.h; p.melTgt = CL.d; }
+  else p.melTgt = null;
   // how full it was, from the half-charge floor up -- so even the shortest real swing moves
   p.chargeGoK = MELEE.finishMin + (1 - MELEE.finishMin) * clamp(t0 / MELEE.charge, 0, 1);
   playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / MELEE.finishBeat);
-  const v = MELEE.finishV * p.chargeGoK;
+  const base = MELEE.finishV * p.chargeGoK;
+  const v = (CL && p.melTgt)
+    ? clamp((CL.dist - MELEE.arrive) / (MELEE.finishBeat * MELEE.carryAvg), base, MELEE.maxV * 1.6)
+    : base;
+  p.melV = v;
   p.vel.x = Math.sin(p.faceH) * v; p.vel.z = Math.cos(p.faceH) * v;
   // AND IT LEAVES THE GROUND. `integrate` runs gravity and the ground collider on this state
   // like any other, so the hop is ballistic and lands itself with nothing new to write.
@@ -1600,7 +1702,8 @@ function stepKit(dt) {
         if (p.chg >= WEAP.minChg) {
           fireBolt(p.chg);
           p.fireT = 1;
-          playOnce(CLIPS.shoot, clipLen(CLIPS.shoot) / WEAP.shootBeat);
+          const sn = rig.actions[CLIPS.shoot + UP] ? CLIPS.shoot + UP : CLIPS.shoot;
+          playOnce(sn, clipLen(CLIPS.shoot) / WEAP.shootBeat);
         }
         p.chg = 0;
       }
@@ -1625,7 +1728,10 @@ function stepKit(dt) {
     // REWOUND ON THE RISING EDGE. `weapon_melee_charge` is a ONCE clip so it holds its last
     // frame -- a man straining rather than winding up over and over -- and a clip that holds
     // has to be rewound BY THE STATE that starts it or the second charge never winds up.
-    if (!p.charge) playOnce(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
+    if (!p.charge) {
+      const nm = rig.actions[CLIPS.chargeUp + UP] ? CLIPS.chargeUp + UP : CLIPS.chargeUp;
+      playOnce(nm, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
+    }
     p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
   } else if (!holding && p.charge) chargeRelease();
 
@@ -1723,7 +1829,16 @@ function stepPlayer(dt) {
     // THE BLOW LANDS ON ITS CONTACT FRAME, once.
     if (!p.melFired && !p.roll) {
       const at = p.melee ? MELEE.at[Math.min(p.meleeIx, MELEE.at.length - 1)] : MELEE.finishAt;
-      if (u >= at) {
+      // WHEN HE IS LOCKED, THE CONTACT FRAME IS WHEN HE ARRIVES. `at` is where the fist lands
+      // IN THE CLIP -- right for a jab thrown on the spot, wrong for a lunge still closing four
+      // metres, which swings at the air he is about to arrive in. The picture and its
+      // consequence have to be ONE event. It swings anyway at `lockAt` if he never gets there.
+      let go = u >= at;
+      if (p.melTgt) {
+        const t2 = aimAt(p.melTgt);
+        go = t2.dist <= MELEE.reach || u >= MELEE.lockAt;
+      }
+      if (go) {
         p.melFired = 1;
         const pw = p.melee ? MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)]
                            : 1.0 * (p.chargeGoK || 1);
@@ -1731,9 +1846,7 @@ function stepPlayer(dt) {
       }
     }
     const h = p.roll ? p.rollH : p.faceH;
-    const v0 = p.roll ? MELEE.rollV
-      : p.melee ? MELEE.lunge[Math.min(p.meleeIx, MELEE.lunge.length - 1)]
-      : MELEE.finishV * (p.chargeGoK || 1);
+    const v0 = p.roll ? MELEE.rollV : (p.melV || MELEE.finishV * (p.chargeGoK || 1));
     p.vel.x = Math.sin(h) * v0 * k; p.vel.z = Math.cos(h) * v0 * k;
     p.faceH = h; p.heading = h;
     integrate(dt, 0, 0, 0, false);
@@ -1770,7 +1883,7 @@ function stepPlayer(dt) {
   // is why `plant` has to go to zero here. `plant` swings the velocity onto his facing as he
   // speeds up, which is right for running and exactly wrong while aiming, since it would drag
   // every step round to point down the barrel.
-  const aiming = !!p.aim || !!p.lock;
+  const aiming = committed() || !!p.lock;
   let wantSp = MOVE.max * s.mag;
   if (aiming) wantSp = Math.min(wantSp, GAIT.aimRunRef);
   if (p.land) wantSp *= .35;
@@ -1824,12 +1937,6 @@ function rigAnim(dt) {
   if (p.roll) { t[CLIPS.roll] = 1; setWeights(t, dt); return; }
   if (p.melee) { t[p.meleeName] = 1; setWeights(t, dt); return; }
   if (p.chargeGo) { t[CLIPS.chargeGo] = 1; setWeights(t, dt); return; }
-  if (p.charge) {
-    // the wind-up HOLDS at the top of its clip rather than looping, so a long hold reads as
-    // a man straining rather than as a man waggling a hammer
-    t[CLIPS.chargeUp] = 1;
-    setWeights(t, dt); return;
-  }
   if (!p.grounded) {
     // `in_air` is 2.83 s of a subtle float and loops, so it reads at any airtime; a jump here
     // is about 0.84 s, so what is seen is its opening third.
@@ -1851,38 +1958,38 @@ function rigAnim(dt) {
   };
   const rest = p.land ? 1 - (t[p.landHard ? CLIPS.landHard : CLIPS.landSoft] || 0) : 1;
 
-  if (gunOut()) {
-    if (p.aim) {
-      // IN THE FIRING POSITION THE LEGS ANSWER THE ANGLE AND NOT THE SPEED. He faces the shot
-      // and travels wherever the thumb says, so "how fast" no longer picks the clip -- "which
-      // way, relative to his nose" does. Forward is the rifle run, sideways is the strafe for
-      // that side, backwards is the backpedal, still is the rifle idle.
-      // AND IT ONLY APPLIES STANDING STILL. Moving, it means nothing extra -- the rifle run,
-      // the strafes and the backpedal all already hold the gun up.
-      const moving = sp > .25;
-      if (!moving) add(rig.actions[CLIPS.aimPose] ? CLIPS.aimPose : CLIPS.aimIdle, rest, 0);
-      else {
-        const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
-        const c = Math.cos(rel), sn = Math.sin(rel);
-        const fwd = Math.abs(c), lat = Math.abs(sn), tot = fwd + lat || 1;
-        if (c >= 0) add(p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun, rest * fwd / tot, GAIT.aimRunRef);
-        else add(CLIPS.back, rest * fwd / tot, GAIT.backRef);
-        // +X IS HIS LEFT. Heading grows from +Z toward +X and his right is (-fz, fx), so a
-        // POSITIVE sine is a strafe to the LEFT. Written down because that argument comes out
-        // backwards half the time.
-        add(sn >= 0 ? CLIPS.strafeL : CLIPS.strafeR, rest * lat / tot, GAIT.strafeRef);
-      }
-    } else {
-      // CARRYING IT: the rifle idle standing, the rifle run moving. There is no rifle WALK in
-      // the set, so the run takes the whole moving range and `tsLo` holds it down at the
-      // bottom of it. A rifle walk is one clip away and one line here.
-      const wMove = smooth(0, GAIT.walkAt * 2.2, sp);
-      add(CLIPS.aimIdle, rest * (1 - wMove), 0);
-      add(p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun, rest * wMove, GAIT.aimRunRef);
+  // ---- COMMITTED: the legs strafe, the arms hold the weapon, and neither knows about the
+  //      other. Every bone is claimed exactly once, so they compose rather than average.
+  if (committed()) {
+    // the UPPER half: what he is doing with the weapon
+    const up = p.charge ? CLIPS.chargeUp : p.fireT > 0 ? CLIPS.shoot : CLIPS.aimPose;
+    add(rig.actions[up + UP] ? up + UP : up, rest, 0);
+    // the LOWER half: which way he is travelling RELATIVE TO HIS NOSE, because he is facing
+    // the target and "how fast" no longer picks the clip -- "which way" does.
+    const moving = sp > .25;
+    const L = n => (rig.actions[n + LEGS] ? n + LEGS : n);
+    if (!moving) add(L(CLIPS.idle), rest, 0);
+    else {
+      const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
+      const c = Math.cos(rel), sn = Math.sin(rel);
+      const fwd = Math.abs(c), lat = Math.abs(sn), tot = fwd + lat || 1;
+      if (c >= 0) add(L(CLIPS.aimRun), rest * fwd / tot, GAIT.aimRunRef);
+      else add(L(CLIPS.back), rest * fwd / tot, GAIT.backRef);
+      // +X IS HIS LEFT. Heading grows from +Z toward +X and his right is (-fz, fx), so a
+      // POSITIVE sine is a strafe to the LEFT. Written down because that argument comes out
+      // backwards half the time, and the strafe clips are picked by its sign.
+      add(L(sn >= 0 ? CLIPS.strafeL : CLIPS.strafeR), rest * lat / tot, GAIT.strafeRef);
     }
-    // THE RECOIL IS COMPRESSED to `shootBeat` and it ticks OUTSIDE the armed gate, so stowing
-    // the gun mid-shot cannot weld the clip on at full weight.
-    if (p.fireT > 0 && sp <= .25) add(CLIPS.shoot, Math.min(1, p.fireT * 1.7), 0);
+    setWeights(t, dt); return;
+  }
+
+  // ---- carrying it, but not committed: the ordinary armed gait, whole body ----
+  if (gunOut()) {
+    // CARRYING IT: the rifle idle standing, the rifle run moving. There is no rifle WALK in
+    // the set, so the run takes the whole moving range and `tsLo` holds it down at the bottom.
+    const wMove = smooth(0, GAIT.walkAt * 2.2, sp);
+    add(CLIPS.aimIdle, rest * (1 - wMove), 0);
+    add(p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun, rest * wMove, GAIT.aimRunRef);
     setWeights(t, dt); return;
   }
 
@@ -2236,6 +2343,8 @@ async function init() {
   // -- which is the T-pose exactly, and looks like a rendering fault rather than a missing clip.
   const want = [];
   for (const k in CLIPS) { const v = CLIPS[k]; Array.isArray(v) ? want.push(...v) : want.push(v); }
+  for (const k of SPLIT.up) want.push(CLIPS[k] + UP);
+  for (const k of SPLIT.legs) want.push(CLIPS[k] + LEGS);
   const gone = want.filter(n => !rig.actions[n]);
   if (gone.length) note('NO CLIP ' + gone.join(','));
 
