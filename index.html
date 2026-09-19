@@ -234,10 +234,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m9</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m10</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m9</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m10</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -269,7 +269,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 
-const BUILD = 'm9';
+const BUILD = 'm10';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
 /* ASSETS:END */
@@ -431,6 +431,11 @@ const WEAP = {
   chargeT: 1.15,     // seconds to a full charge
   minChg: .10,       // under this a release is a fumble rather than a shot
   shootBeat: .34,    // the `shoot` clip compressed to this -- it is 0.583 s at 1x
+  // WHERE THE AIM POSE IS CUT FROM. There is no sighted standing clip in the export, so it is
+  // the FIRST FRAME of a clip that already has the gun up. `rifle_run` is his pick; `shoot` is
+  // the other candidate and is one word away -- its first frame would put the release perfectly
+  // in register, at the cost of the hold being the recoil's starting stance.
+  aimFrom: 'rifle_run',
   range: 60,         // how far the aim is walked to find what he is pointing at
   boltV: 44,         // m/s. Slow enough to SEE, which is the whole point of a charged ball
   boltLife: 2.4, boltR: .17,
@@ -448,6 +453,7 @@ const CLIPS = {
   idle: 'idle_01', walk: 'walk_fwd', run: 'run_fwd', sprint: 'run_fwd_fast', back: 'run_bwd',
   air: 'in_air', landSoft: 'landing_soft', landHard: 'landing_hard', roll: 'roll',
   aimIdle: 'idle_rifle', aimRun: 'rifle_run', aimRunShoot: 'rifle_run_shoot', shoot: 'shoot',
+  aimPose: 'rifle_aim',              // DERIVED at load -- see `deriveClips`. Not in the file.
   strafeL: 'strafe_left', strafeR: 'strafe_right',
   fist: ['melee_01', 'melee_03', 'Standing_Melee_Attack_360_High'],
   weap: ['weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03'],
@@ -705,6 +711,40 @@ function normaliseClips(clips) {
     if (!(clip.duration > 0)) { note('CLIP ' + clip.name + ' duration ' + clip.duration); continue; }
     out.push(clip);
   }
+  return out;
+}
+
+// --------------------------------------------------------------------------------------------
+// THE AIM POSE IS ONE FRAME, TRIMMED -- there is no sighted standing clip in the export.
+// Holding a charge he is BRACED, not at ease: `idle_rifle` is the gun DOWN and him standing
+// about, which is exactly right for carrying it and exactly wrong for the moment a shot is
+// winding up. The first frame of a clip that already has the gun up IS that pose, for free.
+//
+// TRIMMED RATHER THAN PAUSED, and that is not a detail: a paused action still has a duration
+// the mixer walks, and it can be left somewhere unexpected by anything that touches its time.
+// **One keyframe cannot drift.** The duration is .1 rather than 0 because a zero-length clip on
+// LoopRepeat divides by its own length.
+//
+// And the arrays are NEW rather than sliced views -- the whole point of `normaliseClips` is that
+// these buffers are shared, so a derived clip that aliased one would put the same landmine back
+// one function along.
+// --------------------------------------------------------------------------------------------
+function deriveClips(clips) {
+  const out = clips.slice();
+  const src = clips.find(c => c.name === WEAP.aimFrom);
+  if (!src) { note('NO CLIP ' + WEAP.aimFrom); return out; }
+  const tracks = [];
+  for (const t of src.tracks) {
+    const n = t.getValueSize();
+    if (!t.values || t.values.length < n) continue;
+    const vals = new Float32Array(n);
+    for (let i = 0; i < n; i++) vals[i] = t.values[i];
+    tracks.push(new t.constructor(t.name, new Float32Array([0]), vals));
+  }
+  if (!tracks.length) { note('NO TRACKS IN ' + WEAP.aimFrom); return out; }
+  out.push(new THREE.AnimationClip(CLIPS.aimPose, .1, tracks));
+  console.log('[melee] ' + CLIPS.aimPose + ' derived from the first frame of ' + WEAP.aimFrom +
+              ' (' + tracks.length + ' tracks)');
   return out;
 }
 
@@ -1683,8 +1723,10 @@ function rigAnim(dt) {
       // and travels wherever the thumb says, so "how fast" no longer picks the clip -- "which
       // way, relative to his nose" does. Forward is the rifle run, sideways is the strafe for
       // that side, backwards is the backpedal, still is the rifle idle.
+      // AND IT ONLY APPLIES STANDING STILL. Moving, it means nothing extra -- the rifle run,
+      // the strafes and the backpedal all already hold the gun up.
       const moving = sp > .25;
-      if (!moving) add(CLIPS.aimIdle, rest, 0);
+      if (!moving) add(rig.actions[CLIPS.aimPose] ? CLIPS.aimPose : CLIPS.aimIdle, rest, 0);
       else {
         const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
         const c = Math.cos(rel), sn = Math.sin(rel);
@@ -1893,7 +1935,7 @@ async function init() {
   rig.faceOff = -measureFacing(rig.bones);
 
   // ---- the clips ----
-  const clips = normaliseClips(g.animations || []);
+  const clips = deriveClips(normaliseClips(g.animations || []));
   rig.mixer = new THREE.AnimationMixer(model);
   for (const c of clips) {
     rig.clips[c.name] = c;
