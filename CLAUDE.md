@@ -17,13 +17,15 @@ phone. The number is the big cyan figure top-left and it is also on the boot car
 **"which build is he actually looking at" is half of every boot question** and the card is
 `z-index: 20` over the badge for the whole load.
 
-**PAGES IS NOT ENABLED YET AND NOTHING IN CI CAN ENABLE IT.** `enablement: true` on
-`configure-pages` was tried and came back `Create Pages site failed. Error: Resource not
-accessible by integration` — the default workflow token may deploy to a Pages site but may not
-create one. It is **Settings → Pages → Source**, once, by hand: *GitHub Actions* (the workflow
-deploys the repo root) or *Deploy from a branch → main / (root)* (no workflow needed — delete
-`.github/workflows/pages.yml` if this is the choice). Until then every push leaves a red X on
-the Actions tab and the site 404s, and **there is nothing wrong with the build**.
+**THERE IS NO CI AND THERE MUST NOT BE ONE.** Pages serves `main` / `(root)` directly, which is
+right for a repo with no build step: push to `main` and it is live, with nothing in between.
+A `.github/workflows/pages.yml` existed briefly and was deleted — under branch deployment it
+deploys nothing and fails on every single push, so all it produces is a red X that has to be
+ignored, and a red X that always means nothing is worse than no signal at all. (For the record,
+CI cannot turn Pages on by itself either: `enablement: true` on `configure-pages` comes back
+`Create Pages site failed. Error: Resource not accessible by integration` — the workflow token
+may deploy to a Pages site but may not create one.) **The gates run here, before the push, not
+on a server.**
 
 ## Verification budget
 
