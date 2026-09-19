@@ -264,10 +264,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m15</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m16</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m15</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m16</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -305,9 +305,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm15';
+const BUILD = 'm16';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -670,7 +670,7 @@ const SFX = {
     swoosh: ['audio/swoosh_01.mp3', 'audio/swoosh_02.mp3', 'audio/swoosh_03.mp3', 'audio/swoosh_04.mp3'],
     clang: ['audio/metal_clang_01.mp3', 'audio/metal_clang_02.mp3', 'audio/metal_clang_03.mp3'],
     thud: ['audio/box_break_01.mp3'],
-    charge: ['audio/powerup_01.mp3'],
+    zap: ['audio/electricity_beam_01.mp3'],
     shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
     big: ['audio/plasma_canon.mp3'],
     boom: ['audio/explosion_small.mp3'],
@@ -725,6 +725,63 @@ function sfxEdge(b) {
   for (let i = n - 1; i > a; i--) if (Math.abs(d[i]) > tail) { z = i; break; }
   return { a: Math.max(0, a / sr - SFX.pre), b: Math.min(b.duration, z / sr + .04) };
 }
+// ============================================================================================
+// THE CHARGE IS A SYNTH, NOT A SAMPLE -- and it has to be.
+// `powerup_01.mp3` was the first try and it is the wrong SHAPE even though it is the right
+// idea: it is the one-shot rise you play when somebody picks up a new gun. A charge is not a
+// `play()`. It is ON for exactly as long as the thumb is up, it RISES with how full the shot
+// actually is, and it stops the instant the shot leaves -- and no one-shot can do any of that.
+// It ends early on a long hold and runs past a short one.
+//
+// TWO DETUNED SAWS UNDER A LOWPASS THAT OPENS. **The DETUNE is what makes it read as
+// ELECTRICAL rather than as a note** -- two saws a few cents apart beat against each other,
+// which is the sound of something building charge rather than of something playing a pitch.
+// The filter opening is the "filling up" read and the pitch rise is the confirmation.
+//
+// And the real ELECTRIC crack is a sample laid on the front of it (`zap`), because an onset is
+// the one part a synth is worse at than a recording.
+// ============================================================================================
+const CHARGE = {
+  f0: 84, f1: 232,        // the note it climbs through
+  det: 9,                 // CENTS of detune between the two saws -- the beat IS the electricity
+  lp0: 240, lp1: 4600,    // and the filter opening is what "charging" sounds like
+  q: 7, g: .17,
+  osc: [], gain: null, flt: null,
+};
+function chargeStart() {
+  if (!SFX.ctx || CHARGE.gain) return;
+  const c = SFX.ctx;
+  const g = c.createGain(); g.gain.value = 0;
+  const f = c.createBiquadFilter();
+  f.type = 'lowpass'; f.frequency.value = CHARGE.lp0; f.Q.value = CHARGE.q;
+  f.connect(g); g.connect(SFX.bus);
+  const os = [];
+  for (const d of [-CHARGE.det, CHARGE.det]) {
+    const o = c.createOscillator();
+    o.type = 'sawtooth'; o.frequency.value = CHARGE.f0; o.detune.value = d;
+    o.connect(f); o.start(); os.push(o);
+  }
+  CHARGE.gain = g; CHARGE.flt = f; CHARGE.osc = os;
+}
+function chargeStep(k) {
+  if (!CHARGE.gain || !SFX.ctx) return;
+  const t = SFX.ctx.currentTime;
+  // `setTargetAtTime` rather than a bare assignment: a parameter jumped on a frame boundary
+  // clicks, and a charge that clicks sixty times a second is a buzz.
+  CHARGE.gain.gain.setTargetAtTime(SFX.on ? CHARGE.g * (.22 + .78 * k) : 0, t, .04);
+  CHARGE.flt.frequency.setTargetAtTime(lerp(CHARGE.lp0, CHARGE.lp1, k * k), t, .05);
+  for (const o of CHARGE.osc) o.frequency.setTargetAtTime(lerp(CHARGE.f0, CHARGE.f1, k), t, .07);
+}
+function chargeStop() {
+  if (!CHARGE.gain || !SFX.ctx) return;
+  const t = SFX.ctx.currentTime;
+  CHARGE.gain.gain.setTargetAtTime(0, t, .025);
+  const g = CHARGE.gain, os = CHARGE.osc;
+  // let the fade finish before the nodes go, or the stop IS the click
+  setTimeout(() => { for (const o of os) { try { o.stop(); } catch (e) {} } try { g.disconnect(); } catch (e) {} }, 220);
+  CHARGE.gain = null; CHARGE.flt = null; CHARGE.osc = [];
+}
+
 function snd(key, o) {
   if (!SFX.on || !SFX.ctx || SFX.voices >= SFX.max) return 1;
   const list = SFX.buf[key]; if (!list || !list.length) return 1;
@@ -1881,7 +1938,7 @@ function stepKit(dt) {
     const keeping = p.aim && upish && mag > WEAP.keepAt;
     if (arming || keeping) {
       p.armT += dt;
-      if (p.armT >= WEAP.armT && !p.aim) { p.aim = 1; snd('charge', { g: .45 }); }
+      if (p.armT >= WEAP.armT && !p.aim) { p.aim = 1; snd('zap', { g: .5, r: 1.2 }); chargeStart(); }
     } else {
       // the edge. Everything that ends the hold -- letting go, rolling the thumb back down,
       // sweeping off the arc, backgrounding the app -- comes through here as one release.
@@ -1902,7 +1959,8 @@ function stepKit(dt) {
       p.aim = 0; p.armT = 0;
     }
     p.chg = p.aim ? Math.min(1, p.chg + dt / WEAP.chargeT) : 0;
-  } else { p.aim = 0; p.armT = 0; p.chg = 0; }
+    if (p.aim) chargeStep(p.chg); else chargeStop();
+  } else { if (p.aim || CHARGE.gain) chargeStop(); p.aim = 0; p.armT = 0; p.chg = 0; }
 
   // the ball winds up ON the muzzle, and the gun's blue lifts with it
   const showBall = p.chg > .02;
@@ -1923,7 +1981,7 @@ function stepKit(dt) {
     // BOTH HALVES ARE STARTED. Which one is DRAWN depends on whether he happens to be moving,
     // and that can change mid-clip -- so the one that is not being drawn still has to be at the
     // right place in its own timeline for the moment it is.
-    if (!p.charge) { playPair(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat); snd('charge', { g: .5, r: 1.15 }); }
+    if (!p.charge) { playPair(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat); snd('swoosh', { g: .55, r: .5 }); }
     p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
   } else if (!holding && p.charge) chargeRelease();
 
@@ -2671,7 +2729,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, dummyHit, stepDummies, findLock,
+  DUMMY, DUMMIES, LOCK, dummyHit, stepDummies, findLock, SFX, CHARGE, TWIST, snd,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, fireBolt, BOLTS, gunOut,
   kit: () => cycleKit(),
@@ -2708,6 +2766,11 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
     return { size: c.getPropertyValue('--size').trim(), w: c.getPropertyValue('--w').trim(),
              hue: c.getPropertyValue('--h').trim(), lock: c.getPropertyValue('--lh').trim() };
   },
+  // the charge whine is a synth, so every part of it is a live number: `f0`/`f1` the note it
+  // climbs through, `det` the detune in CENTS (this is the one that decides whether it reads as
+  // electrical or as a tune), `lp0`/`lp1` how far the filter opens, `g` the level.
+  chg: o => { if (o) Object.assign(CHARGE, o); return { f0: CHARGE.f0, f1: CHARGE.f1, det: CHARGE.det, lp0: CHARGE.lp0, lp1: CHARGE.lp1, q: CHARGE.q, g: CHARGE.g }; },
+  mute: v => { SFX.on = v == null ? (SFX.on ? 0 : 1) : (v ? 1 : 0); return SFX.on; },
   emis: v => { for (const m of Object.values(rig.mats || {})) m.emissiveIntensity = v; RIG.emissive = v; return v; },
 };
 
