@@ -224,6 +224,28 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   opacity: calc(.25 + .75 * var(--c));
 }
 
+/* ---- the melee mark ---- */
+#mmark {
+  position: fixed; z-index: 3; left: 0; top: 0; width: 96px; height: 96px;
+  margin: -48px 0 0 -48px; pointer-events: none; opacity: 0;
+  transition: opacity .12s ease; --c: 0; --mc: #ff9b2f;
+  filter: drop-shadow(0 0 4px var(--mc));
+}
+#mmark.on { opacity: 1; }
+#mmark i { position: absolute; left: 50%; top: 50%; display: block; }
+/* the diamond CLOSES as it winds up -- one shape doing what the blaster's five rings do */
+#mmark .dia {
+  width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  border: 2px solid var(--mc); border-radius: 3px;
+  transform: rotate(45deg) scale(calc(1.5 - .75 * var(--c)));
+  opacity: calc(.35 + .65 * var(--c));
+}
+#mmark .dot {
+  width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%; background: var(--mc);
+  transform: scale(calc(.3 + .9 * var(--c)));
+}
+
 .pad .hint {
   position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%);
   font-size: 10px; letter-spacing: .12em; opacity: .42; white-space: nowrap; text-transform: uppercase;
@@ -242,10 +264,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m13</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m14</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m13</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m14</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -270,6 +292,11 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <div class="core"></div>
 </div>
 
+<!-- THE MELEE MARK. Deliberately NOT the blaster's reticle: a hammer does not have a firing
+     solution, it has a thing it is about to arrive at. A diamond that closes onto a dot as the
+     swing winds up, no spin, no layers -- and it only exists while the wind-up is held. -->
+<div id="mmark" aria-hidden="true"><i class="dia"></i><i class="dot"></i></div>
+
 <canvas id="gl"></canvas>
 
 <script type="module">
@@ -278,9 +305,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm13';
+const BUILD = 'm14';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -398,31 +425,39 @@ const FLICK = { at: .70, within: .28, let: .26, gap: .10 };
 // clips run 1.0 to 1.75 s, so a three-hit chain played at 1x is over four seconds of watching,
 // which reads as lag rather than as a combo. Escalating, so the finisher has the most weight.
 const MELEE = {
-  beat: [.62, .74, .95],
+  // FAST ENOUGH TO PLAY ALL THE WAY THROUGH. The rule is that a strike is never interrupted,
+  // which is only bearable if each one is over quickly -- so the beats come down and the clips
+  // are compressed harder to match. A chain is 1.56 s of three landed blows rather than 2.3 s
+  // of two and a half.
+  beat: [.44, .50, .62],
   // WHERE IN THE CLIP THE BLOW LANDS, per strike. Firing on the INPUT frame puts the
   // consequence a third of a second before the hand gets there, and a swing and its effect
   // arriving as two events is what "you cannot actually hit things" looks like from outside.
   at: [.34, .40, .32], finishAt: .38,
-  reach: 2.3,
+  reach: 2.5,
   // A FLICK IN THE GENERAL DIRECTION OF SOMEBODY IS A FLICK AT HIM. Aiming at him is not
   // enough on its own: a punch thrown at exactly the right bearing from four metres still hits
   // air. So the lock also SOLVES the launch for the gap, which is what makes it land.
   aimCone: .95,        // ~54 degrees either side of the flick
   aimNear: .35,        // what a metre of distance is worth against a metre of miss
-  maxV: 15,            // the fastest a lunge may be solved to
+  maxV: 21,            // the fastest a lunge may be solved to
   arrive: 1.25,        // the gap he is solved to leave -- arm's length, not his centre
   lockAt: .58,         // and if he never arrives, the blow swings anyway at this much of the clip
   carryAvg: .725,      // the `carry` profile's average speed: carry + (1 - carry) / 2
-  finishRange: 15,     // the charged swing reaches about double what a strike does
+  finishRange: 19,     // the charged swing reaches about double what a strike does
   // and what each one is worth. The finisher and the charged swing put him down outright.
   power: [.45, .52, 1.0],
   window: 1.05,      // how long after a strike the next flick continues the chain
-  hold: .55,         // fraction of a strike after which the stick can cancel the recovery
+  // `hold` IS DEAD AND KEPT AS A NOTE. It was the fraction of a strike after which the stick
+  // could cancel the recovery -- and cancelling a strike is exactly what must not happen now.
+  hold: .55,
   // A STRIKE HAS TO TRAVEL. At 2.4 / 2.0 / 2.6 the three-hit chain covered about a metre in
   // total, which reads as swinging on the spot. Distance is `v * beat * .725` (the `carry`
   // profile's average), so these give 1.9 / 2.1 / 3.4 m -- a chain that crosses seven metres
   // and a finisher that genuinely closes.
-  lunge: [4.2, 3.8, 5.0],
+  // HE RUNS AT THE GUY AND LAUNCHES. These are the FLOOR -- the lock solves upward from here
+  // for the real gap, so what they set is how far an unlocked swing carries.
+  lunge: [7.0, 6.5, 9.0],
   carry: .45,        // full speed for this fraction of the strike, then linear to zero
   rollDur: .92, rollV: 6.2, rollFree: .45,
   charge: 1.0,       // seconds to a full hammer charge
@@ -431,7 +466,7 @@ const MELEE = {
   // reads as a man swinging at the air in front of him. Both scale with how full the charge
   // was, so the hold buys the distance -- and the UP term takes him off the ground, which is
   // what makes it land as a blow rather than arrive as a shuffle.
-  finishV: 13.0, finishUp: 4.6, finishMin: .45,
+  finishV: 18.0, finishUp: 4.6, finishMin: .45,
 };
 
 const WEAP = {
@@ -591,6 +626,107 @@ function setBoot(label, frac) {
 
 const MISSING = [];
 const note = m => { if (!MISSING.includes(m)) MISSING.push(m); console.warn('[melee] ' + m); };
+
+// ============================================================================================
+// SOUND. Borrowed whole from Plutopia, Shredworld and Robits -- the same swooshes, clangs and
+// blaster shots those games already use. Two ideas here are load-bearing:
+//
+// 1. TWO-STAGE LOAD. A browser will not build an AudioContext outside a gesture, but it will
+//    happily FETCH -- so the bytes come down at page load and only the decode waits for the
+//    first touch. The first swing then HAS a sound instead of being the thing that starts the
+//    download.
+// 2. EDGE TRIMMING. An exported effect is usually a short noise sitting inside a longer file:
+//    silence, the event, then a tail of nothing. Played from zero that is a sound with a delay
+//    bolted onto the front, and nothing on the trigger side can fix it.
+//    AND THE ONSET IS FOUND RELATIVE TO THE FILE'S OWN PEAK, not against an absolute floor --
+//    an absolute floor opens on room tone, which on a real recording is a tenth of a second of
+//    nothing in front of the hit.
+// `play` returns TRUE when it REFUSES a sound (voice cap or per-key gap), because a caller
+// reading false would fall back to something else and put the pile-up back.
+// ============================================================================================
+const SFX = {
+  on: 1, vol: .85, ctx: null, bus: null, ready: 0,
+  gap: .045,        // the least time between two of the same key
+  voices: 0, max: 14,
+  hit: .25,         // the onset is the first sample over this much of the file's own peak
+  pre: .03,         // with this much run-up kept, so the attack survives
+  files: {
+    swoosh: ['audio/swoosh_01.mp3', 'audio/swoosh_02.mp3', 'audio/swoosh_03.mp3', 'audio/swoosh_04.mp3'],
+    clang: ['audio/metal_clang_01.mp3', 'audio/metal_clang_02.mp3', 'audio/metal_clang_03.mp3'],
+    thud: ['audio/box_break_01.mp3'],
+    charge: ['audio/powerup_01.mp3'],
+    shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
+    big: ['audio/plasma_canon.mp3'],
+    boom: ['audio/explosion_small.mp3'],
+    lock: ['audio/metal_ping_01.mp3'],
+  },
+  raw: {}, buf: {}, edge: {}, last: {},
+};
+// stage one: the bytes, at page load, with no context anywhere
+(function sfxFetch() {
+  for (const k in SFX.files) {
+    SFX.raw[k] = [];
+    SFX.files[k].forEach((u, i) => {
+      fetch(A(u)).then(r => r.ok ? r.arrayBuffer() : null).then(b => { if (b) SFX.raw[k][i] = b; })
+        .catch(() => {});
+    });
+  }
+})();
+// stage two: the context and the decode, on the first touch anywhere
+function sfxWake() {
+  if (SFX.ctx) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) { note('NO AUDIO'); return; }
+  SFX.ctx = new AC();
+  // THIS IS WHAT MAKES A PHONE WITH THE RING SWITCH ON AUDIBLE AT ALL.
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+  SFX.bus = SFX.ctx.createGain();
+  SFX.bus.gain.value = SFX.vol;
+  SFX.bus.connect(SFX.ctx.destination);
+  for (const k in SFX.raw) {
+    SFX.buf[k] = []; SFX.edge[k] = [];
+    SFX.raw[k].forEach((ab, i) => {
+      if (!ab) return;
+      SFX.ctx.decodeAudioData(ab.slice(0)).then(b => {
+        SFX.buf[k][i] = b;
+        SFX.edge[k][i] = sfxEdge(b);
+        SFX.ready = 1;
+      }).catch(() => {});
+    });
+  }
+}
+addEventListener('pointerdown', sfxWake, { capture: true, once: false });
+function sfxEdge(b) {
+  const d = b.getChannelData(0), n = d.length, sr = b.sampleRate;
+  let peak = 0;
+  for (let i = 0; i < n; i += 7) { const v = Math.abs(d[i]); if (v > peak) peak = v; }
+  if (peak < 1e-4) return { a: 0, b: b.duration };
+  const gate = peak * SFX.hit;
+  let a = 0;
+  for (let i = 0; i < n; i++) if (Math.abs(d[i]) > gate) { a = i; break; }
+  let z = n - 1;
+  const tail = peak * .012;
+  for (let i = n - 1; i > a; i--) if (Math.abs(d[i]) > tail) { z = i; break; }
+  return { a: Math.max(0, a / sr - SFX.pre), b: Math.min(b.duration, z / sr + .04) };
+}
+function snd(key, o) {
+  if (!SFX.on || !SFX.ctx || SFX.voices >= SFX.max) return 1;
+  const list = SFX.buf[key]; if (!list || !list.length) return 1;
+  const t = SFX.ctx.currentTime;
+  if (SFX.last[key] != null && t - SFX.last[key] < SFX.gap) return 1;
+  const i = (o && o.i != null) ? o.i : (Math.random() * list.length) | 0;
+  const b = list[i]; if (!b) return 1;
+  SFX.last[key] = t;
+  const e = (SFX.edge[key] && SFX.edge[key][i]) || { a: 0, b: b.duration };
+  const src = SFX.ctx.createBufferSource(); src.buffer = b;
+  src.playbackRate.value = (o && o.r) || 1;
+  const g = SFX.ctx.createGain(); g.gain.value = (o && o.g != null) ? o.g : 1;
+  src.connect(g); g.connect(SFX.bus);
+  SFX.voices++;
+  src.onended = () => { SFX.voices--; };
+  src.start(0, e.a, Math.max(.02, e.b - e.a));
+  return 0;
+}
 
 // ============================================================================================
 // renderer, scene, world
@@ -1258,6 +1394,7 @@ function stepBolts(dt) {
     // writing a scale
     ballSize(b.g, .9 + Math.random() * .22);
     if (dead) {
+      snd('boom', { g: .28 + b.chg * .35, r: 1.25 - b.chg * .35 });
       b.g.traverse(o => { if (o.material) o.material.dispose(); });
       scene.remove(b.g); BOLTS.splice(i, 1);
     }
@@ -1266,9 +1403,26 @@ function stepBolts(dt) {
 
 // ---- the reticle ----
 const reticEl = document.getElementById('retic');
+const mmarkEl = document.getElementById('mmark');
 const _rv = new THREE.Vector3();
 function paintRetic() {
   const p = player;
+  // THE HAMMER GETS ITS OWN, SIMPLER MARK, and it exists only while the wind-up is held.
+  if (mmarkEl) {
+    const show = p.charge > 0 && !p.aim;
+    mmarkEl.classList.toggle('on', !!show);
+    if (show) {
+      const L = p.lock;
+      const w = L ? _ap.set(L.root.position.x, L.root.position.y + DUMMY.h * LOCK.chest, L.root.position.z)
+                  : _ap.set(p.pos.x + Math.sin(p.faceH) * 3, p.pos.y + RIG.height * .6, p.pos.z + Math.cos(p.faceH) * 3);
+      _rv.copy(w).project(camera);
+      if (_rv.z <= 1) {
+        mmarkEl.style.transform =
+          `translate(${((_rv.x * .5 + .5) * innerWidth).toFixed(1)}px,${((-_rv.y * .5 + .5) * innerHeight).toFixed(1)}px)`;
+        mmarkEl.style.setProperty('--c', (p.chargeT / MELEE.charge).toFixed(3));
+      } else mmarkEl.classList.remove('on');
+    }
+  }
   if (!p.aim || !reticEl) { if (reticEl) reticEl.classList.remove('on'); return; }
   // LOCKED, THE MARK IS ON HIM -- not on whatever the level walk happened to find. The mark IS
   // the promise, and a mark that sits beside the thing the gun is committed to is worse than
@@ -1329,6 +1483,8 @@ function skinPlay(skin, name, timeScale) {
   return 1;
 }
 function playOnce(name, timeScale) { return skinPlay(rig, name, timeScale); }
+// a clip and its upper-half clone, started together and kept in step
+function playPair(name, timeScale) { skinPlay(rig, name, timeScale); skinPlay(rig, name + UP, timeScale); }
 function setScale(name, s) { const a = rig.actions[name]; if (a) a.setEffectiveTimeScale(s); }
 const clipLen = name => { const c = rig.clips[name]; return c ? c.duration : 0; };
 const skinLen = (skin, name) => { const c = skin.clips && skin.clips[name]; return c ? c.duration : 0; };
@@ -1345,7 +1501,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
-  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0, melV: 0, melTgt: null,
+  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, twist: 0, melQ: null,
   slot: 0,
   r: .34, hh: 1.6,
 };
@@ -1479,7 +1635,12 @@ function meleeLock(h, reachMax) {
 }
 function meleeGo(h) {
   const p = player;
-  if (!p.grounded || p.roll || p.chargeGo) return;
+  if (!p.grounded) return;
+  // BUFFERED, NEVER INTERRUPTING. A flick thrown while a strike is still playing is remembered
+  // and taken the moment it finishes, so the chain answers the thumb without any link being
+  // cut off halfway. Dropping the input instead would make a fast chain feel unresponsive;
+  // taking it immediately would make every strike a jump cut.
+  if (p.melee || p.roll || p.chargeGo) { p.melQ = (h != null ? h : p.faceH); return; }
   const chain = meleeChain();
   // A CHAIN, NOT A BUTTON. Inside the window (or during a strike, which buffers) the next
   // flick takes the NEXT link; let it lapse and the next flick opens at the first again. Past
@@ -1504,6 +1665,7 @@ function meleeGo(h) {
   // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,
   // which reads as lag rather than as a combo.
   playOnce(name, clipLen(name) / p.meleeDur);
+  snd('swoosh', { r: .95 + ix * .1, g: .8 });
   // and he covers ground: full speed for `carry` of the strike, then linear to zero, which
   // averages .725 rather than .5 and is what a lunge actually looks like
   p.vel.x = Math.sin(p.faceH) * p.melV; p.vel.z = Math.cos(p.faceH) * p.melV;
@@ -1514,6 +1676,7 @@ function rollGo(h) {
   p.roll = 1; p.rollT = 0; p.rollH = (h != null ? h : p.faceH);
   p.heading = p.rollH; p.melee = 0; p.meleeChain = 0;
   playOnce(CLIPS.roll, clipLen(CLIPS.roll) / MELEE.rollDur);
+  snd('swoosh', { r: 1.35, g: .45 });
   p.vel.x = Math.sin(p.rollH) * MELEE.rollV; p.vel.z = Math.cos(p.rollH) * MELEE.rollV;
 }
 function chargeRelease() {
@@ -1533,6 +1696,7 @@ function chargeRelease() {
   // how full it was, from the half-charge floor up -- so even the shortest real swing moves
   p.chargeGoK = MELEE.finishMin + (1 - MELEE.finishMin) * clamp(t0 / MELEE.charge, 0, 1);
   playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / MELEE.finishBeat);
+  snd('swoosh', { r: .72, g: 1 });
   const base = MELEE.finishV * p.chargeGoK;
   const v = (CL && p.melTgt)
     ? clamp((CL.dist - MELEE.arrive) / (MELEE.finishBeat * MELEE.carryAvg), base, MELEE.maxV * 1.6)
@@ -1694,7 +1858,7 @@ function stepKit(dt) {
     const keeping = p.aim && upish && mag > WEAP.keepAt;
     if (arming || keeping) {
       p.armT += dt;
-      if (p.armT >= WEAP.armT) p.aim = 1;
+      if (p.armT >= WEAP.armT && !p.aim) { p.aim = 1; snd('charge', { g: .45 }); }
     } else {
       // the edge. Everything that ends the hold -- letting go, rolling the thumb back down,
       // sweeping off the arc, backgrounding the app -- comes through here as one release.
@@ -1702,8 +1866,8 @@ function stepKit(dt) {
         if (p.chg >= WEAP.minChg) {
           fireBolt(p.chg);
           p.fireT = 1;
-          const sn = rig.actions[CLIPS.shoot + UP] ? CLIPS.shoot + UP : CLIPS.shoot;
-          playOnce(sn, clipLen(CLIPS.shoot) / WEAP.shootBeat);
+          snd(p.chg > .82 ? 'big' : 'shot', { g: .42 + p.chg * .3, r: 1.12 - p.chg * .3 });
+          playPair(CLIPS.shoot, clipLen(CLIPS.shoot) / WEAP.shootBeat);
         }
         p.chg = 0;
       }
@@ -1728,10 +1892,10 @@ function stepKit(dt) {
     // REWOUND ON THE RISING EDGE. `weapon_melee_charge` is a ONCE clip so it holds its last
     // frame -- a man straining rather than winding up over and over -- and a clip that holds
     // has to be rewound BY THE STATE that starts it or the second charge never winds up.
-    if (!p.charge) {
-      const nm = rig.actions[CLIPS.chargeUp + UP] ? CLIPS.chargeUp + UP : CLIPS.chargeUp;
-      playOnce(nm, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
-    }
+    // BOTH HALVES ARE STARTED. Which one is DRAWN depends on whether he happens to be moving,
+    // and that can change mid-clip -- so the one that is not being drawn still has to be at the
+    // right place in its own timeline for the moment it is.
+    if (!p.charge) { playPair(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat); snd('charge', { g: .5, r: 1.15 }); }
     p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
   } else if (!holding && p.charge) chargeRelease();
 
@@ -1812,7 +1976,9 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
 
 function stepPlayer(dt) {
   const p = player;
+  const hadLock = p.lock;
   p.lock = findLock();
+  if (p.lock && p.lock !== hadLock) snd('lock', { g: .3, r: 1.5 });
   const s = p.lock ? stickLocked(p.lock) : stickWorld();
 
   // ---- the states that OWN the body. Each bleeds its own speed off and still runs gravity
@@ -1842,7 +2008,11 @@ function stepPlayer(dt) {
         p.melFired = 1;
         const pw = p.melee ? MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)]
                            : 1.0 * (p.chargeGoK || 1);
-        dummyHit(p.pos.x, p.pos.z, p.faceH, pw, MELEE.reach);
+        if (dummyHit(p.pos.x, p.pos.z, p.faceH, pw, MELEE.reach)) {
+          // a hammer rings and a fist thuds -- the weapon decides, not the strike
+          if (slotNow().charge) snd('clang', { g: .85, r: .9 + Math.random() * .2 });
+          else snd('thud', { g: .8, r: 1.05 + Math.random() * .15 });
+        }
       }
     }
     const h = p.roll ? p.rollH : p.faceH;
@@ -1853,16 +2023,26 @@ function stepPlayer(dt) {
     // THE TAIL IS CANCELLABLE. Holding the whole clip makes a three-punch chain feel like three
     // seconds of watching; past `hold`, a stick on the pad takes him out of the recovery, which
     // is what makes each link in the chain a decision rather than a wait.
-    const free = which === 'roll' ? MELEE.rollFree : MELEE.hold;
-    const out = u >= 1 || (u > free && s.mag > .3);
+    // A STRIKE IS NEVER CUT SHORT. Only the ROLL can be run out of early -- a roll is a move
+    // you spend to go somewhere and its tail is yours; a strike is a blow, and a blow that the
+    // next input truncates never reads as having landed. The whole reason the beats came down
+    // is that this rule is only bearable when each one is over quickly.
+    const out = p.roll ? (u >= 1 || (u > MELEE.rollFree && s.mag > .3)) : u >= 1;
     if (out) {
       if (p.roll) p.roll = 0;
-      else if (p.melee) { p.melee = 0; p.meleeChain = MELEE.window; }
-      else p.chargeGo = 0;
+      else if (p.melee) {
+        p.melee = 0; p.meleeChain = MELEE.window;
+        // and the flick that arrived mid-strike is taken NOW, so a chain thrown as fast as the
+        // thumb can move still lands every link
+        if (p.melQ != null) { const q = p.melQ; p.melQ = null; meleeGo(q); }
+      } else {
+        p.chargeGo = 0;
+        if (p.melQ != null) { const q = p.melQ; p.melQ = null; meleeGo(q); }
+      }
     }
     return;
   }
-  if (p.meleeChain > 0) p.meleeChain -= dt;
+  if (p.meleeChain > 0) { p.meleeChain -= dt; if (p.meleeChain <= 0) p.melQ = null; }
 
   // ---- the landing states: he can move out of them, but not instantly ----
   if (p.land) {
@@ -1961,15 +2141,19 @@ function rigAnim(dt) {
   // ---- COMMITTED: the legs strafe, the arms hold the weapon, and neither knows about the
   //      other. Every bone is claimed exactly once, so they compose rather than average.
   if (committed()) {
-    // the UPPER half: what he is doing with the weapon
     const up = p.charge ? CLIPS.chargeUp : p.fireT > 0 ? CLIPS.shoot : CLIPS.aimPose;
+    const moving = sp > .25;
+    // STANDING STILL IS THE WHOLE CLIP, NOT THE HYBRID. The split exists to put a weapon pose
+    // on STRAFING legs; standing there are no strafing legs to put it on, and half a running
+    // stride held under a pose reads as a man caught mid-step -- which is exactly what it was.
+    // The hybrid is for moving left and right and nothing else.
+    if (!moving) { add(up, rest, 0); setWeights(t, dt); return; }
+    // the UPPER half: what he is doing with the weapon
     add(rig.actions[up + UP] ? up + UP : up, rest, 0);
     // the LOWER half: which way he is travelling RELATIVE TO HIS NOSE, because he is facing
     // the target and "how fast" no longer picks the clip -- "which way" does.
-    const moving = sp > .25;
     const L = n => (rig.actions[n + LEGS] ? n + LEGS : n);
-    if (!moving) add(L(CLIPS.idle), rest, 0);
-    else {
+    {
       const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
       const c = Math.cos(rel), sn = Math.sin(rel);
       const fwd = Math.abs(c), lat = Math.abs(sn), tot = fwd + lat || 1;
@@ -2003,6 +2187,82 @@ function rigAnim(dt) {
   add(CLIPS.run, wRun * rest, GAIT.runRef);
   add(CLIPS.sprint, wSpr * rest, GAIT.sprintRef);
   setWeights(t, dt);
+}
+
+// ============================================================================================
+// POINTING THE GUN AT THE TARGET
+//
+// The aim pose is the first frame of `rifle_run` and a running stride holds the weapon across
+// the body, so the barrel sits a long way off his nose -- and the strafe clips turn him further
+// still. Facing the target with his FEET therefore does not point the GUN at it.
+//
+// THE LOOP IS CLOSED ON THE BARREL, NOT ON A TYPED BIAS. How far off the pose holds the weapon
+// is a property of the ANIMATION: it differs per clip, it moves during the recoil, and it would
+// differ again on a re-export. So it is never calculated -- the barrel's own world bearing is
+// READ each frame (the mount markers are exactly two points on it) and the residual is folded
+// back in, which converges on "the gun is on the mark" whatever the pose underneath is doing.
+//
+// AND THE EDIT IS TAKEN OFF BEFORE THE MIXER WRITES. A relative edit on a bone is only safe if
+// something rewrites that bone from scratch every frame -- and the `__legs` clones have every
+// spine track REMOVED by construction, so on precisely the state this exists for there may be
+// nothing driving Spine1/Spine2 at all. Last frame's twist would still be sitting on them and
+// the next one would stack: a few degrees a frame at 60 Hz, which is a spine unravelling.
+// `aimUntwist` is correct without having to know which case it is in: if the mixer owns the
+// bone it overwrites this and nothing is lost, and if it does not, the bone is back where the
+// twist started.
+// ============================================================================================
+const TWIST = {
+  bones: ['mixamorig_Spine1', 'mixamorig_Spine2'],
+  max: 1.75,     // how far the waist may come round in total. Generous, because it is also
+                 // absorbing the pose's own bias -- if it ever LOOKS over-twisted, the honest
+                 // fix is an aim pose that holds the gun forward, not a smaller number here.
+  ease: 9,       // how fast the residual is folded back
+};
+const TWISTQ = new THREE.Quaternion(), TWISTP = new THREE.Quaternion(), TWISTI = new THREE.Quaternion();
+const TWISTUP = new THREE.Vector3(0, 1, 0);
+const twistSave = [];
+function aimUntwist() {
+  for (let i = twistSave.length - 1; i >= 0; i--) twistSave[i].b.quaternion.copy(twistSave[i].q);
+  twistSave.length = 0;
+}
+const _wa = new THREE.Vector3(), _wb = new THREE.Vector3();
+function barrelH() {
+  const w = WEAP.worn[slotNow().key];
+  const host = w && w.host; if (!host) return null;
+  let tip = null;
+  for (const c of host.children) if (/tip/.test(c.name)) tip = c;
+  if (!tip) return null;
+  host.getWorldPosition(_wa); tip.getWorldPosition(_wb);
+  const dx = _wb.x - _wa.x, dz = _wb.z - _wa.z;
+  if (dx * dx + dz * dz < 1e-8) return null;
+  return Math.atan2(dx, dz);
+}
+function aimTwist(dt) {
+  const p = player;
+  if (!committed() || !gunOut() && !p.charge) { p.twist = damp(p.twist || 0, 0, .12, dt); }
+  else {
+    const want = p.lock ? lockH(p.lock) : cam.az;
+    const bh = barrelH();
+    // with nothing to read the barrel off -- an unarmed melee, a weapon that never loaded --
+    // fall back to his own facing, which is at least a direction
+    const now = bh != null ? bh : p.faceH + (p.twist || 0);
+    const err = wrapAngle(want - now);
+    p.twist = clamp((p.twist || 0) + err * Math.min(1, TWIST.ease * dt), -TWIST.max, TWIST.max);
+  }
+  if (Math.abs(p.twist || 0) < .004) return;
+  const per = p.twist / TWIST.bones.length;
+  TWISTQ.setFromAxisAngle(TWISTUP, per);
+  for (const nm of TWIST.bones) {
+    const b = rig.bones[nm]; if (!b || !b.parent) continue;
+    twistSave.push({ b, q: b.quaternion.clone() });
+    // THE PARENT CHAIN IS RE-READ PER BONE, because twisting one moves the next one's frame;
+    // applying both against one stale parent is a shear rather than a turn.
+    b.parent.updateWorldMatrix(true, false);
+    TWISTP.setFromRotationMatrix(b.parent.matrixWorld);
+    TWISTI.copy(TWISTP).invert();
+    b.quaternion.premultiply(TWISTP).premultiply(TWISTQ).premultiply(TWISTI);
+    b.updateMatrixWorld(true);
+  }
 }
 
 // ============================================================================================
@@ -2228,7 +2488,10 @@ function frame() {
     stepPlayer(dt);
     stepDummies(dt);
     rigAnim(dt);
+    aimUntwist();            // take last frame's edit off BEFORE the clips are written
     rig.mixer.update(dt);
+    aimTwist(dt);            // and put this frame's on top of the pose
+
     // DRAWN AT `faceH`, not at `heading`.
     rig.root.position.copy(player.pos);
     rig.root.rotation.y = player.faceH + rig.faceOff + RIG.spin;
