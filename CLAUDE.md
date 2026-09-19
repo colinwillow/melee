@@ -29,49 +29,47 @@ on a server.**
 
 ## Verification budget
 
-**He tests the game. You do not.** Make the change, `npm run bump`, run **`npm run check`**
-(~4 s), push, and say **"shipped unverified"** *with the build number* so he knows what to look
-for. No screenshots, no playwright unless he asks for it by name. A wrong guess costs him one
-look; a verification pass costs him the round trip he was going to spend looking anyway.
+**HE TESTS THE GAME. YOU DO NOT.** He asks for a change, you make it, you `npm run bump`, you
+push, and you say **"shipped unverified"** with the build number. Then he looks at it on his
+phone and tells you what is next. That is the loop, it is the only loop, and nothing in this
+repo is allowed to get between the change and the phone. **A wrong guess costs him one look. A
+verification pass costs him the round trip he was going to spend looking anyway**, which is
+strictly worse than being wrong — and it comes out of a fixed window he is paying for.
 
-**`npm run check:boot` EXISTS BECAUSE `check:syntax` ONLY PARSES.** It cannot see a `const` read
-above its own declaration, a throw at module top level, an undeclared assignment, or a
-`getElementById` that comes back null — and every one of those is a **BLANK PAGE**: the boot
-card sits for ever on the text it was born with, `init()` never runs, and nothing on screen or
-in a phone's console says why. It runs the REAL module, with `three` resolved to the VENDORED
-build through a shim that swaps `WebGLRenderer`/`WebGLRenderTarget`/`PMREMGenerator` for fakes.
-The asset failures are the environment, not the code — node has no relative-URL base — so those
-are filtered and anything else that rejects is a real fault.
+**The only thing that runs by default:**
 
-**`npm run glsl` CHECKS THE SHADER SPLICE**, because the blaster's charge glow is a string
-spliced into three's own fragment shader and a string is the one thing neither gate can see:
-`check:syntax` parses the JavaScript *around* it and `check:boot` has no GPU and never compiles
-one. A `.replace()` whose anchor is not in the chunk **does not throw** — it returns the string
-unchanged, so the uniform is never declared and the effect silently does not exist. It reads the
-anchors out of `index.html` rather than restating them, and it also pins the ORDER: the glow
-reads the texel, so it must run after `<map_fragment>` has multiplied the map into
-`diffuseColor`, or it measures the flat base colour and lights the whole gun evenly.
+```sh
+npm run check      # ~4s: the syntax gate and the boot gate
+```
 
-**`npm run check:sim` DRIVES THE SHIPPED LOCOMOTION HEADLESSLY**, and it is the one that pays.
-Everything that matters about movement is reachable without a GPU: the collider is boxes and
-`stepPlayer` is arithmetic. **It calls `melee.stepPlayer`; it never restates the rule** — a
-harness with its own copy of the code measures a game that does not exist, which is how a suite
-can pass happily while movement runs backwards. Eight cases: he walks AWAY FROM THE CAMERA at
-five bearings (not north, which is the version that works until you turn the lens), nothing goes
-non-finite under six seconds of thrashing, top speed lands on `MOVE.max`, the step-up and the
-jump, the boxes are solid, the roll goes where it was pointed, a strike lunges and stops, and
-his travel agrees with his facing at a run. **On its first run it found a real collider bug**
-(below).
-**WHAT IT CANNOT SEE IS THE SKIN.** The GLB is draco and DRACOLoader wants a Worker, so no
-harness here can build a rig. Clips, weights, the mounts and every pose belong on the phone and
-to `npm run clips` / `npm run rig`, which read the file directly. The melee actions in the sim
-are FABRICATED with the real durations read out of the GLB — a stated gap, not a silent one.
+Those two earn their seconds because they are the one failure he **cannot** look at and correct:
+a file that will not parse, or a module that throws at top level, is a **BLANK PAGE** — the boot
+card sits on the text it was born with and there is nothing on screen or in a phone's console to
+say why. That is not a wrong guess he can judge; it is a round trip with nothing in it. Say the
+word and `check:boot` goes too.
 
-**All four gates were verified by breaking the file on purpose**, which is the only thing that
-proves a gate is a gate: a missing element exits 1 with
-`TypeError: Cannot read properties of null`, and a TDZ exits 1 with `Cannot access 'LATER'
-before initialization`. **Check the revert anchor actually matched before believing a test that
-says it caught something** — a patch that silently applies nothing reports a pass.
+**Do NOT run, unless he asks for it by name:**
+
+```sh
+npm run sim        # drives the shipped stepPlayer over the real collider
+npm run glsl       # does the shader splice still land
+npm run clips      # what is actually in each animation
+npm run gait       # the measured reference speed of every locomotion clip
+npm run rig        # height, facing, and whether the weapon mounts still agree
+```
+
+**These exist because of what they FOUND, and that is what they are for now — a record, not a
+gate.** `sim` found a collider bug (a 40 cm kerb was a wall); `gait` replaced three eyeballed
+constants with measurements and caught its own first version being wrong; `rig` is what to run
+after a re-export, because a rig change under a mount is silent. Keep them working when you
+change what they cover. **Do not reach for them to feel sure before pushing.**
+
+If a probe would genuinely settle something reading the code has not — the problem is real, it
+is not going away, and guessing has already failed once — say so in **one sentence**, name the
+tool, and let him decide. Do not run it and report afterwards.
+
+**Reporting:** one or two lines on what changed and what to look at. Say "shipped unverified"
+plainly; do not claim it looks right.
 
 ## What the assets actually are (all measured, none assumed)
 
