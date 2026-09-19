@@ -188,10 +188,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m3</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m4</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m3</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m4</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -204,7 +204,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 
-const BUILD = 'm3';
+const BUILD = 'm4';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
 /* ASSETS:END */
@@ -979,6 +979,10 @@ function stepKit(dt) {
   const held = PADS.R ? PADS.R.hold() : 0;
   const up = -R.y, mag = Math.hypot(R.x, R.y);
   const holding = R.down && held > MOVE.tapT;
+  // THE COOLDOWN TICKS ALWAYS, not only while the trigger is held. Counted down inside the
+  // fire branch it never reaches zero once you let go, so the first shot of every fresh aim
+  // stalls for a cooldown that has had seconds to expire.
+  if (p.cool > 0) p.cool = Math.max(0, p.cool - dt);
   // ---- the blaster: hold to aim, push UP to fire ----
   if (s.aim && holding) {
     p.aim = 1; p.aimT += dt;
@@ -992,10 +996,9 @@ function stepKit(dt) {
     // not cancel the shot you meant, and without it a full pull only fires from full stretch.
     if (aimedUp || keeping) {
       p.fire = 1;
-      p.cool -= dt;
       if (p.cool <= 0) { p.cool = WEAP.cool; p.fireT = 1; playOnce(CLIPS.shoot, clipLen(CLIPS.shoot) / .34); }
     } else p.fire = 0;
-  } else if (!holding) { p.aim = 0; p.fire = 0; }
+  } else { p.aim = 0; p.fire = 0; }
   // ---- the hammer: hold to wind up, let go to swing ----
   if (s.charge && holding && p.grounded && !p.melee && !p.roll && !p.chargeGo) {
     p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
