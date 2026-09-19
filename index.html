@@ -170,39 +170,47 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 #padR.arm::after { opacity: .9; }
 #padR.ready::after { opacity: .28; }
-/* ---- the reticle: a geometric portal ---- */
+/* ---- the reticle: a geometric portal ----
+   IT WAS BIG AND THICK AND THE COLOURS WERE A GUESS. Size, stroke weight and both hues are
+   custom properties now, so `mel.retic({...})` moves all of it live on the phone -- how a mark
+   should look is a look-at-it decision and those do not belong in a commit. */
 #retic {
-  position: fixed; z-index: 3; left: 0; top: 0; width: 210px; height: 210px;
-  margin: -105px 0 0 -105px; pointer-events: none; opacity: 0;
-  transition: opacity .14s ease;
+  position: fixed; z-index: 3; left: 0; top: 0;
+  --size: 146px;               /* was 210 */
+  --w: 1;                      /* stroke weight multiplier */
+  --h: 196;                    /* the hue it rests at -- azure */
+  --lh: 34;                    /* and the one it locks at -- amber */
+  width: var(--size); height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  pointer-events: none; opacity: 0; transition: opacity .14s ease;
   --c: 0;                      /* charge, 0..1 -- the only thing the frame loop writes */
-  --gl: #3bd8ff;               /* the neon it bleeds */
-  --r1: #a06bff; --r2: #6f8cff; --r3: #35d6ff; --r4: #9df2ff; --r5: #e8fbff;
-  /* THE NEON IS TWO DROP-SHADOWS, which is what makes a stroke read as a lit tube rather than
-     as a drawn line. It is one small element, so the cost is nothing, and it runs on the
-     compositor like the spin. */
-  filter: drop-shadow(0 0 4px var(--gl)) drop-shadow(0 0 12px var(--gl));
+  --gl: hsl(var(--h) 100% 60%);
+  --r1: hsl(var(--h) 80% 74%); --r2: hsl(var(--h) 92% 68%); --r3: hsl(var(--h) 100% 62%);
+  --r4: hsl(var(--h) 100% 80%); --r5: hsl(var(--h) 100% 92%);
+  /* the neon is two drop-shadows, which is what makes a stroke read as a lit tube rather than
+     as a drawn line. One small element, so it costs nothing and it runs on the compositor. */
+  filter: drop-shadow(0 0 3px var(--gl)) drop-shadow(0 0 9px var(--gl));
 }
 #retic.on { opacity: 1; }
-/* LOCKED IS A DIFFERENT MARK, NOT A BRIGHTER ONE -- it goes hot magenta and the rings pull in,
-   so "the gun has something" is a glance rather than a comparison against a memory. */
-#retic.lock { --gl: #ff3ca8; --r1: #ff7ad5; --r2: #ff5cc0; --r3: #ff3ca8; --r4: #ffa8dd; --r5: #fff0fa; }
+/* LOCKED IS A DIFFERENT MARK, NOT A BRIGHTER ONE -- the whole thing changes hue and the rings
+   pull in, so "the gun has something" is a glance rather than a comparison against a memory. */
+#retic.lock { --h: var(--lh); }
 #retic .lay, #retic .spin { position: absolute; inset: 0; }
 #retic svg { width: 100%; height: 100%; display: block; overflow: visible; }
 #retic circle { fill: none; stroke-linecap: butt; }
 /* THE CONVERGENCE. Each ring rests wide and closes onto its drawn radius as the charge fills,
    so a loaded shot IS the portal shut. The scale is on the outer div and the spin on the inner
    one, because two animations cannot share `transform`. */
-#retic .a { transform: scale(calc(1 + 1.05 * (1 - var(--c)))); opacity: calc(.30 + .70 * var(--c)); }
-#retic .b { transform: scale(calc(1 + .74 * (1 - var(--c)))); opacity: calc(.34 + .66 * var(--c)); }
-#retic .c { transform: scale(calc(1 + .48 * (1 - var(--c)))); opacity: calc(.40 + .60 * var(--c)); }
-#retic .d { transform: scale(calc(1 + .28 * (1 - var(--c)))); opacity: calc(.46 + .54 * var(--c)); }
-#retic .e { transform: scale(calc(1 + .12 * (1 - var(--c)))); opacity: calc(.20 + .80 * var(--c)); }
-#retic .a circle { stroke: var(--r1); stroke-width: 2.2; stroke-dasharray: 22 11.333; }
-#retic .b circle { stroke: var(--r2); stroke-width: 3;   stroke-dasharray: 9 7.667; }
-#retic .c circle { stroke: var(--r3); stroke-width: 5;   stroke-dasharray: 40 10; }
-#retic .d circle { stroke: var(--r4); stroke-width: 2;   stroke-dasharray: 2.5 5.833; }
-#retic .e circle { stroke: var(--r5); stroke-width: 6;   stroke-dasharray: 17 8; }
+#retic .a { transform: scale(calc(1 + .95 * (1 - var(--c)))); opacity: calc(.26 + .74 * var(--c)); }
+#retic .b { transform: scale(calc(1 + .68 * (1 - var(--c)))); opacity: calc(.30 + .70 * var(--c)); }
+#retic .c { transform: scale(calc(1 + .44 * (1 - var(--c)))); opacity: calc(.36 + .64 * var(--c)); }
+#retic .d { transform: scale(calc(1 + .26 * (1 - var(--c)))); opacity: calc(.42 + .58 * var(--c)); }
+#retic .e { transform: scale(calc(1 + .11 * (1 - var(--c)))); opacity: calc(.18 + .82 * var(--c)); }
+#retic .a circle { stroke: var(--r1); stroke-width: calc(1.4 * var(--w)); stroke-dasharray: 22 11.333; }
+#retic .b circle { stroke: var(--r2); stroke-width: calc(1.8 * var(--w)); stroke-dasharray: 9 7.667; }
+#retic .c circle { stroke: var(--r3); stroke-width: calc(2.6 * var(--w)); stroke-dasharray: 40 10; }
+#retic .d circle { stroke: var(--r4); stroke-width: calc(1.1 * var(--w)); stroke-dasharray: 2.5 5.833; }
+#retic .e circle { stroke: var(--r5); stroke-width: calc(3.0 * var(--w)); stroke-dasharray: 17 8; }
 #retic .a .spin { animation: spin 9s  linear infinite; }
 #retic .b .spin { animation: spin 6s  linear infinite reverse; }
 #retic .c .spin { animation: spin 4s  linear infinite; }
@@ -210,9 +218,9 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 #retic .e .spin { animation: spin 7s  linear infinite reverse; }
 @keyframes spin { to { transform: rotate(360deg); } }
 #retic .core {
-  position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+  position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px;
   border-radius: 50%; background: var(--r5);
-  transform: scale(calc(.15 + 1.05 * var(--c)));
+  transform: scale(calc(.15 + 1.0 * var(--c)));
   opacity: calc(.25 + .75 * var(--c));
 }
 
@@ -234,10 +242,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m10</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m12</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m10</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m12</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -268,10 +276,11 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
+import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm10';
+const BUILD = 'm12';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -390,6 +399,13 @@ const FLICK = { at: .70, within: .28, let: .26, gap: .10 };
 // which reads as lag rather than as a combo. Escalating, so the finisher has the most weight.
 const MELEE = {
   beat: [.62, .74, .95],
+  // WHERE IN THE CLIP THE BLOW LANDS, per strike. Firing on the INPUT frame puts the
+  // consequence a third of a second before the hand gets there, and a swing and its effect
+  // arriving as two events is what "you cannot actually hit things" looks like from outside.
+  at: [.34, .40, .32], finishAt: .38,
+  reach: 2.3,
+  // and what each one is worth. The finisher and the charged swing put him down outright.
+  power: [.45, .52, 1.0],
   window: 1.05,      // how long after a strike the next flick continues the chain
   hold: .55,         // fraction of a strike after which the stick can cancel the recovery
   // A STRIKE HAS TO TRAVEL. At 2.4 / 2.0 / 2.6 the three-hit chain covered about a metre in
@@ -445,6 +461,45 @@ const WEAP = {
   hue: .52, hueW: .09,
 };
 
+// SOMETHING TO HIT. He stands in his idle, takes the blows, goes over, lies there and gets back
+// up -- which is the whole loop the gun and the melee need in order to mean anything.
+// HE IS THE POLICE OFFICER FROM THE CITY REPO, and he is the right body for this because his
+// export already carries the hard part: four hit reactions, two knock-downs and two get-ups.
+// Nothing here had to be authored.
+const DUMMY = {
+  file: 'models/characters/dummy_officer.glb',
+  h: 1.75, r: .42, hp: 3,
+  at: [[3, -7], [-6, -2], [8, -14]],     // open ground, clear of every box
+  clips: {
+    idle: 'idle_01',
+    hits: ['hit_head', 'hit_body', 'hit_ribs', 'hit_stomach'],
+    downF: 'knock_down_front', downB: 'knock_down_back',
+    upF: 'get_up_front', upB: 'get_up_back',
+  },
+  hitBeat: .5,        // the reactions run 1.0-1.5 s at 1x, which is a long time to watch
+  downBeat: 1.25,     // and the knock-downs 2.2-2.8
+  upBeat: 1.5,
+  out: 1.4,           // how long he lies there before getting up
+  // A BLOW THAT LAUNCHES HIM READS AS A HIT; one that folds him on the spot reads as a hit
+  // point being deducted. Ballistic, and THE GROUND ends it rather than a timer -- a timer
+  // drops him through whatever he was thrown onto.
+  flyV: 8.5, flyUp: 5.4, flyG: 20, flyDrag: 1.6,
+  hard: .62,          // a blow at or over this fraction of full power puts him down at once
+  cool: .18,          // and he cannot be hit again inside this, or one bolt is three hits
+};
+
+// LOCKING ON. Once the trigger is held or the hammer is wound, he is committed to a target --
+// he faces it, the lens comes round to it, and the left stick stops meaning "a direction in the
+// world" and starts meaning "toward him, away from him, or AROUND him".
+const LOCK = {
+  range: 24,        // how far he will take a target
+  cone: .95,        // and how far off the lens it may be -- about 54 degrees
+  near: .5,         // how much nearer beats how much straighter, when two are in the cone
+  face: 9,          // how fast he comes round to it
+  cam: 2.4,         // and how fast the lens does
+  chest: .62,       // where on him the mark sits, as a fraction of his height
+};
+
 // THE CLIP TABLE. Every name here is checked against the file at load and anything missing is
 // reported in the chip rather than failing silently -- a table naming a clip that does not
 // exist leaves a bone at zero total weight, and the mixer blends a zero-weight bone back to
@@ -490,7 +545,7 @@ document.getElementById('bootBuild').textContent = BUILD;
 // whatever text it had. For the first load that is the text it was BORN with, which is pixel
 // for pixel what `init()` never running looks like. The two failures worth telling apart were
 // rendering as the same screen.
-const PROG = { done: 0, total: 3, label: '' };
+const PROG = { done: 0, total: 4, label: '' };
 function setBoot(label, frac) {
   PROG.label = label;
   if (bootMsg) bootMsg.textContent = label;
@@ -563,10 +618,18 @@ scene.add(world);
   ground.receiveShadow = true;
   world.add(ground);
 
-  const grid = new THREE.GridHelper(120, 60, 0xc2ccd8, 0xdde4ec);
-  grid.position.y = .004;
-  grid.material.transparent = true; grid.material.opacity = .65;
-  world.add(grid);
+  // TWO GRIDS, NOT ONE. A single spacing gives you either a fine mesh that turns to moire in
+  // the distance or a coarse one that says nothing underfoot. A faint 1 m mesh for the ground
+  // right around him and a stronger 10 m mesh that survives to the horizon read as depth
+  // together in a way neither does alone -- which is the whole complaint about a white floor.
+  const fine = new THREE.GridHelper(200, 200, 0x9aa8bb, 0x9aa8bb);
+  fine.position.y = .004;
+  fine.material.transparent = true; fine.material.opacity = .28; fine.material.depthWrite = false;
+  world.add(fine);
+  const coarse = new THREE.GridHelper(200, 20, 0x5f7089, 0x6f8098);
+  coarse.position.y = .008;
+  coarse.material.transparent = true; coarse.material.opacity = .5; coarse.material.depthWrite = false;
+  world.add(coarse);
 
   const mats = [0xff4d6d, 0xffc247, 0x46e0ff, 0x8a7bff, 0xa8b4c4].map(c =>
     new THREE.MeshStandardMaterial({ color: c, roughness: .8, metalness: .02 }));
@@ -1126,7 +1189,11 @@ function stepBolts(dt) {
     let dead = b.t > WEAP.boltLife;
     for (let k = 0; k < 2 && !dead; k++) {
       b.pos.addScaledVector(b.vel, dt * .5);
-      if (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0) dead = true;
+      // A BODY BEFORE A BOX. A bolt that tested the world first would pass through a man
+      // standing against a wall, which is exactly where anybody stands.
+      if (!dead && dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
+                            .45 + b.chg * .75, WEAP.boltR + .45)) dead = true;
+      if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
     }
     b.g.position.copy(b.pos);
     // it flickers, which at sixty frames a second is what plasma looks like for the cost of
@@ -1145,7 +1212,12 @@ const _rv = new THREE.Vector3();
 function paintRetic() {
   const p = player;
   if (!p.aim || !reticEl) { if (reticEl) reticEl.classList.remove('on'); return; }
-  const a = aimPoint();
+  // LOCKED, THE MARK IS ON HIM -- not on whatever the level walk happened to find. The mark IS
+  // the promise, and a mark that sits beside the thing the gun is committed to is worse than
+  // no mark at all.
+  const L = p.lock;
+  const a = L ? { p: _ap.set(L.root.position.x, L.root.position.y + DUMMY.h * LOCK.chest, L.root.position.z), hit: 1 }
+              : aimPoint();
   _rv.copy(a.p).project(camera);
   if (_rv.z > 1) { reticEl.classList.remove('on'); return; }
   const x = (_rv.x * .5 + .5) * innerWidth, y = (-_rv.y * .5 + .5) * innerHeight;
@@ -1161,41 +1233,47 @@ function paintRetic() {
 // `crossFadeFrom` state machine has to know what it is coming FROM, which breaks the first time
 // two transitions overlap -- and they always eventually overlap.
 // ============================================================================================
-function setWeights(t, dt, snapHL) {
-  const acts = rig.actions, cw = rig.cw;
+function skinWeights(skin, t, dt, snapHL, fb) {
+  const acts = skin.actions, cw = skin.cw || (skin.cw = {});
+  if (!acts) return;
   // THE T-POSE ESCAPE HATCH. If nothing in the table names a clip that actually exists, every
   // bone ends the frame at a total weight of zero -- and the mixer blends a zero-weight bone
   // back to its BIND value, which is the T-pose exactly. One missing clip is enough.
+  // THE FALLBACK IS AN ARGUMENT because this drives the dummy too, and his idle is not the
+  // player's -- falling back to a clip the skin does not have would take the escape hatch and
+  // land straight in the T-pose it exists to prevent.
   let tot = 0;
   for (const k in t) if (acts[k]) tot += t[k];
-  if (tot < .01) { t = { [CLIPS.idle]: 1 }; }
+  if (tot < .01) t = { [fb]: 1 };
   for (const nm in acts) {
     const a = acts[nm], want = t[nm] || 0, cur = cw[nm] || 0;
     const w = cw[nm] = damp(cur, want, snapHL || .055, dt);
     if (w > .002) { if (!a.isRunning()) a.play(); a.setEffectiveWeight(w); }
     // NEVER ASK `isRunning()` WHETHER A CLIP STILL MATTERS -- ASK ITS WEIGHT. three ends a
     // LoopOnce clip with `clampWhenFinished ? paused = true : enabled = false`, and
-    // `isRunning()` is `enabled && !paused`, so every ONCE clip is *not running* from the
+    // `isRunning()` is `enabled && !paused`, so every clip in `ONCE` is *not running* from the
     // instant it finishes. Shutting clips down inside `else if (a.isRunning())` therefore
     // skipped exactly the clips that need it: the finished clip kept the 1.0 it was last given
-    // and went on applying its final frame for the rest of the session -- a landing pose welded
-    // into the walk.
+    // and went on applying its final frame for the rest of the session.
     else if (cur > .002 || a.getEffectiveWeight() > .002 || a.isRunning()) { a.setEffectiveWeight(0); a.stop(); }
   }
 }
+function setWeights(t, dt, snapHL) { skinWeights(rig, t, dt, snapHL, CLIPS.idle); }
 // RE-ENTERING A `ONCE` CLIP HAS TO REWIND IT, AND THE DAMPED WEIGHT CANNOT BE WHAT DECIDES.
 // Rewinding only when the weight has decayed below a threshold is right for a clip you have
 // left alone and wrong for one you are re-entering immediately: roll, roll again before the
 // first has faded, and the action is still PAUSED on its last frame, so it sits there applying
 // that frame -- which on a roll is a forward step. The STATE that starts a clip rewinds it.
-function playOnce(name, timeScale) {
-  const a = rig.actions[name]; if (!a) return 0;
+function skinPlay(skin, name, timeScale) {
+  const a = skin.actions && skin.actions[name]; if (!a) return 0;
   a.reset(); a.play();
   a.setEffectiveTimeScale(timeScale || 1);
   return 1;
 }
+function playOnce(name, timeScale) { return skinPlay(rig, name, timeScale); }
 function setScale(name, s) { const a = rig.actions[name]; if (a) a.setEffectiveTimeScale(s); }
 const clipLen = name => { const c = rig.clips[name]; return c ? c.duration : 0; };
+const skinLen = (skin, name) => { const c = skin.clips && skin.clips[name]; return c ? c.duration : 0; };
 
 // ============================================================================================
 // THE PLAYER
@@ -1209,7 +1287,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
-  aim: 0, armT: 0, chg: 0, fireT: 0,
+  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0,
   slot: 0,
   r: .34, hh: 1.6,
 };
@@ -1250,6 +1328,49 @@ function slotNow() { return WEAP.slots[player.slot]; }
 // This is what `idle_rifle` is FOR, and it is the difference between carrying a weapon and
 // occasionally producing one.
 function gunOut() { return !!slotNow().aim; }
+// COMMITTED means the trigger is held or the hammer is wound. Both are a decision to engage,
+// so both lock -- which is the whole reason the strafes exist.
+function committed() { return !!(player.aim || player.charge); }
+function findLock() {
+  if (!committed()) return null;
+  const p = player;
+  let best = null, bestS = -Infinity;
+  for (const d of DUMMIES) {
+    const dx = d.root.position.x - p.pos.x, dz = d.root.position.z - p.pos.z;
+    const dist = Math.hypot(dx, dz);
+    if (dist > LOCK.range || dist < .4) continue;
+    const off = Math.abs(wrapAngle(Math.atan2(dx, dz) - cam.az));
+    if (off > LOCK.cone) continue;
+    // straightest wins, nearest breaks it -- and BOTH terms are fractions of their own limit,
+    // so "how far off" and "how far away" are comparable rather than one drowning the other
+    const sc = (1 - off / LOCK.cone) - LOCK.near * (dist / LOCK.range);
+    if (sc > bestS) { bestS = sc; best = d; }
+  }
+  return best;
+}
+const lockH = L => Math.atan2(L.root.position.x - player.pos.x, L.root.position.z - player.pos.z);
+// LOCKED, THE LEFT STICK IS READ IN THE TARGET'S FRAME AND NOT THE CAMERA'S. Up and down close
+// or open the range; left and right run along the TANGENT -- and because the tangent is
+// recomputed every frame, a straight step along it is a circle. That is the orbit, and it is
+// why this cannot go through `stickWorld`: a camera-relative direction is fixed in the world
+// the moment it is taken, so he would set off along the tangent and spiral away from it.
+function stickLocked(L) {
+  let lx = stick.L.x, ly = stick.L.y;
+  if (keys.a || keys.arrowleft) lx -= 1; if (keys.d || keys.arrowright) lx += 1;
+  if (keys.w || keys.arrowup) ly -= 1; if (keys.s || keys.arrowdown) ly += 1;
+  lx = clamp(lx, -1, 1); ly = clamp(ly, -1, 1);
+  const mag = Math.min(1, Math.hypot(lx, ly));
+  if (mag < MOVE.dead) return { x: 0, z: 0, mag: 0 };
+  const dx = L.root.position.x - player.pos.x, dz = L.root.position.z - player.pos.z;
+  const dd = Math.hypot(dx, dz) || 1;
+  const tx = dx / dd, tz = dz / dd;      // toward him
+  const sx = -tz, sz = tx;               // the tangent. +X is his left, so this is his RIGHT
+  const fwd = -ly;                       // up the pad is toward the target
+  let wx = tx * fwd + sx * lx, wz = tz * fwd + sz * lx;
+  const d = Math.hypot(wx, wz) || 1;
+  return { x: wx / d, z: wz / d,
+    mag: Math.pow(clamp((mag - MOVE.dead) / (1 - MOVE.dead), 0, 1), MOVE.curve) };
+}
 WEAP.worn = {};
 function paintKit() {
   const s = slotNow();
@@ -1284,7 +1405,7 @@ function meleeGo(h) {
   if (!rig.actions[name]) { note('NO CLIP ' + name); return; }
   p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name;
   p.meleeDur = MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
-  p.meleeChain = 0;
+  p.meleeChain = 0; p.melFired = 0;
   if (h != null) { p.heading = h; p.faceH = h; }
   // THE CLIP IS COMPRESSED TO THE BEAT, not the beat stretched to the clip. `melee_03` is
   // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,
@@ -1310,7 +1431,7 @@ function chargeRelease() {
   const full = t0 >= MELEE.charge * .5;
   p.charge = 0; p.chargeT = 0;
   if (!full) return;                                   // a short hold is not a swing
-  p.chargeGo = 1; p.chargeGoT = 0;
+  p.chargeGo = 1; p.chargeGoT = 0; p.melFired = 0;
   // how full it was, from the half-charge floor up -- so even the shortest real swing moves
   p.chargeGoK = MELEE.finishMin + (1 - MELEE.finishMin) * clamp(t0 / MELEE.charge, 0, 1);
   playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / MELEE.finishBeat);
@@ -1584,7 +1705,9 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
 }
 
 function stepPlayer(dt) {
-  const p = player, s = stickWorld();
+  const p = player;
+  p.lock = findLock();
+  const s = p.lock ? stickLocked(p.lock) : stickWorld();
 
   // ---- the states that OWN the body. Each bleeds its own speed off and still runs gravity
   //      and the ground collider, so the ground hands him straight back to the air code.
@@ -1597,6 +1720,16 @@ function stepPlayer(dt) {
     // half the launch speed, so every metre of travel has to be bought with a speed spike at
     // the front -- which reads as a rocket rather than a lunge.
     const k = u < MELEE.carry ? 1 : 1 - (u - MELEE.carry) / (1 - MELEE.carry);
+    // THE BLOW LANDS ON ITS CONTACT FRAME, once.
+    if (!p.melFired && !p.roll) {
+      const at = p.melee ? MELEE.at[Math.min(p.meleeIx, MELEE.at.length - 1)] : MELEE.finishAt;
+      if (u >= at) {
+        p.melFired = 1;
+        const pw = p.melee ? MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)]
+                           : 1.0 * (p.chargeGoK || 1);
+        dummyHit(p.pos.x, p.pos.z, p.faceH, pw, MELEE.reach);
+      }
+    }
     const h = p.roll ? p.rollH : p.faceH;
     const v0 = p.roll ? MELEE.rollV
       : p.melee ? MELEE.lunge[Math.min(p.meleeIx, MELEE.lunge.length - 1)]
@@ -1637,7 +1770,7 @@ function stepPlayer(dt) {
   // is why `plant` has to go to zero here. `plant` swings the velocity onto his facing as he
   // speeds up, which is right for running and exactly wrong while aiming, since it would drag
   // every step round to point down the barrel.
-  const aiming = !!p.aim;
+  const aiming = !!p.aim || !!p.lock;
   let wantSp = MOVE.max * s.mag;
   if (aiming) wantSp = Math.min(wantSp, GAIT.aimRunRef);
   if (p.land) wantSp *= .35;
@@ -1652,8 +1785,9 @@ function stepPlayer(dt) {
   } else p.goT = 0;
 
   // aiming, he faces where the camera looks; otherwise he faces where he is going
-  const faceTgt = aiming ? cam.az : p.heading;
-  const fRate = (aiming ? MOVE.face0 : lerp(MOVE.face0, MOVE.face1, clamp(p.speed / MOVE.max, 0, 1))) * dt;
+  // LOCKED, HE FACES THE TARGET -- not the lens. That is what makes the strafes read.
+  const faceTgt = p.lock ? lockH(p.lock) : aiming ? cam.az : p.heading;
+  const fRate = (p.lock ? LOCK.face : aiming ? MOVE.face0 : lerp(MOVE.face0, MOVE.face1, clamp(p.speed / MOVE.max, 0, 1))) * dt;
   p.faceH += clamp(wrapAngle(faceTgt - p.faceH), -fRate, fRate);
 
   // PLANT. At a walk the legs push where the thumb says; at a run, along `faceH`.
@@ -1765,6 +1899,153 @@ function rigAnim(dt) {
 }
 
 // ============================================================================================
+// THE DUMMY -- something to hit
+// ============================================================================================
+const DUMMIES = [];
+function buildDummies(g) {
+  const proto = g.scene;
+  // scale MEASURED off the geometry, never typed -- and off EVERY skinned mesh, because this
+  // file has two and the first one is his EYES: read alone it reports an authored height of
+  // 2.9 cm and asks for a scale of x60.
+  let lo = Infinity, hi = -Infinity;
+  proto.traverse(o => {
+    if (!o.isSkinnedMesh || !o.geometry) return;
+    o.geometry.computeBoundingBox();
+    lo = Math.min(lo, o.geometry.boundingBox.min.y); hi = Math.max(hi, o.geometry.boundingBox.max.y);
+  });
+  const authored = hi - lo, scale = authored > .01 ? DUMMY.h / authored : 1;
+  // he gets the same emissive lift the player does, so he does not read as a dark cut-out
+  // beside him. `skeletonClone` SHARES materials, so this is done once for all of them.
+  proto.traverse(o => {
+    if (o.isMesh || o.isSkinnedMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; }
+    const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+    for (const m of mats) {
+      if (!m.isMeshStandardMaterial) continue;
+      if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffffff); }
+      m.emissiveIntensity = RIG.emissive;
+    }
+  });
+  proto.updateMatrixWorld(true);
+  const pb = {}; proto.traverse(o => { if (o.isBone) pb[o.name] = o; });
+  const faceOff = -measureFacing(pb);
+  const clips = normaliseClips(g.animations || []);
+  console.log('[melee] dummy: ' + authored.toFixed(4) + ' m authored -> x' + scale.toFixed(3) +
+              ', ' + clips.length + ' clips');
+
+  for (const [x, z] of DUMMY.at) {
+    const model = skeletonClone(proto);
+    model.scale.setScalar(scale);
+    const root = new THREE.Group();
+    root.add(model);
+    root.position.set(x, groundAt(x, z, 0, MOVE.step), z);
+    scene.add(root);
+    const mixer = new THREE.AnimationMixer(model);
+    const d = { root, model, mixer, actions: {}, clips: {}, cw: {}, faceOff,
+      st: 'idle', t: 0, hp: DUMMY.hp, cool: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
+      // FACING THE SPAWN. They all face +Z as authored, and the spawn is behind that -- three
+      // men standing with their backs to you is a worse first impression than it sounds.
+      h: Math.atan2(player.pos.x - x, player.pos.z - z) };
+    for (const c of clips) {
+      d.clips[c.name] = c;
+      const a = mixer.clipAction(c);
+      // EVERY REACTION IS A ONE-SHOT. Only the idle loops; a knock-down that repeats is a man
+      // falling over on a timer.
+      if (c.name !== DUMMY.clips.idle) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
+      a.enabled = true; a.setEffectiveWeight(0); a.play();
+      d.actions[c.name] = a;
+    }
+    DUMMIES.push(d);
+  }
+}
+
+// WHICH WAY HE FALLS IS WHICH WAY THE BLOW WAS TRAVELLING. A blow going the same way he faces
+// hit his BACK, so he goes over forwards.
+function dummyHit(x, z, dirH, power, reach) {
+  let hit = 0;
+  for (const d of DUMMIES) {
+    if (d.cool > 0) continue;
+    const dx = d.root.position.x - x, dz = d.root.position.z - z;
+    if (dx * dx + dz * dz > (reach + DUMMY.r) * (reach + DUMMY.r)) continue;
+    hit = 1;
+    d.cool = DUMMY.cool;
+    // A MAN ON THE GROUND IS STILL A BODY. Hitting him while he is down does not stand him up
+    // to play a reaction -- it PUNTS him, and restarts the clock on the lie, so kicking him
+    // along the floor works for as long as you like and he still eventually gets up.
+    if (d.st === 'down') {
+      d.vx = Math.sin(dirH) * DUMMY.flyV * .35 * power;
+      d.vz = Math.cos(dirH) * DUMMY.flyV * .35 * power;
+      d.vy = DUMMY.flyUp * .30 * power;
+      d.t = Math.min(d.t, DUMMY.downBeat);
+      continue;
+    }
+    d.hp -= 1;
+    const down = d.hp <= 0 || power >= DUMMY.hard;
+    if (!down) {
+      d.st = 'hit'; d.t = 0;
+      const nm = DUMMY.clips.hits[(Math.random() * DUMMY.clips.hits.length) | 0];
+      d.cur = nm;
+      skinPlay(d, nm, skinLen(d, nm) / DUMMY.hitBeat);
+      continue;
+    }
+    // OVER HE GOES. Ballistic, and the GROUND ends the flight rather than a timer -- a timer
+    // drops him through whatever he was thrown onto and leaves him hanging over a hole.
+    d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
+    d.st = 'down'; d.t = 0; d.hp = DUMMY.hp;
+    d.vx = Math.sin(dirH) * DUMMY.flyV * power;
+    d.vz = Math.cos(dirH) * DUMMY.flyV * power;
+    d.vy = DUMMY.flyUp * power;
+    d.cur = d.back ? DUMMY.clips.downB : DUMMY.clips.downF;
+    skinPlay(d, d.cur, skinLen(d, d.cur) / DUMMY.downBeat);
+  }
+  return hit;
+}
+
+function stepDummies(dt) {
+  for (const d of DUMMIES) {
+    d.t += dt;
+    if (d.cool > 0) d.cool -= dt;
+    const t = {};
+    if (d.st === 'hit') {
+      t[d.cur] = 1;
+      if (d.t >= DUMMY.hitBeat) { d.st = 'idle'; d.t = 0; }
+    } else if (d.st === 'down') {
+      // integrate while there is anything left to integrate
+      const P = d.root.position;
+      const gy = groundAt(P.x, P.z, P.y, .5);
+      if (P.y > gy + .02 || d.vy > 0) {
+        d.vy -= DUMMY.flyG * dt;
+        const k = Math.exp(-DUMMY.flyDrag * dt);
+        d.vx *= k; d.vz *= k;
+        P.x += d.vx * dt; P.z += d.vz * dt; P.y += d.vy * dt;
+        const g2 = groundAt(P.x, P.z, P.y, .5);
+        if (d.vy <= 0 && P.y <= g2 + .04) { P.y = g2; d.vy = 0; d.vx = 0; d.vz = 0; }
+      }
+      t[d.cur] = 1;
+      if (d.t >= DUMMY.downBeat + DUMMY.out) {
+        // ONE OF THE FOUR COMBINATIONS IS AUTHORED THE OTHER WAY ROUND, AND IT WAS MEASURED
+        // rather than guessed: on this export `knock_down_front` ENDS 174 degrees from where
+        // `get_up_front` starts, while the back pair agrees to 14. So the front pair needs him
+        // turned by pi as the get-up begins -- otherwise he does a 180 on the floor between
+        // going down and standing up. "One of them is flipped" is four possibilities and three
+        // of them make it worse.
+        if (!d.back) d.h += Math.PI;
+        d.st = 'up'; d.t = 0;
+        d.cur = d.back ? DUMMY.clips.upB : DUMMY.clips.upF;
+        skinPlay(d, d.cur, skinLen(d, d.cur) / DUMMY.upBeat);
+      }
+    } else if (d.st === 'up') {
+      t[d.cur] = 1;
+      if (d.t >= DUMMY.upBeat) { d.st = 'idle'; d.t = 0; d.hp = DUMMY.hp; }
+    } else {
+      t[DUMMY.clips.idle] = 1;
+    }
+    skinWeights(d, t, dt, .06, DUMMY.clips.idle);
+    d.mixer.update(dt);
+    d.root.rotation.y = d.h + d.faceOff;
+  }
+}
+
+// ============================================================================================
 // THE CAMERA
 // ONE WRITER ON `cam.az`, ALWAYS. The right pad drags it and nothing else does -- while aiming
 // he simply faces wherever the lens is pointed, which is the same number rather than a second
@@ -1794,6 +2075,9 @@ function stepCam(dt) {
   const rx = stick.R.down ? stick.R.x : ((keys.j ? -1 : 0) + (keys.l ? 1 : 0));
   if (Math.abs(rx) > .06) cam.az -= rx * CAM.yawRate * dt;
 
+  // AND IT COMES ROUND TO A LOCKED TARGET. This is inside `stepCam` on purpose -- `cam.az` has
+  // exactly one writer, and a second one somewhere else is a loop that never settles.
+  if (p.lock) cam.az += wrapAngle(lockH(p.lock) - cam.az) * Math.min(1, LOCK.cam * dt);
   cam.el = CAM.el;
   cam.tgt.set(p.pos.x, p.pos.y + CAM.look, p.pos.z);
   const ce = Math.cos(cam.el);
@@ -1835,6 +2119,7 @@ function frame() {
   if (rig.ready) {
     stepKit(dt);
     stepPlayer(dt);
+    stepDummies(dt);
     rigAnim(dt);
     rig.mixer.update(dt);
     // DRAWN AT `faceH`, not at `heading`.
@@ -1860,10 +2145,11 @@ function frame() {
     const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) : p.chargeGo ? 'swing'
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
       : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
+    const lk = p.lock ? ' · LOCK' : '';
     const hue = RIG.showHue
       ? ' · H' + (ALIENU.hue.value * 360).toFixed(0) + '/' + (GUNU.hue.value * 360).toFixed(0) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + hue + (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
 }
 
@@ -1962,6 +2248,11 @@ async function init() {
       WEAP.worn[s.key] = mountWeapon(s, w);
     } catch (e) { PROG.done++; note('NO ' + s.key.toUpperCase() + ' GLB'); }
   }
+  // SOMETHING TO HIT. Not on the critical path: no dummy is a world with nothing in it, which
+  // is still a game you can look at.
+  try { buildDummies(await loadGLB(DUMMY.file, 'loading a body to hit')); }
+  catch (e) { PROG.done++; note('NO DUMMY GLB'); }
+
   paintKit();
 
   player.pos.y = groundAt(player.pos.x, player.pos.z, 0, MOVE.step);
@@ -1976,6 +2267,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
+  DUMMY, DUMMIES, LOCK, dummyHit, stepDummies, findLock,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, fireBolt, BOLTS, gunOut,
   kit: () => cycleKit(),
@@ -1997,6 +2289,20 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
     if (a != null) { RIG.hue = a; ALIENU.hue.value = a; ALIENU.rgb.value.setHSL(a, 1, .6); }
     if (g != null) { WEAP.hue = g; GUNU.hue.value = g; GUNU.rgb.value.setHSL(g, 1, .6); }
     return { alien: RIG.hue, gun: WEAP.hue };
+  },
+  // HOW A MARK SHOULD LOOK IS A LOOK-AT-IT DECISION. `mel.retic({size, w, hue, lock})` --
+  // size in px, `w` the stroke multiplier, both hues in degrees. Anything omitted is left alone.
+  retic: o => {
+    const el = document.getElementById('retic'); if (!el) return null;
+    if (o) {
+      if (o.size != null) el.style.setProperty('--size', o.size + 'px');
+      if (o.w != null) el.style.setProperty('--w', o.w);
+      if (o.hue != null) el.style.setProperty('--h', o.hue);
+      if (o.lock != null) el.style.setProperty('--lh', o.lock);
+    }
+    const c = getComputedStyle(el);
+    return { size: c.getPropertyValue('--size').trim(), w: c.getPropertyValue('--w').trim(),
+             hue: c.getPropertyValue('--h').trim(), lock: c.getPropertyValue('--lh').trim() };
   },
   emis: v => { for (const m of Object.values(rig.mats || {})) m.emissiveIntensity = v; RIG.emissive = v; return v; },
 };

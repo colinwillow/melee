@@ -17,8 +17,23 @@ const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const nx = v => { const d = Math.hypot(v[0], v[2]) || 1; return [v[0] / d, v[2] / d]; };
 
 console.log('CHARACTER  ' + CHAR);
-const acc = g.accessors[g.meshes[0].primitives[0].attributes.POSITION];
-const H = acc.max[1] - acc.min[1];
+// EVERY SKINNED MESH, UNIONED -- not `meshes[0]`. This file has two, and the first one is a
+// 2.9 cm prop: read alone it reported an authored height of 0.0289 m and wanted a scale of x60.
+// A skinned mesh is the character; anything unskinned beside it is a prop that came along.
+const skinned = new Set();
+for (const n of g.nodes) if (n.skin != null && n.mesh != null) skinned.add(n.mesh);
+let lo = Infinity, hi = -Infinity;
+for (const [mi, m] of g.meshes.entries()) {
+  if (skinned.size && !skinned.has(mi)) continue;
+  for (const pr of m.primitives) {
+    const a2 = g.accessors[pr.attributes.POSITION];
+    if (!a2 || !a2.min) continue;
+    lo = Math.min(lo, a2.min[1]); hi = Math.max(hi, a2.max[1]);
+  }
+}
+const acc = { min: [0, lo, 0], max: [0, hi, 0] };
+const H = hi - lo;
+console.log('  skinned meshes: ' + (skinned.size || g.meshes.length) + ' of ' + g.meshes.length);
 console.log('  authored height  ' + H.toFixed(4) + ' m   (mesh bbox Y; GLTFLoader binds skins with IDENTITY,');
 console.log('                                        so geometry position IS world position at rest)');
 console.log('  soles at y       ' + acc.min[1].toFixed(4) + ' m' + (Math.abs(acc.min[1]) > .01 ? '   <-- NOT ZERO: he will float or sink' : ''));
