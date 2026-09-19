@@ -1,0 +1,1443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Melee</title>
+
+<!-- =====================================================================
+     THE CRASH TRAP IS THE FIRST THING IN THE HEAD, BEFORE THE IMPORT MAP AND
+     BEFORE THE MODULE. A phone has no console, so an exception is a blank
+     screen and six builds of "it's stuck on the loading screen" that nobody
+     can tell apart. Registered with CAPTURE, because a subresource that 404s
+     fires `error` at its own element and never bubbles -- that includes a
+     module that fails to PARSE and an import that never resolves, which are
+     exactly the failures a trap installed later cannot see.
+     ===================================================================== -->
+<script>
+(function () {
+  var box = null;
+  function show(msg) {
+    try {
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'crash';
+        document.documentElement.appendChild(box);
+      }
+      box.style.display = 'block';
+      box.textContent = (box.textContent ? box.textContent + '\n\n' : '') + msg;
+    } catch (e) {}
+  }
+  window.__crash = show;
+  addEventListener('error', function (e) {
+    if (e && e.target && e.target !== window && e.target.src !== undefined) {
+      show('FAILED TO LOAD\n' + (e.target.src || e.target.href || e.target.tagName));
+      return;
+    }
+    show((e.message || 'error') + '\n@ ' + (e.filename || '?') + ':' + (e.lineno || '?') + ':' + (e.colno || '?'));
+  }, true);
+  addEventListener('unhandledrejection', function (e) {
+    var r = e && e.reason;
+    show('UNHANDLED REJECTION\n' + ((r && (r.stack || r.message)) || String(r)));
+  });
+})();
+</script>
+
+<!-- =====================================================================
+     NO ZOOMING -- AND `touch-action` IS NOT THE FIX FOR DOUBLE TAP.
+     iOS Safari has ignored `user-scalable=no` since iOS 10 and decides the
+     double-tap gesture off the touch stream itself, so the touch stream is
+     where it has to be refused. Pinch is a separate, non-standard event
+     family that `touch-action` does not cover at all, dispatched AT the
+     element -- so those three are listened for with CAPTURE, on document as
+     well as window, or a listener that only sees them bubbling can be
+     stopped before it ever runs.
+     Its own script, NOT the module: a guard that installs when the game has
+     finished loading is absent for the whole of the loading screen, and
+     absent entirely if the module throws -- which is precisely when somebody
+     starts jabbing at a page that is not responding.
+     ===================================================================== -->
+<script>
+(function () {
+  var lastT = 0, lastX = 0, lastY = 0;
+  var interactive = /^(BUTTON|A|INPUT|SELECT|TEXTAREA|LABEL)$/;
+  addEventListener('touchend', function (e) {
+    var t = e.changedTouches && e.changedTouches[0]; if (!t) return;
+    var now = e.timeStamp || Date.now();
+    var el = e.target;
+    // A REAL CONTROL IS LET THROUGH. `preventDefault` here would cancel its synthesised
+    // click, and Safari does not zoom on a target it already treats as interactive -- so a
+    // button loses its second press by being guarded and loses nothing by being exempt.
+    var ok = true;
+    for (var n = el; n && n !== document; n = n.parentNode) {
+      if (n.tagName && interactive.test(n.tagName)) { ok = false; break; }
+    }
+    // WITHIN 400 ms *AND* WITHIN 40 px. Two deliberate taps in different places are two
+    // taps, and a game gets those constantly.
+    if (ok && now - lastT < 400 && Math.abs(t.clientX - lastX) < 40 && Math.abs(t.clientY - lastY) < 40) {
+      e.preventDefault();
+    }
+    lastT = now; lastX = t.clientX; lastY = t.clientY;
+  }, { passive: false });
+  var kill = function (e) { e.preventDefault(); };
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (t) {
+    addEventListener(t, kill, { passive: false, capture: true });
+    document.addEventListener(t, kill, { passive: false, capture: true });
+  });
+  addEventListener('dblclick', kill, { passive: false });
+})();
+</script>
+
+<style>
+/* THE PAGE IS PINNED, not merely `overflow:hidden`. On iOS that alone still lets a drag
+   rubber-band the document and leaves the canvas off-centre, and a page that cannot be
+   scrolled is a page with less for a stray gesture to act on. */
+:root {
+  --hot: #ff4d6d; --sun: #ffc247; --sky: #46e0ff; --ink: #0b0d12;
+  --ui: 'Barlow Condensed', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --disp: 'Bungee', var(--ui);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  position: fixed; inset: 0; margin: 0; padding: 0; overflow: hidden;
+  background: var(--ink); color: #fff; font-family: var(--ui);
+  touch-action: none; overscroll-behavior: none;
+  -webkit-user-select: none; user-select: none;
+}
+canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+/* ---- the crash overlay: above everything, monospaced and SELECTABLE so it can be
+        copied or read out. A message that cannot be read is a message that does not exist. ---- */
+#crash {
+  display: none; position: fixed; inset: 0; z-index: 999; overflow: auto;
+  padding: 18px 14px; margin: 0; background: rgba(8, 4, 10, .94);
+  color: #ff8fa3; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace;
+  white-space: pre-wrap; word-break: break-word;
+  -webkit-user-select: text; user-select: text;
+}
+
+/* ---- boot card ---- */
+#boot {
+  position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  background: radial-gradient(120% 90% at 50% 30%, #1b2233 0%, #0b0d12 70%);
+  transition: opacity .5s ease; padding: 24px;
+}
+#boot.gone { opacity: 0; pointer-events: none; }
+#boot h1 { font-family: var(--disp); font-size: 30px; letter-spacing: .02em; margin: 0; color: var(--sky); }
+#boot .msg { font-size: 15px; letter-spacing: .09em; text-transform: uppercase; opacity: .78; min-height: 20px; text-align: center; }
+#boot .bar { width: min(76vw, 320px); height: 5px; border-radius: 3px; background: #ffffff1c; overflow: hidden; }
+#boot .bar i { display: block; height: 100%; width: 0; background: var(--sky); transition: width .25s ease; }
+#boot .bld { font-family: var(--disp); font-size: 13px; color: var(--sun); letter-spacing: .06em; }
+
+/* ---- HUD ---- */
+.chip {
+  position: fixed; z-index: 4; font-size: 13px; letter-spacing: .05em;
+  color: #cfe8ff; text-shadow: 0 1px 0 #000a; pointer-events: none;
+}
+#build { top: calc(12px + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left));
+  max-width: calc(100vw - 140px); }
+#build b { font-family: var(--disp); font-size: 26px; color: var(--sky); display: block; line-height: 1; }
+#build i { font-style: normal; opacity: .8; font-size: 12px; }
+#wep { top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right));
+  font-family: var(--disp); font-size: 15px; color: var(--sun); text-align: right; }
+#wep small { display: block; font-family: var(--ui); font-size: 11px; color: #cfe8ff; opacity: .7; letter-spacing: .08em; }
+
+/* ---- the pads ---- */
+.pad {
+  position: fixed; z-index: 5; width: 132px; height: 132px; border-radius: 50%;
+  border: 2px solid #ffffff24; background: #ffffff0c; touch-action: none;
+  bottom: calc(26px + env(safe-area-inset-bottom));
+}
+.pad.act { background: #ffffff16; border-color: #ffffff40; }
+#padL { left: calc(20px + env(safe-area-inset-left)); }
+#padR { right: calc(20px + env(safe-area-inset-right)); }
+.knob {
+  position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px;
+  border-radius: 50%; background: #ffffff2e; border: 2px solid #ffffff4a;
+  will-change: transform;
+}
+#padR .knob { background: #46e0ff2e; border-color: #46e0ff66; }
+/* the aim ring: dim whenever the weapon is out, bright while the trigger is armed. A pad
+   that looks identical armed and unarmed is a control nobody finds. */
+#padR::after {
+  content: ''; position: absolute; inset: -9px; border-radius: 50%;
+  border: 2px solid var(--sun); opacity: 0; transition: opacity .16s ease;
+}
+#padR.arm::after { opacity: .9; }
+#padR.ready::after { opacity: .28; }
+.pad .hint {
+  position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%);
+  font-size: 10px; letter-spacing: .12em; opacity: .42; white-space: nowrap; text-transform: uppercase;
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Barlow+Condensed:wght@400;600&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+</head>
+<body>
+
+<div id="boot">
+  <h1>MELEE</h1>
+  <div class="msg" id="bootMsg">loading</div>
+  <div class="bar"><i id="bootBar"></i></div>
+  <div class="bld">BUILD <span id="bootBuild">m3</span></div>
+</div>
+
+<div class="chip" id="build"><b id="buildN">m3</b><i id="buildI"></i></div>
+<div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
+
+<div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
+<div class="pad" id="padR"><div class="knob"></div><div class="hint">look &middot; tap = jump</div></div>
+
+<canvas id="gl"></canvas>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from './vendor/GLTFLoader.js';
+import { DRACOLoader } from './vendor/DRACOLoader.js';
+
+const BUILD = 'm3';
+/* ASSETS:START */
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
+/* ASSETS:END */
+// Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
+// CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
+// -- gets a new URL and actually arrives, while a file that did not change keeps its URL and
+// stays cached. Hand-bumped version constants work only when somebody remembers, and
+// "somebody remembered" is not a mechanism.
+const A = p => (ASSETS[p] ? p + '?v=' + ASSETS[p] : p);
+
+// ============================================================================================
+// TUNING. One object per system; everything is on `window.melee` for the console.
+// ============================================================================================
+
+const RIG = {
+  // METRES. The SCALE is measured off the geometry at load and never typed, so a re-export at
+  // any size lands right with no edit here. 1.75 m against an authored 0.9087 m is x1.926.
+  height: 1.75,
+  file: 'models/characters/alien_antenna_game.glb',
+  // WHICH WAY THE EXPORT FACES IS MEASURED, NOT ASSUMED (see `measureFacing`). This rig reads
+  // +Z -- toes and shoulders agree to 1.0000 -- but that is a fact about today's file.
+  spin: 0,          // a manual extra yaw, in radians, if a future export needs one
+};
+
+const MOVE = {
+  // TOP SPEED IS THE FASTEST CLIP'S OWN SPEED, so `run_fwd_fast` plays at 1.0x at full tilt
+  // and the feet never slide at the top of the range. `npm run gait` measures it: 2.362 m/s
+  // authored, x1.926 for RIG.height = 4.55. Raising this past it is allowed and costs foot
+  // slip in proportion -- GAIT.tsHi is the ceiling on how far the clip will be pushed.
+  max: 4.55,
+  acc: 22, accFall: .86, drag: 40,
+  // THE GATHER: how much of his acceleration he HAS, climbing from `push0` to full over
+  // `pushT` seconds of asking. This is what stops a standing start being a snap to speed,
+  // and it belongs here rather than in the target speed or in a momentum term.
+  push0: .34, pushT: .30,
+  airAcc: 9, airDrag: 1.0,
+  // steering is rate-limited SEPARATELY from acceleration
+  turn: 14, airTurn: 6,
+  // `heading` is the thumb, taken instantly. `faceH` is the BODY, coming round at face0 on
+  // the spot and face1 at a run. He is DRAWN at faceH. Without the split the model snaps.
+  face0: 11, face1: 5.2,
+  // AND `plant` IS THE THIRD IDEA, the one whose absence IS the moonwalk: at a walk the legs
+  // push where the thumb says, at a run they push along `faceH`. Without it the velocity
+  // keeps answering the stick while the body has already turned.
+  plantAt: 1.2, plantFull: 3.4,
+  turnBrake: .40,     // a hard turn costs speed, which is what plants the feet
+  jump: 8.4, g: 20, dead: .12, curve: 1.4, step: .5, coyote: .12,
+  hardLand: 8.0,      // impact speed (m/s) above which the landing is the HARD one
+  tapT: .30,          // longer than this on a pad is a HOLD, and a hold is not a tap
+};
+
+// THE GAIT IS A WEIGHTED BLEND OF CLIPS BY MEASURED SPEED -- never a run FLAG. Each clip's
+// clock is tied to the ground speed too, so the feet do not skate.
+// EVERY REFERENCE SPEED HERE IS MEASURED (`npm run gait`), not eyeballed. They are the speed
+// the PLANTED FOOT slides backwards at in the body frame, which is exactly the speed the clip
+// is walking at, and they are already multiplied by RIG's scale.
+const GAIT = {
+  walkRef: .84, runRef: 3.09, sprintRef: 4.55,
+  backRef: 2.23, strafeRef: 2.00, aimRunRef: 3.36,
+  walkAt: .35, runAt: 2.10, sprintAt: 3.90,   // where each clip starts taking over
+  tsLo: .55, tsHi: 1.9,                        // how far a clip may be pushed before it reads as a scramble
+  // `run_fwd_fast`'s two feet disagree by 34% (L 2.77, R 1.96) -- a real asymmetry in the clip,
+  // reported by the tool rather than hidden by it. If the sprint ever reads limpy, that is why.
+};
+
+const CAM = {
+  dist: 5.0, distV: .10, el: .22, look: 1.05, yawRate: 2.6, half: .07,
+  fov: 58, fovRush: 7, rush0: 2.6, rushSpan: 3.2,
+  // IT COMES IN WHEN SOMETHING IS IN THE WAY RATHER THAN CLIMBING OVER IT. Shortening the boom
+  // keeps the SHOT -- a level three-quarter view -- while lifting the lens changes it into a
+  // top-down one, which is a different and much worse shot.
+  probe: .5, pad: .3, min: 1.5, outHL: .5,
+  clear: .45,        // how far the lens stays off whatever is under it
+  rise: 1.4,         // and the most it may ever sit above the look point
+};
+
+// A FLICK IS A FAST MOVE *AND THEN A RELEASE*, AND BOTH HALVES ARE THE GATE.
+// Judged on `pointerup` alone it is dead on a pad that is already being held -- the time since
+// pointerdown is always past any window, so the gesture can never once fire. Judged on the
+// pad's own travel alone it fires MID-HOLD: every fast correction of a steering thumb reads as
+// a trick, and a press-and-hold cannot be told from a swipe at all.
+// So the TRAVEL arms it and the LIFT fires it, if the lift comes inside `let` OF THE TRAVEL --
+// never of the pointerdown. A thumb four seconds into a hold still flicks; a thumb that sweeps
+// and then stays down never does, however fast the sweep was.
+const FLICK = { at: .70, within: .28, let: .26, gap: .10 };
+
+// THE MELEE CHAIN. Each link is a fixed BEAT and the clip is compressed to it: the authored
+// clips run 1.0 to 1.75 s, so a three-hit chain played at 1x is over four seconds of watching,
+// which reads as lag rather than as a combo. Escalating, so the finisher has the most weight.
+const MELEE = {
+  beat: [.62, .74, .95],
+  window: 1.05,      // how long after a strike the next flick continues the chain
+  hold: .55,         // fraction of a strike after which the stick can cancel the recovery
+  lunge: [2.4, 2.0, 2.6],   // m/s carried into each strike
+  carry: .45,        // full speed for this fraction of the strike, then linear to zero
+  rollDur: .92, rollV: 6.2, rollFree: .45,
+  charge: 1.0,       // seconds to a full hammer charge
+  chargeBeat: .55, finishBeat: .80,
+};
+
+const WEAP = {
+  // Both weapon files are built around `weapon_root_right` with the tip at (-14.3102, 0, 0) --
+  // BYTE-IDENTICAL to the character's own right-hand mount, to four decimal places. So they
+  // parent with IDENTITY: no scale, no offset, no rotation, and nothing about where a weapon
+  // sits is typed here. An export that moves the joint moves the weapon with it.
+  slots: [
+    { key: 'none',    label: 'UNARMED', file: null,                                        melee: 'fist' },
+    { key: 'blaster', label: 'BLASTER', file: 'models/weapons/alien_antenna_blaster_game.glb', melee: 'fist', aim: true },
+    { key: 'hammer',  label: 'HAMMER',  file: 'models/weapons/alien_antenna_hammer_game.glb',  melee: 'weap', charge: true },
+  ],
+  // THE TRIGGER IS A FULL PULL, HELD. Four gates, and each rules out a different way of firing
+  // by accident: `fireAt` is how far up the pad it arms (a nudge cannot reach it), `keepAt` how
+  // far back down it stands down -- the GAP is hysteresis, so a thumb rolling inward as it
+  // lifts does not cancel the shot you meant -- `armT` how long it has to be up there, and
+  // `arc` how far off straight up it may be and still be a trigger rather than a look.
+  fireAt: .78, keepAt: .48, armT: .09, arc: 1.05,
+  cool: .34,         // seconds between shots
+};
+
+// THE CLIP TABLE. Every name here is checked against the file at load and anything missing is
+// reported in the chip rather than failing silently -- a table naming a clip that does not
+// exist leaves a bone at zero total weight, and the mixer blends a zero-weight bone back to
+// its BIND value, which is the T-pose exactly.
+const CLIPS = {
+  idle: 'idle_01', walk: 'walk_fwd', run: 'run_fwd', sprint: 'run_fwd_fast', back: 'run_bwd',
+  air: 'in_air', landSoft: 'landing_soft', landHard: 'landing_hard', roll: 'roll',
+  aimIdle: 'idle_rifle', aimRun: 'rifle_run', aimRunShoot: 'rifle_run_shoot', shoot: 'shoot',
+  strafeL: 'strafe_left', strafeR: 'strafe_right',
+  fist: ['melee_01', 'melee_03', 'Standing_Melee_Attack_360_High'],
+  weap: ['weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03'],
+  chargeUp: 'weapon_melee_charge', chargeGo: 'weapon_melee_finish',
+};
+// CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
+// that starts it, never by its own damped weight -- see `playOnce`.
+const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot',
+  'melee_01', 'melee_03', 'Standing_Melee_Attack_360_High',
+  'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_finish']);
+// EXPORTER RESIDUE. One frame, 0 bones moving -- measured, not guessed.
+const DROP = new Set(['CINEMA_4D_Main']);
+
+// ============================================================================================
+// helpers
+// ============================================================================================
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+// NEVER SCRUB A VELOCITY WITH A BARE `*= k` PER FRAME -- the half life then depends on the
+// frame rate and a 120 Hz phone plays a different game from a 30 Hz one.
+const damp = (cur, tgt, half, dt) => lerp(cur, tgt, 1 - Math.pow(0.5, dt / half));
+const wrapAngle = a => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a || 1), 0, 1); return t * t * (3 - 2 * t); };
+
+const bootMsg = document.getElementById('bootMsg');
+const bootBar = document.getElementById('bootBar');
+const bootCard = document.getElementById('boot');
+const buildI = document.getElementById('buildI');
+document.getElementById('bootBuild').textContent = BUILD;
+
+// THE CARD SPEAKS WHEN A LOAD *STARTS*, not from the progress callback. `e.total` is the
+// Content-Length: a response served without one -- chunked, which is what a CDN does to a big
+// file often enough -- produces NO progress call at all for that whole file, so the card keeps
+// whatever text it had. For the first load that is the text it was BORN with, which is pixel
+// for pixel what `init()` never running looks like. The two failures worth telling apart were
+// rendering as the same screen.
+const PROG = { done: 0, total: 3, label: '' };
+function setBoot(label, frac) {
+  PROG.label = label;
+  if (bootMsg) bootMsg.textContent = label;
+  const p = clamp((PROG.done + clamp(frac || 0, 0, 1)) / PROG.total, 0, 1);
+  if (bootBar) bootBar.style.width = (p * 100).toFixed(1) + '%';
+}
+
+const MISSING = [];
+const note = m => { if (!MISSING.includes(m)) MISSING.push(m); console.warn('[melee] ' + m); };
+
+// ============================================================================================
+// renderer, scene, world
+// ============================================================================================
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NeutralToneMapping;
+// NOT ACES. ACES is the default reach and it is a FILM curve: it desaturates as it rolls off,
+// so a hand-picked palette quietly stops existing.
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xeef2f7);
+scene.fog = new THREE.Fog(0xeef2f7, 40, 150);
+
+const camera = new THREE.PerspectiveCamera(CAM.fov, 1, .1, 400);
+const cam = { az: 0, el: CAM.el, dist: CAM.dist, pos: new THREE.Vector3(), tgt: new THREE.Vector3() };
+
+const hemi = new THREE.HemisphereLight(0xdceaff, 0x8a8f99, 1.5);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff3e0, 2.1);
+sun.position.set(6, 12, 5);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.near = 1; sun.shadow.camera.far = 60;
+sun.shadow.camera.left = -22; sun.shadow.camera.right = 22;
+sun.shadow.camera.top = 22; sun.shadow.camera.bottom = -22;
+sun.shadow.bias = -0.0009;
+scene.add(sun, sun.target);
+
+// ---- the world: a white floor and some boxes to run at, jump on and hide the camera behind ----
+// BOXES ARE AABBs and they are the whole collider. Their tops are floors, which is how you
+// stand on one; the camera boom probes the same list, so there is one description of the world
+// and not two to keep in step.
+const BOXES = [];
+const world = new THREE.Group();
+scene.add(world);
+
+{
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(400, 400),
+    new THREE.MeshStandardMaterial({ color: 0xf2f4f8, roughness: .96, metalness: 0 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  world.add(ground);
+
+  const grid = new THREE.GridHelper(120, 60, 0xc2ccd8, 0xdde4ec);
+  grid.position.y = .004;
+  grid.material.transparent = true; grid.material.opacity = .65;
+  world.add(grid);
+
+  const mats = [0xff4d6d, 0xffc247, 0x46e0ff, 0x8a7bff, 0xa8b4c4].map(c =>
+    new THREE.MeshStandardMaterial({ color: c, roughness: .8, metalness: .02 }));
+  const box = new THREE.BoxGeometry(1, 1, 1);
+  const put = (x, y, z, w, h, d, m) => {
+    const o = new THREE.Mesh(box, mats[m % mats.length]);
+    o.position.set(x, y + h / 2, z); o.scale.set(w, h, d);
+    o.castShadow = true; o.receiveShadow = true;
+    world.add(o);
+    BOXES.push({ minx: x - w / 2, maxx: x + w / 2, miny: y, maxy: y + h, minz: z - d / 2, maxz: z + d / 2 });
+  };
+  // a few things at jumpable heights, and a couple far too tall to get on
+  put(  6, 0,  -3, 3, .40, 3, 0);   // under MOVE.step, so this one is WALKED onto
+  put( 9.5, 0, -6, 3, 1.15, 3, 1);
+  put( 13, 0,  -9, 3, 1.85, 3, 2);
+  put( -7, 0,   4, 4, 2.6, 4, 3);
+  put(-12, 0,  -6, 2.2, 5.0, 2.2, 4);
+  put(  2, 0,  12, 9, .35, 3, 4);
+  put( -4, 0, -11, 3, 1.0, 7, 1);
+  put( 16, 0,   6, 2.4, 3.4, 2.4, 0);
+  put(  0, 0, -18, 14, 4.2, 1.2, 4);
+  put(-16, 0,  12, 5, 1.5, 5, 2);
+}
+
+// The highest box top under (x,z) at or a step above `y`, else the floor at 0.
+function groundAt(x, z, y, step) {
+  let best = 0;
+  for (const b of BOXES) {
+    if (x < b.minx || x > b.maxx || z < b.minz || z > b.maxz) continue;
+    if (b.maxy > best && b.maxy <= y + step) best = b.maxy;
+  }
+  return best;
+}
+// Push a position out of any box it is inside. The axis it is LEAST deep into is the face it
+// came in by, which is the cheapest correct answer and the one that does not teleport him
+// round a corner.
+function resolveBoxes(p, r, hh) {
+  let hit = false;
+  for (const b of BOXES) {
+    if (p.x + r < b.minx || p.x - r > b.maxx) continue;
+    if (p.z + r < b.minz || p.z - r > b.maxz) continue;
+    // A BOX TOP WITHIN `step` OF HIS FEET IS A FLOOR, NOT A WALL -- which is how a kerb is
+    // walked up and how a roof works. Without this the wall test and `groundAt` disagree about
+    // what a low box is: `groundAt` puts him on top of it and this pushes him off the side, so
+    // he grinds to a halt against a 40 cm kerb he is standing on.
+    if (b.maxy <= p.y + MOVE.step) continue;
+    if (p.y + hh < b.miny || p.y > b.maxy - .02) continue;
+    const dx1 = (b.maxx + r) - p.x, dx2 = p.x - (b.minx - r);
+    const dz1 = (b.maxz + r) - p.z, dz2 = p.z - (b.minz - r);
+    const m = Math.min(dx1, dx2, dz1, dz2);
+    if (m <= 0) continue;
+    if (m === dx1) p.x = b.maxx + r; else if (m === dx2) p.x = b.minx - r;
+    else if (m === dz1) p.z = b.maxz + r; else p.z = b.minz - r;
+    hit = true;
+  }
+  return hit;
+}
+function camHit(x, y, z, pad) {
+  for (const b of BOXES) {
+    if (x > b.minx - pad && x < b.maxx + pad && y > b.miny - pad && y < b.maxy + pad &&
+        z > b.minz - pad && z < b.maxz + pad) return true;
+  }
+  return false;
+}
+
+// ============================================================================================
+// THE RIG
+// ============================================================================================
+const rig = {
+  ready: false, root: null, model: null, mixer: null,
+  actions: {}, clips: {}, cw: {},          // cw: the damped weight of each action
+  bones: {}, scale: 1, faceOff: 0, mounts: {},
+};
+
+const dl = new DRACOLoader().setDecoderPath('./vendor/draco/');
+const gltf = new GLTFLoader().setDRACOLoader(dl);
+
+// A SLOW CONNECTION IS NOT A MISSING FILE, and from the call site the two are
+// indistinguishable -- one wants to carry on without the thing, the other wants to ask again.
+// So the TRANSPORT retries and only a file that fails every try reaches the caller as missing.
+function loadGLB(url, label) {
+  return new Promise((resolve, reject) => {
+    let tries = 0;
+    const go = () => {
+      setBoot(label, 0);                      // the label is set when the load STARTS
+      gltf.load(A(url),
+        g => { PROG.done++; setBoot(label, 0); resolve(g); },
+        e => { if (e && e.total) setBoot(label, e.loaded / e.total); },
+        err => {
+          if (++tries < 3) { setTimeout(go, 400 * tries); return; }
+          reject(err);
+        });
+    };
+    go();
+  });
+}
+
+// --------------------------------------------------------------------------------------------
+// normaliseClips -- and the first line of it is the most important line in this file.
+//
+// A KEYFRAME TRACK'S `times` ARRAY IS SHARED. This export has 4464 samplers referencing just
+// THIRTY-THREE distinct time accessors; GLTFLoader resolves each accessor once and caches it,
+// and KeyframeTrack keeps the Float32Array BY REFERENCE. So subtracting the start offset from
+// "each track" subtracts it from the same array about a hundred and thirty times over: the
+// times go deeply negative, `resetDuration()` comes back NEGATIVE, and a track evaluated past
+// its last key returns that key -- every clip in the file frozen on its final frame, for ever.
+// It reads as "he just holds the pose" and no amount of work on weights or loop modes touches
+// it. Clone before you mutate.
+//
+// Three things are done here and all three were measured first, not assumed:
+//   * every clip starts at exactly 1/24 s -- one held frame at the top of every loop, which on
+//     a 0.5 s run cycle is 8% of the stride spent standing still. Shifted to zero.
+//   * all 62 SCALE tracks in all 23 clips hold their rest value to within 5.4e-7. No-ops.
+//   * every POSITION track except the Hips holds its rest value to within 2.3e-5 armature
+//     units. Only the Hips genuinely translates -- and that one is the body's HEIGHT off the
+//     ground, which every crouch, landing and roll in this set needs, so it stays.
+// Stripping the other two is therefore a no-op that removes 2,700 channels of work per frame.
+// If a future export animates a finger's position or a bone's scale on purpose, `npm run clips`
+// says so and these filters are what to revisit.
+// --------------------------------------------------------------------------------------------
+function normaliseClips(clips) {
+  const out = [];
+  for (const clip of clips) {
+    if (DROP.has(clip.name)) continue;
+    const keep = [];
+    for (const t of clip.tracks) {
+      const bone = t.name.split('.')[0].replace(/^\s+|\s+$/g, '');
+      const path = t.name.slice(t.name.lastIndexOf('.') + 1);
+      if (path === 'scale') continue;
+      if (path === 'position' && !/Hips$/.test(bone)) continue;
+      // CLONE. See above.
+      t.times = Float32Array.from(t.times);
+      keep.push(t);
+    }
+    clip.tracks = keep;
+    let t0 = Infinity;
+    for (const t of clip.tracks) if (t.times.length) t0 = Math.min(t0, t.times[0]);
+    if (isFinite(t0) && t0 > 0) for (const t of clip.tracks) for (let i = 0; i < t.times.length; i++) t.times[i] -= t0;
+    clip.resetDuration();
+    // A NON-POSITIVE DURATION IS THE SIGNATURE of the bug above, so it says so rather than
+    // going quiet and freezing every pose in the game.
+    if (!(clip.duration > 0)) { note('CLIP ' + clip.name + ' duration ' + clip.duration); continue; }
+    out.push(clip);
+  }
+  return out;
+}
+
+// --------------------------------------------------------------------------------------------
+// WHICH WAY DOES THE EXPORT FACE? MEASURED, NEVER GUESSED.
+// A glTF conventionally points -Z and this rig points +Z, which is the difference between
+// running away from the camera and running at it -- and because the camera swings round behind
+// him as he moves, getting it wrong reads as INVERTED CONTROLS rather than as a backwards
+// model, which is why the stick maths gets blamed for it.
+//
+// THE TOES ARE THE PRIMARY MEASUREMENT: a foot points forwards, which is a geometric fact
+// about a body, and averaging the pair cancels the splay. The shoulder span is the obvious
+// alternative and is strictly weaker -- it needs the rig's left/right naming to be honest AND
+// the up-cross-forward to come out the right way round, and those two can be wrong at once and
+// hide each other. Both are measured here and they cross-check; on this file they agree to
+// 1.0000 and the answer is +Z.
+// --------------------------------------------------------------------------------------------
+function measureFacing(bones) {
+  const nx = (a, b) => {
+    const x = a.x - b.x, z = a.z - b.z, d = Math.hypot(x, z) || 1;
+    return { x: x / d, z: z / d };
+  };
+  const need = n => bones[n] && bones[n].getWorldPosition(new THREE.Vector3());
+  const lf = need('mixamorig_LeftFoot'), lt = need('mixamorig_LeftToe_End');
+  const rf = need('mixamorig_RightFoot'), rt = need('mixamorig_RightToe_End');
+  let fx = 0, fz = 1, how = 'default';
+  if (lf && lt && rf && rt) {
+    const a = nx(lt, lf), b = nx(rt, rf);
+    const sx = a.x + b.x, sz = a.z + b.z, d = Math.hypot(sx, sz);
+    if (d > .2) { fx = sx / d; fz = sz / d; how = 'toes'; }
+  }
+  // the cross-check: his LEFT is up x forward = (fz, -fx), and the shoulder span should agree
+  const ls = need('mixamorig_LeftShoulder'), rs = need('mixamorig_RightShoulder');
+  let agree = null;
+  if (ls && rs) {
+    const s = nx(ls, rs);
+    agree = s.x * fz + s.z * -fx;
+    if (agree < .4) note('FACING: toes and shoulders DISAGREE (' + agree.toFixed(2) + ')');
+  }
+  const yaw = Math.atan2(fx, fz);
+  console.log('[melee] facing measured from ' + how + ': (' + fx.toFixed(3) + ', ' + fz.toFixed(3) +
+              ') = ' + (yaw * 180 / Math.PI).toFixed(1) + ' deg' +
+              (agree != null ? '   shoulder cross-check ' + agree.toFixed(4) : ''));
+  return yaw;
+}
+
+// --------------------------------------------------------------------------------------------
+// MEASURE HIM WITH GEOMETRY BOUNDS, NEVER `Box3.setFromObject`. A skinned mesh ignores its node
+// transform but setFromObject applies it anyway -- and this armature is scaled 0.01, so the box
+// comes back a hundredth of his size. GLTFLoader binds every skin with the IDENTITY matrix, so
+// at rest a vertex's geometry position IS its world position and these bounds are already
+// metres: 0.9087 m for today's file, which wants x1.926 to stand 1.75 m tall.
+// --------------------------------------------------------------------------------------------
+function measureHeight(scene) {
+  let lo = Infinity, hi = -Infinity;
+  scene.traverse(o => {
+    if (!o.isSkinnedMesh || !o.geometry) return;
+    o.geometry.computeBoundingBox();
+    const b = o.geometry.boundingBox;
+    lo = Math.min(lo, b.min.y); hi = Math.max(hi, b.max.y);
+  });
+  return isFinite(lo) ? hi - lo : 0;
+}
+
+// --------------------------------------------------------------------------------------------
+// MOUNTING A WEAPON. Both files are built round `weapon_root_right` with the tip at exactly
+// (-14.3102, 0, 0) -- which is the character's own right-hand mount to four decimal places. So
+// the answer is to parent with IDENTITY and apply no scale, no offset and no rotation at all.
+//
+// THE TRAP IS THE ARMATURE SCALE, AND IT IS APPLIED TWICE IF YOU CLONE THE WHOLE SCENE. The
+// weapon file is `Armature(0.01) > weapon_root_right > mesh`, and the character's mount is
+// ALREADY inside his own Armature(0.01) -- so a naive clone of the file's scene onto the joint
+// comes out at a hundredth of its size, which from a phone is indistinguishable from the file
+// never having loaded. What is taken is only what sits BELOW the file's own mount: the mesh,
+// with its local transform relative to that mount preserved. That carries the authored
+// placement and nothing else.
+//
+// AND THE MOUNT IS FOUND BY NAME ON THE WEARER, so a weapon exported onto the LEFT hand lands
+// in the left hand with no code change here.
+// --------------------------------------------------------------------------------------------
+function mountWeapon(slot, g) {
+  const src = g.scene;
+  let fileRoot = null;
+  src.traverse(o => { if (!fileRoot && /^weapon_root/.test(o.name)) fileRoot = o; });
+  if (!fileRoot) { note('NO weapon_root IN ' + slot.key); return null; }
+  const host = rig.mounts[fileRoot.name];
+  if (!host) { note('NO MOUNT "' + fileRoot.name + '" ON THE RIG for ' + slot.key); return null; }
+
+  src.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(fileRoot.matrixWorld).invert();
+  const group = new THREE.Group();
+  group.name = 'weapon:' + slot.key;
+
+  const parts = [];
+  fileRoot.traverse(o => { if (o.isMesh) parts.push(o); });
+  if (!parts.length) { note('NO MESH IN ' + slot.key); return null; }
+  for (const m of parts) {
+    // the mesh's transform RELATIVE TO THE FILE'S OWN MOUNT -- which is the authored placement
+    const rel = new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld);
+    const o = new THREE.Mesh(m.geometry, m.material);
+    o.matrixAutoUpdate = false;
+    o.matrix.copy(rel);
+    o.castShadow = true;
+    o.frustumCulled = false;   // it rides a bone; its own bounds say nothing about where it is
+    group.add(o);
+  }
+  host.add(group);
+  group.visible = false;
+
+  // WHAT SIZE DID IT ACTUALLY COME OUT? "It doesn't show up" is three bugs wearing one face
+  // from a phone -- it never loaded, it loaded at a hundredth scale, or it is the right size in
+  // the wrong place -- and only a number tells them apart.
+  const bb = new THREE.Box3();
+  for (const o of group.children) { o.updateMatrixWorld(true); bb.expandByObject(o); }
+  const size = bb.getSize(new THREE.Vector3());
+  const cm = Math.max(size.x, size.y, size.z) * 100;
+  console.log('[melee] ' + slot.key + ' mounted on ' + fileRoot.name + ' -- ' + cm.toFixed(0) + ' cm');
+  if (cm < 5) note(slot.key.toUpperCase() + ' ' + cm.toFixed(0) + 'CM');
+  return { group, cm };
+}
+
+// ============================================================================================
+// ANIMATION IS WEIGHTS, NOT CROSSFADES.
+// `rigAnim` asks for a set of clip weights each frame and `setWeights` damps toward it. A
+// `crossFadeFrom` state machine has to know what it is coming FROM, which breaks the first time
+// two transitions overlap -- and they always eventually overlap.
+// ============================================================================================
+function setWeights(t, dt, snapHL) {
+  const acts = rig.actions, cw = rig.cw;
+  // THE T-POSE ESCAPE HATCH. If nothing in the table names a clip that actually exists, every
+  // bone ends the frame at a total weight of zero -- and the mixer blends a zero-weight bone
+  // back to its BIND value, which is the T-pose exactly. One missing clip is enough.
+  let tot = 0;
+  for (const k in t) if (acts[k]) tot += t[k];
+  if (tot < .01) { t = { [CLIPS.idle]: 1 }; }
+  for (const nm in acts) {
+    const a = acts[nm], want = t[nm] || 0, cur = cw[nm] || 0;
+    const w = cw[nm] = damp(cur, want, snapHL || .055, dt);
+    if (w > .002) { if (!a.isRunning()) a.play(); a.setEffectiveWeight(w); }
+    // NEVER ASK `isRunning()` WHETHER A CLIP STILL MATTERS -- ASK ITS WEIGHT. three ends a
+    // LoopOnce clip with `clampWhenFinished ? paused = true : enabled = false`, and
+    // `isRunning()` is `enabled && !paused`, so every ONCE clip is *not running* from the
+    // instant it finishes. Shutting clips down inside `else if (a.isRunning())` therefore
+    // skipped exactly the clips that need it: the finished clip kept the 1.0 it was last given
+    // and went on applying its final frame for the rest of the session -- a landing pose welded
+    // into the walk.
+    else if (cur > .002 || a.getEffectiveWeight() > .002 || a.isRunning()) { a.setEffectiveWeight(0); a.stop(); }
+  }
+}
+// RE-ENTERING A `ONCE` CLIP HAS TO REWIND IT, AND THE DAMPED WEIGHT CANNOT BE WHAT DECIDES.
+// Rewinding only when the weight has decayed below a threshold is right for a clip you have
+// left alone and wrong for one you are re-entering immediately: roll, roll again before the
+// first has faded, and the action is still PAUSED on its last frame, so it sits there applying
+// that frame -- which on a roll is a forward step. The STATE that starts a clip rewinds it.
+function playOnce(name, timeScale) {
+  const a = rig.actions[name]; if (!a) return 0;
+  a.reset(); a.play();
+  a.setEffectiveTimeScale(timeScale || 1);
+  return 1;
+}
+function setScale(name, s) { const a = rig.actions[name]; if (a) a.setEffectiveTimeScale(s); }
+const clipLen = name => { const c = rig.clips[name]; return c ? c.duration : 0; };
+
+// ============================================================================================
+// THE PLAYER
+// ============================================================================================
+const player = {
+  pos: new THREE.Vector3(0, 0, 4), vel: new THREE.Vector3(),
+  heading: 0, faceH: 0, speed: 0, grounded: true, airT: 0, coyote: 0,
+  goT: 0,                          // how long he has been asking to move -- the gather
+  jump: 0, jumps: 0, fallV: 0,
+  land: 0, landT: 0, landHard: 0,  // the landing state
+  roll: 0, rollT: 0, rollH: 0,
+  melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
+  charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0,
+  aim: 0, aimT: 0, fire: 0, fireT: 0, cool: 0,
+  slot: 0,
+  r: .34, hh: 1.6,
+};
+const stick = { L: { x: 0, y: 0, down: 0, far: 0 }, R: { x: 0, y: 0, down: 0, far: 0 } };
+const keys = {};
+addEventListener('keydown', e => { keys[e.key.toLowerCase()] = 1; });
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = 0; });
+
+// The left stick as a WORLD direction, relative to the camera azimuth. Every gesture on either
+// pad goes through this same mapping (see `flickH`) so the stick and a flick can never disagree
+// about which way is forward.
+function stickWorld() {
+  let lx = stick.L.x, ly = stick.L.y;
+  if (keys.a || keys.arrowleft) lx -= 1; if (keys.d || keys.arrowright) lx += 1;
+  if (keys.w || keys.arrowup) ly -= 1; if (keys.s || keys.arrowdown) ly += 1;
+  lx = clamp(lx, -1, 1); ly = clamp(ly, -1, 1);
+  const mag = Math.min(1, Math.hypot(lx, ly));
+  if (mag < MOVE.dead) return { x: 0, z: 0, mag: 0 };
+  const sa = Math.sin(cam.az), ca = Math.cos(cam.az);
+  const dx = -ly * sa - lx * ca, dz = -ly * ca + lx * sa;
+  const d = Math.hypot(dx, dz) || 1;
+  return { x: dx / d, z: dz / d, mag: Math.pow(clamp((mag - MOVE.dead) / (1 - MOVE.dead), 0, 1), MOVE.curve) };
+}
+// A FLICK'S DIRECTION IN WORLD TERMS. The pad is in SCREEN space and the camera can be
+// anywhere, so "up and to the right" is a different bearing every time the lens moves. Same
+// mapping and same convention as `stickWorld`, in one place, so there is one thing to be wrong.
+function flickH(dx, dy) {
+  const sa = Math.sin(cam.az), ca = Math.cos(cam.az);
+  return Math.atan2(-dy * sa - dx * ca, -dy * ca + dx * sa);
+}
+
+// ---- the kit ----------------------------------------------------------------------------
+const wepName = document.getElementById('wepName'), wepHint = document.getElementById('wepHint');
+function slotNow() { return WEAP.slots[player.slot]; }
+WEAP.worn = {};
+function paintKit() {
+  const s = slotNow();
+  wepName.textContent = s.label;
+  wepHint.textContent = s.aim ? 'hold right = aim' : s.charge ? 'hold right = charge' : 'tap left pad';
+  // EXACTLY ONE SLOT IS VISIBLE, decided in one place, so the label, the ring and the thing in
+  // his hand cannot disagree about what he is carrying.
+  for (const key in WEAP.worn) {
+    const w = WEAP.worn[key];
+    if (w && w.group) w.group.visible = (key === s.key);
+  }
+  padR.classList.toggle('ready', !!(s.aim || s.charge));
+}
+function cycleKit() {
+  player.slot = (player.slot + 1) % WEAP.slots.length;
+  player.aim = 0; player.aimT = 0; player.charge = 0; player.chargeT = 0;
+  paintKit();
+}
+
+// ---- melee ---------------------------------------------------------------------------------
+function meleeChain() { return CLIPS[slotNow().melee] || CLIPS.fist; }
+function meleeGo(h) {
+  const p = player;
+  if (!p.grounded || p.roll || p.chargeGo) return;
+  const chain = meleeChain();
+  // A CHAIN, NOT A BUTTON. Inside the window (or during a strike, which buffers) the next
+  // flick takes the NEXT link; let it lapse and the next flick opens at the first again. Past
+  // the finisher it comes back round rather than sticking on the last one for ever.
+  const cont = p.melee || p.meleeChain > 0;
+  const ix = cont ? (p.meleeIx + 1) % chain.length : 0;
+  const name = chain[ix];
+  if (!rig.actions[name]) { note('NO CLIP ' + name); return; }
+  p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name;
+  p.meleeDur = MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
+  p.meleeChain = 0;
+  if (h != null) { p.heading = h; p.faceH = h; }
+  // THE CLIP IS COMPRESSED TO THE BEAT, not the beat stretched to the clip. `melee_03` is
+  // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,
+  // which reads as lag rather than as a combo.
+  playOnce(name, clipLen(name) / p.meleeDur);
+  // and he covers ground: full speed for `carry` of the strike, then linear to zero, which
+  // averages .725 rather than .5 and is what a lunge actually looks like
+  const v = MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
+  p.vel.x = Math.sin(p.faceH) * v; p.vel.z = Math.cos(p.faceH) * v;
+}
+function rollGo(h) {
+  const p = player;
+  if (!p.grounded || p.roll || p.melee || p.chargeGo) return;
+  p.roll = 1; p.rollT = 0; p.rollH = (h != null ? h : p.faceH);
+  p.heading = p.rollH; p.melee = 0; p.meleeChain = 0;
+  playOnce(CLIPS.roll, clipLen(CLIPS.roll) / MELEE.rollDur);
+  p.vel.x = Math.sin(p.rollH) * MELEE.rollV; p.vel.z = Math.cos(p.rollH) * MELEE.rollV;
+}
+function chargeRelease() {
+  const p = player;
+  if (!p.charge) return;
+  const full = p.chargeT >= MELEE.charge * .5;
+  p.charge = 0; p.chargeT = 0;
+  if (!full) return;                                   // a short hold is not a swing
+  p.chargeGo = 1; p.chargeGoT = 0;
+  playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / MELEE.finishBeat);
+  p.vel.x = Math.sin(p.faceH) * 3.0; p.vel.z = Math.cos(p.faceH) * 3.0;
+}
+
+// ============================================================================================
+// THE PADS
+//
+// A STUCK STICK IS ALWAYS A MISSING `pointerup`. The thumb has gone and the pad never heard, so
+// `down` stays 1, `x/y` keep whatever they last were, and the game goes on steering for ever.
+// There is no single cause to find -- there are four ways an up goes missing on a phone and
+// each is closed where it happens.
+//
+// AND THERE IS NO WATCHDOG, DELIBERATELY. A pointer that is not moving generates no events, so
+// "no events" and "no thumb" are the same observation and no amount of waiting separates them;
+// the browser has no "is this pointer still down" to ask. A test that cannot tell its two
+// answers apart is not a test, and its false positive -- dropping a hold the player is in the
+// middle of, which is what running in a straight line IS -- is worse than the bug it hedges
+// against.
+// ============================================================================================
+const STICKS = [];
+const PADS = {};
+function bindStick(el, out, onTap, onFlick, onHold, onRel) {
+  const knob = el.querySelector('.knob');
+  let id = null, t0 = 0, far = 0, lx = 0, ly = 0, hist = [], pend = null, lastFlick = -1e9;
+  const RAD = 52;
+  const set = (cx, cy) => {
+    const r = el.getBoundingClientRect();
+    let dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
+    const d = Math.hypot(dx, dy);
+    if (d > RAD) { dx *= RAD / d; dy *= RAD / d; }
+    out.x = lx = dx / RAD; out.y = ly = dy / RAD;
+    out.far = Math.max(out.far || 0, Math.hypot(out.x, out.y));
+    knob.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px)`;
+    if (!onFlick) return;
+    // THE DELTA OVER THE WINDOW, not the distance from the centre -- that is what lets the
+    // gesture fire out of a HELD position instead of only out of rest.
+    const now = performance.now();
+    hist.push({ x: lx, y: ly, t: now });
+    while (hist.length > 1 && now - hist[0].t > FLICK.within * 1000) hist.shift();
+    const r0 = hist[0], ddx = lx - r0.x, ddy = ly - r0.y;
+    // ARM ONLY. A later sweep in the same touch re-arms with its own direction and its own
+    // clock, so the flick that counts is always the last one before the thumb came off.
+    if (Math.hypot(ddx, ddy) > FLICK.at) { pend = { x: ddx, y: ddy, t: now }; hist = [{ x: lx, y: ly, t: now }]; }
+  };
+  el.addEventListener('pointerdown', e => {
+    // 1. ONE THUMB PER PAD. A second finger landing on the same pad used to overwrite `id`,
+    //    after which the FIRST finger's up no longer matched and was thrown away. A stick has
+    //    one thumb by definition; a second touch on it is simply not ours.
+    if (id !== null) { e.preventDefault(); e.stopPropagation(); return; }
+    id = e.pointerId; t0 = performance.now();
+    // 2. GUARDED, because it THROWS if the pointer has already gone -- and it used to be
+    //    called after `id` was set, so the throw left the pad tracking an id whose up had
+    //    already been and gone.
+    try { el.setPointerCapture(id); } catch (err) {}
+    out.down = 1; out.far = 0;
+    // seeded at the CENTRE: on an absolute pad a thumb slammed onto the top edge IS a flick,
+    // and a delta measured from where it landed says the stick never moved.
+    hist = [{ x: 0, y: 0, t: t0 }]; pend = null;
+    el.classList.add('act'); set(e.clientX, e.clientY); far = Math.hypot(out.x, out.y);
+    e.preventDefault(); e.stopPropagation();
+  });
+  el.addEventListener('pointermove', e => {
+    if (e.pointerId !== id) return;
+    set(e.clientX, e.clientY); far = Math.max(far, Math.hypot(out.x, out.y));
+    e.stopPropagation();
+  });
+  const end = e => {
+    if (e.pointerId !== id) return;
+    const now = performance.now(), held = (now - t0) / 1000;
+    let fired = 0;
+    if (pend && onFlick && now - pend.t < FLICK.let * 1000 && now - lastFlick > FLICK.gap * 1000) {
+      lastFlick = now; fired = 1; onFlick(pend.x, pend.y);
+    }
+    if (!fired && onTap && far < .42 && held < MOVE.tapT) { fired = 1; onTap(); }
+    if (onRel) onRel(far, held, fired);
+    id = null; pend = null; out.down = 0; out.x = out.y = 0; out.far = 0; hist = [];
+    knob.style.transform = 'translate(0,0)'; el.classList.remove('act');
+    e.stopPropagation();
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('lostpointercapture', end);
+  const h = { el, out, end, id: () => id, hold: () => (id !== null ? (performance.now() - t0) / 1000 : 0),
+    release: () => {
+      if (id === null && !out.down) return;
+      id = null; pend = null; out.down = 0; out.x = out.y = 0; out.far = 0; hist = [];
+      knob.style.transform = 'translate(0,0)'; el.classList.remove('act');
+      // RELEASING IS NOT A TAP AND NOT A FLICK. Letting go because the thumb is gone must not
+      // fire a gesture nobody asked for.
+    } };
+  STICKS.push(h);
+  return h;
+}
+// 3. THE UP WENT SOMEWHERE ELSE. Capture can be lost without `lostpointercapture` reaching us,
+//    so the WINDOW hears every up and cancel in the CAPTURE phase -- which runs before any
+//    target handler and cannot be stopped by one -- and hands it to whichever pad owns that id.
+for (const t of ['pointerup', 'pointercancel']) addEventListener(t, e => {
+  for (const s of STICKS) if (s.id() === e.pointerId) s.end(e);
+}, { capture: true });
+// 4. THE APP WENT AWAY MID-TOUCH. Backgrounding a phone with a thumb down delivers nothing on
+//    the way out and nothing on the way back: the pad is simply still held. This is the one
+//    that leaves a stick parked at full deflection with no finger anywhere near it.
+for (const t of ['blur', 'pagehide', 'visibilitychange']) addEventListener(t, () => {
+  if (t === 'visibilitychange' && document.visibilityState === 'visible') return;
+  for (const s of STICKS) s.release();
+});
+
+// --------------------------------------------------------------------------------------------
+// THE CONTROL MAP. Read this before touching either pad.
+//   LEFT PAD  -- the BODY.  hold = move.  tap = next weapon.  flick = dodge roll that way.
+//   RIGHT PAD -- the VERB.  drag = camera. tap = jump.        flick = strike that way.
+//                            hold = aim (blaster) or charge (hammer); push UP to fire.
+// The two halves have to keep meaning the same thing in every state or neither pad means
+// anything you can carry from one situation to the next.
+// --------------------------------------------------------------------------------------------
+const padL = document.getElementById('padL'), padR = document.getElementById('padR');
+PADS.L = bindStick(padL, stick.L,
+  () => cycleKit(),                                   // tap
+  (dx, dy) => rollGo(flickH(dx, dy)),                 // flick: dodge roll, in the flicked direction
+  null, null);
+PADS.R = bindStick(padR, stick.R,
+  () => { player.jump = 1; },                         // tap: jump
+  (dx, dy) => meleeGo(flickH(dx, dy)),                // flick: strike, in the flicked direction
+  null,
+  () => { chargeRelease(); player.aim = 0; player.aimT = 0; player.fire = 0; });
+
+// THE HOLD IS READ PER FRAME RATHER THAN ON AN EDGE, because what it means depends on what is
+// in his hand and that can change under a thumb that is already down.
+function stepKit(dt) {
+  const p = player, s = slotNow(), R = stick.R;
+  const held = PADS.R ? PADS.R.hold() : 0;
+  const up = -R.y, mag = Math.hypot(R.x, R.y);
+  const holding = R.down && held > MOVE.tapT;
+  // ---- the blaster: hold to aim, push UP to fire ----
+  if (s.aim && holding) {
+    p.aim = 1; p.aimT += dt;
+    // `arc` is what lets this share a pad that is already full: a drag near the middle is
+    // still the camera, and only a deliberate push UP is the trigger.
+    // ABS. `atan2` is SIGNED, so an unsigned test passes for the whole left half of the pad
+    // at any angle -- which is exactly the sideways drag `arc` exists to refuse.
+    const aimedUp = mag > WEAP.fireAt && Math.abs(Math.atan2(R.x, up)) < WEAP.arc && up > 0;
+    const keeping = p.fire && mag > WEAP.keepAt && up > 0;
+    // the GAP between fireAt and keepAt is hysteresis: a thumb rolling inward as it lifts must
+    // not cancel the shot you meant, and without it a full pull only fires from full stretch.
+    if (aimedUp || keeping) {
+      p.fire = 1;
+      p.cool -= dt;
+      if (p.cool <= 0) { p.cool = WEAP.cool; p.fireT = 1; playOnce(CLIPS.shoot, clipLen(CLIPS.shoot) / .34); }
+    } else p.fire = 0;
+  } else if (!holding) { p.aim = 0; p.fire = 0; }
+  // ---- the hammer: hold to wind up, let go to swing ----
+  if (s.charge && holding && p.grounded && !p.melee && !p.roll && !p.chargeGo) {
+    p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
+  } else if (!holding && p.charge) chargeRelease();
+  if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / .30);
+  padR.classList.toggle('arm', !!(p.fire || (p.charge && p.chargeT > MELEE.charge * .5)));
+}
+
+// ============================================================================================
+// LOCOMOTION. Three separate ideas, and the moonwalk comes from missing the third.
+//   1. the GATHER lives in `push` -- how much of his acceleration he HAS, climbing from `push0`
+//      over `pushT`, with `accFall` thinning it again near the top speed. Not in the target
+//      speed and not in a momentum term.
+//   2. `heading` is the thumb, taken instantly. `faceH` is the BODY, coming round at `face0` on
+//      the spot and `face1` at a run. He is DRAWN at `faceH`.
+//   3. `plant`: at a walk the legs push where the thumb says, at a run they push along `faceH`.
+//      WITHOUT THIS the velocity keeps answering the stick while the body has already turned,
+//      which *is* the moonwalk. `turnBrake` costs him speed through a hard turn, which is what
+//      plants the feet rather than just pointing them.
+// ============================================================================================
+function integrate(dt, wantX, wantZ, wantSp, ctl) {
+  const p = player;
+
+  if (ctl) {
+    const sp0 = Math.hypot(p.vel.x, p.vel.z);
+    // the gather, and `accFall` measures against the speed he is ACTUALLY being asked for.
+    // Against a fixed ceiling it pins the acceleration at its floor the moment he passes that
+    // ceiling, so a raised target can never be reached and raising it reads as doing nothing.
+    const ramp = 1 - MOVE.accFall * smooth(0, 1, sp0 / Math.max(.5, wantSp || MOVE.max));
+    const push = lerp(MOVE.push0, 1, clamp(p.goT / MOVE.pushT, 0, 1));
+    const acc = (p.grounded ? MOVE.acc : MOVE.airAcc) * push * Math.max(.08, ramp);
+    if (wantSp > 0) {
+      const tx = wantX * wantSp, tz = wantZ * wantSp;
+      const ex = tx - p.vel.x, ez = tz - p.vel.z, e = Math.hypot(ex, ez);
+      if (e > 1e-4) {
+        // SPEEDING UP IS RAMPED, SLOWING DOWN IS NOT. `accFall` is about how fast he can pick
+        // speed UP, and slowing down is not accelerating -- one sign test. Without it a body
+        // carrying speed out of a lunge takes twenty seconds to come back to a walk, which
+        // reads as ice.
+        const along = (ex * p.vel.x + ez * p.vel.z) / (sp0 || 1);
+        const rate = (along >= 0 ? acc : MOVE.acc) * dt;
+        const k = Math.min(1, rate / e);
+        p.vel.x += ex * k; p.vel.z += ez * k;
+      }
+    } else {
+      const k = Math.exp(-(p.grounded ? MOVE.drag : MOVE.airDrag) * dt * .25);
+      p.vel.x *= k; p.vel.z *= k;
+    }
+  }
+
+  p.vel.y -= MOVE.g * dt;
+  const px = p.pos.x, pz = p.pos.z;
+  p.pos.x += p.vel.x * dt; p.pos.z += p.vel.z * dt; p.pos.y += p.vel.y * dt;
+
+  if (resolveBoxes(p.pos, p.r, p.hh)) {
+    // only the component going INTO the surface is removed, so a slide along a wall keeps its
+    // speed by itself and needs no extra scrub
+    const mx = p.pos.x - px, mz = p.pos.z - pz;
+    if (Math.abs(mx) < 1e-6) p.vel.x = 0;
+    if (Math.abs(mz) < 1e-6) p.vel.z = 0;
+  }
+
+  const gy = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
+  let landed = 0;
+  if (p.grounded) {
+    if (p.pos.y - gy > MOVE.step) { p.grounded = false; p.airT = 0; p.coyote = MOVE.coyote; }
+    else { p.pos.y = gy; p.vel.y = 0; }
+  } else {
+    p.airT += dt;
+    if (p.coyote > 0) p.coyote -= dt;
+    if (p.vel.y <= 0 && p.pos.y <= gy + .04) {
+      p.fallV = -p.vel.y;
+      p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; landed = 1;
+    }
+  }
+  p.speed = Math.hypot(p.vel.x, p.vel.z);
+  return landed;
+}
+
+function stepPlayer(dt) {
+  const p = player, s = stickWorld();
+
+  // ---- the states that OWN the body. Each bleeds its own speed off and still runs gravity
+  //      and the ground collider, so the ground hands him straight back to the air code.
+  if (p.roll || p.melee || p.chargeGo) {
+    const which = p.roll ? 'roll' : p.melee ? 'melee' : 'charge';
+    const dur = p.roll ? MELEE.rollDur : p.melee ? p.meleeDur : MELEE.finishBeat;
+    const tRef = p.roll ? (p.rollT += dt) : p.melee ? (p.meleeT += dt) : (p.chargeGoT += dt);
+    const u = clamp(tRef / dur, 0, 1);
+    // full speed for `carry` of the move, then linear to zero. A flat linear bleed averages
+    // half the launch speed, so every metre of travel has to be bought with a speed spike at
+    // the front -- which reads as a rocket rather than a lunge.
+    const k = u < MELEE.carry ? 1 : 1 - (u - MELEE.carry) / (1 - MELEE.carry);
+    const h = p.roll ? p.rollH : p.faceH;
+    const v0 = p.roll ? MELEE.rollV : p.melee ? MELEE.lunge[Math.min(p.meleeIx, MELEE.lunge.length - 1)] : 3.0;
+    p.vel.x = Math.sin(h) * v0 * k; p.vel.z = Math.cos(h) * v0 * k;
+    p.faceH = h; p.heading = h;
+    integrate(dt, 0, 0, 0, false);
+    // THE TAIL IS CANCELLABLE. Holding the whole clip makes a three-punch chain feel like three
+    // seconds of watching; past `hold`, a stick on the pad takes him out of the recovery, which
+    // is what makes each link in the chain a decision rather than a wait.
+    const free = which === 'roll' ? MELEE.rollFree : MELEE.hold;
+    const out = u >= 1 || (u > free && s.mag > .3);
+    if (out) {
+      if (p.roll) p.roll = 0;
+      else if (p.melee) { p.melee = 0; p.meleeChain = MELEE.window; }
+      else p.chargeGo = 0;
+    }
+    return;
+  }
+  if (p.meleeChain > 0) p.meleeChain -= dt;
+
+  // ---- the landing states: he can move out of them, but not instantly ----
+  if (p.land) { p.landT += dt; if (p.landT >= p.land || (p.landT > p.land * .45 && s.mag > .3)) p.land = 0; }
+
+  // ---- the jump ----
+  if (p.jump) {
+    p.jump = 0;
+    if ((p.grounded || p.coyote > 0) && !p.land) {
+      p.vel.y = MOVE.jump; p.grounded = false; p.coyote = 0; p.airT = 0; p.jumps = 1;
+    }
+  }
+
+  // ---- ordinary locomotion ----
+  // AIMED, HE FACES THE SHOT AND TRAVELS WHEREVER THE THUMB SAYS -- which is a STRAFE, and it
+  // is why `plant` has to go to zero here. `plant` swings the velocity onto his facing as he
+  // speeds up, which is right for running and exactly wrong while aiming, since it would drag
+  // every step round to point down the barrel.
+  const aiming = !!p.aim;
+  let wantSp = MOVE.max * s.mag;
+  if (aiming) wantSp = Math.min(wantSp, GAIT.aimRunRef);
+  if (p.land) wantSp *= .35;
+
+  if (s.mag > 0) {
+    p.goT += dt;
+    const tgt = Math.atan2(s.x, s.z);
+    if (!aiming) {
+      const rate = (p.grounded ? MOVE.turn : MOVE.airTurn) * dt;
+      p.heading += clamp(wrapAngle(tgt - p.heading), -rate, rate);
+    }
+  } else p.goT = 0;
+
+  // aiming, he faces where the camera looks; otherwise he faces where he is going
+  const faceTgt = aiming ? cam.az : p.heading;
+  const fRate = (aiming ? MOVE.face0 : lerp(MOVE.face0, MOVE.face1, clamp(p.speed / MOVE.max, 0, 1))) * dt;
+  p.faceH += clamp(wrapAngle(faceTgt - p.faceH), -fRate, fRate);
+
+  // PLANT. At a walk the legs push where the thumb says; at a run, along `faceH`.
+  let wx = s.x, wz = s.z;
+  if (s.mag > 0 && !aiming) {
+    const plant = smooth(MOVE.plantAt, MOVE.plantFull, p.speed);
+    const fx = Math.sin(p.faceH), fz = Math.cos(p.faceH);
+    wx = lerp(s.x, fx, plant); wz = lerp(s.z, fz, plant);
+    const d = Math.hypot(wx, wz) || 1; wx /= d; wz /= d;
+    // a hard turn costs him speed -- this is what plants the feet rather than just pointing them
+    const off = Math.abs(wrapAngle(Math.atan2(s.x, s.z) - p.faceH));
+    wantSp *= 1 - MOVE.turnBrake * smooth(.6, Math.PI, off);
+  }
+
+  const landed = integrate(dt, wx, wz, wantSp, true);
+  if (landed) {
+    // SOFT OR HARD IS THE IMPACT SPEED, not how long he was in the air: a long float onto a
+    // box top is a soft landing and a short drop off a ledge at pace is not.
+    const hard = p.fallV > MOVE.hardLand;
+    p.landHard = hard ? 1 : 0;
+    const nm = hard ? CLIPS.landHard : CLIPS.landSoft;
+    p.land = hard ? .62 : .34; p.landT = 0;
+    playOnce(nm, clipLen(nm) / (p.land * 1.9));
+  }
+}
+
+// ============================================================================================
+// THE WEIGHT TABLE
+// ============================================================================================
+function rigAnim(dt) {
+  const p = player, sp = p.speed, t = {};
+
+  if (p.roll) { t[CLIPS.roll] = 1; setWeights(t, dt); return; }
+  if (p.melee) { t[p.meleeName] = 1; setWeights(t, dt); return; }
+  if (p.chargeGo) { t[CLIPS.chargeGo] = 1; setWeights(t, dt); return; }
+  if (p.charge) {
+    // the wind-up HOLDS at the top of its clip rather than looping, so a long hold reads as
+    // a man straining rather than as a man waggling a hammer
+    t[CLIPS.chargeUp] = 1;
+    setScale(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
+    setWeights(t, dt); return;
+  }
+  if (!p.grounded) {
+    // `in_air` is 2.83 s of a subtle float and loops, so it reads at any airtime; a jump here
+    // is about 0.84 s, so what is seen is its opening third.
+    t[CLIPS.air] = 1; setWeights(t, dt); return;
+  }
+  if (p.land) {
+    const nm = p.landHard ? CLIPS.landHard : CLIPS.landSoft;
+    const u = clamp(p.landT / p.land, 0, 1);
+    t[nm] = 1 - u * .55;                       // it gives way to the gait rather than cutting
+  }
+
+  if (p.aim) {
+    // AIMED, THE LEGS ANSWER THE ANGLE AND NOT THE SPEED. He faces the shot and travels
+    // wherever the thumb says, so "how fast" no longer picks the clip -- "which way, relative
+    // to his nose" does. Forward is the rifle run, sideways is the strafe for that side,
+    // backwards is the backpedal, still is the rifle idle.
+    const moving = sp > .25;
+    if (!moving) t[CLIPS.aimIdle] = (t[CLIPS.aimIdle] || 0) + 1;
+    else {
+      const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
+      const c = Math.cos(rel), sn = Math.sin(rel);
+      const fwd = Math.abs(c), lat = Math.abs(sn);
+      const tot = fwd + lat || 1;
+      // +X IS HIS LEFT. Heading grows from +Z toward +X and his right is (-fz, fx), so a
+      // POSITIVE sine is a strafe to the LEFT. Written down because that argument comes out
+      // backwards half the time.
+      if (c >= 0) {
+        const nm = p.fire || p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun;
+        t[nm] = (t[nm] || 0) + fwd / tot;
+        setScale(nm, clamp(sp / GAIT.aimRunRef, GAIT.tsLo, GAIT.tsHi));
+      } else {
+        t[CLIPS.back] = (t[CLIPS.back] || 0) + fwd / tot;
+        setScale(CLIPS.back, clamp(sp / GAIT.backRef, GAIT.tsLo, GAIT.tsHi));
+      }
+      const side = sn >= 0 ? CLIPS.strafeL : CLIPS.strafeR;
+      t[side] = (t[side] || 0) + lat / tot;
+      setScale(side, clamp(sp / GAIT.strafeRef, GAIT.tsLo, GAIT.tsHi));
+    }
+    if (p.fireT > 0 && !moving) t[CLIPS.shoot] = (t[CLIPS.shoot] || 0) + Math.min(1, p.fireT * 1.6);
+    setWeights(t, dt); return;
+  }
+
+  // ---- the ordinary gait: four clips weighted by MEASURED speed, never a run flag ----
+  const add = (nm, w, ref) => {
+    if (w <= 0) return;
+    t[nm] = (t[nm] || 0) + w;
+    if (ref) setScale(nm, clamp(sp / ref, GAIT.tsLo, GAIT.tsHi));
+  };
+  const wIdle = 1 - smooth(0, GAIT.walkAt, sp);
+  const wWalk = smooth(0, GAIT.walkAt, sp) * (1 - smooth(GAIT.walkAt, GAIT.runAt, sp));
+  const wRun = smooth(GAIT.walkAt, GAIT.runAt, sp) * (1 - smooth(GAIT.runAt, GAIT.sprintAt, sp));
+  const wSpr = smooth(GAIT.runAt, GAIT.sprintAt, sp);
+  const rest = p.land ? 1 - (t[p.landHard ? CLIPS.landHard : CLIPS.landSoft] || 0) : 1;
+  add(CLIPS.idle, wIdle * rest, 0);
+  add(CLIPS.walk, wWalk * rest, GAIT.walkRef);
+  add(CLIPS.run, wRun * rest, GAIT.runRef);
+  add(CLIPS.sprint, wSpr * rest, GAIT.sprintRef);
+  setWeights(t, dt);
+}
+
+// ============================================================================================
+// THE CAMERA
+// ONE WRITER ON `cam.az`, ALWAYS. The right pad drags it and nothing else does -- while aiming
+// he simply faces wherever the lens is pointed, which is the same number rather than a second
+// one to keep in step. Two writers on a camera bearing is a loop that never settles and a
+// picture that shakes, and it is the bug that shows up every single time.
+// ============================================================================================
+function camFree(tx, ty, tz, dx, dy, dz, want) {
+  const step = CAM.probe, n = Math.ceil(want / step), pad = CAM.pad;
+  for (let i = 1; i <= n; i++) {
+    const d = Math.min(want, i * step);
+    if (!camHit(tx + dx * d, ty + dy * d, tz + dz * d, pad)) continue;
+    // BISECT. Walking in fixed steps and returning the last clear one means the answer only
+    // ever takes values `probe` apart, so the boom JUMPS half a metre at a time as the shot
+    // sways past a wall. A quantised probe is fine for a yes/no and wrong the moment something
+    // continuous is drawn from it.
+    let lo = d - step, hi = d;
+    for (let k = 0; k < 4; k++) {
+      const m = (lo + hi) * .5;
+      if (camHit(tx + dx * m, ty + dy * m, tz + dz * m, pad)) hi = m; else lo = m;
+    }
+    return Math.max(CAM.min, lo);
+  }
+  return want;
+}
+function stepCam(dt) {
+  const p = player;
+  const rx = stick.R.down ? stick.R.x : ((keys.j ? -1 : 0) + (keys.l ? 1 : 0));
+  if (Math.abs(rx) > .06) cam.az -= rx * CAM.yawRate * dt;
+
+  cam.el = CAM.el;
+  cam.tgt.set(p.pos.x, p.pos.y + CAM.look, p.pos.z);
+  const ce = Math.cos(cam.el);
+  const bx = -Math.sin(cam.az) * ce, by = Math.sin(cam.el), bz = -Math.cos(cam.az) * ce;
+  const want = CAM.dist + p.speed * CAM.distV;
+  const free = camFree(cam.tgt.x, cam.tgt.y, cam.tgt.z, bx, by, bz, want);
+  // SNAP IN, EASE OUT. Easing IN is time spent inside the wall; easing OUT is what stops every
+  // doorway and lamp post making the shot lurch.
+  cam.dist = free < (cam.dist || want) ? free : damp(cam.dist || want, free, CAM.outHL, dt);
+  const wx = cam.tgt.x + bx * cam.dist, wy = cam.tgt.y + by * cam.dist, wz = cam.tgt.z + bz * cam.dist;
+  if (cam.pos.lengthSq() === 0) cam.pos.set(wx, wy, wz);
+  cam.pos.x = damp(cam.pos.x, wx, CAM.half, dt);
+  cam.pos.y = damp(cam.pos.y, wy, CAM.half, dt);
+  cam.pos.z = damp(cam.pos.z, wz, CAM.half, dt);
+  // the floor under the LENS, capped at how far it may sit above the subject -- that cap is
+  // what stops the camera being left standing on the box he has just dropped off
+  const floor = groundAt(cam.pos.x, cam.pos.z, cam.pos.y, .6) + CAM.clear;
+  cam.pos.y = Math.max(cam.pos.y, Math.min(floor, cam.tgt.y + CAM.rise));
+  camera.position.copy(cam.pos);
+  camera.lookAt(cam.tgt);
+  // the lens widens with speed -- the cheapest speed cue there is, and it costs nothing
+  const rush = smooth(CAM.rush0, CAM.rush0 + CAM.rushSpan, p.speed);
+  const fov = CAM.fov + CAM.fovRush * rush;
+  if (Math.abs(camera.fov - fov) > .01) { camera.fov = damp(camera.fov, fov, .25, dt); camera.updateProjectionMatrix(); }
+}
+
+// ============================================================================================
+// THE FRAME
+// ============================================================================================
+let last = performance.now(), fps = 0, fpsT = 0, frames = 0;
+function frame() {
+  requestAnimationFrame(frame);
+  const now = performance.now();
+  // clamped, because a backgrounded tab hands back a delta of several seconds and every
+  // integrator in the file would take one enormous step through the world
+  const dt = Math.min(.05, (now - last) / 1000);
+  last = now;
+
+  if (rig.ready) {
+    stepKit(dt);
+    stepPlayer(dt);
+    rigAnim(dt);
+    rig.mixer.update(dt);
+    // DRAWN AT `faceH`, not at `heading`.
+    rig.root.position.copy(player.pos);
+    rig.root.rotation.y = player.faceH + rig.faceOff + RIG.spin;
+  }
+  stepCam(dt);
+  sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
+  sun.target.position.copy(player.pos);
+  sun.target.updateMatrixWorld();
+
+  renderer.render(scene, camera);
+
+  frames++; fpsT += dt;
+  if (fpsT > .5) {
+    fps = frames / fpsT; frames = 0; fpsT = 0;
+    const p = player;
+    const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) : p.chargeGo ? 'swing'
+      : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
+      : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? (p.fire ? 'FIRE' : 'aim') : 'ground';
+    buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
+      p.speed.toFixed(1) + ' m/s · ' + st + (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
+  }
+}
+
+// ============================================================================================
+// BOOT
+// ============================================================================================
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+addEventListener('orientationchange', () => setTimeout(resize, 120));
+resize();
+
+async function init() {
+  // ---- the character. There is no game without him, so a failure here is reported on the
+  //      card rather than warned to a console that does not exist on a phone.
+  let g;
+  try { g = await loadGLB(RIG.file, 'loading the alien'); }
+  catch (e) {
+    setBoot('could not load the character', 1);
+    if (window.__crash) window.__crash('CHARACTER FAILED TO LOAD\n' + RIG.file + '\n' + ((e && e.message) || e));
+    return;
+  }
+
+  const root = new THREE.Group();
+  root.name = 'rig';
+  const model = g.scene;
+  root.add(model);
+  scene.add(root);
+  rig.root = root; rig.model = model;
+
+  // SCALE IS MEASURED, NEVER TYPED, so a re-export at any size lands right with no edit.
+  const authored = measureHeight(model);
+  rig.scale = authored > .01 ? RIG.height / authored : 1;
+  model.scale.setScalar(rig.scale);
+  console.log('[melee] authored height ' + authored.toFixed(4) + ' m -> x' + rig.scale.toFixed(3) +
+              ' for RIG.height ' + RIG.height);
+  if (authored <= .01) note('RIG HEIGHT UNMEASURABLE');
+
+  model.traverse(o => {
+    if (o.isMesh || o.isSkinnedMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; }
+    if (o.isBone) {
+      rig.bones[o.name] = o;
+      if (/^weapon_root/.test(o.name)) rig.mounts[o.name] = o;
+    }
+  });
+  model.updateMatrixWorld(true);
+  // measured on the BIND pose, before any clip has been played
+  rig.faceOff = -measureFacing(rig.bones);
+
+  // ---- the clips ----
+  const clips = normaliseClips(g.animations || []);
+  rig.mixer = new THREE.AnimationMixer(model);
+  for (const c of clips) {
+    rig.clips[c.name] = c;
+    const a = rig.mixer.clipAction(c);
+    if (ONCE.has(c.name)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
+    a.enabled = true; a.setEffectiveWeight(0); a.play();
+    rig.actions[c.name] = a;
+  }
+  console.log('[melee] ' + clips.length + ' clips: ' + clips.map(c => c.name + ' ' + c.duration.toFixed(2) + 's').join(', '));
+  // THE TABLE IS CHECKED AGAINST THE FILE. A table naming a clip that is not there leaves a
+  // bone at zero total weight, and the mixer blends a zero-weight bone back to its BIND value
+  // -- which is the T-pose exactly, and looks like a rendering fault rather than a missing clip.
+  const want = [];
+  for (const k in CLIPS) { const v = CLIPS[k]; Array.isArray(v) ? want.push(...v) : want.push(v); }
+  const gone = want.filter(n => !rig.actions[n]);
+  if (gone.length) note('NO CLIP ' + gone.join(','));
+
+  // ---- the weapons. They are not on the critical path: a missing one costs that weapon and
+  //      nothing else, which is why they are each in their own try.
+  for (const s of WEAP.slots) {
+    if (!s.file) continue;
+    try {
+      const w = await loadGLB(s.file, 'loading the ' + s.key);
+      WEAP.worn[s.key] = mountWeapon(s, w);
+    } catch (e) { PROG.done++; note('NO ' + s.key.toUpperCase() + ' GLB'); }
+  }
+  paintKit();
+
+  player.pos.y = groundAt(player.pos.x, player.pos.z, 0, MOVE.step);
+  rig.ready = true;
+  setBoot('go', 1);
+  setTimeout(() => bootCard.classList.add('gone'), 260);
+}
+
+// the console handle. Every tuning object is live, so a number can be moved on the phone
+// without a rebuild and without a push.
+window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, rig, player, cam, stick, BOXES,
+  // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
+  // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
+  // the only way not to make it is for `npm run sim` to call exactly these.
+  stepPlayer, rigAnim, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, groundAt, resolveBoxes, camFree,
+  kit: () => cycleKit(),
+  clips: () => Object.keys(rig.clips).map(n => n + ' ' + rig.clips[n].duration.toFixed(3) + 's').join('\n'),
+  where: () => `${player.pos.x.toFixed(1)}, ${player.pos.y.toFixed(2)}, ${player.pos.z.toFixed(1)}`,
+};
+
+frame();
+init();
+</script>
+</body>
+</html>

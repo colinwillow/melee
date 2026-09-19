@@ -1,0 +1,17 @@
+{
+  "name": "melee",
+  "private": true,
+  "description": "Tooling for Melee. The game itself needs none of this -- index.html opens and runs.",
+  "scripts": {
+    "bump": "node tools/bump.mjs",
+    "check:syntax": "node tools/syntax.mjs index.html",
+    "check:boot": "node tools/boot.mjs",
+    "check:sim": "node tools/sim.mjs",
+    "check": "npm run check:syntax && npm run check:boot && npm run check:sim",
+    "clips": "node tools/clips.mjs",
+    "gait": "node tools/gait.mjs",
+    "rig": "node tools/rig.mjs",
+    "sim": "node tools/sim.mjs"
+  },
+  "type": "module"
+}
