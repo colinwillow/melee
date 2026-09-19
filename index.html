@@ -264,10 +264,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m14</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m15</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m14</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m15</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -305,7 +305,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm14';
+const BUILD = 'm15';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -491,15 +491,31 @@ const WEAP = {
   // hold stops meaning anything and the reticle has nothing to converge over.
   chargeT: 1.15,     // seconds to a full charge
   minChg: .10,       // under this a release is a fumble rather than a shot
-  shootBeat: .34,    // the `shoot` clip compressed to this -- it is 0.583 s at 1x
-  // WHERE THE AIM POSE IS CUT FROM. There is no sighted standing clip in the export, so it is
-  // the FIRST FRAME of a clip that already has the gun up. `rifle_run` is his pick; `shoot` is
-  // the other candidate and is one word away -- its first frame would put the release perfectly
-  // in register, at the cost of the hold being the recoil's starting stance.
-  aimFrom: 'rifle_run',
+  // THE SHOT PLAYS FAST AND THEN HOLDS. `shootBeat` is how long the clip takes; `shootHold` is
+  // how long its LAST FRAME is then kept on screen -- the clip is `ONCE` with
+  // `clampWhenFinished`, so holding it costs nothing but the weight staying up. Without the
+  // hold the follow-through is gone the instant the arm arrives, which reads as the shot not
+  // having happened rather than as a fast shot.
+  shootBeat: .26,
+  shootHold: .30,
+  // WHERE THE AIM POSE IS CUT FROM -- and this moved, because the first choice was the cause of
+  // *"the upward motion when you shoot goes a little crooked"*. `rifle_run` is a RUNNING STRIDE:
+  // it holds the weapon across the body, about ninety degrees off his nose, so the spine twist
+  // had to drag the whole waist round to point the barrel and what that looks like is crooked.
+  // My own note under TWIST.max said it: the honest fix for an over-twist is an aim pose that
+  // holds the gun forward, not a bigger allowance.
+  // `shoot` is that pose. Measured: 30 bones move across the WHOLE clip and the worst of them
+  // turns 13.7 degrees -- it is a man standing still and firing, so its first frame already
+  // points down the sight. The twist is then correcting a few degrees rather than ninety, and
+  // the release into the recoil is in register by construction because it is the same clip.
+  aimFrom: 'shoot',
   range: 60,         // how far the aim is walked to find what he is pointing at
   boltV: 44,         // m/s. Slow enough to SEE, which is the whole point of a charged ball
   boltLife: 2.4, boltR: .17,
+  // IT SHOVES HIM. A shot that moves nothing is a sound and a sprite; a shot that puts him on
+  // his back foot for a tenth of a second is a shot. Scaled by the charge, and deliberately
+  // brief -- the ground drag has a 0.07 s half-life, so this is a shunt rather than a slide.
+  kick: 1.0, kickChg: 1.9,
   glow: 2.6,         // how hard the gun's accent lifts at a full charge
   // MEASURED off the blaster's own map at load and overwritten there; these are only what it
   // starts at, and a cyan default is the honest guess for a sci-fi gun if the read ever fails.
@@ -1544,7 +1560,14 @@ function slotNow() { return WEAP.slots[player.slot]; }
 function gunOut() { return !!slotNow().aim; }
 // COMMITTED means the trigger is held or the hammer is wound. Both are a decision to engage,
 // so both lock -- which is the whole reason the strafes exist.
-function committed() { return !!(player.aim || player.charge); }
+// THE RECOIL COUNTS AS COMMITTED, AND IT HAS TO. The trigger is RELEASED by the act of firing,
+// so on the very next frame `aim` is 0 -- and he fell straight out of this branch into the
+// carrying gait, which standing still is `idle_rifle`. **The shoot clip was started and then
+// never given any weight at all**, which is exactly *"it plays and then it quickly transitions
+// into the next thing and it doesn't feel like he shot the gun"*: it was not playing.
+// Folding the recoil in here keeps the lock, the facing, the leg set and the spine twist for
+// the whole follow-through, which is the dramatic beat rather than a decoration on it.
+function committed() { return !!(player.aim || player.charge || player.fireT > 0); }
 function findLock() {
   if (!committed()) return null;
   const p = player;
@@ -1867,6 +1890,11 @@ function stepKit(dt) {
           fireBolt(p.chg);
           p.fireT = 1;
           snd(p.chg > .82 ? 'big' : 'shot', { g: .42 + p.chg * .3, r: 1.12 - p.chg * .3 });
+          // and it shoves him back along the shot -- the same bearing the bolt left on, so the
+          // recoil cannot disagree with where the shot went
+          const kh = p.lock ? lockH(p.lock) : cam.az;
+          const kv = WEAP.kick + WEAP.kickChg * p.chg;
+          p.vel.x -= Math.sin(kh) * kv; p.vel.z -= Math.cos(kh) * kv;
           playPair(CLIPS.shoot, clipLen(CLIPS.shoot) / WEAP.shootBeat);
         }
         p.chg = 0;
@@ -1899,7 +1927,7 @@ function stepKit(dt) {
     p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
   } else if (!holding && p.charge) chargeRelease();
 
-  if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / .34);
+  if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / (WEAP.shootBeat + WEAP.shootHold));
   padR.classList.toggle('arm', !!(p.aim || (p.charge && p.chargeT > MELEE.charge * .5)));
 }
 
@@ -2141,7 +2169,7 @@ function rigAnim(dt) {
   // ---- COMMITTED: the legs strafe, the arms hold the weapon, and neither knows about the
   //      other. Every bone is claimed exactly once, so they compose rather than average.
   if (committed()) {
-    const up = p.charge ? CLIPS.chargeUp : p.fireT > 0 ? CLIPS.shoot : CLIPS.aimPose;
+    const up = p.fireT > 0 ? CLIPS.shoot : p.charge ? CLIPS.chargeUp : CLIPS.aimPose;
     const moving = sp > .25;
     // STANDING STILL IS THE WHOLE CLIP, NOT THE HYBRID. The split exists to put a weapon pose
     // on STRAFING legs; standing there are no strafing legs to put it on, and half a running
@@ -2213,10 +2241,10 @@ function rigAnim(dt) {
 // ============================================================================================
 const TWIST = {
   bones: ['mixamorig_Spine1', 'mixamorig_Spine2'],
-  max: 1.75,     // how far the waist may come round in total. Generous, because it is also
-                 // absorbing the pose's own bias -- if it ever LOOKS over-twisted, the honest
-                 // fix is an aim pose that holds the gun forward, not a smaller number here.
-  ease: 9,       // how fast the residual is folded back
+  // A REAL WAIST TURN. It was 1.75 rad only because it was absorbing a ninety-degree pose bias;
+  // now the pose points forward, this is what a man can actually twist and no more.
+  max: .95,
+  ease: 11,      // how fast the residual is folded back
 };
 const TWISTQ = new THREE.Quaternion(), TWISTP = new THREE.Quaternion(), TWISTI = new THREE.Quaternion();
 const TWISTUP = new THREE.Vector3(0, 1, 0);
@@ -2240,6 +2268,10 @@ function barrelH() {
 function aimTwist(dt) {
   const p = player;
   if (!committed() || !gunOut() && !p.charge) { p.twist = damp(p.twist || 0, 0, .12, dt); }
+  // AND IT FREEZES WHILE THE SHOT IS IN THE AIR. The bolt has already left on the bearing it
+  // left on; re-aiming the barrel underneath the recoil makes the gun swing during the one beat
+  // that is meant to be held, which is the other half of "it goes a little crooked".
+  else if (p.fireT > 0) { /* hold whatever it was at the moment of the shot */ }
   else {
     const want = p.lock ? lockH(p.lock) : cam.az;
     const bh = barrelH();
