@@ -170,40 +170,51 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 #padR.arm::after { opacity: .9; }
 #padR.ready::after { opacity: .28; }
-/* ---- the reticle ---- */
+/* ---- the reticle: a geometric portal ---- */
 #retic {
-  position: fixed; z-index: 3; width: 190px; height: 190px; left: 0; top: 0;
-  margin: -95px 0 0 -95px; pointer-events: none; opacity: 0;
-  transition: opacity .13s ease;
-  --c: 0;                       /* charge, 0..1 */
-  --col: #9fe9ff;
+  position: fixed; z-index: 3; left: 0; top: 0; width: 210px; height: 210px;
+  margin: -105px 0 0 -105px; pointer-events: none; opacity: 0;
+  transition: opacity .14s ease;
+  --c: 0;                      /* charge, 0..1 -- the only thing the frame loop writes */
+  --gl: #3bd8ff;               /* the neon it bleeds */
+  --r1: #a06bff; --r2: #6f8cff; --r3: #35d6ff; --r4: #9df2ff; --r5: #e8fbff;
+  /* THE NEON IS TWO DROP-SHADOWS, which is what makes a stroke read as a lit tube rather than
+     as a drawn line. It is one small element, so the cost is nothing, and it runs on the
+     compositor like the spin. */
+  filter: drop-shadow(0 0 4px var(--gl)) drop-shadow(0 0 12px var(--gl));
 }
-#retic.on { opacity: .95; }
-#retic.lock { --col: #ffc247; }
-#retic g { fill: none; stroke: var(--col); stroke-width: 3.4; stroke-linecap: round; }
-#retic .core { fill: var(--col); stroke: none; }
-/* TRANSFORM-BOX IS LOAD-BEARING. Without it each group spins about its own tight bounding box
-   rather than the shared middle, and the layers wobble apart instead of turning together. */
-#retic .lay, #retic .spin, #retic .brk { transform-box: view-box; transform-origin: 50% 50%; }
-/* THE CONVERGENCE. Each layer rests at its own radius and they all approach scale 1 as the
-   charge fills, so the pieces of the arc close onto one ring. Nested inside the spin so the
-   two transforms cannot fight over one property. */
-#retic .a { transform: scale(calc(1 + .82 * (1 - var(--c)))); opacity: calc(.35 + .65 * var(--c)); }
-#retic .b { transform: scale(calc(1 + .52 * (1 - var(--c)))); opacity: calc(.40 + .60 * var(--c)); }
-#retic .c { transform: scale(calc(1 + .26 * (1 - var(--c)))); opacity: calc(.45 + .55 * var(--c)); }
-#retic .d { transform: scale(calc(1 + .10 * (1 - var(--c)))); opacity: calc(.30 + .70 * var(--c)); }
-#retic .ring { stroke-width: 2; stroke-dasharray: 6 9; }
-#retic .core { transform: scale(calc(.4 + var(--c))); transform-box: view-box; transform-origin: 50% 50%; }
-/* the brackets BREATHE while it has nothing and SNAP IN when it locks -- a different mark,
-   not a brighter one, so "the gun has something" is a glance rather than a comparison */
-#retic .brk { animation: brth 1.5s ease-in-out infinite; stroke-width: 4; }
-#retic.lock .brk { animation: none; transform: scale(.78); }
-@keyframes brth { 0%,100% { transform: scale(1.12); } 50% { transform: scale(1.26); } }
-#retic .s1 { animation: spin 7s linear infinite; }
-#retic .s2 { animation: spin 5s linear infinite reverse; }
-#retic .s3 { animation: spin 3.4s linear infinite; }
-#retic .s4 { animation: spin 11s linear infinite reverse; }
+#retic.on { opacity: 1; }
+/* LOCKED IS A DIFFERENT MARK, NOT A BRIGHTER ONE -- it goes hot magenta and the rings pull in,
+   so "the gun has something" is a glance rather than a comparison against a memory. */
+#retic.lock { --gl: #ff3ca8; --r1: #ff7ad5; --r2: #ff5cc0; --r3: #ff3ca8; --r4: #ffa8dd; --r5: #fff0fa; }
+#retic .lay, #retic .spin { position: absolute; inset: 0; }
+#retic svg { width: 100%; height: 100%; display: block; overflow: visible; }
+#retic circle { fill: none; stroke-linecap: butt; }
+/* THE CONVERGENCE. Each ring rests wide and closes onto its drawn radius as the charge fills,
+   so a loaded shot IS the portal shut. The scale is on the outer div and the spin on the inner
+   one, because two animations cannot share `transform`. */
+#retic .a { transform: scale(calc(1 + 1.05 * (1 - var(--c)))); opacity: calc(.30 + .70 * var(--c)); }
+#retic .b { transform: scale(calc(1 + .74 * (1 - var(--c)))); opacity: calc(.34 + .66 * var(--c)); }
+#retic .c { transform: scale(calc(1 + .48 * (1 - var(--c)))); opacity: calc(.40 + .60 * var(--c)); }
+#retic .d { transform: scale(calc(1 + .28 * (1 - var(--c)))); opacity: calc(.46 + .54 * var(--c)); }
+#retic .e { transform: scale(calc(1 + .12 * (1 - var(--c)))); opacity: calc(.20 + .80 * var(--c)); }
+#retic .a circle { stroke: var(--r1); stroke-width: 2.2; stroke-dasharray: 22 11.333; }
+#retic .b circle { stroke: var(--r2); stroke-width: 3;   stroke-dasharray: 9 7.667; }
+#retic .c circle { stroke: var(--r3); stroke-width: 5;   stroke-dasharray: 40 10; }
+#retic .d circle { stroke: var(--r4); stroke-width: 2;   stroke-dasharray: 2.5 5.833; }
+#retic .e circle { stroke: var(--r5); stroke-width: 6;   stroke-dasharray: 17 8; }
+#retic .a .spin { animation: spin 9s  linear infinite; }
+#retic .b .spin { animation: spin 6s  linear infinite reverse; }
+#retic .c .spin { animation: spin 4s  linear infinite; }
+#retic .d .spin { animation: spin 14s linear infinite reverse; }
+#retic .e .spin { animation: spin 7s  linear infinite reverse; }
 @keyframes spin { to { transform: rotate(360deg); } }
+#retic .core {
+  position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+  border-radius: 50%; background: var(--r5);
+  transform: scale(calc(.15 + 1.05 * var(--c)));
+  opacity: calc(.25 + .75 * var(--c));
+}
 
 .pad .hint {
   position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%);
@@ -223,41 +234,33 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m8</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m9</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m8</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m9</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
 <div class="pad" id="padR"><div class="knob"></div><div class="hint">look &middot; tap = jump</div></div>
 
-<!-- THE RETICLE. Four layers of arc at four radii, each spinning at its own rate, all of them
-     CONVERGING onto one ring as the charge fills -- so "how loaded is the shot" is a shape
-     rather than a bar, and it is legible without ever looking away from what you are aiming at.
-     It is CSS all the way down: the spin is a keyframe animation, so it runs on the compositor
-     and the frame loop writes nothing per frame but a position and two custom properties. -->
-<svg id="retic" viewBox="-60 -60 120 120" aria-hidden="true">
-  <g class="lay a"><g class="spin s1">
-    <path d="M -46 0 A 46 46 0 0 1 -32.5 -32.5" /><path d="M 46 0 A 46 46 0 0 1 32.5 32.5" />
-  </g></g>
-  <g class="lay b"><g class="spin s2">
-    <path d="M 0 -38 A 38 38 0 0 1 26.9 -26.9" /><path d="M 0 38 A 38 38 0 0 1 -26.9 26.9" />
-    <path d="M -38 0 A 38 38 0 0 0 -26.9 26.9" /><path d="M 38 0 A 38 38 0 0 0 26.9 -26.9" />
-  </g></g>
-  <g class="lay c"><g class="spin s3">
-    <path d="M -30 -13 A 32.7 32.7 0 0 1 -13 -30" /><path d="M 30 13 A 32.7 32.7 0 0 1 13 30" />
-    <path d="M -30 13 A 32.7 32.7 0 0 0 -13 30" /><path d="M 30 -13 A 32.7 32.7 0 0 0 13 -30" />
-  </g></g>
-  <g class="lay d"><g class="spin s4">
-    <circle cx="0" cy="0" r="24" class="ring" />
-  </g></g>
-  <g class="core"><circle cx="0" cy="0" r="3.2" /></g>
-  <g class="brk">
-    <path d="M -17 -11 L -17 -17 L -11 -17" /><path d="M 17 -11 L 17 -17 L 11 -17" />
-    <path d="M -17 11 L -17 17 L -11 17" /><path d="M 17 11 L 17 17 L 11 17" />
-  </g>
-</svg>
+<!-- THE RETICLE -- CONCENTRIC BROKEN RINGS, NOT ARCS IN ONE SVG.
+     The first version put every layer in one <svg> and spun each <g> with
+     `transform-box: view-box`. Safari does not honour that on an SVG group: each arc rotated
+     about ITS OWN tight bounding box, so the pieces flew apart round the screen instead of
+     turning together. **Every spinning thing is a DIV now**, all the same size and all stacked
+     on the same centre, so `transform-origin: 50% 50%` means the reticle's middle by
+     construction and there is nothing left to get wrong.
+     Each ring is ONE <circle> broken into segments with `stroke-dasharray`, on
+     `pathLength="100"` so the dash numbers are percentages of the circumference and a ring can
+     be re-radiused without recomputing them. -->
+<div id="retic" aria-hidden="true">
+  <div class="lay a"><div class="spin"><svg viewBox="-60 -60 120 120"><circle r="52" pathLength="100"/></svg></div></div>
+  <div class="lay b"><div class="spin"><svg viewBox="-60 -60 120 120"><circle r="44" pathLength="100"/></svg></div></div>
+  <div class="lay c"><div class="spin"><svg viewBox="-60 -60 120 120"><circle r="36" pathLength="100"/></svg></div></div>
+  <div class="lay d"><div class="spin"><svg viewBox="-60 -60 120 120"><circle r="28" pathLength="100"/></svg></div></div>
+  <div class="lay e"><div class="spin"><svg viewBox="-60 -60 120 120"><circle r="20" pathLength="100"/></svg></div></div>
+  <div class="core"></div>
+</div>
 
 <canvas id="gl"></canvas>
 
@@ -266,7 +269,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 
-const BUILD = 'm8';
+const BUILD = 'm9';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
 /* ASSETS:END */
@@ -294,7 +297,7 @@ const RIG = {
   // colours rather than washing him toward grey -- it lands after the lighting, so it brightens
   // without making him shiny. `hue` is the accent band, measured off his map at load the same
   // way the gun's is, so whatever colour he is trimmed in reads as lit rather than painted.
-  emissive: .30,
+  emissive: .18,   // .30 read a shade washed on the device -- he said so, and this is the dial
   hue: .52, hueW: .10, hueGlow: .55,
   showHue: 1,       // put the measured hues on the chip -- there is no console on a phone
 };
@@ -521,7 +524,7 @@ const cam = { az: 0, el: CAM.el, dist: CAM.dist, pos: new THREE.Vector3(), tgt: 
 // the ground into a lightbox and makes him read darker against it, not lighter. Most of the
 // lift is on HIM (`RIG.emissive`, his own map fed back) and on the fill below; the globals move
 // a little and the floor comes down a little to meet him.
-const hemi = new THREE.HemisphereLight(0xe4f0ff, 0xa79b8e, 1.9);
+const hemi = new THREE.HemisphereLight(0xe4f0ff, 0xa79b8e, 1.75);
 scene.add(hemi);
 // A COOL FILL FROM THE OPPOSITE SIDE, casting nothing. This is the one that does the work on
 // his shadow side; it is what a second lamp is for and it costs no shadow map.
@@ -914,22 +917,43 @@ function measureHue(tex, label) {
     satSum += sat; n++;
   }
   if (!n) { console.log('[melee] ' + label + ': no chromatic texels -- nothing to ramp on'); return null; }
-  let best = 0;
-  for (let i = 1; i < BINS; i++) if (hist[i] > hist[best]) best = i;
+
   // THE CENTROID IS TAKEN ON THE CIRCLE, not on the bin index: hue wraps, so a family sitting
   // across the seam at zero would otherwise average to the middle of the wheel -- and red is
   // exactly the family that sits there.
-  let sx = 0, sy = 0, tot = 0;
-  for (let k = -2; k <= 2; k++) {
-    const i = (best + k + BINS) % BINS, w = hist[i], a = ((i + .5) / BINS) * Math.PI * 2;
-    sx += Math.cos(a) * w; sy += Math.sin(a) * w; tot += w;
-  }
-  const hue = ((Math.atan2(sy, sx) / (Math.PI * 2)) % 1 + 1) % 1;
-  const col = new THREE.Color().setHSL(hue, 1, .6);
-  const out = { hue, share: tot / (satSum || 1), sat: satSum / n, px: n, hex: '#' + col.getHexString() };
-  console.log('[melee] ' + label + ' dominant hue ' + (hue * 360).toFixed(0) + 'deg ' + out.hex +
-    '  ' + (out.share * 100).toFixed(0) + '% of the chroma, mean sat ' + out.sat.toFixed(2) +
-    ', ' + n + ' chromatic texels');
+  const peak = (bins, at) => {
+    let sx = 0, sy = 0, tot = 0;
+    for (let k = -2; k <= 2; k++) {
+      const i = (at + k + BINS) % BINS, w = bins[i], a = ((i + .5) / BINS) * Math.PI * 2;
+      sx += Math.cos(a) * w; sy += Math.sin(a) * w; tot += w;
+    }
+    return { hue: ((Math.atan2(sy, sx) / (Math.PI * 2)) % 1 + 1) % 1, w: tot };
+  };
+  const top = bins => { let b = 0; for (let i = 1; i < BINS; i++) if (bins[i] > bins[b]) b = i; return b; };
+
+  // THE DOMINANT HUE IS THE BODY, AND THE BODY IS NOT WHAT SHOULD GLOW.
+  // The first version took the biggest peak and duly reported 20 deg for the alien and 17 for
+  // the blaster -- both of them the ORANGE, because orange is most of both maps. That is a
+  // correct answer to the wrong question: *"make the blueish colour glow"* is asking for the
+  // ACCENT, which is by definition the minority. So the main peak is found, a wedge either
+  // side of it is knocked out, and the strongest thing LEFT is the accent -- which is the blue.
+  const main = peak(hist, top(hist));
+  const away = Math.round(BINS * (60 / 360));        // 60 degrees clear of the body colour
+  const rest = Float64Array.from(hist);
+  const mainBin = Math.floor(main.hue * BINS);
+  for (let k = -away; k <= away; k++) rest[(mainBin + k + BINS) % BINS] = 0;
+  const acc = peak(rest, top(rest));
+  // it has to be a real family rather than the noise floor, or a map with one colour in it
+  // would glow on whatever rounding happened to leave behind
+  const good = acc.w > main.w * .06;
+  const use = good ? acc : main;
+  const col = new THREE.Color().setHSL(use.hue, 1, .6);
+  const out = { hue: use.hue, main: main.hue, accent: good ? acc.hue : null,
+                share: use.w / (satSum || 1), sat: satSum / n, px: n, hex: '#' + col.getHexString() };
+  console.log('[melee] ' + label + ': body ' + (main.hue * 360).toFixed(0) + 'deg, ' +
+    (good ? 'ACCENT ' + (acc.hue * 360).toFixed(0) + 'deg ' + out.hex + ' (' +
+      (acc.w / main.w * 100).toFixed(0) + '% of the body peak)' : 'no accent found -- using the body colour') +
+    '   ' + n + ' chromatic texels, mean sat ' + out.sat.toFixed(2));
   return out;
 }
 
