@@ -264,5 +264,61 @@ for (let k = 0; k < 3; k++) {
 ok('three strikes carry him a real distance', total > 5,
    `${total.toFixed(2)} m over the chain (was about 1 m)`);
 
+
+console.log('\n-- 12. THE LANDING PLAYS ALL THE WAY THROUGH --');
+// The state used to last `land` seconds while the clip was scaled to play over `land * 1.9`,
+// so the hard landing ended with more than half its clip still to run and the gait took over
+// mid-roll. A state whose length disagrees with the clip it is playing can only ever cut it off.
+reset(0, 0); cam.az = 0;
+p.pos.y = 9; p.grounded = false; p.vel.set(0, 0, 0);
+let landedAt = -1, tt = 0;
+for (let i = 0; i < 200 && landedAt < 0; i++) { M.stepPlayer(DT); M.rigAnim(DT); tt += DT; if (p.land) landedAt = tt; }
+ok('a long drop reads as the HARD landing', p.landHard === 1 && Math.abs(p.land - MOVE.landHard) < 1e-6,
+   `impact ${p.fallV.toFixed(1)} m/s vs MOVE.hardLand ${MOVE.hardLand}, state ${p.land.toFixed(2)} s`);
+// held still, the clip has to keep full weight well past halfway.
+// ONCE IT IS IN, IT STAYS IN -- which is not the same as "it is at 1 on every frame". The
+// weights are DAMPED, so the first fifth of a second is the blend arriving, and an earlier
+// version of this case recorded that ramp as its minimum and called a working landing a
+// failure. What is under test is whether anything pulls it back DOWN before `landFree`.
+let heldTo = 0, wPeak = 0, wAfter = 1, arrived = 0;
+for (let i = 0; i < Math.round(MOVE.landHard * .66 / DT); i++) {
+  M.stepPlayer(DT); M.rigAnim(DT);
+  if (!p.land) break;
+  const w = M.rig.cw[M.CLIPS.landHard] || 0;
+  heldTo = p.landT; wPeak = Math.max(wPeak, w);
+  if (w > .9) arrived = 1;
+  if (arrived) wAfter = Math.min(wAfter, w);
+}
+ok('the landing clip reaches full weight', wPeak > .95, `peaked at ${wPeak.toFixed(2)}`);
+ok('and is not pulled back down before landFree', p.land > 0 && arrived && wAfter > .9,
+   `still in it at ${heldTo.toFixed(2)} s of ${MOVE.landHard}, lowest weight after it arrived ${wAfter.toFixed(2)}`);
+// and a nudge of the stick must not kill it early
+reset(0, 0); p.pos.y = 9; p.grounded = false;
+for (let i = 0; i < 200 && !p.land; i++) { M.stepPlayer(DT); M.rigAnim(DT); }
+let killedAt = -1; tt = 0;
+for (let i = 0; i < 200 && p.land; i++) { hold(0, -1); M.stepPlayer(DT); M.rigAnim(DT); tt += DT; }
+killedAt = tt;
+ok('the stick cannot run him out before landFree', killedAt >= MOVE.landHard * MOVE.landFree - DT * 2,
+   `broke out at ${killedAt.toFixed(2)} s, floor is ${(MOVE.landHard * MOVE.landFree).toFixed(2)}`);
+
+console.log('\n-- 13. THE CHARGED SWING THROWS HIM FORWARD AND UP --');
+reset(0, 0); cam.az = 0; p.slot = 2;            // hammer
+p.charge = 1; p.chargeT = M.MELEE.charge;       // fully wound
+M.chargeRelease();
+ok('the release leaves the ground', p.vel.y > 2 && !p.grounded, `vy ${p.vel.y.toFixed(2)} m/s`);
+const vh = Math.hypot(p.vel.x, p.vel.z);
+ok('and drives him forward hard', vh > 9, `${vh.toFixed(2)} m/s along his facing (was a flat 3.0)`);
+const z0 = p.pos.z;
+run(1.6);
+ok('it carries a real distance and lands', p.pos.z - z0 > 5 && p.grounded,
+   `${(p.pos.z - z0).toFixed(2)} m, back on the ground ${p.grounded}`);
+// a half charge must still move him, but less
+reset(0, 0); cam.az = 0; p.slot = 2;
+p.charge = 1; p.chargeT = M.MELEE.charge * .5;
+M.chargeRelease();
+const vhHalf = Math.hypot(p.vel.x, p.vel.z);
+ok('a half charge goes less far than a full one', vhHalf > 4 && vhHalf < vh,
+   `${vhHalf.toFixed(2)} m/s vs ${vh.toFixed(2)} at full`);
+
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);

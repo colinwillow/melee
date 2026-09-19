@@ -16,8 +16,10 @@ const html = fs.readFileSync('index.html', 'utf8');
 const src = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1];
 
 // every `.replace('<anchor>', ...)` inside the shader-patching function
-const fn = src.slice(src.indexOf('function blasterGlow'), src.indexOf('// WHERE THE SHOT COMES OUT'));
-if (!fn) { console.error('blasterGlow not found in index.html'); process.exit(1); }
+const i0 = src.indexOf('function hueGlow');
+const i1 = src.indexOf('function glowUniforms');
+if (i0 < 0 || i1 < i0) { console.error('hueGlow not found in index.html -- has the splice moved?'); process.exit(1); }
+const fn = src.slice(i0, i1);
 const anchors = [...fn.matchAll(/\.replace\(\s*'((?:[^'\\]|\\.)*)'/g)].map(m => m[1].replace(/\\n/g, '\n'));
 if (!anchors.length) { console.error('no .replace() anchors found -- has the splice moved?'); process.exit(1); }
 

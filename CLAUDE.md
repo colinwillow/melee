@@ -270,6 +270,42 @@ same picture from a phone.
 - **+X IS HIS LEFT.** Forward is `(sin h, cos h)` and his right is `(-fz, fx)`, so facing +Z his
   right is −X and a POSITIVE sine is a strafe to the LEFT. Written down because that argument
   comes out backwards about half the time, and the strafe clips are picked by its sign.
+- **A STATE WHOSE LENGTH DISAGREES WITH THE CLIP IT IS PLAYING CAN ONLY EVER CUT THAT CLIP OFF
+  (m8).** *"The roll landing is not playing all the way through."* Exactly right, and it was
+  arithmetic: `p.land` was `.62` while the clip was scaled to play over `p.land * 1.9` = 1.18 s,
+  so the hard landing's state ended with **more than half its clip still to run** and the gait
+  took over mid-roll. Worse, the cancel window was `land * .45`, a QUARTER of the clip: one
+  nudge of the stick and you never saw it at all. There is one number per landing now
+  (`MOVE.landSoft` / `landHard`) and the clip is compressed to exactly it, so the two cannot
+  drift apart again.
+  **And the weight is held FULL until `landFree`, then given way.** Ramping it down from the
+  first frame put the gait at 0.55 through the whole second half, which dilutes exactly the part
+  of a hard landing worth watching.
+- **HE LOOKED DARK, AND THE ANSWER IS NOT A BIGGER SUN (m8).** Winding the globals up far enough
+  to fix a dark character blows out a near-white floor, and he then reads DARKER against it, not
+  lighter. Three things instead, each doing a different job: his own base map fed back as
+  **emission** (`RIG.emissive`, white `emissive` + `emissiveMap = map`, so what comes back is his
+  own colours rather than a wash toward grey, and it lands after the lighting so it brightens
+  without making him shiny); a **cool fill from the opposite side** casting nothing, which is
+  what actually works on a shadow side; and only a small lift on the hemisphere and the sun,
+  with the floor brought down a little to meet him.
+- **WHICH HUE GLOWS IS MEASURED OFF THE TEXTURE, NOT PICKED BY EYE (m8).** *"Grab a colour ramp
+  of the blaster and make the blueish colour glow, and see if there's a hue or tone on the alien
+  to ramp the emission on as well."* So the texture is asked. It is a **saturation-weighted** hue
+  histogram and the weighting is the part that matters: a character map is mostly midtones and
+  skin, so counting every pixel equally reports the BACKGROUND rather than the accent. Weighted,
+  it finds the blue trim on a grey blaster, because the grey has no chroma and does not vote.
+  **The centroid is taken on the CIRCLE**, not on the bin index — hue wraps, and red is exactly
+  the family that sits across the seam at zero.
+  **ONE SHADER SERVES BOTH**, keyed on a hue band times saturation, so a grey or a white can
+  never light up however the band is set. `mel.hues()` says what it found and `mel.glow(a, g)` /
+  `mel.hue(a, g)` are the live A/B, because how much a colour should glow is a look-at-it
+  decision and those belong on the phone.
+  **AND THE CHIP CARRIES IT (`H<alien>/<gun>`)**, because there is no console on a phone and a
+  measurement nobody can read is a measurement nobody can act on.
+  **This cannot be checked offline**: the textures are WebP inside the GLB and there is no
+  decoder in this container, so what the histogram will pick is a device question. That is why
+  it reports itself.
 - **THE BLASTER IS A CHARGE SHOT: THE HOLD WINDS IT UP AND THE RELEASE FIRES IT.** An
   auto-repeating firing loop was the first version and it is a different weapon — nothing about
   it rewards the hold, so the hold stops meaning anything and the reticle has nothing to
