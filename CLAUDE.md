@@ -43,6 +43,15 @@ build through a shim that swaps `WebGLRenderer`/`WebGLRenderTarget`/`PMREMGenera
 The asset failures are the environment, not the code — node has no relative-URL base — so those
 are filtered and anything else that rejects is a real fault.
 
+**`npm run glsl` CHECKS THE SHADER SPLICE**, because the blaster's charge glow is a string
+spliced into three's own fragment shader and a string is the one thing neither gate can see:
+`check:syntax` parses the JavaScript *around* it and `check:boot` has no GPU and never compiles
+one. A `.replace()` whose anchor is not in the chunk **does not throw** — it returns the string
+unchanged, so the uniform is never declared and the effect silently does not exist. It reads the
+anchors out of `index.html` rather than restating them, and it also pins the ORDER: the glow
+reads the texel, so it must run after `<map_fragment>` has multiplied the map into
+`diffuseColor`, or it measures the flat base colour and lights the whole gun evenly.
+
 **`npm run check:sim` DRIVES THE SHIPPED LOCOMOTION HEADLESSLY**, and it is the one that pays.
 Everything that matters about movement is reachable without a GPU: the collider is boxes and
 `stepPlayer` is arithmetic. **It calls `melee.stepPlayer`; it never restates the rule** — a
@@ -58,7 +67,7 @@ harness here can build a rig. Clips, weights, the mounts and every pose belong o
 to `npm run clips` / `npm run rig`, which read the file directly. The melee actions in the sim
 are FABRICATED with the real durations read out of the GLB — a stated gap, not a silent one.
 
-**All three gates were verified by breaking the file on purpose**, which is the only thing that
+**All four gates were verified by breaking the file on purpose**, which is the only thing that
 proves a gate is a gate: a missing element exits 1 with
 `TypeError: Cannot read properties of null`, and a TDZ exits 1 with `Cannot access 'LATER'
 before initialization`. **Check the revert anchor actually matched before believing a test that
@@ -261,6 +270,46 @@ same picture from a phone.
 - **+X IS HIS LEFT.** Forward is `(sin h, cos h)` and his right is `(-fz, fx)`, so facing +Z his
   right is −X and a POSITIVE sine is a strafe to the LEFT. Written down because that argument
   comes out backwards about half the time, and the strafe clips are picked by its sign.
+- **THE BLASTER IS A CHARGE SHOT: THE HOLD WINDS IT UP AND THE RELEASE FIRES IT.** An
+  auto-repeating firing loop was the first version and it is a different weapon — nothing about
+  it rewards the hold, so the hold stops meaning anything and the reticle has nothing to
+  converge over. **The release is the shot, which is why the pad's `onRel` must NOT clear
+  `p.aim`**: `stepKit` fires on the edge where the trigger stops being held, so clearing the
+  state in the handler would eat every shot in the game. Everything that ends a hold — letting
+  go, rolling the thumb back down, sweeping off the arc, backgrounding the app — comes through
+  that one edge.
+  **And a fumble is not a shot** (`WEAP.minChg`): under a tenth of a charge the release fires
+  nothing, or every stray brush of the top of the pad is a bolt.
+- **THE RETICLE CONVERGES, AND IT IS ALL CSS.** Four layers of arc at four radii, each spinning
+  at its own rate, all approaching scale 1 as the charge fills — so "how loaded is the shot" is
+  a SHAPE rather than a bar, and it is legible without looking away from the target. The spin is
+  a keyframe animation, so it runs on the compositor and the frame loop writes nothing per frame
+  but a position and two custom properties.
+  **`transform-box: view-box` is load-bearing** — without it each group spins about its own
+  tight bounding box rather than the shared middle, and the layers wobble apart instead of
+  turning together. The spin and the convergence are on NESTED elements, or the two transforms
+  fight over one property.
+  **Locked is a different MARK, not a brighter one**: it goes warm and the brackets stop
+  breathing and snap in, so "the gun has something" is a glance rather than a comparison against
+  a memory of what it looked like a second ago.
+- **THE MARK AND THE SHOT ARE ONE BEARING, BY CONSTRUCTION.** `aimPoint` walks from the muzzle
+  along `cam.az`, the reticle is drawn where that lands, and `fireBolt` aims at the same point.
+  Two places agreeing is not the same as one place deciding — **a mark the gun does not keep is
+  worse than no mark at all**. And the walk **bisects**: a quantised probe only ever returns
+  values a step apart, and because he is moving the phase of the walk slides under him, so the
+  break lands a step earlier or later each frame and the mark jumps a metre along the shot.
+- **THE MUZZLE IS MEASURED; `weapon_tip` IS NOT IT.** On the blaster the mesh runs from +11.7 to
+  −38.2 along the mount's X while the tip marker sits at −14.3, about 28% along. The marker pair
+  defines the mount's POSITION and AXIS, which is all it is for. The muzzle is the far end of
+  the geometry along that axis, which needs no marker and survives a re-model.
+- **THE GUN'S BLUE PARTS ARE IN THE TEXTURE, NOT IN A MATERIAL.** The blaster is one mesh on one
+  material, so there is no "blue part" to pick out by name — but the map knows which texels are
+  blue, so the shader can. Blueness is **blue minus red**, not blue minus the brighter of the
+  other two: the accents are CYAN, so green is high there as well and a `max()` test scores them
+  near zero and lights up nothing. `b - r` is zero on every grey, white and warm texel and high
+  on anything blue or cyan. One uniform, driven by the charge.
+  **A material carrying a custom hook needs its own `customProgramCacheKey`** or three can hand
+  it a program compiled for something else.
 - **A STRIKE TAKES A FIXED BEAT AND THE CLIP IS COMPRESSED TO IT.** The authored melee clips run
   1.0 to 1.75 s, so a three-hit chain at 1× is over four seconds of watching, which reads as lag
   rather than as a combo. `MELEE.beat` is the beat and `playOnce` scales the clip to fit.
@@ -295,11 +344,14 @@ means anything you can carry from one situation to the next.
 
 | | left | right |
 |---|---|---|
-| hold | move | aim (blaster) / wind up (hammer) |
+| hold | move | **hold UP**: firing position, charge, release to fire (blaster) / wind up (hammer) |
 | tap | next weapon | jump |
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
 
+- **The trigger does NOT wait for `MOVE.tapT` the way an ordinary hold does.** A push to
+  `fireAt` (.78) is already far past the tap's own `far < .42`, so the jump and the trigger
+  cannot collide and the firing position can be entered as fast as the thumb moves.
 - **The trigger is a full pull, HELD, and all four gates earn their keep.** `fireAt` is how far
   up the pad it arms (a nudge cannot reach it); `keepAt` is how far back DOWN it stands down,
   and **the gap between them is hysteresis** — a thumb rolling inward as it lifts must not

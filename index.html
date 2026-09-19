@@ -170,6 +170,41 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 #padR.arm::after { opacity: .9; }
 #padR.ready::after { opacity: .28; }
+/* ---- the reticle ---- */
+#retic {
+  position: fixed; z-index: 3; width: 190px; height: 190px; left: 0; top: 0;
+  margin: -95px 0 0 -95px; pointer-events: none; opacity: 0;
+  transition: opacity .13s ease;
+  --c: 0;                       /* charge, 0..1 */
+  --col: #9fe9ff;
+}
+#retic.on { opacity: .95; }
+#retic.lock { --col: #ffc247; }
+#retic g { fill: none; stroke: var(--col); stroke-width: 3.4; stroke-linecap: round; }
+#retic .core { fill: var(--col); stroke: none; }
+/* TRANSFORM-BOX IS LOAD-BEARING. Without it each group spins about its own tight bounding box
+   rather than the shared middle, and the layers wobble apart instead of turning together. */
+#retic .lay, #retic .spin, #retic .brk { transform-box: view-box; transform-origin: 50% 50%; }
+/* THE CONVERGENCE. Each layer rests at its own radius and they all approach scale 1 as the
+   charge fills, so the pieces of the arc close onto one ring. Nested inside the spin so the
+   two transforms cannot fight over one property. */
+#retic .a { transform: scale(calc(1 + .82 * (1 - var(--c)))); opacity: calc(.35 + .65 * var(--c)); }
+#retic .b { transform: scale(calc(1 + .52 * (1 - var(--c)))); opacity: calc(.40 + .60 * var(--c)); }
+#retic .c { transform: scale(calc(1 + .26 * (1 - var(--c)))); opacity: calc(.45 + .55 * var(--c)); }
+#retic .d { transform: scale(calc(1 + .10 * (1 - var(--c)))); opacity: calc(.30 + .70 * var(--c)); }
+#retic .ring { stroke-width: 2; stroke-dasharray: 6 9; }
+#retic .core { transform: scale(calc(.4 + var(--c))); transform-box: view-box; transform-origin: 50% 50%; }
+/* the brackets BREATHE while it has nothing and SNAP IN when it locks -- a different mark,
+   not a brighter one, so "the gun has something" is a glance rather than a comparison */
+#retic .brk { animation: brth 1.5s ease-in-out infinite; stroke-width: 4; }
+#retic.lock .brk { animation: none; transform: scale(.78); }
+@keyframes brth { 0%,100% { transform: scale(1.12); } 50% { transform: scale(1.26); } }
+#retic .s1 { animation: spin 7s linear infinite; }
+#retic .s2 { animation: spin 5s linear infinite reverse; }
+#retic .s3 { animation: spin 3.4s linear infinite; }
+#retic .s4 { animation: spin 11s linear infinite reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
 .pad .hint {
   position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%);
   font-size: 10px; letter-spacing: .12em; opacity: .42; white-space: nowrap; text-transform: uppercase;
@@ -188,14 +223,41 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m6</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m7</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m6</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m7</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
 <div class="pad" id="padR"><div class="knob"></div><div class="hint">look &middot; tap = jump</div></div>
+
+<!-- THE RETICLE. Four layers of arc at four radii, each spinning at its own rate, all of them
+     CONVERGING onto one ring as the charge fills -- so "how loaded is the shot" is a shape
+     rather than a bar, and it is legible without ever looking away from what you are aiming at.
+     It is CSS all the way down: the spin is a keyframe animation, so it runs on the compositor
+     and the frame loop writes nothing per frame but a position and two custom properties. -->
+<svg id="retic" viewBox="-60 -60 120 120" aria-hidden="true">
+  <g class="lay a"><g class="spin s1">
+    <path d="M -46 0 A 46 46 0 0 1 -32.5 -32.5" /><path d="M 46 0 A 46 46 0 0 1 32.5 32.5" />
+  </g></g>
+  <g class="lay b"><g class="spin s2">
+    <path d="M 0 -38 A 38 38 0 0 1 26.9 -26.9" /><path d="M 0 38 A 38 38 0 0 1 -26.9 26.9" />
+    <path d="M -38 0 A 38 38 0 0 0 -26.9 26.9" /><path d="M 38 0 A 38 38 0 0 0 26.9 -26.9" />
+  </g></g>
+  <g class="lay c"><g class="spin s3">
+    <path d="M -30 -13 A 32.7 32.7 0 0 1 -13 -30" /><path d="M 30 13 A 32.7 32.7 0 0 1 13 30" />
+    <path d="M -30 13 A 32.7 32.7 0 0 0 -13 30" /><path d="M 30 -13 A 32.7 32.7 0 0 0 13 -30" />
+  </g></g>
+  <g class="lay d"><g class="spin s4">
+    <circle cx="0" cy="0" r="24" class="ring" />
+  </g></g>
+  <g class="core"><circle cx="0" cy="0" r="3.2" /></g>
+  <g class="brk">
+    <path d="M -17 -11 L -17 -17 L -11 -17" /><path d="M 17 -11 L 17 -17 L 11 -17" />
+    <path d="M -17 11 L -17 17 L -11 17" /><path d="M 17 11 L 17 17 L 11 17" />
+  </g>
+</svg>
 
 <canvas id="gl"></canvas>
 
@@ -204,7 +266,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 
-const BUILD = 'm6';
+const BUILD = 'm7';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27"};
 /* ASSETS:END */
@@ -234,7 +296,13 @@ const MOVE = {
   // and the feet never slide at the top of the range. `npm run gait` measures it: 2.362 m/s
   // authored, x1.926 for RIG.height = 4.55. Raising this past it is allowed and costs foot
   // slip in proportion -- GAIT.tsHi is the ceiling on how far the clip will be pushed.
-  max: 4.55,
+  // FASTER THAN THE FASTEST CLIP, ON PURPOSE (m7). It was pinned to `run_fwd_fast`'s own
+  // measured 4.55 m/s so nothing could ever slide -- honest, and too slow. At 7.2 the sprint
+  // clip is pushed to 1.58x, which is inside `GAIT.tsHi` and reads as running hard rather than
+  // as a scramble. **There is no sprint clip beyond this one, and that is the real fix**: the
+  // cap is deliberately short of keeping up rather than absurdly past it, and the CAMERA sells
+  // the rest (`CAM.rush` widens the lens with speed).
+  max: 7.2,
   acc: 22, accFall: .86, drag: 40,
   // THE GATHER: how much of his acceleration he HAS, climbing from `push0` to full over
   // `pushT` seconds of asking. This is what stops a standing start being a snap to speed,
@@ -249,9 +317,10 @@ const MOVE = {
   // AND `plant` IS THE THIRD IDEA, the one whose absence IS the moonwalk: at a walk the legs
   // push where the thumb says, at a run they push along `faceH`. Without it the velocity
   // keeps answering the stick while the body has already turned.
-  plantAt: 1.2, plantFull: 3.4,
+  plantAt: 1.5, plantFull: 4.5,   // moved with `max`, or the plant saturates mid-range
   turnBrake: .40,     // a hard turn costs speed, which is what plants the feet
-  jump: 8.4, g: 20, dead: .12, curve: 1.4, step: .5, coyote: .12,
+  // apex = jump^2 / 2g: 10.6 gives 2.81 m and 1.06 s of air, against 1.76 m before.
+  jump: 10.6, g: 20, dead: .12, curve: 1.4, step: .5, coyote: .12,
   hardLand: 8.0,      // impact speed (m/s) above which the landing is the HARD one
   tapT: .30,          // longer than this on a pad is a HOLD, and a hold is not a tap
 };
@@ -264,7 +333,12 @@ const MOVE = {
 const GAIT = {
   walkRef: .84, runRef: 3.09, sprintRef: 4.55,
   backRef: 2.23, strafeRef: 2.00, aimRunRef: 3.36,
-  walkAt: .35, runAt: 2.10, sprintAt: 3.90,   // where each clip starts taking over
+  // WHERE EACH CLIP TAKES OVER, SPREAD ACROSS THE WHOLE RANGE. The old bands put the sprint's
+  // handover at 3.90 against a top speed of 4.55, so `run_fwd_fast` only ever appeared in the
+  // top 14% of the stick and was effectively never seen. Each clip now DOMINATES around its own
+  // measured reference speed, which is what makes the blend read as one gait rather than three:
+  //   walk   ~0.8 m/s (ref 0.84)      run  ~3.5 m/s (ref 3.09)      sprint 5.0+ (ref 4.55)
+  walkAt: .30, runAt: 2.40, sprintAt: 5.00,
   tsLo: .55, tsHi: 1.9,                        // how far a clip may be pushed before it reads as a scramble
   // `run_fwd_fast`'s two feet disagree by 34% (L 2.77, R 1.96) -- a real asymmetry in the clip,
   // reported by the tool rather than hidden by it. If the sprint ever reads limpy, that is why.
@@ -298,7 +372,11 @@ const MELEE = {
   beat: [.62, .74, .95],
   window: 1.05,      // how long after a strike the next flick continues the chain
   hold: .55,         // fraction of a strike after which the stick can cancel the recovery
-  lunge: [2.4, 2.0, 2.6],   // m/s carried into each strike
+  // A STRIKE HAS TO TRAVEL. At 2.4 / 2.0 / 2.6 the three-hit chain covered about a metre in
+  // total, which reads as swinging on the spot. Distance is `v * beat * .725` (the `carry`
+  // profile's average), so these give 1.9 / 2.1 / 3.4 m -- a chain that crosses seven metres
+  // and a finisher that genuinely closes.
+  lunge: [4.2, 3.8, 5.0],
   carry: .45,        // full speed for this fraction of the strike, then linear to zero
   rollDur: .92, rollV: 6.2, rollFree: .45,
   charge: 1.0,       // seconds to a full hammer charge
@@ -321,7 +399,17 @@ const WEAP = {
   // lifts does not cancel the shot you meant -- `armT` how long it has to be up there, and
   // `arc` how far off straight up it may be and still be a trigger rather than a look.
   fireAt: .78, keepAt: .48, armT: .09, arc: 1.05,
-  cool: .34,         // seconds between shots
+  // IT IS A CHARGE SHOT, NOT A FIRING LOOP. Holding up puts him in the firing position and
+  // winds a ball up at the muzzle; the RELEASE is the shot. A repeating auto-fire was the
+  // first version and it is a different weapon: nothing about it rewards the hold, so the
+  // hold stops meaning anything and the reticle has nothing to converge over.
+  chargeT: 1.15,     // seconds to a full charge
+  minChg: .10,       // under this a release is a fumble rather than a shot
+  shootBeat: .34,    // the `shoot` clip compressed to this -- it is 0.583 s at 1x
+  range: 60,         // how far the aim is walked to find what he is pointing at
+  boltV: 44,         // m/s. Slow enough to SEE, which is the whole point of a charged ball
+  boltLife: 2.4, boltR: .17,
+  glow: 2.6,         // how hard the blue of the gun lifts at a full charge
 };
 
 // THE CLIP TABLE. Every name here is checked against the file at load and anything missing is
@@ -694,7 +782,197 @@ function mountWeapon(slot, g) {
   const cm = Math.max(size.x, size.y, size.z) * 100;
   console.log('[melee] ' + slot.key + ' mounted on ' + fileRoot.name + ' -- ' + cm.toFixed(0) + ' cm');
   if (cm < 5) note(slot.key.toUpperCase() + ' ' + cm.toFixed(0) + 'CM');
-  return { group, cm };
+
+  // THE BARREL AXIS COMES OFF THE RIG'S OWN TIP MARKER, which is what that marker is FOR --
+  // it says which way the mount points, and nothing about it is typed here.
+  let axis = new THREE.Vector3(-1, 0, 0);
+  for (const c of host.children) if (/tip/.test(c.name) && c.position.lengthSq() > 1e-9) axis = c.position.clone().normalize();
+  const muzzle = measureMuzzle(group, axis);
+  console.log('[melee] ' + slot.key + ' muzzle at ' + muzzle.toArray().map(v => v.toFixed(2)).join(', ') +
+              ' in mount space, along ' + axis.toArray().map(v => v.toFixed(2)).join(', '));
+
+  if (slot.aim) for (const o of group.children) if (o.material) blasterGlow(o.material);
+  return { group, cm, muzzle, host, axis };
+}
+
+// ============================================================================================
+// THE BLASTER: a charged ball, a reticle that converges, and a gun that lights up
+// ============================================================================================
+
+// One soft radial dot, built once. Every glowing thing in here is a stack of these at one
+// point -- core, body, haze -- which is what makes a ball read as a ball wrapped in light
+// rather than as a flat disc.
+const DOT = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)');
+  gr.addColorStop(.35, 'rgba(255,255,255,.55)');
+  gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+// NOT ADDITIVE ON ITS OWN ACCOUNT -- additive IS right for plasma, but it has to be
+// tone-mapped off or it saturates to white the moment two of them overlap.
+function glowSprite(colour, size) {
+  const m = new THREE.SpriteMaterial({ map: DOT, color: colour, transparent: true,
+    blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
+  const sp = new THREE.Sprite(m);
+  sp.scale.setScalar(size);
+  return sp;
+}
+function glowBall(size) {
+  const g = new THREE.Group();
+  g.add(glowSprite(0x7a3cff, size * 1.9));     // violet haze
+  g.add(glowSprite(0x2ec8ff, size * 1.15));    // cyan body
+  g.add(glowSprite(0xffffff, size * .52));     // white-hot core
+  g.userData.base = size;
+  return g;
+}
+function ballSize(g, k) {
+  const b = g.userData.base || 1;
+  g.children[0].scale.setScalar(b * 1.9 * k);
+  g.children[1].scale.setScalar(b * 1.15 * k);
+  g.children[2].scale.setScalar(b * .52 * k);
+}
+
+// THE GUN LIGHTS UP AS IT CHARGES, AND THE BLUE PARTS ARE IN THE TEXTURE, NOT IN A MATERIAL.
+// The blaster is one mesh on one material, so there is no "blue part" to pick out by name --
+// but the map knows which texels are blue, so the shader can. Blueness is how far the blue
+// channel is ahead of the other two, which is a real measure of "this bit is the glowing bit"
+// and leaves the grey body alone. One uniform, driven by the charge.
+const GLOWU = { value: 0 };
+function blasterGlow(mat) {
+  mat.onBeforeCompile = sh => {
+    sh.uniforms.uChg = GLOWU;
+    sh.fragmentShader = sh.fragmentShader
+      .replace('void main() {', 'uniform float uChg;\nvoid main() {')
+      // AFTER `map_fragment`, so `diffuseColor` is the TEXEL rather than the flat base colour.
+      .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+        {
+          // BLUE MINUS RED, not blue minus the brighter of the other two: the accents on this
+          // gun are CYAN, so green is high there as well and a max() test would score them
+          // near zero and light up nothing. b - r is zero on every grey, white and warm texel
+          // and high on anything blue OR cyan, which is exactly the set that should glow.
+          float b = clamp((diffuseColor.b - diffuseColor.r) * 2.8, 0.0, 1.0);
+          totalEmissiveRadiance += vec3(0.30, 0.72, 1.0) * b * uChg;
+        }`);
+  };
+  // three reuses a compiled program across materials whose cache key matches, so a material
+  // carrying a custom hook needs its own key or it can be handed somebody else's shader.
+  mat.customProgramCacheKey = () => 'blasterglow';
+  mat.needsUpdate = true;
+}
+
+// WHERE THE SHOT COMES OUT -- MEASURED, BECAUSE `weapon_tip` IS NOT THE MUZZLE. On the blaster
+// the mesh runs from +11.7 to -38.2 along the mount's X and the tip marker sits at -14.3, about
+// 28% along: the marker pair defines the mount's POSITION and AXIS, which is all it is for. The
+// muzzle is the far end of the geometry along that axis, which needs no marker and survives a
+// re-model.
+function measureMuzzle(group, axis) {
+  const bb = new THREE.Box3();
+  for (const o of group.children) {
+    o.geometry.computeBoundingBox();
+    bb.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrix));
+  }
+  const m = bb.getCenter(new THREE.Vector3());
+  const ax = Math.abs(axis.x), ay = Math.abs(axis.y), az = Math.abs(axis.z);
+  if (ax >= ay && ax >= az) m.x = axis.x > 0 ? bb.max.x : bb.min.x;
+  else if (ay >= az) m.y = axis.y > 0 ? bb.max.y : bb.min.y;
+  else m.z = axis.z > 0 ? bb.max.z : bb.min.z;
+  return m;
+}
+const _mz = new THREE.Vector3();
+function muzzleWorld() {
+  const w = WEAP.worn[slotNow().key];
+  if (w && w.muzzle && w.host) return _mz.copy(w.muzzle).applyMatrix4(w.host.matrixWorld);
+  return _mz.set(player.pos.x, player.pos.y + RIG.height * .62, player.pos.z);
+}
+
+// WHERE IS HE POINTING? The aim is walked from the muzzle along his facing until it meets
+// something, which is what the reticle is drawn at and what the bolt is aimed at -- ONE
+// bearing, so the mark is a promise the gun keeps by construction rather than by two places
+// agreeing. A mark the gun does not keep is worse than no mark at all.
+const _ap = new THREE.Vector3();
+function aimPoint() {
+  const m = muzzleWorld(), h = cam.az;
+  const dx = Math.sin(h), dz = Math.cos(h);
+  const step = 1.1, R = WEAP.range;
+  let d = 0, hit = 0;
+  for (; d < R; d += step) {
+    const e = Math.min(R, d + step);
+    if (camHit(m.x + dx * e, m.y, m.z + dz * e, 0)) { hit = 1; break; }
+  }
+  if (hit) {
+    // BISECT. A quantised probe is fine for a yes/no and wrong the moment something continuous
+    // is DRAWN from it: the mark would only ever take values a step apart, and because he is
+    // moving, the phase of the walk slides under him and the break lands a step earlier or
+    // later from frame to frame -- which is a reticle that jumps a metre along the shot.
+    let lo = d, hi = Math.min(R, d + step);
+    for (let k = 0; k < 6; k++) {
+      const mid = (lo + hi) * .5;
+      if (camHit(m.x + dx * mid, m.y, m.z + dz * mid, 0)) hi = mid; else lo = mid;
+    }
+    d = lo;
+  } else d = R;
+  _ap.set(m.x + dx * d, m.y, m.z + dz * d);
+  return { p: _ap, hit, dist: d };
+}
+
+// ---- the charge ball at the muzzle ----
+const chargeFx = glowBall(.22);
+chargeFx.visible = false;
+scene.add(chargeFx);
+
+// ---- the bolts ----
+const BOLTS = [];
+function fireBolt(chg) {
+  const m = muzzleWorld().clone();
+  const a = aimPoint();
+  const dir = new THREE.Vector3(a.p.x - m.x, a.p.y - m.y, a.p.z - m.z);
+  if (dir.lengthSq() < 1e-6) dir.set(Math.sin(cam.az), 0, Math.cos(cam.az));
+  dir.normalize();
+  const size = .16 + chg * .40;
+  const g = glowBall(size);
+  g.position.copy(m);
+  scene.add(g);
+  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size });
+}
+function stepBolts(dt) {
+  for (let i = BOLTS.length - 1; i >= 0; i--) {
+    const b = BOLTS[i];
+    b.t += dt;
+    // TWO HALF-STEPS A FRAME. At forty-four metres a second a whole frame is most of a metre,
+    // which is wide enough for a bolt to pass clean through a box.
+    let dead = b.t > WEAP.boltLife;
+    for (let k = 0; k < 2 && !dead; k++) {
+      b.pos.addScaledVector(b.vel, dt * .5);
+      if (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0) dead = true;
+    }
+    b.g.position.copy(b.pos);
+    // it flickers, which at sixty frames a second is what plasma looks like for the cost of
+    // writing a scale
+    ballSize(b.g, .9 + Math.random() * .22);
+    if (dead) {
+      b.g.traverse(o => { if (o.material) o.material.dispose(); });
+      scene.remove(b.g); BOLTS.splice(i, 1);
+    }
+  }
+}
+
+// ---- the reticle ----
+const reticEl = document.getElementById('retic');
+const _rv = new THREE.Vector3();
+function paintRetic() {
+  const p = player;
+  if (!p.aim || !reticEl) { if (reticEl) reticEl.classList.remove('on'); return; }
+  const a = aimPoint();
+  _rv.copy(a.p).project(camera);
+  if (_rv.z > 1) { reticEl.classList.remove('on'); return; }
+  const x = (_rv.x * .5 + .5) * innerWidth, y = (-_rv.y * .5 + .5) * innerHeight;
+  reticEl.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+  reticEl.style.setProperty('--c', p.chg.toFixed(3));
+  reticEl.classList.add('on');
+  reticEl.classList.toggle('lock', !!a.hit);
 }
 
 // ============================================================================================
@@ -751,7 +1029,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0,
-  aim: 0, aimT: 0, fire: 0, fireT: 0, cool: 0,
+  aim: 0, armT: 0, chg: 0, fireT: 0,
   slot: 0,
   r: .34, hh: 1.6,
 };
@@ -786,6 +1064,12 @@ function flickH(dx, dy) {
 // ---- the kit ----------------------------------------------------------------------------
 const wepName = document.getElementById('wepName'), wepHint = document.getElementById('wepHint');
 function slotNow() { return WEAP.slots[player.slot]; }
+// THE ARMED GAIT IS THE WHOLE TIME HE IS CARRYING IT, NOT ONLY WHILE HE IS AIMING. `p.aim` is
+// live from the moment the trigger arms, which is a fraction of a second either side of a shot
+// -- and a man walking around with a blaster does not put it away for the rest of the time.
+// This is what `idle_rifle` is FOR, and it is the difference between carrying a weapon and
+// occasionally producing one.
+function gunOut() { return !!slotNow().aim; }
 WEAP.worn = {};
 function paintKit() {
   const s = slotNow();
@@ -970,7 +1254,9 @@ PADS.R = bindStick(padR, stick.R,
   () => { player.jump = 1; },                         // tap: jump
   (dx, dy) => meleeGo(flickH(dx, dy)),                // flick: strike, in the flicked direction
   null,
-  () => { chargeRelease(); player.aim = 0; player.aimT = 0; player.fire = 0; });
+  // THE RELEASE IS THE SHOT, so this must NOT clear `p.aim` -- `stepKit` sees the pad is no
+  // longer held and fires on that edge. Clearing it here would eat every shot in the game.
+  () => { chargeRelease(); });
 
 // THE HOLD IS READ PER FRAME RATHER THAN ON AN EDGE, because what it means depends on what is
 // in his hand and that can change under a thumb that is already down.
@@ -979,26 +1265,52 @@ function stepKit(dt) {
   const held = PADS.R ? PADS.R.hold() : 0;
   const up = -R.y, mag = Math.hypot(R.x, R.y);
   const holding = R.down && held > MOVE.tapT;
-  // THE COOLDOWN TICKS ALWAYS, not only while the trigger is held. Counted down inside the
-  // fire branch it never reaches zero once you let go, so the first shot of every fresh aim
-  // stalls for a cooldown that has had seconds to expire.
-  if (p.cool > 0) p.cool = Math.max(0, p.cool - dt);
-  // ---- the blaster: hold to aim, push UP to fire ----
-  if (s.aim && holding) {
-    p.aim = 1; p.aimT += dt;
-    // `arc` is what lets this share a pad that is already full: a drag near the middle is
-    // still the camera, and only a deliberate push UP is the trigger.
-    // ABS. `atan2` is SIGNED, so an unsigned test passes for the whole left half of the pad
-    // at any angle -- which is exactly the sideways drag `arc` exists to refuse.
-    const aimedUp = mag > WEAP.fireAt && Math.abs(Math.atan2(R.x, up)) < WEAP.arc && up > 0;
-    const keeping = p.fire && mag > WEAP.keepAt && up > 0;
-    // the GAP between fireAt and keepAt is hysteresis: a thumb rolling inward as it lifts must
-    // not cancel the shot you meant, and without it a full pull only fires from full stretch.
-    if (aimedUp || keeping) {
-      p.fire = 1;
-      if (p.cool <= 0) { p.cool = WEAP.cool; p.fireT = 1; playOnce(CLIPS.shoot, clipLen(CLIPS.shoot) / .34); }
-    } else p.fire = 0;
-  } else { p.aim = 0; p.fire = 0; }
+
+  // ---- the blaster: PRESS AND HOLD UP to take the firing position and wind a shot up,
+  //      RELEASE to fire it. Four gates on the arming, and each rules out a different way of
+  //      firing by accident:
+  //        fireAt  how far up the pad it arms -- a nudge cannot reach it
+  //        keepAt  and how far back DOWN it stands down. The GAP is hysteresis: a thumb
+  //                rolling inward as it lifts must not cancel the shot you meant
+  //        armT    how long it has to be up there, so a stab at the top is not a shot
+  //        arc     how far off straight up it may be -- which is what lets this share a pad
+  //                that is already carrying the camera and the jump
+  //      It does NOT wait for `tapT` the way a hold does: a push to `fireAt` is already far
+  //      past the tap's own `far < .42`, so the jump and the trigger cannot collide.
+  if (s.aim) {
+    const upish = R.down && up > 0 && Math.abs(Math.atan2(R.x, up)) < WEAP.arc;
+    const arming = upish && mag > WEAP.fireAt;
+    const keeping = p.aim && upish && mag > WEAP.keepAt;
+    if (arming || keeping) {
+      p.armT += dt;
+      if (p.armT >= WEAP.armT) p.aim = 1;
+    } else {
+      // the edge. Everything that ends the hold -- letting go, rolling the thumb back down,
+      // sweeping off the arc, backgrounding the app -- comes through here as one release.
+      if (p.aim) {
+        if (p.chg >= WEAP.minChg) {
+          fireBolt(p.chg);
+          p.fireT = 1;
+          playOnce(CLIPS.shoot, clipLen(CLIPS.shoot) / WEAP.shootBeat);
+        }
+        p.chg = 0;
+      }
+      p.aim = 0; p.armT = 0;
+    }
+    p.chg = p.aim ? Math.min(1, p.chg + dt / WEAP.chargeT) : 0;
+  } else { p.aim = 0; p.armT = 0; p.chg = 0; }
+
+  // the ball winds up ON the muzzle, and the gun's blue lifts with it
+  const showBall = p.chg > .02;
+  chargeFx.visible = showBall;
+  if (showBall) {
+    chargeFx.position.copy(muzzleWorld());
+    // the flicker is the same trick the bolt uses: a value thrown somewhere new every frame IS
+    // what electricity looks like, for the cost of writing a scale
+    ballSize(chargeFx, (.35 + p.chg * 1.5) * (.92 + Math.random() * .16));
+  }
+  GLOWU.value = damp(GLOWU.value, p.chg * WEAP.glow, .06, dt);
+
   // ---- the hammer: hold to wind up, let go to swing ----
   if (s.charge && holding && p.grounded && !p.melee && !p.roll && !p.chargeGo) {
     // REWOUND ON THE RISING EDGE. `weapon_melee_charge` is a ONCE clip so it holds its last
@@ -1007,8 +1319,9 @@ function stepKit(dt) {
     if (!p.charge) playOnce(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
     p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
   } else if (!holding && p.charge) chargeRelease();
-  if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / .30);
-  padR.classList.toggle('arm', !!(p.fire || (p.charge && p.chargeT > MELEE.charge * .5)));
+
+  if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / .34);
+  padR.classList.toggle('arm', !!(p.aim || (p.charge && p.chargeT > MELEE.charge * .5)));
 }
 
 // ============================================================================================
@@ -1200,48 +1513,51 @@ function rigAnim(dt) {
     t[nm] = 1 - u * .55;                       // it gives way to the gait rather than cutting
   }
 
-  if (p.aim) {
-    // AIMED, THE LEGS ANSWER THE ANGLE AND NOT THE SPEED. He faces the shot and travels
-    // wherever the thumb says, so "how fast" no longer picks the clip -- "which way, relative
-    // to his nose" does. Forward is the rifle run, sideways is the strafe for that side,
-    // backwards is the backpedal, still is the rifle idle.
-    const moving = sp > .25;
-    if (!moving) t[CLIPS.aimIdle] = (t[CLIPS.aimIdle] || 0) + 1;
-    else {
-      const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
-      const c = Math.cos(rel), sn = Math.sin(rel);
-      const fwd = Math.abs(c), lat = Math.abs(sn);
-      const tot = fwd + lat || 1;
-      // +X IS HIS LEFT. Heading grows from +Z toward +X and his right is (-fz, fx), so a
-      // POSITIVE sine is a strafe to the LEFT. Written down because that argument comes out
-      // backwards half the time.
-      if (c >= 0) {
-        const nm = p.fire || p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun;
-        t[nm] = (t[nm] || 0) + fwd / tot;
-        setScale(nm, clamp(sp / GAIT.aimRunRef, GAIT.tsLo, GAIT.tsHi));
-      } else {
-        t[CLIPS.back] = (t[CLIPS.back] || 0) + fwd / tot;
-        setScale(CLIPS.back, clamp(sp / GAIT.backRef, GAIT.tsLo, GAIT.tsHi));
-      }
-      const side = sn >= 0 ? CLIPS.strafeL : CLIPS.strafeR;
-      t[side] = (t[side] || 0) + lat / tot;
-      setScale(side, clamp(sp / GAIT.strafeRef, GAIT.tsLo, GAIT.tsHi));
-    }
-    if (p.fireT > 0 && !moving) t[CLIPS.shoot] = (t[CLIPS.shoot] || 0) + Math.min(1, p.fireT * 1.6);
-    setWeights(t, dt); return;
-  }
-
-  // ---- the ordinary gait: four clips weighted by MEASURED speed, never a run flag ----
   const add = (nm, w, ref) => {
     if (w <= 0) return;
     t[nm] = (t[nm] || 0) + w;
     if (ref) setScale(nm, clamp(sp / ref, GAIT.tsLo, GAIT.tsHi));
   };
+  const rest = p.land ? 1 - (t[p.landHard ? CLIPS.landHard : CLIPS.landSoft] || 0) : 1;
+
+  if (gunOut()) {
+    if (p.aim) {
+      // IN THE FIRING POSITION THE LEGS ANSWER THE ANGLE AND NOT THE SPEED. He faces the shot
+      // and travels wherever the thumb says, so "how fast" no longer picks the clip -- "which
+      // way, relative to his nose" does. Forward is the rifle run, sideways is the strafe for
+      // that side, backwards is the backpedal, still is the rifle idle.
+      const moving = sp > .25;
+      if (!moving) add(CLIPS.aimIdle, rest, 0);
+      else {
+        const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
+        const c = Math.cos(rel), sn = Math.sin(rel);
+        const fwd = Math.abs(c), lat = Math.abs(sn), tot = fwd + lat || 1;
+        if (c >= 0) add(p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun, rest * fwd / tot, GAIT.aimRunRef);
+        else add(CLIPS.back, rest * fwd / tot, GAIT.backRef);
+        // +X IS HIS LEFT. Heading grows from +Z toward +X and his right is (-fz, fx), so a
+        // POSITIVE sine is a strafe to the LEFT. Written down because that argument comes out
+        // backwards half the time.
+        add(sn >= 0 ? CLIPS.strafeL : CLIPS.strafeR, rest * lat / tot, GAIT.strafeRef);
+      }
+    } else {
+      // CARRYING IT: the rifle idle standing, the rifle run moving. There is no rifle WALK in
+      // the set, so the run takes the whole moving range and `tsLo` holds it down at the
+      // bottom of it. A rifle walk is one clip away and one line here.
+      const wMove = smooth(0, GAIT.walkAt * 2.2, sp);
+      add(CLIPS.aimIdle, rest * (1 - wMove), 0);
+      add(p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun, rest * wMove, GAIT.aimRunRef);
+    }
+    // THE RECOIL IS COMPRESSED to `shootBeat` and it ticks OUTSIDE the armed gate, so stowing
+    // the gun mid-shot cannot weld the clip on at full weight.
+    if (p.fireT > 0 && sp <= .25) add(CLIPS.shoot, Math.min(1, p.fireT * 1.7), 0);
+    setWeights(t, dt); return;
+  }
+
+  // ---- the ordinary gait: four clips weighted by MEASURED speed, never a run flag ----
   const wIdle = 1 - smooth(0, GAIT.walkAt, sp);
   const wWalk = smooth(0, GAIT.walkAt, sp) * (1 - smooth(GAIT.walkAt, GAIT.runAt, sp));
   const wRun = smooth(GAIT.walkAt, GAIT.runAt, sp) * (1 - smooth(GAIT.runAt, GAIT.sprintAt, sp));
   const wSpr = smooth(GAIT.runAt, GAIT.sprintAt, sp);
-  const rest = p.land ? 1 - (t[p.landHard ? CLIPS.landHard : CLIPS.landSoft] || 0) : 1;
   add(CLIPS.idle, wIdle * rest, 0);
   add(CLIPS.walk, wWalk * rest, GAIT.walkRef);
   add(CLIPS.run, wRun * rest, GAIT.runRef);
@@ -1327,6 +1643,11 @@ function frame() {
     rig.root.rotation.y = player.faceH + rig.faceOff + RIG.spin;
   }
   stepCam(dt);
+  // AFTER the camera, because the reticle is PROJECTED through it -- drawn from last frame's
+  // matrix it would trail the shot by a frame every time the lens moved, which is exactly the
+  // thing a mark on a target must not do.
+  stepBolts(dt);
+  paintRetic();
   sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
   sun.target.position.copy(player.pos);
   sun.target.updateMatrixWorld();
@@ -1339,7 +1660,7 @@ function frame() {
     const p = player;
     const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) : p.chargeGo ? 'swing'
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
-      : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? (p.fire ? 'FIRE' : 'aim') : 'ground';
+      : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
@@ -1436,7 +1757,8 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  stepPlayer, rigAnim, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, groundAt, resolveBoxes, camFree,
+  stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, groundAt,
+  resolveBoxes, camFree, aimPoint, fireBolt, BOLTS, gunOut,
   kit: () => cycleKit(),
   clips: () => Object.keys(rig.clips).map(n => n + ' ' + rig.clips[n].duration.toFixed(3) + 's').join('\n'),
   where: () => `${player.pos.x.toFixed(1)}, ${player.pos.y.toFixed(2)}, ${player.pos.z.toFixed(1)}`,

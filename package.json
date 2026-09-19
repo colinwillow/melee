@@ -7,11 +7,12 @@
     "check:syntax": "node tools/syntax.mjs index.html",
     "check:boot": "node tools/boot.mjs",
     "check:sim": "node tools/sim.mjs",
-    "check": "npm run check:syntax && npm run check:boot && npm run check:sim",
+    "check": "npm run check:syntax && npm run check:boot && npm run check:sim && npm run glsl",
     "clips": "node tools/clips.mjs",
     "gait": "node tools/gait.mjs",
     "rig": "node tools/rig.mjs",
-    "sim": "node tools/sim.mjs"
+    "sim": "node tools/sim.mjs",
+    "glsl": "node tools/glsl.mjs"
   },
   "type": "module"
 }

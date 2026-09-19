@@ -98,6 +98,7 @@ function run(secs, fn) {
   }
 }
 
+const MELEE_BEAT = k => M.MELEE.beat[Math.min(k, M.MELEE.beat.length - 1)];
 const fin = v => Number.isFinite(v);
 let fails = 0;
 const ok = (name, cond, detail) => {
@@ -188,6 +189,80 @@ let off = Math.abs(travel - p.faceH);
 while (off > Math.PI) off = Math.abs(off - Math.PI * 2);
 ok('travel and facing agree at a run', off < .25,
    `${(off * 180 / Math.PI).toFixed(1)} deg apart at ${p.speed.toFixed(2)} m/s`);
+
+
+console.log('\n-- 9. THE GAIT USES ALL THREE CLIPS --');
+// "walk at slower speeds, the run at mid speeds and the run fast as highest." A blend that
+// never reaches its top clip is the bug this pins: the old bands put the sprint's handover at
+// 3.90 against a top speed of 4.55, so `run_fwd_fast` lived in the top 14% of the stick.
+function gaitAt(v) {
+  reset(0, 0); p.slot = 0; p.grounded = true;
+  for (let i = 0; i < 60; i++) { p.speed = v; p.vel.set(0, 0, v); M.rigAnim(DT); }
+  const w = M.rig.cw, C = M.CLIPS;
+  return { idle: w[C.idle] || 0, walk: w[C.walk] || 0, run: w[C.run] || 0, sprint: w[C.sprint] || 0 };
+}
+for (const [v, want] of [[0, 'idle'], [0.9, 'walk'], [3.5, 'run'], [7.0, 'sprint']]) {
+  const g = gaitAt(v);
+  const top = Object.keys(g).reduce((a, b) => (g[a] >= g[b] ? a : b));
+  ok(`at ${v.toFixed(1).padStart(4)} m/s the dominant clip is ${want.padEnd(6)}`, top === want,
+     `idle ${g.idle.toFixed(2)} walk ${g.walk.toFixed(2)} run ${g.run.toFixed(2)} sprint ${g.sprint.toFixed(2)}`);
+}
+
+console.log('\n-- 10. THE BLASTER IS A CHARGE SHOT, NOT A FIRING LOOP --');
+// hold up on the right pad, charge, release -> exactly ONE bolt.
+reset(0, 0); cam.az = 0;
+p.slot = 1;                                     // blaster
+ok('carrying it arms the gait', M.gunOut(), 'gunOut() is what puts him on the rifle idle');
+M.BOLTS.length = 0;
+const pushUp = () => { stick.R.down = 1; stick.R.x = 0; stick.R.y = -1; };   // -y is UP the pad
+const letGo  = () => { stick.R.down = 0; stick.R.x = 0; stick.R.y = 0; };
+let armedAt = -1;
+for (let i = 0; i < 48; i++) { pushUp(); M.stepKit(DT); if (armedAt < 0 && p.aim) armedAt = i * DT; }
+ok('holding up takes the firing position', p.aim === 1 && armedAt >= 0,
+   `armed after ${armedAt.toFixed(3)} s (WEAP.armT ${M.WEAP.armT})`);
+const chgHalf = p.chg;
+for (let i = 0; i < 48; i++) { pushUp(); M.stepKit(DT); }
+ok('the charge fills while it is held', p.chg > chgHalf && p.chg > .9,
+   `${chgHalf.toFixed(2)} -> ${p.chg.toFixed(2)} of a full charge`);
+ok('nothing has been fired yet -- it is not a loop', M.BOLTS.length === 0, `${M.BOLTS.length} bolts in the air`);
+const atRelease = p.chg;
+letGo(); M.stepKit(DT);
+ok('the RELEASE is the shot', M.BOLTS.length === 1, `${M.BOLTS.length} bolt, fired at charge ${atRelease.toFixed(2)}`);
+const fullBall = M.BOLTS.length ? M.BOLTS[0].size : 0;
+ok('and the charge is spent', p.chg === 0 && p.aim === 0, `chg ${p.chg.toFixed(2)}, aim ${p.aim}`);
+// A FUMBLE IS NOT A SHOT. Under `minChg` the release fires nothing -- otherwise every stray
+// brush of the top of the pad is a bolt, and the charge stops meaning anything.
+M.BOLTS.length = 0; p.chg = 0; p.aim = 0; p.armT = 0;
+for (let i = 0; i < 8; i++) { pushUp(); M.stepKit(DT); }
+const fumble = p.chg; letGo(); M.stepKit(DT);
+ok('a flick off the top of the pad fires nothing', M.BOLTS.length === 0,
+   `charge reached ${fumble.toFixed(3)}, under WEAP.minChg ${M.WEAP.minChg}`);
+// and a bigger charge has to be a bigger ball, or the hold buys nothing
+M.BOLTS.length = 0; p.chg = 0; p.aim = 0; p.armT = 0;
+for (let i = 0; i < 32; i++) { pushUp(); M.stepKit(DT); }
+const partial = p.chg; letGo(); M.stepKit(DT);
+ok('a part charge makes a smaller ball than a full one',
+   M.BOLTS.length === 1 && M.BOLTS[0].size < fullBall,
+   `charge ${partial.toFixed(2)} -> ${M.BOLTS[0].size.toFixed(3)} m ball, vs ${atRelease.toFixed(2)} -> ${fullBall.toFixed(3)} m`);
+M.BOLTS.length = 0;
+// and a sideways drag is still the CAMERA, not the trigger
+reset(0, 0); p.slot = 1;
+for (let i = 0; i < 60; i++) { stick.R.down = 1; stick.R.x = 1; stick.R.y = 0; M.stepKit(DT); }
+ok('a sideways drag never arms the trigger', p.aim === 0 && M.BOLTS.length === 0, 'WEAP.arc is what buys this');
+letGo(); M.stepKit(DT);
+ok('and letting go of a drag fires nothing', M.BOLTS.length === 0, `${M.BOLTS.length} bolts`);
+
+console.log('\n-- 11. THE MELEE CHAIN TRAVELS --');
+reset(0, 0); cam.az = 0; p.slot = 0;
+let total = 0;
+for (let k = 0; k < 3; k++) {
+  const z0 = p.pos.z;
+  M.meleeGo(0);
+  run(MELEE_BEAT(k) + .05);
+  total += p.pos.z - z0;
+}
+ok('three strikes carry him a real distance', total > 5,
+   `${total.toFixed(2)} m over the chain (was about 1 m)`);
 
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);

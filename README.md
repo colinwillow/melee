@@ -14,14 +14,15 @@ Two thumbs, and each pad means one thing in every state:
 
 | | **LEFT PAD — the body** | **RIGHT PAD — the verb** |
 |---|---|---|
-| **hold** | move | aim (blaster) / wind up (hammer) |
+| **hold** | move | hold **up**: charge a shot (blaster) / wind up (hammer) |
 | **tap** | next weapon | jump |
 | **flick** | dodge roll, in the flicked direction | strike, in the flicked direction |
 | **drag** | — | orbit the camera |
 
-With the blaster out, holding the right pad aims and **pushing it straight up** fires — a nudge
-cannot reach the trigger and a sideways drag is still the camera. With the hammer out, holding
-winds up and letting go swings.
+With the blaster out, **pushing the right pad straight up and holding** takes the firing
+position: a reticle appears and converges as the shot charges, the gun's blue parts light up,
+and **letting go fires the ball you charged**. A nudge cannot reach the trigger and a sideways
+drag is still the camera. With the hammer out, holding winds up and letting go swings.
 
 Keyboard, for debugging on a laptop only: WASD / arrows to move, J and L to orbit.
 
