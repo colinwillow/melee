@@ -3,6 +3,12 @@
 Mobile-first twin-stick action game. Single-file Three.js r180 in `index.html` (native ES
 modules, import map, **no build step**).
 
+**PUSH STRAIGHT TO `main`. ALWAYS.** Pages serves `main` and he previews live on a phone, so a
+change sitting on a branch cannot be tested, which means it is not done. Branch all you like
+while working; end on `main`. Do not open a pull request unless he asks for one — it is an extra
+click between the work and the phone it has to run on. *(Asked and answered, c m3: "we always
+push to main". Do not ask again.)*
+
 **Run `npm run bump` before every push** — it raises `BUILD` in all three places and rewrites
 `version.json`. Pages caches `index.html` for ten minutes and a home-screen shortcut caches it
 harder, so a build that does not announce itself cannot be told apart from the one before it —
