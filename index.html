@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m31</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m32</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m31</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m32</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm31';
+const BUILD = 'm32';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -709,12 +709,21 @@ const CHAIN = {
   // is a RATIO -- 1.0 is critical, over is creamy, under is springy -- and the drag falls out
   // of whatever stiffness the particle actually has. The tip is softer than the root, so its
   // damping is softer too, by construction and without a second number.
+  // **AND `damping` IS A RATIO AGAINST THE FREQUENCY THE SPRING REALLY HAS.** m30 derived it
+  // as `2*sqrt(stiff)`, which treats a per-second relaxation rate as though it were a spring
+  // constant in 1/s^2. It is not: in Verlet a positional pull of fraction `a` per substep is
+  // an acceleration of `a/h^2`, so the natural frequency is `sqrt(a)/h`. Measured at 90 Hz:
+  //     hair root  omega 20.9 rad/s (3.3 Hz)   applied c 5.14   ->  zeta 0.12
+  //     tail root  omega 18.8     (3.0 Hz)     applied c 5.20   ->  zeta 0.14
+  // **Twelve per cent of critical**, everywhere -- a spring that rings for eight cycles, which
+  // is *"everything is kind of wiggling around a lot"* told exactly. 1.0 here is now genuinely
+  // critical, over is creamy, under is springy.
   kinds: [
     //              gravity  stiff/s  tip/s  damping  cone
-    { test: /^Hair/i, g: -7.5, stiff: 5.0, tipStiff: 1.2, damping: 1.15, cone: .70 },
-    { test: /^Tail/i, g: -9.5, stiff: 4.0, tipStiff: 1.0, damping: 1.30, cone: .78 },
+    { test: /^Hair/i, g: -7.5, stiff: 5.0, tipStiff: 1.2, damping: 1.05, cone: .70 },
+    { test: /^Tail/i, g: -9.5, stiff: 4.0, tipStiff: 1.0, damping: 1.15, cone: .78 },
   ],
-  def: { g: -8, stiff: 4.5, tipStiff: 1.0, damping: 1.2, cone: .75 },
+  def: { g: -8, stiff: 4.5, tipStiff: 1.0, damping: 1.1, cone: .75 },
   // WHAT THE CHAINS BUMP INTO. Without these the hair goes through her shoulders, which is the
   // one thing that makes this read as broken rather than as hair. A fraction of her height, so
   // a re-export at any size still fits.
@@ -2850,7 +2859,15 @@ function chainStep(skin, dt) {
       for (let i = 1; i <= n; i++) {
         const u = (i - 1) / Math.max(1, n - 1);
         const k = lerp(kind.stiff, kind.tipStiff, u);
-        const damp = Math.exp(-2 * Math.sqrt(k) * kind.damping * h);
+        // **THE DAMPING IS AGAINST THE SPRING THIS ACTUALLY IS, AND `2*sqrt(k)` WAS NOT IT.**
+        // `k` is a per-second RELAXATION RATE for the pull below, not a spring constant in
+        // 1/s^2 -- and in Verlet a positional pull of fraction `a` IS an acceleration of
+        // `a/h^2`, so the natural frequency is `sqrt(a)/h` and not `sqrt(k)`. At 90 Hz that is
+        // 21 rad/s on a hair root rather than 2.2, so every particle was running at about
+        // TWELVE PER CENT of critical damping -- a spring that rings for eight cycles, which
+        // is the wiggle exactly. `c*h` then cancels the h: `2*sqrt(a)*ratio`.
+        const a = 1 - Math.exp(-k * h);
+        const damp = Math.exp(-2 * Math.sqrt(a) * kind.damping);
         const p = pts[i], q = prev[i];
         const vx = (p.x - q.x) * damp, vy = (p.y - q.y) * damp, vz = (p.z - q.z) * damp;
         q.copy(p);
@@ -2870,6 +2887,8 @@ function chainStep(skin, dt) {
         _cd.copy(C.axis[i]).applyQuaternion(_cq).normalize().multiplyScalar(rest[i]);
         _ch.add(_cd);
         const k = lerp(kind.stiff, kind.tipStiff, i / Math.max(1, n - 1));
+        // this fraction IS the `a` the drag above derives its frequency from -- same k, same
+        // particle, same expression -- so retuning a stiffness moves both halves together
         pts[i + 1].lerp(_ch, 1 - Math.exp(-k * h));
       }
       for (let it = 0; it < CHAIN.iters; it++) {
@@ -3204,15 +3223,22 @@ function buildBuildings(g) {
     c.copy(mid).applyAxisAngle(UPY, o.rotation.y);
     o.position.set(x - c.x, -bb.min.y * k, z - c.z);
     world.add(o);
-    // everything `mel.bld()` needs to re-size this WITHOUT re-reading the file, kept on the
-    // object so the picture and the boxes it pushed can never be re-sized apart
-    const b0 = { o, bx, x, z, q, unit: k / BLD.height, w: w / BLD.height, d: d / BLD.height,
-                 loY: bb.min.y, mid: mid.clone().divideScalar(BLD.height), cols: null };
+    // **`bx` IS DECLARED BEFORE ANYTHING READS IT, AND FOR TWO BUILDS IT WAS NOT (m32).**
+    // `const b0 = { o, bx, ... }` sat ABOVE `const bx = {...}`, which is a ReferenceError in
+    // its temporal dead zone -- thrown on the FIRST placement, after `world.add(o)` had already
+    // run. So the building was in the scene and not one box ever reached `BOXES`: *"I'm still
+    // just walking through this building."* This file's oldest landmine, and neither gate can
+    // see it -- `check:syntax` parses and `check:boot` never gets a GLB, because headless every
+    // `loadGLB` rejects and `buildBuildings` is never entered at all.
     // a quarter turn swaps the footprint; anything else would need an ORIENTED box, and the
     // AABB of a rotated one is forty per cent too big along both axes -- the phantom hit
     const ww = (q % 2) ? d : w, dd = (q % 2) ? w : d;
     const bx = { minx: x - ww / 2, maxx: x + ww / 2, miny: 0, maxy: BLD.height,
                  minz: z - dd / 2, maxz: z + dd / 2 };
+    // everything `mel.bld()` needs to re-size this WITHOUT re-reading the file, kept on the
+    // object so the picture and the boxes it pushed can never be re-sized apart
+    const b0 = { o, bx, x, z, q, unit: k / BLD.height, w: w / BLD.height, d: d / BLD.height,
+                 loY: bb.min.y, mid: mid.clone().divideScalar(BLD.height), cols: null };
     // THE REAL SHAPE, NOT ITS BOUNDING BOX -- and the world matrix has to be current, because
     // the rasteriser reads WORLD triangle positions and the clone was placed a line ago.
     let cols = 0;
@@ -3665,13 +3691,17 @@ async function init() {
   }
   // SOMETHING TO HIT. Not on the critical path: no dummy is a world with nothing in it, which
   // is still a game you can look at.
-  try { buildDummies(await loadGLB(DUMMY.file, 'loading a body to hit')); }
-  catch (e) { PROG.done++; note('NO DUMMY GLB'); }
-  // AND SOMETHING TO STAND NEXT TO. Same rule -- a missing building costs a building.
-  try { buildBuildings(await loadGLB(BLD.file, 'loading a building')); }
-  catch (e) { PROG.done++; note('NO BUILDING GLB'); }
-  try { buildShe(await loadGLB(SHE.file, 'loading the alien girl')); }
-  catch (e) { PROG.done++; note('NO SHE GLB'); }
+  // **"THE FILE IS MISSING" AND "THE BUILDER THREW" ARE DIFFERENT BUGS AND THEY WORE ONE LABEL
+  // (m32).** The chip said `NO BUILDING GLB` while the GLB had loaded perfectly and
+  // `buildBuildings` had thrown a ReferenceError halfway through -- so the message pointed at
+  // the network and the fault was in this file. `side()` splits them and PRINTS THE EXCEPTION,
+  // because a `catch` that swallows `e` throws away the only thing that would have said which.
+  const side = (fn, label, tag) => loadGLB(fn, label).then(
+    g => { try { tag.build(g); } catch (e) { console.error('[melee] ' + tag.name + ' build failed', e); note(tag.name + ' FAILED'); } },
+    e => { PROG.done++; console.warn('[melee] ' + tag.name + ' did not load', e); note('NO ' + tag.name + ' GLB'); });
+  await side(DUMMY.file, 'loading a body to hit', { name: 'DUMMY', build: buildDummies });
+  await side(BLD.file, 'loading a building', { name: 'BUILDING', build: buildBuildings });
+  await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
 
   paintKit();
 

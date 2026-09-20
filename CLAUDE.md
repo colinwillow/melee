@@ -654,6 +654,24 @@ same picture from a phone.
   simply longer than the event it stands for -- `electricity_beam_01.mp3` is a BEAM, seconds of
   it, and arming the trigger is an instant. `dur` caps it, with a linear ramp over the last
   fraction, because stopping a buffer mid-waveform is a step discontinuity.
+- **THE BUILDING HAD NO COLLIDER AT ALL, AND THE CHIP BLAMED THE NETWORK (m32).** *"I'm still
+  just like walking through this building."* The chip in his shot read **`NO BUILDING GLB`** with
+  the building plainly standing in the scene -- which is the whole diagnosis, because those two
+  cannot both be true of a load that failed. It was a **temporal dead zone** in the placement
+  loop: `const b0 = { o, bx, ... }` read `bx` two lines above its own `const`, so every
+  placement threw a ReferenceError **after `world.add(o)` had already run**. The mesh renders,
+  not one box ever reaches `BOXES`, and the throw unwound into `init()`'s catch, which reported
+  it as a missing file. Shipped since m24.
+  **AND THE CATCH SWALLOWED THE EXCEPTION**, which is why it cost several builds: `catch { note('NO
+  BUILDING GLB') }` cannot tell "the file is not there" from "the builder threw", and those want
+  completely different fixes. `side()` splits them -- a rejected fetch says `NO X GLB`, a throw
+  inside the builder says `X FAILED` **and `console.error`s the real error**. A diagnostic that
+  names the wrong half is worse than none: it sent me looking at `bump.mjs`'s hashes and at the
+  wire.
+  **NEITHER GATE CAN SEE THIS.** `check:syntax` only parses, and `check:boot` never enters
+  `buildBuildings` because headless every `loadGLB` rejects -- so the one class of fault the boot
+  gate exists for walked straight past it one function further in. That is the standing shape of
+  a TDZ here and it is the seventh time across these repos.
 - **A PICTURE AND THE THING YOU WALK INTO ARE ONE OBJECT (m24).** A building pushes its
   footprint into `BOXES` -- the same list the collider, the floor test and the camera boom all
   read -- so there is one description of the world rather than two to keep in step. `mel.bld(h)`
@@ -712,6 +730,22 @@ same picture from a phone.
   axis negates twice and the joint SNAPS the wrong way. That is the "glitchy" half, and it is
   the same q/-q trap this file already has a note about one measurement over. Canonicalise all
   four components first; then the angle is always in [0, pi] and the clamp is unsigned.
+  **AND IT WAS DERIVED AGAINST THE WRONG SPRING (m32).** *"Her hair is still wiggling, tail is
+  still wiggling."* `2*sqrt(stiff)` treats `stiff` as a spring constant in 1/s^2, and it is a
+  per-second RELAXATION RATE for a positional pull. **In Verlet a positional pull of fraction
+  `a` per substep IS an acceleration of `a/h^2`**, so the natural frequency is `sqrt(a)/h`, and
+  at 90 Hz that is 20.9 rad/s on a hair root rather than the 2.2 the formula assumed. Measured
+  across the file: **zeta 0.12 to 0.14 on every particle** -- twelve per cent of critical, a
+  spring that rings for eight cycles, which is the wiggle described precisely. m30 was the right
+  idea (creamy IS critical damping, and the ratio IS the honest knob) applied to a frequency the
+  solver does not have. `c*h` then cancels the h and the whole drag is `exp(-2*sqrt(a)*ratio)`.
+  **THE TWO HALVES SHARE ONE EXPRESSION**, because `a` is literally the lerp fraction the spring
+  applies on the same particle three lines later -- so retuning a stiffness moves the damping
+  with it rather than leaving it describing a different spring, which is what typing them
+  separately did once already.
+  **A DAMPING RATIO IS A NUMBER YOU CAN CHECK.** Both times this was wrong the code looked
+  reasonable and the only way to see it was to work out what zeta actually came to; 0.12 is not
+  a judgement call about how hair should feel, it is a spring that must ring.
   **CREAMY IS CRITICAL DAMPING, AND IT IS DERIVED FROM THE STIFFNESS (m30).** *"Everything is
   kind of wiggling around a lot now -- can we add damping? I had a good amount of it and it was
   making it nice and smooth and creamy."* What creamy IS, is critical damping: a spring of rate
