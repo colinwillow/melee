@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m28</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m29</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m28</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m29</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm28';
+const BUILD = 'm29';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"a8e1c744","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -693,11 +693,20 @@ const CHAIN = {
   hz: 90, maxSub: 3,
   iters: 3,          // constraint passes. 1 is rubbery, 3 is plenty, more is wasted.
   // PER KIND, matched on the chain root's name. Hair is light and whippy; a tail is heavy.
+  // **EVERY RATE HERE IS PER SECOND, AND THE FIRST VERSION APPLIED THEM PER SUBSTEP.** That is
+  // the whole of *"barely moving, some glitchy static behaviour"*: at `drag` .06 a substep and
+  // 90 substeps a second, the velocity retained 0.94^90 = **0.4% per second** -- dead inside a
+  // tenth of a second -- and `stiff` .16 a substep glued every particle to the pose in about
+  // 45 ms. Small motions were erased entirely and only a big impulse could show at all, which
+  // is exactly why *"when she got up on the cube it jiggled really nicely"* and nothing else
+  // did. Converted with `exp(-k*h)` per substep, which is this file's own rule about never
+  // scrubbing a value with a bare per-frame factor -- it just had never been applied here.
   kinds: [
-    { test: /^Hair/i, g: -7.0, drag: .06, stiff: .16, tipStiff: .035, cone: .72 },
-    { test: /^Tail/i, g: -9.0, drag: .09, stiff: .13, tipStiff: .030, cone: .80 },
+    //              gravity  drag/s  stiff/s  tip/s  cone
+    { test: /^Hair/i, g: -7.5, drag: 1.4, stiff: 5.0, tipStiff: 1.0, cone: .70 },
+    { test: /^Tail/i, g: -9.5, drag: 2.0, stiff: 4.0, tipStiff:  .8, cone: .78 },
   ],
-  def: { g: -8, drag: .08, stiff: .15, tipStiff: .03, cone: .75 },
+  def: { g: -8, drag: 1.6, stiff: 4.5, tipStiff: .9, cone: .75 },
   // WHAT THE CHAINS BUMP INTO. Without these the hair goes through her shoulders, which is the
   // one thing that makes this read as broken rather than as hair. A fraction of her height, so
   // a re-export at any size still fits.
@@ -722,6 +731,8 @@ const SHE = {
   path: [[-14, 30, 'run'], [16, 34, 'walk'], [24, 18, 'run'], [4, 12, 'walk'], [-18, 16, 'run']],
   turn: 2.6,         // rad/s
   at: 1.4,           // how near a waypoint counts as arrived
+  // 'auto' honours the export, 'front' culls backfaces, 'double' draws both. See `buildShe`.
+  side: 'auto',
 };
 
 const DUMMY = {
@@ -2824,7 +2835,9 @@ function chainStep(skin, dt) {
       // **PARTICLE 0 IS PINNED TO THE SKELETON**, which is the whole mechanism: it goes exactly
       // where her head goes, and everything behind it arrives late.
       bones[0].getWorldPosition(pts[0]); prev[0].copy(pts[0]);
-      const damp = 1 - kind.drag;
+      // per SECOND, converted to this substep -- see the note on `CHAIN.kinds`
+      const damp = Math.exp(-kind.drag * h);
+      const sK = 1 - Math.exp(-kind.stiff * h), tK = 1 - Math.exp(-kind.tipStiff * h);
       for (let i = 1; i <= n; i++) {
         const p = pts[i], q = prev[i];
         const vx = (p.x - q.x) * damp, vy = (p.y - q.y) * damp, vz = (p.z - q.z) * damp;
@@ -2844,8 +2857,7 @@ function chainStep(skin, dt) {
         _cq.multiply(C.home[i]);
         _cd.copy(C.axis[i]).applyQuaternion(_cq).normalize().multiplyScalar(rest[i]);
         _ch.add(_cd);
-        const k = lerp(kind.stiff, kind.tipStiff, i / Math.max(1, n - 1));
-        pts[i + 1].lerp(_ch, k);
+        pts[i + 1].lerp(_ch, lerp(sK, tK, i / Math.max(1, n - 1)));
       }
       for (let it = 0; it < CHAIN.iters; it++) {
         for (let i = 0; i < n; i++) {
@@ -2893,10 +2905,17 @@ function chainWrite(skin) {
       _cq.setFromUnitVectors(_cw, _cd);
       // **A CONE, so a chain cannot fold back through itself.** Verlet has no notion of a joint
       // limit and a segment that inverts reads as a broken bone rather than as hair.
-      const ang = 2 * Math.acos(Math.min(1, Math.abs(_cq.w)));
+      // **AND IT HAS TO BE CANONICALISED FIRST.** q and -q are the same rotation, so on the far
+      // side of w = 0 the stored axis is flipped too -- clamping to `-cone` about an already
+      // flipped axis negates twice and the joint SNAPS the wrong way. That is the "glitchy"
+      // half of his report, and it is the same q/-q trap this file already has a note about one
+      // measurement over. Flip all four components, then the angle is always in [0, pi].
+      if (_cq.w < 0) { _cq.x = -_cq.x; _cq.y = -_cq.y; _cq.z = -_cq.z; _cq.w = -_cq.w; }
+      const ang = 2 * Math.acos(Math.min(1, _cq.w));
       if (ang > kind.cone) {
-        _cv.set(_cq.x, _cq.y, _cq.z); if (_cv.lengthSq() < 1e-12) _cv.set(0, 1, 0);
-        _cq.setFromAxisAngle(_cv.normalize(), _cq.w < 0 ? -kind.cone : kind.cone);
+        _cv.set(_cq.x, _cq.y, _cq.z);
+        if (_cv.lengthSq() < 1e-12) _cv.set(0, 1, 0);
+        _cq.setFromAxisAngle(_cv.normalize(), kind.cone);
       }
       // q_local = inv(parentWorld) * delta * parentWorld * home.  The bone's world rotation at
       // HOME is `P * home`, `delta` turns its axis onto the solved direction in world space, so
@@ -2929,12 +2948,19 @@ function buildShe(g) {
     const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
     for (const m of mats) {
       if (!m.isMeshStandardMaterial) continue;
-      // **`BLEND` + `doubleSided` IS THE EXPORTER DEFAULT AND IT MAKES HER SEE-THROUGH.** Any
-      // texture carrying an alpha channel comes out this way, and a transparent double-sided
-      // skin sorts against ITSELF -- her far side draws over her near side. A CUTOUT does the
-      // same job for hair edges and writes depth like anything else.
+      // **`BLEND` IS THE EXPORTER DEFAULT WHENEVER THE TEXTURE CARRIES ALPHA, AND IT MAKES HER
+      // SEE-THROUGH**: a transparent skin sorts against ITSELF, so her far side draws over her
+      // near side. A CUTOUT does the same job for hair edges and writes depth like anything
+      // else, so that part stays.
       if (m.transparent) { m.transparent = false; m.alphaTest = .5; }
-      m.side = THREE.FrontSide;
+      // **BUT THE SIDEDNESS IS THE FILE'S TO DECIDE.** Forcing `FrontSide` on the building was
+      // right -- a closed shell has no use for its inside. Forcing it on a CHARACTER is not:
+      // hair cards, a skirt and anything with an open edge are authored to be seen from both
+      // sides, and on a mesh whose winding is inverted it shows you the inside, which is
+      // *"like I'm seeing the back of the normals"*. `SHE.side` is the dial, and 'auto' means
+      // whatever the export asked for.
+      if (SHE.side === 'front') m.side = THREE.FrontSide;
+      else if (SHE.side === 'double') m.side = THREE.DoubleSide;
       if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffffff); }
       m.emissiveIntensity = RIG.emissive;
     }
