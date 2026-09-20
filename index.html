@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m22</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m23</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m22</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m23</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm22';
+const BUILD = 'm23';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -1525,11 +1525,44 @@ function aimPoint() {
 // the unlocked case and disagreeing about the locked one, which is exactly what "by
 // construction" is supposed to rule out. **A mark the gun does not keep is worse than no assist
 // at all** -- and it is worse than it sounds, because the lock is what makes you stop aiming.
-function aimTarget() {
+function aimRaw() {
   const L = player.lock;
   if (!L) return aimPoint();
   return { p: _ap.set(L.root.position.x, L.root.position.y + DUMMY.h * LOCK.chest, L.root.position.z),
            hit: 1, lock: 1, dist: Math.hypot(L.root.position.x - player.pos.x, L.root.position.z - player.pos.z) };
+}
+
+// **AND THE ANSWER IS EASED, BECAUSE THE RAW ONE IS GENUINELY DISCONTINUOUS.** *"I'm charging
+// the shot, I'm scanning left to right, and then it clocks a cube that's closer and it jumps to
+// lower down the screen."* Nothing is wrong with that reading -- one frame the walk runs sixty
+// metres to open ground and the next it stops at a box eight metres away, and those are two
+// different places in the world. **A jump in the world can only be answered by a filter**, and
+// the same applies to the assist: acquiring a lock moves the point from wherever the walk
+// landed onto a man's chest, which is a metres-wide step however narrow the cone is.
+// THE HEIGHT GETS ITS OWN, SLOWER HALF-LIFE. The mark's job is to say where the shot lands in
+// PLAN; its height is a detail, and it is the only axis a camera pitched down turns into
+// visible bobbing -- which is exactly the word he used.
+// AND IT IS SEEDED, NOT EASED, ON THE FIRST FRAME: without that it slides in from wherever the
+// gun was last pointed, which reads as the reticle chasing rather than appearing.
+const AIM = { half: .075, halfY: .16 };
+const _aimP = new THREE.Vector3();
+let aimHas = 0, aimHit = 0, aimLock = 0;
+function stepAim(dt) {
+  const p = player;
+  if (!(p.aim || p.fireT > 0)) { aimHas = 0; return; }
+  const r = aimRaw();
+  aimHit = r.hit; aimLock = r.lock || 0;
+  if (!aimHas) { _aimP.copy(r.p); aimHas = 1; return; }
+  _aimP.x = damp(_aimP.x, r.p.x, AIM.half, dt);
+  _aimP.z = damp(_aimP.z, r.p.z, AIM.half, dt);
+  _aimP.y = damp(_aimP.y, r.p.y, AIM.halfY, dt);
+}
+// ONE ANSWER, STILL. The mark is drawn here and the bolt leaves here, so easing it moves both
+// together and the promise the mark makes is the one the gun keeps -- which is the whole of
+// m20 and must survive anything done to this number.
+function aimTarget() {
+  if (!aimHas) return aimRaw();
+  return { p: _aimP, hit: aimHit, lock: aimLock };
 }
 
 // ---- the charge ball at the muzzle ----
@@ -2755,6 +2788,7 @@ function frame() {
   last = now;
 
   if (rig.ready) {
+    stepAim(dt);          // one eased answer, before anything reads it
     stepKit(dt);
     stepPlayer(dt);
     stepDummies(dt);
@@ -2922,7 +2956,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   // the only way not to make it is for `npm run sim` to call exactly these.
   DUMMY, DUMMIES, LOCK, STRIKE, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
-  resolveBoxes, camFree, aimPoint, aimTarget, fireBolt, BOLTS, gunOut,
+  resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
   kit: () => cycleKit(),
   clips: () => Object.keys(rig.clips).map(n => n + ' ' + rig.clips[n].duration.toFixed(3) + 's').join('\n'),
   where: () => `${player.pos.x.toFixed(1)}, ${player.pos.y.toFixed(2)}, ${player.pos.z.toFixed(1)}`,

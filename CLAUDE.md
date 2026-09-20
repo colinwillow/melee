@@ -396,6 +396,21 @@ same picture from a phone.
   `aimTarget()` is the one answer now and both call it. **A mark the gun does not keep is worse
   than no assist at all** -- and worse than it sounds, because the lock is what makes you stop
   aiming.
+- **A JUMP IN THE WORLD CAN ONLY BE ANSWERED BY A FILTER (m23).** *"I'm charging the shot, I'm
+  scanning left to right, and then it clocks a cube that's closer and it jumps to lower down the
+  screen. I don't like the jumpy behaviour -- it needs to ease that transition, and the aim
+  assist needs to ease to its assisted position too."* Both halves are the same thing and
+  neither is a bug in the probe: one frame the walk runs sixty metres to open ground and the
+  next it stops at a box eight metres away, and those genuinely ARE two different places. No
+  finer bisection removes a discontinuity that is real. Acquiring a lock is the same step, from
+  wherever the walk landed onto a man's chest, and it is metres wide however narrow the cone is.
+  **THE HEIGHT GETS ITS OWN, SLOWER HALF-LIFE** (`AIM.halfY` .16 against `.075`). The mark's job
+  is to say where the shot lands in PLAN; its height is a detail, and it is the only axis a
+  camera pitched down turns into visible bobbing -- which is the word he used.
+  **SEEDED, NOT EASED, ON THE FIRST FRAME**, or it slides in from wherever the gun was last
+  pointed, which reads as the reticle chasing rather than appearing.
+  **And it is still ONE answer** -- `aimTarget` eases and both the mark and the bolt read it, so
+  m20's invariant survives rather than being re-broken by the fix for the jitter.
 - **AN ASSIST'S CONE IS SIZED FOR WHAT IT DELIVERS, NOT FOR WHAT IT DRAWS (m20).** `LOCK.cone`
   was 1.05 rad -- **sixty degrees either side** to acquire, and with `LOCK.keep` **eighty-seven**
   to hold. That is survivable for a mark that only draws and absurd for one the round follows:
