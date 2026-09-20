@@ -264,10 +264,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m17</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m18</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m17</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m18</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -305,7 +305,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm17';
+const BUILD = 'm18';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -2304,7 +2304,9 @@ const TWIST = {
   // a few degrees in normal play, so this is a ceiling that can only ever stop something going
   // wrong rather than a number the loop lives at.
   max: .70,
-  ease: 11,      // how fast the residual is folded back
+  // A HALF-LIFE, not a gain: the target is exact and closed-form, so all this decides is how
+  // quickly he gets there. Short, because the answer is already right.
+  half: .07,
 };
 const TWISTQ = new THREE.Quaternion(), TWISTP = new THREE.Quaternion(), TWISTI = new THREE.Quaternion();
 const TWISTUP = new THREE.Vector3(0, 1, 0);
@@ -2325,21 +2327,35 @@ function barrelH() {
   if (dx * dx + dz * dz < 1e-8) return null;
   return Math.atan2(dx, dz);
 }
+// THE LOOP WAS OPEN, WHICH IS WHY IT PARKED AT THE CLAMP.
+// `aimUntwist` restores the locals and the mixer then overwrites them, so by the time
+// `barrelH()` is called the pose on the bones is the UNTWISTED one -- every frame. An
+// integrator fed "the error before my correction" never sees its own correction, so it winds up
+// until it hits `max` and stays there for ever. That is not a loop, it is a ramp.
+//
+// AND IT DOES NOT NEED TO BE A LOOP AT ALL. The correction is a yaw about world UP, and a yaw
+// about world up adds EXACTLY to a horizontal bearing -- rotating any direction by R_y(t) turns
+// atan2(d.x, d.z) into atan2(...) + t, for any d. So the twist that puts the barrel on the mark
+// is simply `want - barrel_untwisted`, in closed form, measured fresh every frame. No
+// integrator, no wind-up, and nothing to converge.
 function aimTwist(dt) {
   const p = player;
   if (!committed() || !gunOut() && !p.charge) { p.twist = damp(p.twist || 0, 0, .12, dt); }
   // AND IT FREEZES WHILE THE SHOT IS IN THE AIR. The bolt has already left on the bearing it
   // left on; re-aiming the barrel underneath the recoil makes the gun swing during the one beat
-  // that is meant to be held, which is the other half of "it goes a little crooked".
+  // that is meant to be held.
   else if (p.fireT > 0) { /* hold whatever it was at the moment of the shot */ }
   else {
     const want = p.lock ? lockH(p.lock) : cam.az;
     const bh = barrelH();
     // with nothing to read the barrel off -- an unarmed melee, a weapon that never loaded --
-    // fall back to his own facing, which is at least a direction
-    const now = bh != null ? bh : p.faceH + (p.twist || 0);
-    const err = wrapAngle(want - now);
-    p.twist = clamp((p.twist || 0) + err * Math.min(1, TWIST.ease * dt), -TWIST.max, TWIST.max);
+    // there is nothing to correct and the clip is left exactly as authored
+    if (bh == null) p.twist = damp(p.twist || 0, 0, .12, dt);
+    else {
+      const tgt = clamp(wrapAngle(want - bh), -TWIST.max, TWIST.max);
+      p.twist = damp(p.twist || 0, tgt, TWIST.half, dt);
+      p.twistRaw = tgt;
+    }
   }
   if (Math.abs(p.twist || 0) < .004) return;
   const per = p.twist / TWIST.bones.length;
@@ -2589,11 +2605,12 @@ function frame() {
     rigAnim(dt);
     aimUntwist();            // take last frame's edit off BEFORE the clips are written
     rig.mixer.update(dt);
-    aimTwist(dt);            // and put this frame's on top of the pose
-
-    // DRAWN AT `faceH`, not at `heading`.
+    // DRAWN AT `faceH`, not at `heading`. AND THIS HAS TO COME BEFORE THE TWIST: `barrelH`
+    // reads WORLD positions and the root's yaw is part of them, so measuring first makes every
+    // reading a frame stale in his own facing.
     rig.root.position.copy(player.pos);
     rig.root.rotation.y = player.faceH + rig.faceOff + RIG.spin;
+    aimTwist(dt);            // and put this frame's correction on top of the pose
   }
   stepCam(dt);
   // AFTER the camera, because the reticle is PROJECTED through it -- drawn from last frame's
@@ -2614,7 +2631,8 @@ function frame() {
     const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) : p.chargeGo ? 'swing'
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
       : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
-    const lk = p.lock ? ' · LOCK' : '';
+    const lk = (p.lock ? ' · LOCK' : '') +
+      (committed() ? ' · T' + ((p.twist || 0) * 180 / Math.PI).toFixed(0) : '');
     const hue = RIG.showHue
       ? ' · H' + (ALIENU.hue.value * 360).toFixed(0) + '/' + (GUNU.hue.value * 360).toFixed(0) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
