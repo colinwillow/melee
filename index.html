@@ -264,10 +264,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m16</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m17</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m16</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m17</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -305,7 +305,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm16';
+const BUILD = 'm17';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -2299,9 +2299,11 @@ function rigAnim(dt) {
 // ============================================================================================
 const TWIST = {
   bones: ['mixamorig_Spine1', 'mixamorig_Spine2'],
-  // A REAL WAIST TURN. It was 1.75 rad only because it was absorbing a ninety-degree pose bias;
-  // now the pose points forward, this is what a man can actually twist and no more.
-  max: .95,
+  // A REAL WAIST TURN, AND TAPERED. It was 1.75 rad while it was absorbing a ninety-degree pose
+  // bias, then .95; with the pose pointing forward and the conjugation fixed, the correction is
+  // a few degrees in normal play, so this is a ceiling that can only ever stop something going
+  // wrong rather than a number the loop lives at.
+  max: .70,
   ease: 11,      // how fast the residual is folded back
 };
 const TWISTQ = new THREE.Quaternion(), TWISTP = new THREE.Quaternion(), TWISTI = new THREE.Quaternion();
@@ -2347,8 +2349,15 @@ function aimTwist(dt) {
     twistSave.push({ b, q: b.quaternion.clone() });
     // THE PARENT CHAIN IS RE-READ PER BONE, because twisting one moves the next one's frame;
     // applying both against one stale parent is a shear rather than a turn.
-    b.parent.updateWorldMatrix(true, false);
-    TWISTP.setFromRotationMatrix(b.parent.matrixWorld);
+    // **AND IT IS `getWorldQuaternion`, NOT `setFromRotationMatrix(matrixWorld)`.** That was the
+    // whole bug, and three says so in its own source: `setFromRotationMatrix` "assumes the upper
+    // 3x3 of m is a pure rotation matrix (i.e, unscaled)". These bones live under an `Armature`
+    // scaled 0.01 with the model scaled 1.926 on top, so the matrix carries a uniform scale of
+    // about 0.0193 -- and fed that, the trace formula returns a non-unit, WRONG quaternion. The
+    // conjugation `P^-1 Q P` then stops being a yaw at all and becomes a skew, which is exactly
+    // what the screenshots showed: hunched over, gun swung off to the side, in a clip that was
+    // ANIMATED STRAIGHT. `getWorldQuaternion` decomposes, so the scale cannot poison it.
+    b.parent.getWorldQuaternion(TWISTP);
     TWISTI.copy(TWISTP).invert();
     b.quaternion.premultiply(TWISTP).premultiply(TWISTQ).premultiply(TWISTI);
     b.updateMatrixWorld(true);

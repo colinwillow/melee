@@ -265,6 +265,20 @@ same picture from a phone.
   the last clear one means the answer only ever takes values `probe` apart, so the boom jumps
   half a metre at a time as the shot sways past a wall. A quantised probe is fine for a yes/no
   and wrong the moment something continuous is drawn from it.
+- **`setFromRotationMatrix` ASSUMES AN UNSCALED MATRIX, AND EVERY BONE HERE IS SCALED (m17).**
+  *"He's not pointing straight and I'm pretty sure I made that animation straight."* He did. The
+  clip was fine and the pipeline was bending him: `aimTwist` extracted the parent's world
+  rotation with `TWISTP.setFromRotationMatrix(b.parent.matrixWorld)`, and three's own source
+  says that method "assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)".
+  These bones live under an `Armature` scaled **0.01** with the model scaled 1.926 on top, so
+  that matrix carries a uniform scale of about 0.0193 — and the trace formula fed a scaled
+  matrix returns a non-unit, wrong quaternion. The conjugation `P⁻¹ Q P` then stops being a yaw
+  and becomes a SKEW: hunched over, gun swung off to the side, in a clip animated straight.
+  **`getWorldQuaternion` decomposes and is the only safe way to read a bone's world rotation in
+  this file.** Anything that reads a rotation off a `matrixWorld` here has the same bug waiting.
+  **And the symptom pointed AWAY from the cause**, which is why it is worth writing down: a
+  crooked gun reads as a clip problem or an aim-maths problem, and the hunched SPINE in the same
+  screenshot is the tell — no aiming bug bends a man forward.
 - **+X IS HIS LEFT.** Forward is `(sin h, cos h)` and his right is `(-fz, fx)`, so facing +Z his
   right is −X and a POSITIVE sine is a strafe to the LEFT. Written down because that argument
   comes out backwards about half the time, and the strafe clips are picked by its sign.
