@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m27</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m28</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m27</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m28</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,9 +306,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm27';
+const BUILD = 'm28';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"a8e1c744","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -656,6 +656,72 @@ const BLD = {
   tol: .45,           // how much two neighbouring columns may disagree and still merge
   full: .92,          // a mesh whose columns nearly all span its whole height IS its bounding
                       // box -- that is what a plain block is -- and collapses back to one
+};
+
+// ============================================================================================
+// SECONDARY MOTION -- a tail and six tentacles, simulated
+//
+// **135 DYNAMIC JOINTS AND IT COSTS NOTHING.** A Verlet particle is about twenty flops; at
+// `iters` constraint passes that is a few thousand a frame against a mixer that already
+// interpolates 193 bones and skins 11,000 vertices. The dynamics are a rounding error on the
+// thing that was already happening.
+//
+// **THE CHAINS ARE FOUND, NOT NAMED.** A chain is an unbranched run of bones that no clip
+// meaningfully moves -- measured across every clip in the file. On her that separates cleanly:
+// the body reads 8.5 to 86 degrees and every hair and tail bone reads **0.03**, because the
+// export keys them at their rest value and nothing else. `minBones` 6 is what excludes the one
+// false positive, a three-bone thumb that happens to be inert in these three clips.
+//     Hair     x6 off mixamorig_Head   16 / 23 / 19 / 16 / 23 / 19 bones
+//     Tail     x1 off mixamorig_Hips   19 bones
+// A name test would have worked here and would break on the next export that spells it
+// differently; "no clip moves it" is a property of what the thing IS.
+//
+// **AND THEIR TRACKS ARE STRIPPED.** They are keyed at rest, so the mixer would write the rest
+// pose onto every one of them every frame and fight the sim for the same bones -- two writers,
+// which this file has paid for twice. Stripping also takes ~70% of her channels out of the
+// mixer, since 405 of her 579 are hair and tail holding still.
+//
+// **THE REACTION TO HER MOTION IS FREE.** The first particle is PINNED to where the skeleton
+// puts it; everything downstream lags behind it because that is what a spring does. There is no
+// "react to movement" term anywhere in here -- the lag IS the effect.
+const CHAIN = {
+  on: 1,
+  minBones: 6,       // under this it is a finger, not a tentacle
+  inert: .018,       // radians (~1 deg) of clip movement, under which a bone is not animated
+  // A FIXED SUBSTEP. Verlet with a variable dt is unstable, and without this a 120 Hz phone
+  // gets different hair from a 30 Hz one -- the same argument as `exp(-k*dt)` one system over.
+  hz: 90, maxSub: 3,
+  iters: 3,          // constraint passes. 1 is rubbery, 3 is plenty, more is wasted.
+  // PER KIND, matched on the chain root's name. Hair is light and whippy; a tail is heavy.
+  kinds: [
+    { test: /^Hair/i, g: -7.0, drag: .06, stiff: .16, tipStiff: .035, cone: .72 },
+    { test: /^Tail/i, g: -9.0, drag: .09, stiff: .13, tipStiff: .030, cone: .80 },
+  ],
+  def: { g: -8, drag: .08, stiff: .15, tipStiff: .03, cone: .75 },
+  // WHAT THE CHAINS BUMP INTO. Without these the hair goes through her shoulders, which is the
+  // one thing that makes this read as broken rather than as hair. A fraction of her height, so
+  // a re-export at any size still fits.
+  hulls: [
+    { bone: /Head$/,   r: .115, up: .04 },
+    { bone: /Spine2$/, r: .130, up: .02 },
+    { bone: /Hips$/,   r: .115, up: .00 },
+  ],
+};
+
+// **THE FEMALE ALIEN.** A test body to watch the dynamics on -- she walks a circuit and runs
+// the long sides, because a straight line shows nothing: it is the TURNS that swing the hair.
+const SHE = {
+  file: 'models/characters/alien_female_purple.glb',
+  h: 1.70,
+  // MEASURED off the planted foot, the same method `npm run gait` uses: at her x1.751 the walk
+  // slides 0.898 m/s and the run 2.478. Driven at those she never slides a foot.
+  walkRef: .90, runRef: 2.48,
+  clips: { idle: 'idle_01', walk: 'walk_fwd', run: 'run_fwd' },
+  drop: /^CINEMA_4D/,          // one frame, 0 bones moving -- exporter residue
+  // the circuit, walked or RUN. Big enough that the turns are real turns.
+  path: [[-14, 30, 'run'], [16, 34, 'walk'], [24, 18, 'run'], [4, 12, 'walk'], [-18, 16, 'run']],
+  turn: 2.6,         // rad/s
+  at: 1.4,           // how near a waypoint counts as arrived
 };
 
 const DUMMY = {
@@ -2655,6 +2721,298 @@ function aimComp(dt) {
 }
 
 // ============================================================================================
+// THE CHAIN SOLVER
+// ============================================================================================
+// FIND THEM. An unbranched run of bones that no clip meaningfully moves. Returns chain roots
+// with their bone lists; the CALLER decides what to do with the tracks.
+function findChains(root, clips) {
+  const move = {};                       // worst rotation any clip puts on each bone, radians
+  for (const c of clips) for (const t of c.tracks) {
+    if (!/\.quaternion$/.test(t.name)) continue;
+    const nm = t.name.slice(0, t.name.lastIndexOf('.')), v = t.values, n = v.length / 4;
+    let w = 0;
+    for (let i = 1; i < n; i++) {
+      let d = 0; for (let k = 0; k < 4; k++) d += v[k] * v[i * 4 + k];
+      // **2*acos(|dot|), NOT A COMPONENT DELTA.** q and -q are the same rotation, so a
+      // component swinging -1 to +1 reads as a delta of 2 and is a sign flip.
+      w = Math.max(w, 2 * Math.acos(Math.min(1, Math.abs(d))));
+    }
+    move[nm] = Math.max(move[nm] || 0, w);
+  }
+  const inert = b => (move[b.name] || 0) < CHAIN.inert;
+  const out = [];
+  root.traverse(b => {
+    if (!b.isBone || !inert(b)) return;
+    // a chain ROOT is an inert bone whose parent is not an inert single-child bone
+    const p = b.parent;
+    if (p && p.isBone && inert(p) && p.children.filter(c => c.isBone).length === 1) return;
+    const bones = [];
+    let c = b;
+    while (c && c.isBone && inert(c)) {
+      bones.push(c);
+      const kids = c.children.filter(k => k.isBone);
+      c = kids.length === 1 ? kids[0] : null;
+    }
+    if (bones.length >= CHAIN.minBones) out.push(bones);
+  });
+  return out;
+}
+
+const _cv = new THREE.Vector3(), _cw = new THREE.Vector3(), _cq = new THREE.Quaternion();
+const _cp = new THREE.Quaternion(), _cd = new THREE.Vector3(), _ch = new THREE.Vector3();
+const _ci = new THREE.Quaternion();
+// BUILD the particle state. World-space points at each bone's head, plus one virtual TIP so the
+// last bone has a direction of its own -- without it the final bone is dead weight.
+function chainInit(skin, clips) {
+  const model = skin.model;
+  model.updateMatrixWorld(true);
+  const sets = findChains(model, clips);
+  skin.chains = [];
+  for (const bones of sets) {
+    const kind = CHAIN.kinds.find(k => k.test.test(bones[0].name)) || CHAIN.def;
+    const pts = [], prev = [], rest = [];
+    for (const b of bones) { const v = new THREE.Vector3(); b.getWorldPosition(v); pts.push(v); prev.push(v.clone()); }
+    // the tip: carry the last segment on by its own length
+    const n = bones.length;
+    const tip = pts[n - 1].clone().add(_cv.copy(pts[n - 1]).sub(pts[n - 2]));
+    pts.push(tip); prev.push(tip.clone());
+    for (let i = 0; i < n; i++) rest.push(pts[i].distanceTo(pts[i + 1]));
+    // each bone's rest direction IN ITS OWN LOCAL SPACE -- where the chain runs before anything
+    // touches it, which is what the solve rotates FROM. Never typed, never an assumed axis.
+    const axis = [];
+    for (let i = 0; i < n; i++) {
+      const child = i + 1 < n ? bones[i + 1] : null;
+      const v = child ? child.position.clone() : new THREE.Vector3(0, rest[i] / (bones[i].getWorldScale(_cv).x || 1), 0);
+      if (v.lengthSq() < 1e-12) v.set(0, 1, 0);
+      axis.push(v.normalize());
+    }
+    skin.chains.push({ bones, pts, prev, rest, axis, kind,
+                       home: bones.map(b => b.quaternion.clone()) });
+  }
+  // the body hulls, resolved to real bones once
+  skin.hulls = [];
+  // the radii are FRACTIONS OF HER HEIGHT, so a re-export at any size still fits. `skin.tall`
+  // is the world height the caller measured; nothing here is in the file's own units.
+  const H = skin.tall || 1.75;
+  for (const h of CHAIN.hulls) {
+    let b = null; model.traverse(o => { if (!b && o.isBone && h.bone.test(o.name)) b = o; });
+    if (b) skin.hulls.push({ b, r: h.r * H, up: h.up * H });
+  }
+  skin.chainT = 0;
+  console.log('[melee] chains: ' + skin.chains.length + ' (' +
+              skin.chains.map(c => c.bones[0].name + ':' + c.bones.length).join(' ') + ')');
+  return skin.chains.length;
+}
+
+// ONE SUBSTEP of Verlet + constraints, then the bones are written from the points.
+function chainStep(skin, dt) {
+  if (!CHAIN.on || !skin.chains || !skin.chains.length) return;
+  // **A FIXED SUBSTEP.** Verlet is unstable under a varying dt, and without this a 120 Hz phone
+  // plays different hair from a 30 Hz one.
+  const h = 1 / CHAIN.hz;
+  skin.chainT = Math.min(skin.chainT + dt, h * CHAIN.maxSub);
+  let subs = 0;
+  while (skin.chainT >= h && subs < CHAIN.maxSub) { skin.chainT -= h; subs++; }
+  if (!subs) { chainWrite(skin); return; }
+
+  // where the hulls are THIS frame
+  for (const H of skin.hulls) { H.b.getWorldPosition(_cv); H.x = _cv.x; H.y = _cv.y + H.up; H.z = _cv.z; }
+
+  for (let sub = 0; sub < subs; sub++) {
+    for (const C of skin.chains) {
+      const { bones, pts, prev, rest, kind } = C, n = bones.length;
+      // **PARTICLE 0 IS PINNED TO THE SKELETON**, which is the whole mechanism: it goes exactly
+      // where her head goes, and everything behind it arrives late.
+      bones[0].getWorldPosition(pts[0]); prev[0].copy(pts[0]);
+      const damp = 1 - kind.drag;
+      for (let i = 1; i <= n; i++) {
+        const p = pts[i], q = prev[i];
+        const vx = (p.x - q.x) * damp, vy = (p.y - q.y) * damp, vz = (p.z - q.z) * damp;
+        q.copy(p);
+        p.set(p.x + vx, p.y + vy + kind.g * h * h, p.z + vz);
+      }
+      // **THE SPRING PULLS TOWARD THE *POSE*, AND THE POSE HAS TO BE RE-DERIVED.** Reading the
+      // bones' current world positions would be springing toward the solver's OWN last output,
+      // which is a no-op dressed up as stiffness -- the bones are carrying what this function
+      // wrote last frame, not the authored rest. So the home chain is walked forward from the
+      // pin with the HOME locals: the parent's world rotation, then each bone's rest quaternion
+      // and rest length in turn. That is what the chain would look like with no dynamics, and
+      // it is the only honest thing to pull back to.
+      bones[0].parent.getWorldQuaternion(_cq);
+      _ch.copy(pts[0]);
+      for (let i = 0; i < n; i++) {
+        _cq.multiply(C.home[i]);
+        _cd.copy(C.axis[i]).applyQuaternion(_cq).normalize().multiplyScalar(rest[i]);
+        _ch.add(_cd);
+        const k = lerp(kind.stiff, kind.tipStiff, i / Math.max(1, n - 1));
+        pts[i + 1].lerp(_ch, k);
+      }
+      for (let it = 0; it < CHAIN.iters; it++) {
+        for (let i = 0; i < n; i++) {
+          const a = pts[i], b = pts[i + 1];
+          _cd.copy(b).sub(a);
+          const d = _cd.length() || 1e-6;
+          // the head of each segment is already settled, so the whole correction goes on the
+          // tail -- walking root to tip means one pass is nearly enough
+          b.addScaledVector(_cd, (rest[i] - d) / d);
+        }
+        // and out of the body
+        for (const H of skin.hulls) {
+          for (let i = 1; i <= n; i++) {
+            const p = pts[i], dx = p.x - H.x, dy = p.y - H.y, dz = p.z - H.z;
+            const l2 = dx * dx + dy * dy + dz * dz;
+            if (l2 >= H.r * H.r || l2 < 1e-9) continue;
+            const l = Math.sqrt(l2), k = H.r / l;
+            p.set(H.x + dx * k, H.y + dy * k, H.z + dz * k);
+          }
+        }
+      }
+    }
+  }
+  chainWrite(skin);
+}
+
+// TURN THE POINTS BACK INTO BONE ROTATIONS. Root to tip, updating each matrix as we go, or the
+// next bone reads a parent frame that is one bone stale.
+function chainWrite(skin) {
+  for (const C of skin.chains) {
+    const { bones, pts, axis, kind } = C, n = bones.length;
+    for (let i = 0; i < n; i++) {
+      const b = bones[i];
+      // **`getWorldQuaternion`, NEVER `setFromRotationMatrix(matrixWorld)`.** Her armature is
+      // scaled, and three's own source says the trace formula assumes an UNSCALED matrix -- fed
+      // a scaled one it returns a non-unit quaternion and the result is a shear, which is the
+      // m17 bug that hunched the alien over.
+      b.parent.getWorldQuaternion(_cp);
+      _cd.copy(pts[i + 1]).sub(pts[i]);
+      if (_cd.lengthSq() < 1e-10) continue;
+      _cd.normalize();
+      // the world direction this bone's own axis currently points, from the PARENT's frame and
+      // the bone's home rotation -- so the solve is relative to the pose, not to the world
+      _cw.copy(axis[i]).applyQuaternion(C.home[i]).applyQuaternion(_cp).normalize();
+      _cq.setFromUnitVectors(_cw, _cd);
+      // **A CONE, so a chain cannot fold back through itself.** Verlet has no notion of a joint
+      // limit and a segment that inverts reads as a broken bone rather than as hair.
+      const ang = 2 * Math.acos(Math.min(1, Math.abs(_cq.w)));
+      if (ang > kind.cone) {
+        _cv.set(_cq.x, _cq.y, _cq.z); if (_cv.lengthSq() < 1e-12) _cv.set(0, 1, 0);
+        _cq.setFromAxisAngle(_cv.normalize(), _cq.w < 0 ? -kind.cone : kind.cone);
+      }
+      // q_local = inv(parentWorld) * delta * parentWorld * home.  The bone's world rotation at
+      // HOME is `P * home`, `delta` turns its axis onto the solved direction in world space, so
+      // the new world rotation is `delta * P * home` and the local is that with P taken off.
+      // A SCRATCH, not a clone: 138 bones x 60 Hz is 8,000 quaternions a second to collect.
+      _ci.copy(_cp).invert();
+      b.quaternion.copy(_cp).premultiply(_cq).premultiply(_ci).multiply(C.home[i]);
+      b.updateMatrixWorld(true);
+    }
+  }
+}
+
+// ============================================================================================
+// THE FEMALE ALIEN -- a body to watch the chains on
+// ============================================================================================
+let she = null;
+function buildShe(g) {
+  const model = g.scene;
+  // scale MEASURED off the geometry, never typed
+  let lo = Infinity, hi = -Infinity;
+  model.traverse(o => {
+    if (!o.isSkinnedMesh || !o.geometry) return;
+    o.geometry.computeBoundingBox();
+    lo = Math.min(lo, o.geometry.boundingBox.min.y); hi = Math.max(hi, o.geometry.boundingBox.max.y);
+  });
+  const authored = hi - lo, scale = authored > .01 ? SHE.h / authored : 1;
+
+  model.traverse(o => {
+    if (o.isMesh || o.isSkinnedMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; }
+    const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+    for (const m of mats) {
+      if (!m.isMeshStandardMaterial) continue;
+      // **`BLEND` + `doubleSided` IS THE EXPORTER DEFAULT AND IT MAKES HER SEE-THROUGH.** Any
+      // texture carrying an alpha channel comes out this way, and a transparent double-sided
+      // skin sorts against ITSELF -- her far side draws over her near side. A CUTOUT does the
+      // same job for hair edges and writes depth like anything else.
+      if (m.transparent) { m.transparent = false; m.alphaTest = .5; }
+      m.side = THREE.FrontSide;
+      if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffffff); }
+      m.emissiveIntensity = RIG.emissive;
+    }
+  });
+  model.scale.setScalar(scale);
+  const root = new THREE.Group();
+  root.add(model);
+  root.position.set(SHE.path[0][0], 0, SHE.path[0][1]);
+  scene.add(root);
+  model.updateMatrixWorld(true);
+
+  const pb = {}; model.traverse(o => { if (o.isBone) pb[o.name] = o; });
+  const faceOff = -measureFacing(pb);
+  let clips = normaliseClips(g.animations || []).filter(c => !SHE.drop.test(c.name));
+
+  she = { root, model, mixer: new THREE.AnimationMixer(model), actions: {}, clips: {}, cw: {},
+          faceOff, h: 0, wp: 1, speed: 0, tall: SHE.h, chains: null, hulls: [], chainT: 0 };
+  // FIND THE CHAINS BEFORE THE TRACKS ARE STRIPPED -- "no clip moves it" is the test, so the
+  // clips have to still have the tracks when it is asked.
+  chainInit(she, clips);
+  const own = new Set();
+  for (const C of she.chains) for (const b of C.bones) own.add(b.name);
+  // **AND NOW STRIP THEM.** They are keyed at their rest value, so the mixer would write that
+  // rest pose onto every chain bone every frame and fight the solver for the same bones -- two
+  // writers, which this file has paid for twice. It also takes 405 of her 579 channels out of
+  // the mixer, which is most of her per-frame cost for bones that hold still.
+  let cut = 0;
+  clips = clips.map(c => {
+    const keep = c.tracks.filter(t => !own.has(t.name.slice(0, t.name.lastIndexOf('.'))));
+    cut += c.tracks.length - keep.length;
+    return keep.length === c.tracks.length ? c : new THREE.AnimationClip(c.name, c.duration, keep);
+  });
+
+  for (const c of clips) {
+    she.clips[c.name] = c;
+    const a = she.mixer.clipAction(c);
+    a.enabled = true; a.setEffectiveWeight(0); a.play();
+    she.actions[c.name] = a;
+  }
+  console.log('[melee] she: ' + authored.toFixed(4) + ' m authored -> x' + scale.toFixed(3) +
+              ', ' + clips.length + ' clips, ' + cut + ' chain channels stripped');
+}
+
+// THE CIRCUIT. Straight lines show nothing -- it is the TURNS that throw the hair, so the path
+// is a loop with real corners in it and the long sides are run.
+function stepShe(dt) {
+  if (!she) return;
+  const w = SHE.path[she.wp], p = she.root.position;
+  const dx = w[0] - p.x, dz = w[1] - p.z, d = Math.hypot(dx, dz);
+  if (d < SHE.at) { she.wp = (she.wp + 1) % SHE.path.length; }
+  const tgt = Math.atan2(dx, dz);
+  she.h += clamp(wrapAngle(tgt - she.h), -SHE.turn * dt, SHE.turn * dt);
+  // she slows through a corner, which is what makes the corner read as one
+  const off = Math.abs(wrapAngle(tgt - she.h));
+  const want = (w[2] === 'run' ? SHE.runRef : SHE.walkRef) * (1 - .55 * smooth(.25, 1.4, off)) * (she.go === 0 ? 0 : 1);
+  she.speed = damp(she.speed, want, .22, dt);
+  p.x += Math.sin(she.h) * she.speed * dt;
+  p.z += Math.cos(she.h) * she.speed * dt;
+  p.y = groundAt(p.x, p.z, p.y, MOVE.step);
+  she.root.rotation.y = she.h + she.faceOff;
+  if (she.spin) she.root.rotation.y = (she.h += she.spin * dt) + she.faceOff;
+
+  // the gait: her own two measured references, so the feet never slide
+  const sp = she.speed, t = {};
+  const A = smooth(0, SHE.walkRef * .5, sp), B = smooth(SHE.walkRef * 1.45, SHE.runRef * .95, sp);
+  t[SHE.clips.idle] = 1 - A;
+  t[SHE.clips.walk] = A * (1 - B);
+  t[SHE.clips.run] = A * B;
+  const sc = (nm, ref) => { const a = she.actions[nm]; if (a) a.setEffectiveTimeScale(clamp(sp / ref, .55, 1.7)); };
+  sc(SHE.clips.walk, SHE.walkRef); sc(SHE.clips.run, SHE.runRef);
+  skinWeights(she, t, dt, null, SHE.clips.idle);
+  she.mixer.update(dt);
+  // AFTER the mixer, because the solver OWNS those bones and the mixer must not be the last
+  // writer on them -- and because the pin reads where the skeleton actually ended up.
+  chainStep(she, dt);
+}
+
+// ============================================================================================
 // THE DUMMY -- something to hit
 // ============================================================================================
 const DUMMIES = [];
@@ -3119,6 +3477,7 @@ function frame() {
     stepKit(dt);
     stepPlayer(dt);
     stepDummies(dt);
+    stepShe(dt);
     rigAnim(dt);
     rig.mixer.update(dt);
     // DRAWN AT `faceH`, not at `heading`, plus the rigid yaw that puts the barrel down his nose.
@@ -3269,6 +3628,8 @@ async function init() {
   // AND SOMETHING TO STAND NEXT TO. Same rule -- a missing building costs a building.
   try { buildBuildings(await loadGLB(BLD.file, 'loading a building')); }
   catch (e) { PROG.done++; note('NO BUILDING GLB'); }
+  try { buildShe(await loadGLB(SHE.file, 'loading the alien girl')); }
+  catch (e) { PROG.done++; note('NO SHE GLB'); }
 
   paintKit();
 
@@ -3287,7 +3648,11 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   DUMMY, DUMMIES, LOCK, STRIKE, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
-  BLD, BUILDINGS, solidColumns, pushBodies,
+  BLD, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
+  // HER, LIVE. `mel.she.spin = 2` turns her on the spot, which is the best look at what the
+  // chains are doing; `mel.she.go = 0` parks her; `mel.CHAIN.on = 0` freezes the solver so the
+  // authored rest pose can be compared against it.
+  get she() { return she; },
   // HOW BIG A BUILDING SHOULD BE IS A LOOK-AT-IT DECISION, so it moves on the phone rather than
   // in a commit. It re-scales what is already in the scene AND rewrites the collider boxes, or
   // the picture and the thing you walk into would stop agreeing.

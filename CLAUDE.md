@@ -132,6 +132,20 @@ same picture from a phone.
   He replaced this one IN PLACE, 4K down to 2048, same path, new bytes: without the hash a phone
   that already had the URL keeps the 4K for ever, and from where he is standing that is
   indistinguishable from the resize not having happened.
+- **`models/characters/alien_female_purple.glb`** — 10,966 tris, one material, one 2K WebP
+  (406 KB on the wire, ~22 MB resident), draco + `EXT_texture_webp` + `KHR_materials_specular`.
+  **Authored height 0.9995 m**, toes read **+1.2 deg** so she faces +Z like the alien. **No
+  weapon mounts** — she is an NPC, not a wearer. 3 clips (`idle_01`, `walk_fwd`, `run_fwd`, all
+  7.54 s) plus `CINEMA_4D_Main` residue, dropped.
+  **193 JOINTS, AND 135 OF THEM ARE HAIR AND TAIL**: six chains off `mixamorig_Head` at 16 / 23
+  / 19 / 16 / 23 / 19 bones, and a 19-bone tail off `mixamorig_Hips`.
+  **HER MATERIAL EXPORTS AS `BLEND` + `doubleSided`**, which is the exporter default whenever
+  the texture carries alpha — and a transparent double-sided skin **sorts against itself**, so
+  her far side draws over her near side and she reads as see-through. It becomes a CUTOUT
+  (`alphaTest .5`) and single-sided, which does the same job for hair edges and writes depth.
+  Rollergirl paid for this one first; **check it on every character export.**
+  **Measured gait** (planted foot, `npm run gait`'s own method): walk 0.898, run 2.478 m/s at
+  her ×1.751.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
   height; hammer 0.614 m = 68%. "As authored" means proportional to the wearer, so they keep
   those percentages at any `RIG.height` and **no scale is applied to either**.
@@ -636,6 +650,41 @@ same picture from a phone.
   AABB of a box rotated 45 degrees is forty per cent too big along BOTH axes -- the phantom hit,
   where the collider touches you and the mesh plainly does not. An arbitrary yaw needs an
   oriented box tested in its own frame (Shredworld has one; this does not, yet).
+
+- **SECONDARY MOTION: THE CHAINS ARE FOUND, NOT NAMED (m28, `CHAIN`, `findChains`).** A chain
+  is an unbranched run of bones **that no clip meaningfully moves** — measured across every clip
+  in the file. On her that separates cleanly: her body reads 8.5 to 86 degrees and every hair
+  and tail bone reads **0.03**, because the export keys them at their rest value and nothing
+  else. `minBones` 6 excludes the one false positive, a 3-bone thumb that happens to be inert in
+  these three clips. A NAME test would have worked here and would break on the next export that
+  spells it differently; **"no clip moves it" is a property of what the thing IS.**
+  **AND THEIR TRACKS ARE STRIPPED — after the chains are found, because the finder needs them.**
+  Keyed at rest, the mixer would write that rest pose onto every chain bone every frame and
+  fight the solver for the same bones: two writers, which this file has paid for twice. It also
+  takes 405 of her 579 channels out of the mixer.
+  **THE REACTION TO HER MOTION IS FREE.** Particle 0 is PINNED to where the skeleton puts it and
+  everything downstream arrives late, because that is what a spring does. There is no
+  "react to movement" term anywhere in the solver — **the lag IS the effect.**
+  **THE SPRING PULLS TOWARD THE POSE, AND THE POSE HAS TO BE RE-DERIVED.** Reading the bones'
+  current world positions is springing toward the solver's OWN last output — a no-op dressed up
+  as stiffness, because those bones are carrying what the solver wrote last frame rather than
+  the authored rest. The home chain is walked forward from the pin using the parent's world
+  rotation and each bone's HOME local, which is what it would look like with no dynamics.
+  **`getWorldQuaternion`, NEVER `setFromRotationMatrix(matrixWorld)`** when converting a solved
+  world direction back to a local rotation — m17's bug, and this is exactly where it would bite
+  again.
+  **A FIXED SUBSTEP** (`CHAIN.hz`), because Verlet under a varying dt is unstable and a 120 Hz
+  phone would otherwise play different hair from a 30 Hz one — `exp(-k*dt)`'s argument, one
+  system over.
+  **A CONE LIMIT**, because Verlet has no notion of a joint limit and a segment that inverts
+  reads as a broken bone rather than as hair.
+  **AND SPHERE HULLS ON HEAD / CHEST / HIPS.** Without them the hair passes through her
+  shoulders, which is the one thing that makes this read as broken rather than as hair.
+  **The cost is nothing**: ~138 particles at 3 constraint passes is a few thousand flops against
+  a mixer that already skins 11,000 vertices. It belongs to the ARTICULATE characters only —
+  a crowd copy runs without it.
+  `mel.she.spin = 2` turns her on the spot, which is the best look at what the chains are doing;
+  `mel.CHAIN.on = 0` freezes the solver so the authored pose can be compared against it.
 
 ## The control map — read this before touching either pad
 
