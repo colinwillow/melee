@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m21</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m22</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m21</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m22</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm21';
+const BUILD = 'm22';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -563,6 +563,13 @@ const WEAP = {
   range: 60,         // how far the aim is walked to find what he is pointing at
   boltV: 44,         // m/s. Slow enough to SEE, which is the whole point of a charged ball
   boltLife: 2.4, boltR: .17,
+  // WHAT A SHOT IS WORTH, against `DUMMY.hard` (.62). `pow0` is a fumble -- it staggers him
+  // and takes a hit point and nothing else; `pow1` is the melee finisher's own 1.0, so a fully
+  // charged bolt hits as hard as anything in the game. **`pow0` IS SOLVED, NOT PICKED**: the
+  // crossing has to land at half a charge, so `pow0 + .5(1 - pow0) = hard` gives .24.
+  //     chg .25  power .43  stagger        chg .75  power .81  carried, 4.0 m/s
+  //     chg .50  power .62  a shove, 2.6   chg 1.0  power 1.00 flying,  8.5
+  pow0: .24, pow1: 1.0,
   // IT SHOVES HIM. A shot that moves nothing is a sound and a sprite; a shot that puts him on
   // his back foot for a tenth of a second is a shot. Scaled by the charge, and deliberately
   // brief -- the ground drag has a 0.07 s half-life, so this is a shunt rather than a slide.
@@ -597,6 +604,13 @@ const DUMMY = {
   // drops him through whatever he was thrown onto.
   flyV: 8.5, flyUp: 5.4, flyG: 20, flyDrag: 1.6,
   hard: .62,          // a blow at or over this fraction of full power puts him down at once
+  // AND HOW FAR HE GOES IS GRADED ABOVE THAT, NOT A STEP. *"A half charge and he gets launched
+  // a little bit, three-quarter a little further, a full charge sends him flying."* A single
+  // `power` deciding both whether he goes down and how hard can only give one launch, so the
+  // excess OVER the threshold is what is scaled -- `fly0` at the threshold itself, full at
+  // full power, and SQUARED between, because a linear ramp spends most of its range looking
+  // the same and the top of it is the part worth having.
+  fly0: .30,
   cool: .18,          // and he cannot be hit again inside this, or one bolt is three hits
 };
 
@@ -1548,8 +1562,14 @@ function stepBolts(dt) {
       b.pos.addScaledVector(b.vel, dt * .5);
       // A BODY BEFORE A BOX. A bolt that tested the world first would pass through a man
       // standing against a wall, which is exactly where anybody stands.
+      // **A BOLT'S POWER IS ITS CHARGE, AND THE THRESHOLD IS WHERE HALF A CHARGE LANDS.**
+      // It was `.45 + chg * .75`, which crosses `DUMMY.hard` at **23%** of a charge -- so the
+      // lightest real shot already put a man on his back and there was nothing left for the
+      // hold to buy. `pow0`/`pow1` put the crossing at half, and `DUMMY.fly0`'s squared ramp
+      // does the rest: half is a shove, three-quarters carries him, full sends him flying.
       if (!dead && dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
-                            .45 + b.chg * .75, WEAP.boltR + .45)) dead = true;
+                            WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
+                            WEAP.boltR + .45)) dead = true;
       if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
     }
     b.g.position.copy(b.pos);
@@ -2609,9 +2629,11 @@ function dummyBlow(d, dirH, power) {
   // drops him through whatever he was thrown onto and leaves him hanging over a hole.
   d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
   d.st = 'down'; d.t = 0; d.hp = DUMMY.hp;
-  d.vx = Math.sin(dirH) * DUMMY.flyV * power;
-  d.vz = Math.cos(dirH) * DUMMY.flyV * power;
-  d.vy = DUMMY.flyUp * power;
+  const t = clamp((power - DUMMY.hard) / (1 - DUMMY.hard), 0, 1);
+  const k = DUMMY.fly0 + (1 - DUMMY.fly0) * t * t;
+  d.vx = Math.sin(dirH) * DUMMY.flyV * k;
+  d.vz = Math.cos(dirH) * DUMMY.flyV * k;
+  d.vy = DUMMY.flyUp * k;
   d.cur = d.back ? DUMMY.clips.downB : DUMMY.clips.downF;
   skinPlay(d, d.cur, skinLen(d, d.cur) / DUMMY.downBeat);
 }

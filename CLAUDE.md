@@ -448,6 +448,22 @@ same picture from a phone.
   **And he holds his speed before he scrubs it** (`MELEE.carry`): a flat linear bleed averages
   half the launch speed, so every metre of travel has to be bought with a speed spike at the
   front — which reads as a rocket rather than a lunge.
+- **THE HOLD HAS TO BUY SOMETHING, AND THE KNOCK-DOWN THRESHOLD SAT AT 23% (m22).** *"Little
+  shots just hit them and the cop does the little animation where he takes a punch, but past
+  about a half charge he gets launched a little, three-quarter a little further, a full charge
+  sends him flying."* A bolt's power was `.45 + chg * .75`, which crosses `DUMMY.hard` (.62) at
+  **chg 0.23** -- so the lightest real shot already put a man on his back and everything above
+  it was the same event slightly harder. A charge shot whose whole range is above the threshold
+  is not a charge shot.
+  **`pow0` IS SOLVED, NOT PICKED**: the crossing has to land at half, so
+  `pow0 + .5(1 - pow0) = hard` gives .24, and `pow1` is the melee finisher's own 1.0.
+  **AND HOW FAR HE FLIES IS GRADED ABOVE THE THRESHOLD, SQUARED.** One `power` deciding both
+  whether he goes down and how hard can only ever give one launch, so `DUMMY.fly0` scales the
+  EXCESS -- .30 at the threshold itself, full at full power, squared between because a linear
+  ramp spends most of its range looking the same and the top is the part worth having:
+      chg .25  power .43  stagger        chg .75  power .81  4.0 m/s
+      chg .50  power .62  2.6 m/s        chg 1.0  power 1.00 8.5 m/s + 5.4 up
+  Melee is untouched: .45 / .52 still stagger and the finisher's 1.0 still gets the full launch.
 - **THE CHARGED SWING IS A SOLVED ARC, NOT A FIXED LEAP (m21).** *"If he's much closer he'll
   jump way higher, and if he's farther away he'll jump way farther. Right now it's always the
   same distance, so if he's really close and you try the charge attack he just jumps through
