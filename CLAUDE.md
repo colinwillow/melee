@@ -104,6 +104,20 @@ same picture from a phone.
   units and the tip marker sits at −14.3, about 28% along. The pair defines the mount's POSITION
   and AXIS, which is all it has to do and all the game uses it for. If a muzzle flash is ever
   wanted, measure it off the mesh bounds — do not assume the tip is it.
+- **`models/buildings/alien_base_01.glb`** — Tripo output, and the GOOD shape for a phone:
+  **1 mesh, 1 material, 1 texture — 8,439 triangles in a SINGLE draw call**, draco +
+  `EXT_texture_webp`, 842 KB of albedo. Triangles are the last thing that costs anything here
+  and draw calls are the first, so a generated shell whose detail lives in its albedo is cheap
+  in exactly the way a building assembled from forty primitives is not.
+  **It is authored on a UNIT CUBE** (1.000 × 0.764 × 0.993), which is a normalisation and not a
+  size, so `BLD.height` is the only number that means anything and the scale is measured off the
+  geometry at load. A re-export at any size lands right with no edit.
+  **Tripo writes `doubleSided: true` on everything** and it is turned off — on a closed shell
+  that is pure wasted fill on the one part of a mobile GPU that is actually scarce, and it
+  disables backface culling for no benefit at all. **Check it on every generated asset.**
+  **The 842 KB WebP is 842 KB on the WIRE and full RGBA in memory** — probably ~21 MB for a
+  2048². Compression in the file only buys download time. `gltf-transform uastc`/`etc1s` to KTX2
+  is what shrinks the resident cost, and that is the one that kills a tab on iOS.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
   height; hammer 0.614 m = 68%. "As authored" means proportional to the wearer, so they keep
   those percentages at any `RIG.height` and **no scale is applied to either**.
@@ -516,6 +530,17 @@ same picture from a phone.
   asserted he stop past −4.4 when the face is at −4.90 and he is a cylinder of radius 0.34, so
   the correct stop is −4.56 — a clean stop failed a made-up threshold. Derive the pass mark from
   the geometry, never from what looks about right.
+
+- **A PICTURE AND THE THING YOU WALK INTO ARE ONE OBJECT (m24).** A building pushes its
+  footprint into `BOXES` -- the same list the collider, the floor test and the camera boom all
+  read -- so there is one description of the world rather than two to keep in step. `mel.bld(h)`
+  re-sizes the mesh AND rewrites its box, because two things re-sized separately is a building
+  you can stand inside, which is the worst kind of bug: nothing on screen disagrees with
+  anything and the player simply cannot walk there.
+  **Placements are yawed in QUARTER TURNS ONLY.** `resolveBoxes` here is axis-aligned, and the
+  AABB of a box rotated 45 degrees is forty per cent too big along BOTH axes -- the phantom hit,
+  where the collider touches you and the mesh plainly does not. An arbitrary yaw needs an
+  oriented box tested in its own frame (Shredworld has one; this does not, yet).
 
 ## The control map — read this before touching either pad
 

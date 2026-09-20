@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m23</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m24</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m23</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m24</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm23';
+const BUILD = 'm24';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -585,6 +585,38 @@ const WEAP = {
 // HE IS THE POLICE OFFICER FROM THE CITY REPO, and he is the right body for this because his
 // export already carries the hard part: four hit reactions, two knock-downs and two get-ups.
 // Nothing here had to be authored.
+// ============================================================================================
+// BUILDINGS
+//
+// `alien_base_01.glb` is Tripo output and it is the GOOD shape for this: **one mesh, one
+// material, one texture -- 8,439 triangles in a SINGLE draw call.** Triangles are the last
+// thing that costs anything on a phone; draw calls are the first, so a generated shell whose
+// detail lives in its albedo is cheap in exactly the way a building assembled from forty
+// primitives is not.
+//
+// **THE SCALE IS MEASURED, NEVER TYPED.** It is authored on a unit cube (1.000 x 0.764 x 0.993),
+// which is a normalisation and not a size -- so `height` is the only number here that means
+// anything, and a re-export at any scale lands right with no edit. The skateboard's rule, one
+// asset class along.
+//
+// **AND IT IS SINGLE-SIDED.** Tripo writes `doubleSided: true` on everything; on a closed shell
+// that is pure wasted fill on the one part of a mobile GPU that is actually scarce, and it
+// turns off backface culling for no benefit at all.
+//
+// The footprint goes into `BOXES` -- ONE description of the world, so the collider, the floor
+// test and the camera boom all agree about it without being told separately. Placements are
+// yawed in QUARTER TURNS only, because `resolveBoxes` here is axis-aligned: a box carrying an
+// arbitrary yaw would have to be tested in its own frame, and the AABB of a rotated one is
+// forty per cent too big along both axes, which is the phantom hit.
+const BLD = {
+  file: 'models/buildings/alien_base_01.glb',
+  height: 8,            // metres to the roof -- the ONE number. `mel.bld(h)` re-sizes live.
+  at: [
+    // x, z, quarter turns
+    [ 10, 26, 0],
+  ],
+};
+
 const DUMMY = {
   file: 'models/characters/dummy_officer.glb',
   h: 1.75, r: .42, hp: 3,
@@ -2515,6 +2547,66 @@ function aimComp(dt) {
 // THE DUMMY -- something to hit
 // ============================================================================================
 const DUMMIES = [];
+const BUILDINGS = [];
+function buildBuildings(g) {
+  const proto = g.scene;
+  // MEASURED off the geometry, in the file's own space. Every node here is at identity, but
+  // asking the geometry rather than `Box3.setFromObject` is the habit that survives an export
+  // that is not -- a mesh's node transform and its geometry bounds are different questions.
+  const bb = new THREE.Box3();
+  proto.updateMatrixWorld(true);
+  proto.traverse(o => {
+    if (!o.isMesh || !o.geometry) return;
+    o.geometry.computeBoundingBox();
+    bb.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld));
+  });
+  if (!isFinite(bb.min.y) || bb.max.y - bb.min.y < 1e-4) { note('BAD BUILDING GLB'); return; }
+  const k = BLD.height / (bb.max.y - bb.min.y);
+  const w = (bb.max.x - bb.min.x) * k, d = (bb.max.z - bb.min.z) * k;
+
+  proto.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = true; o.receiveShadow = true;
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    for (const m of mats) {
+      if (!m) continue;
+      // ONE SIDE. See the note on BLD -- fill rate is the scarce thing on a phone and a closed
+      // shell has no use for its own inside.
+      m.side = THREE.FrontSide;
+      // and the far side of a 10 m wall is looked at edge-on all day, which is exactly where a
+      // texture without anisotropy turns to mush
+      if (m.map) { m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); m.map.needsUpdate = true; }
+    }
+  });
+
+  // PLACED ON ITS OWN MEASURED MIDDLE AND ITS OWN MEASURED FLOOR, so a model authored anywhere
+  // relative to its origin still lands centred on (x, z) with its feet at zero -- where the
+  // origin happens to sit is not this code's business. The centre offset is TURNED with the
+  // building rather than reasoned about, or a quarter turn slides it off its own footprint.
+  const mid = new THREE.Vector3((bb.min.x + bb.max.x) * .5 * k, 0, (bb.min.z + bb.max.z) * .5 * k);
+  const UPY = new THREE.Vector3(0, 1, 0), c = new THREE.Vector3();
+  for (const [x, z, q] of BLD.at) {
+    const o = proto.clone(true);
+    o.scale.setScalar(k);
+    o.rotation.y = (q || 0) * Math.PI / 2;
+    c.copy(mid).applyAxisAngle(UPY, o.rotation.y);
+    o.position.set(x - c.x, -bb.min.y * k, z - c.z);
+    world.add(o);
+    // a quarter turn swaps the footprint; anything else would need an ORIENTED box, and the
+    // AABB of a rotated one is forty per cent too big along both axes -- the phantom hit
+    const ww = (q % 2) ? d : w, dd = (q % 2) ? w : d;
+    const bx = { minx: x - ww / 2, maxx: x + ww / 2, miny: 0, maxy: BLD.height,
+                 minz: z - dd / 2, maxz: z + dd / 2 };
+    BOXES.push(bx);
+    // everything `mel.bld()` needs to re-size this WITHOUT re-reading the file, kept on the
+    // object so the picture and the box it pushed can never be re-sized apart
+    BUILDINGS.push({ o, bx, x, z, q, unit: k / BLD.height, w: w / BLD.height, d: d / BLD.height,
+                     loY: bb.min.y, mid: mid.clone().divideScalar(BLD.height) });
+  }
+  console.log('[melee] building x' + k.toFixed(3) + ' -> ' + w.toFixed(1) + ' x ' +
+              BLD.height.toFixed(1) + ' x ' + d.toFixed(1) + ' m, ' + BLD.at.length + ' placed');
+}
+
 function buildDummies(g) {
   const proto = g.scene;
   // scale MEASURED off the geometry, never typed -- and off EVERY skinned mesh, because this
@@ -2939,6 +3031,9 @@ async function init() {
   // is still a game you can look at.
   try { buildDummies(await loadGLB(DUMMY.file, 'loading a body to hit')); }
   catch (e) { PROG.done++; note('NO DUMMY GLB'); }
+  // AND SOMETHING TO STAND NEXT TO. Same rule -- a missing building costs a building.
+  try { buildBuildings(await loadGLB(BLD.file, 'loading a building')); }
+  catch (e) { PROG.done++; note('NO BUILDING GLB'); }
 
   paintKit();
 
@@ -2957,6 +3052,27 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   DUMMY, DUMMIES, LOCK, STRIKE, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
+  BLD, BUILDINGS,
+  // HOW BIG A BUILDING SHOULD BE IS A LOOK-AT-IT DECISION, so it moves on the phone rather than
+  // in a commit. It re-scales what is already in the scene AND rewrites the collider boxes, or
+  // the picture and the thing you walk into would stop agreeing.
+  bld: h => {
+    if (h) BLD.height = h;
+    const H = BLD.height, up = new THREE.Vector3(0, 1, 0), c = new THREE.Vector3();
+    for (const b of BUILDINGS) {
+      const k = b.unit * H, ww = (b.q % 2) ? b.d * H : b.w * H, dd = (b.q % 2) ? b.w * H : b.d * H;
+      c.copy(b.mid).multiplyScalar(H).applyAxisAngle(up, b.o.rotation.y);
+      b.o.scale.setScalar(k);
+      b.o.position.set(b.x - c.x, -b.loY * k, b.z - c.z);
+      // AND THE BOX MOVES WITH IT. A picture and the thing you walk into that are re-sized
+      // separately is a building you can stand inside, which is the worst kind of bug: nothing
+      // on screen disagrees with anything.
+      b.bx.minx = b.x - ww / 2; b.bx.maxx = b.x + ww / 2;
+      b.bx.minz = b.z - dd / 2; b.bx.maxz = b.z + dd / 2; b.bx.maxy = H;
+    }
+    return 'BLD.height = ' + H.toFixed(1) + ' m, footprint ' +
+           (BUILDINGS[0] ? (BUILDINGS[0].w * H).toFixed(1) + ' x ' + (BUILDINGS[0].d * H).toFixed(1) : '-');
+  },
   kit: () => cycleKit(),
   clips: () => Object.keys(rig.clips).map(n => n + ' ' + rig.clips[n].duration.toFixed(3) + 's').join('\n'),
   where: () => `${player.pos.x.toFixed(1)}, ${player.pos.y.toFixed(2)}, ${player.pos.z.toFixed(1)}`,
