@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m26</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m27</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m26</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m27</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm26';
+const BUILD = 'm27';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -390,13 +390,28 @@ const MOVE = {
 const GAIT = {
   walkRef: .84, runRef: 3.09, sprintRef: 4.55,
   backRef: 2.23, strafeRef: 2.00, aimRunRef: 3.36,
-  // WHERE EACH CLIP TAKES OVER, SPREAD ACROSS THE WHOLE RANGE. The old bands put the sprint's
-  // handover at 3.90 against a top speed of 4.55, so `run_fwd_fast` only ever appeared in the
-  // top 14% of the stick and was effectively never seen. Each clip now DOMINATES around its own
-  // measured reference speed, which is what makes the blend read as one gait rather than three:
-  //   walk   ~0.8 m/s (ref 0.84)      run  ~3.5 m/s (ref 3.09)      sprint 5.0+ (ref 4.55)
-  walkAt: .30, runAt: 2.40, sprintAt: 5.00,
-  tsLo: .55, tsHi: 1.9,                        // how far a clip may be pushed before it reads as a scramble
+  // **THE BANDS ARE READ AGAINST THE STICK, NOT AGAINST THE SPEED RANGE (m27).** *"I was trying
+  // to go really slow to make him do his walk and he was basically doing a slow run -- half
+  // stride. And I don't think I ever see the fast run."* Both are this table, and the arithmetic
+  // says it outright. `MOVE.max` is 7.2 and the pad curve is `mag^1.4`, so the stick deflection
+  // that asks for a given speed is `.12 + (sp/7.2)^(1/1.4) * .88`:
+  //     walkAt .30  ->  21% of the stick -- INSIDE the noise of a thumb, so the walk was
+  //                     unreachable and everything holdable landed in the crossfade
+  //     at 36% he got walk .64 / run .36, with the walk pushed to 1.37x and the run CLAMPED at
+  //                     tsLo .55 -- a fast walk averaged with a slow-motion run. That is the
+  //                     "half stride" exactly, and no amount of blending fixes two clips both
+  //                     playing at the wrong rate.
+  //     sprintAt 5.00 -> 85% of the stick before `run_fwd_fast` is ever pure
+  // Re-cut so each clip OWNS a stretch of the pad and the crossfades are short:
+  //     idle   0 - 25%      walk 25 - 38%      run ~55%      sprint 76%+
+  // A blend of walk and run can never look right in the middle -- their refs are 0.84 and 3.09,
+  // **3.7x apart, with nothing authored between them** -- so the only real fix is to spend as
+  // little of the stick in there as possible. A jog clip is what would close it properly.
+  idleAt: .45,                                 // he is MOVING at all past this
+  walkAt: 1.30, runAt: 2.60, sprintAt: 4.60,
+  // AND THE CEILING CAME DOWN. At 1.9 the walk clip is a cartoon scramble for the whole of the
+  // crossfade; 1.6 is the most a cycle here takes before it stops reading as the gait it is.
+  tsLo: .62, tsHi: 1.6,
   // `run_fwd_fast`'s two feet disagree by 34% (L 2.77, R 1.96) -- a real asymmetry in the clip,
   // reported by the tool rather than hidden by it. If the sprint ever reads limpy, that is why.
 };
@@ -439,8 +454,10 @@ const MELEE = {
   // A FLICK IN THE GENERAL DIRECTION OF SOMEBODY IS A FLICK AT HIM. Aiming at him is not
   // enough on its own: a punch thrown at exactly the right bearing from four metres still hits
   // air. So the lock also SOLVES the launch for the gap, which is what makes it land.
-  aimCone: .95,        // ~54 degrees either side of the flick
-  aimNear: .35,        // what a metre of distance is worth against a metre of miss
+  aimCone: .42,        // ~24 degrees either side of the flick. It was .95 -- FIFTY-FOUR, which
+                       // is most of the screen, and the same complaint as `LOCK.cone`.
+  aimNear: .55,        // what a metre of distance is worth against a metre of miss. Raised with
+                       // the cone: swinging at two men, the NEAR one is what you meant.
   maxV: 21,            // the fastest a lunge may be solved to
   arrive: 1.05,        // the gap he is solved to leave -- arm's length, not his centre. It has
                        // to be inside what the swept fist can REACH now that the sweep decides:
@@ -483,8 +500,15 @@ const MELEE = {
   // is playing can only ever cut that clip off. Everything scales with `chargeGoK`, so a half
   // charge is a smaller hop that reaches less far.
   finishReach: 11,     // the farthest the leap will carry at a full charge
-  finishHiNear: 2.4,   // the apex standing on top of him, in metres
-  finishHiFar: 1.1,    // and at full reach. Close is a stomp; far is a flying leap.
+  // **AND THE APEX RIDES THE HOLD, WHICH IS WHAT MAKES THE CHARGE WORTH HOLDING.** *"If you
+  // just pull it back, lock on and let go, he does a ground slam -- but if you charge it to the
+  // full end of the lock he jumps pretty high, maybe double, and slams down."* These were 2.4 /
+  // 1.1 scaled only by `chargeGoK`, whose floor is `finishMin` .45 -- so the shortest real
+  // swing already leapt 45% as high as the longest and the hold bought almost nothing you could
+  // see. Doubled at the top, and `finishHiK0` is the floor at the bottom.
+  finishHiNear: 4.6,   // the apex standing on top of him, in metres, at a FULL charge
+  finishHiFar: 2.0,    // and at full reach. Close is a stomp; far is a flying leap.
+  finishHiK0: .30,     // and what a bare half-charge release gets -- a hop, not a leap
   finishFree: 4.5,     // an unlocked swing has no gap to solve, so it leaps this far
   finishTail: .22,     // the recovery after he lands, so the clip has somewhere to finish
   // `finishV` and `finishUp` ARE DEAD AND KEPT AS A NOTE -- the flat 18 m/s and 4.6 m/s that
@@ -563,9 +587,10 @@ const WEAP = {
   range: 60,         // how far the aim is walked to find what he is pointing at
   boltV: 44,         // m/s. Slow enough to SEE, which is the whole point of a charged ball
   boltLife: 2.4, boltR: .17,
-  // HOW LONG THE ARMING CRACKLE LASTS. `electricity_beam_01.mp3` is a BEAM -- seconds of it --
-  // and arming the trigger is an instant, so it ran on under the charge, the shot and whatever
-  // came next. It is the sound of the gun coming live, so it is over when the gun is live.
+  // `zapDur` IS KEPT AS A NOTE. It capped `electricity_beam_01.mp3` -- a BEAM, seconds of it --
+  // when arming used to fire one beside the charge hum. Nothing calls it now: the hum is the
+  // charge and a second voice on the same event is what he was hearing. `snd`'s `dur` is
+  // general and stays.
   zapDur: .34,
   // WHAT A SHOT IS WORTH, against `DUMMY.hard` (.62). `pow0` is a fumble -- it staggers him
   // and takes a hit point and nothing else; `pow1` is the melee finisher's own 1.0, so a fully
@@ -674,9 +699,14 @@ const LOCK = {
   // acquire and, with `keep`, EIGHTY-SEVEN to hold, which is *"I was aiming almost ninety
   // degrees away from one cop and it kept locking onto one further left"* stated as arithmetic.
   // A number tuned for a mark that only DRAWS is far too wide for one the shot now follows.
-  cone: .30, coneTight: .12,
-  keep: 1.25,       // and whatever is already locked keeps it on a slightly wider cone, or the
-                    // mark flickers between two men standing shoulder to shoulder
+  // **NARROWER AGAIN (m27).** *"I had two cops a similar distance apart, I was trying to aim at
+  // one and it kept locking the other, and moving it over still wouldn't get off him."* Both
+  // halves are `keep`: at 1.25 the man already locked held a cone 25% wider than the one he was
+  // being compared against, so a target the thumb was plainly ON could not win. 1.06 is enough
+  // hysteresis to stop a flicker between two men shoulder to shoulder and not enough to hold a
+  // lock the thumb has left.
+  cone: .19, coneTight: .06,
+  keep: 1.06,
   near: .5,         // how much nearer beats how much straighter, when two are in the cone
   face: 9,          // how fast he comes round to it
   cam: 2.4,         // and how fast the lens does
@@ -2010,7 +2040,12 @@ function chargeRelease() {
   if (CL && CL.dist <= MELEE.finishRange) { p.faceH = p.heading = CL.h; p.melTgt = CL.d; }
   else p.melTgt = null;
   // how full it was, from the half-charge floor up -- so even the shortest real swing moves
-  p.chargeGoK = MELEE.finishMin + (1 - MELEE.finishMin) * clamp(t0 / MELEE.charge, 0, 1);
+  const chg01 = clamp(t0 / MELEE.charge, 0, 1);
+  p.chargeGoK = MELEE.finishMin + (1 - MELEE.finishMin) * chg01;
+  // THE APEX GETS ITS OWN CURVE. `chargeGoK` floors at `finishMin` because a half-charge swing
+  // still has to LAND -- that is about power and reach. How high he goes has no such floor and
+  // wants the whole range, or the hold buys nothing you can see.
+  p.chargeGoH = MELEE.finishHiK0 + (1 - MELEE.finishHiK0) * chg01;
   snd('swoosh', { r: .72, g: 1 });
 
   // ---- THE ARC IS SOLVED FROM THE GAP ----
@@ -2020,7 +2055,7 @@ function chargeRelease() {
   const gap = (CL && p.melTgt) ? clamp(CL.dist - MELEE.arrive, 0, reach) : MELEE.finishFree * k;
   const f = reach > .01 ? clamp(gap / reach, 0, 1) : 0;
   // CLOSE GOES UP, FAR GOES OUT. One lerp, and the whole shape of the move falls out of it.
-  const hi = lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * k;
+  const hi = lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * p.chargeGoH;
   const vy = Math.sqrt(2 * MOVE.g * hi);
   const T = 2 * vy / MOVE.g;                 // the flight time IS the arc, never a typed beat
   const vx = clamp(gap / T, 0, MELEE.maxV);  // and this lands him on the man at any distance
@@ -2185,7 +2220,14 @@ function stepKit(dt) {
     const keeping = p.aim && upish && mag > WEAP.keepAt;
     if (arming || keeping) {
       p.armT += dt;
-      if (p.armT >= WEAP.armT && !p.aim) { p.aim = 1; snd('zap', { g: .5, r: 1.2, dur: WEAP.zapDur }); chargeStart(); }
+      if (p.armT >= WEAP.armT && !p.aim) {
+          // **ONE SOUND FOR ONE EVENT.** `chargeStart` already spins up the synth hum -- the
+          // rising "waaaa" that IS the charge, for as long as it is held -- and a one-shot zap
+          // fired beside it is a second voice describing the same thing. Capping its length at
+          // m26 made it shorter and no less redundant. The `zap` sample is still loaded and
+          // `mel.snd('zap')` still plays it; nothing in the blaster asks for it.
+          p.aim = 1; chargeStart();
+        }
     } else {
       // the edge. Everything that ends the hold -- letting go, rolling the thumb back down,
       // sweeping off the arc, backgrounding the app -- comes through here as one release.
@@ -2513,10 +2555,14 @@ function rigAnim(dt) {
   }
 
   // ---- the ordinary gait: four clips weighted by MEASURED speed, never a run flag ----
-  const wIdle = 1 - smooth(0, GAIT.walkAt, sp);
-  const wWalk = smooth(0, GAIT.walkAt, sp) * (1 - smooth(GAIT.walkAt, GAIT.runAt, sp));
-  const wRun = smooth(GAIT.walkAt, GAIT.runAt, sp) * (1 - smooth(GAIT.runAt, GAIT.sprintAt, sp));
-  const wSpr = smooth(GAIT.runAt, GAIT.sprintAt, sp);
+  // A CHAIN, SO THE FOUR ALWAYS SUM TO EXACTLY 1. `idleAt` is its own edge now rather than
+  // sharing `walkAt`, which is what lets the walk own a real stretch of the pad while the idle
+  // still lets go promptly -- and a table that dips below 1 mid-crossfade bleeds the BIND pose
+  // in, which is the T-pose exactly.
+  const A = smooth(0, GAIT.idleAt, sp);                 // moving at all
+  const B = smooth(GAIT.walkAt, GAIT.runAt, sp);        // walk -> run
+  const C = smooth(GAIT.runAt, GAIT.sprintAt, sp);      // run -> sprint
+  const wIdle = 1 - A, wWalk = A * (1 - B), wRun = A * B * (1 - C), wSpr = A * B * C;
   add(CLIPS.idle, wIdle * rest, 0);
   add(CLIPS.walk, wWalk * rest, GAIT.walkRef);
   add(CLIPS.run, wRun * rest, GAIT.runRef);

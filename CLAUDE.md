@@ -201,6 +201,41 @@ same picture from a phone.
   the left strafe, which is the measurement describing itself.
   **`run_fwd_fast`'s two feet still disagree by 34%** (L 2.77, R 1.96). That is a real asymmetry
   in the clip, reported rather than hidden. If the sprint ever reads limpy, that is why.
+- **A GAIT BAND IS READ AGAINST THE STICK, NOT AGAINST THE SPEED RANGE (m27).** *"I was trying
+  to go really slow to make him do his walk and he was basically doing a slow run -- half
+  stride. And I don't think I ever see the fast run."* Both are the same table, and the
+  arithmetic says it outright. `MOVE.max` is 7.2 and the pad curve is `mag^1.4`, so the
+  deflection that asks for a speed is `.12 + (sp/7.2)^(1/1.4) * .88`:
+      walkAt .30    ->  21% of the stick. INSIDE the noise of a thumb, so the walk was
+                        unreachable and everything holdable landed in the crossfade.
+      at 36%        ->  walk .64 / run .36, walk pushed to 1.37x and run CLAMPED at tsLo .55
+                        -- a fast walk averaged with a slow-motion run. That IS the half stride.
+      sprintAt 5.00 ->  85% of the stick before `run_fwd_fast` is ever pure.
+  **Bands are chosen by where they land on the PAD.** Re-cut so each clip owns a stretch and the
+  crossfades are short: idle 0-25%, walk 25-38%, run ~55%, sprint 76%+.
+  **And no amount of blending fixes two clips both playing at the wrong rate.** walk 0.84 and
+  run 3.09 are **3.7x apart with nothing authored between them**, so in the middle each is off
+  by ~1.9x whatever you do -- the only real fix is to spend as little of the stick in there as
+  possible. **A jog clip is what would close it properly.**
+  **The weights are a CHAIN so they sum to exactly 1** (`A`, `A(1-B)`, `AB(1-C)`, `ABC`), with
+  `idleAt` its own edge rather than sharing `walkAt` -- that is what lets the walk own real pad
+  while the idle still lets go promptly. A table that dips below 1 mid-crossfade bleeds the BIND
+  pose in, which is the T-pose exactly.
+  **`tsHi` came down 1.9 -> 1.6**: at 1.9 the walk clip is a cartoon scramble for the whole
+  crossfade.
+- **ONE SOUND FOR ONE EVENT (m27).** *"I think it's playing two sounds for the charge -- there's
+  a waaaaa which is good and then an electrical zap I don't need."* Exactly two voices on one
+  event: `chargeStart`'s synth hum, which rises for as long as the trigger is held and IS the
+  charge, and a one-shot `zap` fired beside it. m26 capped the zap's length, which made it
+  shorter and no less redundant -- **the fix for a duplicate is not a quieter duplicate.** The
+  sample is still loaded and `mel.snd('zap')` still plays it; nothing in the blaster asks for it.
+- **A FLOOR MEANT FOR ONE THING MUST NOT BE SHARED WITH ANOTHER (m27, `chargeGoH`).** The
+  charged leap's APEX was scaled by `chargeGoK`, whose floor is `MELEE.finishMin` .45 -- so the
+  shortest real swing already jumped 45% as high as the longest and the hold bought almost
+  nothing you could see. That floor exists because a half-charge swing still has to LAND, which
+  is about power and reach; how HIGH he goes has no such floor and wants the whole range. Its
+  own curve (`finishHiK0` .30 to 1), and the apex doubled at the top: 4.6 m on top of him at a
+  full charge against 1.4 for a bare release.
 - **`idle_01` READS 0.002 m/s AND THAT IS THE CONTROL.** A measurement with no case that must
   come back zero is a measurement nobody can trust.
 - **THE CLIPS ANIMATE IN PLACE.** The `root` bone carries 0.03° of noise and no translation at
@@ -443,8 +478,15 @@ same picture from a phone.
   was 1.05 rad -- **sixty degrees either side** to acquire, and with `LOCK.keep` **eighty-seven**
   to hold. That is survivable for a mark that only draws and absurd for one the round follows:
   *"I was aiming almost ninety degrees away from one cop and it kept locking onto one further to
-  the left."* .30 / .12 / 1.25 -- about 17 deg to acquire, 7 once the shot is loaded. The
-  subtlety is the cone; the DELIVERY still has to be total, or it is the bullet above again.
+  the left."* The subtlety is the cone; the DELIVERY still has to be total, or it is the bullet
+  above again.
+  **AND `keep` WAS THE STICKY HALF (m27).** *"Two cops a similar distance apart, I was trying to
+  aim at one and it kept locking the other, and moving it over still wouldn't get off him."* At
+  1.25 the man already locked was judged against a cone **25% wider** than the one he was being
+  compared to, so a target the thumb was plainly ON could not win. .19 / .06 / **1.06** -- about
+  11 deg to acquire, 3.5 once loaded, and just enough hysteresis to stop a flicker between two
+  men shoulder to shoulder. `MELEE.aimCone` went .95 -> .42 with it (54 deg was most of the
+  screen) and `aimNear` .35 -> .55, because swinging at two men the NEAR one is what you meant.
 - **A RETICLE IS A POINTER, AND AT 146 px IT COVERED A MAN AT TWENTY METRES.** 74. The one thing
   a mark must not do is hide the thing it is marking.
 - **A BLOW IS THE LIMB ARRIVING, NOT A RANGE CHECK (m20).** *"The cops are getting hit before the
