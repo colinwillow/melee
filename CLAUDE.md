@@ -746,6 +746,25 @@ same picture from a phone.
   **A DAMPING RATIO IS A NUMBER YOU CAN CHECK.** Both times this was wrong the code looked
   reasonable and the only way to see it was to work out what zeta actually came to; 0.12 is not
   a judgement call about how hair should feel, it is a spring that must ring.
+  **AND CRITICAL DAMPING CANNOT COVER A DISTANCE CONSTRAINT, WHICH IS WHAT WAS LEFT (m33).**
+  *"Her hair is jingling around, and goes wild when she drops down the curb."* Two symptoms, one
+  place: the constraint pass. `damping` is derived against the pull-to-pose rate and there is a
+  SECOND restoring force in here with no rate at all -- the segment-length projection, which is
+  an infinitely stiff spring. **In Verlet every metre a constraint moves a particle becomes a
+  metre per step of velocity on the next one**, so the pose spring stopped overshooting at m32
+  and the constraints went on feeding it. `CHAIN.snap` is how much of a correction is allowed to
+  be banked as speed -- `prev` is moved with the particle by the rest. It is not damping and
+  costs nothing when nothing is stretched; it is refusing to turn a position fix into energy.
+  **AND THE DROP IS THE STANDARD WAY THIS SOLVER COMES APART.** Stepping off a kerb moves her
+  head further in one substep than a hair segment is LONG, so the particle behind it is
+  stretched past its own rest length, the constraint that pulls it back overshoots, and the
+  overshoot is a bigger correction and therefore more velocity. `CHAIN.maxV` is the hard ceiling
+  under it.
+  **AND IT IS MEASURED RELATIVE TO THE PIN, WHICH IS THE LOAD-BEARING HALF.** An absolute speed
+  cap clamps every strand the moment she RUNS -- her whole body is doing 7 m/s and so is her
+  hair -- which is exactly the motion these chains exist to show. The cap is on the part of the
+  velocity that is not her own travel, so only hair moving fast through HER frame is held.
+  `mel.CHAIN.snap = 1` and `mel.CHAIN.maxV = 99` are the A/B back to m32.
   **CREAMY IS CRITICAL DAMPING, AND IT IS DERIVED FROM THE STIFFNESS (m30).** *"Everything is
   kind of wiggling around a lot now -- can we add damping? I had a good amount of it and it was
   making it nice and smooth and creamy."* What creamy IS, is critical damping: a spring of rate

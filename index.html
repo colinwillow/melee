@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m32</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m33</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m32</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m33</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm32';
+const BUILD = 'm33';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -692,6 +692,23 @@ const CHAIN = {
   // gets different hair from a 30 Hz one -- the same argument as `exp(-k*dt)` one system over.
   hz: 90, maxSub: 3,
   iters: 3,          // constraint passes. 1 is rubbery, 3 is plenty, more is wasted.
+  // **A DISTANCE CONSTRAINT IS AN INFINITELY STIFF SPRING, AND CRITICAL DAMPING CANNOT COVER
+  // IT.** `damping` is derived against the pull-to-pose rate; the constraint pass is a
+  // PROJECTION with no rate at all, and in Verlet every metre it moves a particle becomes a
+  // metre per step of velocity on the next one. That is the ringing left after m32 -- the
+  // spring stopped overshooting and the constraints went on feeding it. `snap` is how much of
+  // a correction is allowed to become velocity: 1 is the old behaviour, 0 projects the
+  // position and adds no energy at all. It is not damping (it costs nothing when nothing is
+  // stretched) -- it is refusing to bank the correction as speed.
+  snap: .30,
+  // AND A HARD CEILING ON SPEED, **MEASURED RELATIVE TO THE PIN**. *"Goes wild when she drops
+  // down the curb"*: a drop moves her head further in one substep than a hair segment is long,
+  // and a Verlet particle that travels more than a rest length per step is the standard way
+  // this solver comes apart -- the constraint that pulls it back overshoots, which is a bigger
+  // correction, which is more velocity. Relative to the pin is the load-bearing half: an
+  // absolute cap would clamp every strand the moment she RUNS, which is exactly the motion the
+  // chains exist to show. m/s through her own frame.
+  maxV: 3.2,
   // PER KIND, matched on the chain root's name. Hair is light and whippy; a tail is heavy.
   // **EVERY RATE HERE IS PER SECOND, AND THE FIRST VERSION APPLIED THEM PER SUBSTEP.** That is
   // the whole of *"barely moving, some glitchy static behaviour"*: at `drag` .06 a substep and
@@ -2789,7 +2806,7 @@ function findChains(root, clips) {
 
 const _cv = new THREE.Vector3(), _cw = new THREE.Vector3(), _cq = new THREE.Quaternion();
 const _cp = new THREE.Quaternion(), _cd = new THREE.Vector3(), _ch = new THREE.Vector3();
-const _ci = new THREE.Quaternion();
+const _ci = new THREE.Quaternion(), _cpv = new THREE.Vector3();
 // BUILD the particle state. World-space points at each bone's head, plus one virtual TIP so the
 // last bone has a direction of its own -- without it the final bone is dead weight.
 function chainInit(skin, clips) {
@@ -2816,6 +2833,9 @@ function chainInit(skin, clips) {
       axis.push(v.normalize());
     }
     skin.chains.push({ bones, pts, prev, rest, axis, kind,
+                       // where every particle sat BEFORE the constraint pass, so the velocity a
+                       // correction is allowed to create can be metered -- see `CHAIN.snap`
+                       pre: pts.map(v => v.clone()),
                        home: bones.map(b => b.quaternion.clone()) });
   }
   // the body hulls, resolved to real bones once
@@ -2849,10 +2869,15 @@ function chainStep(skin, dt) {
 
   for (let sub = 0; sub < subs; sub++) {
     for (const C of skin.chains) {
-      const { bones, pts, prev, rest, kind } = C, n = bones.length;
+      const { bones, pts, prev, rest, kind, pre } = C, n = bones.length;
       // **PARTICLE 0 IS PINNED TO THE SKELETON**, which is the whole mechanism: it goes exactly
       // where her head goes, and everything behind it arrives late.
+      _cpv.copy(pts[0]);
       bones[0].getWorldPosition(pts[0]); prev[0].copy(pts[0]);
+      // how far the pin itself moved this substep. The speed cap below is measured against it,
+      // so running never clamps a strand and only hair moving fast through HER frame is held.
+      _cpv.subVectors(pts[0], _cpv);
+      const cap = CHAIN.maxV * h;
       // per SECOND, converted to this substep -- see the note on `CHAIN.kinds`. The drag is
       // `2*sqrt(stiff) * damping`, which is critical damping scaled, so the two can never
       // drift apart when one of them is tuned.
@@ -2869,7 +2894,12 @@ function chainStep(skin, dt) {
         const a = 1 - Math.exp(-k * h);
         const damp = Math.exp(-2 * Math.sqrt(a) * kind.damping);
         const p = pts[i], q = prev[i];
-        const vx = (p.x - q.x) * damp, vy = (p.y - q.y) * damp, vz = (p.z - q.z) * damp;
+        let vx = (p.x - q.x) * damp, vy = (p.y - q.y) * damp, vz = (p.z - q.z) * damp;
+        // clamp the part that is NOT the body's own travel
+        let rx = vx - _cpv.x, ry = vy - _cpv.y, rz = vz - _cpv.z;
+        const rl = Math.sqrt(rx * rx + ry * ry + rz * rz);
+        if (rl > cap) { const f = cap / rl; rx *= f; ry *= f; rz *= f; }
+        vx = rx + _cpv.x; vy = ry + _cpv.y; vz = rz + _cpv.z;
         q.copy(p);
         p.set(p.x + vx, p.y + vy + kind.g * h * h, p.z + vz);
       }
@@ -2891,6 +2921,7 @@ function chainStep(skin, dt) {
         // particle, same expression -- so retuning a stiffness moves both halves together
         pts[i + 1].lerp(_ch, 1 - Math.exp(-k * h));
       }
+      for (let i = 1; i <= n; i++) pre[i].copy(pts[i]);
       for (let it = 0; it < CHAIN.iters; it++) {
         for (let i = 0; i < n; i++) {
           const a = pts[i], b = pts[i + 1];
@@ -2910,6 +2941,15 @@ function chainStep(skin, dt) {
             p.set(H.x + dx * k, H.y + dy * k, H.z + dz * k);
           }
         }
+      }
+      // **METER THE CORRECTION.** `prev` is what the next substep reads its velocity from, so
+      // moving `prev` with the particle is how a projection is stopped from being banked as
+      // speed. At `snap` 1 nothing moves and every correction rings on; at 0 the constraints
+      // are pure position and add no energy whatever.
+      const keep = 1 - CHAIN.snap;
+      if (keep > 0) for (let i = 1; i <= n; i++) {
+        const p = pts[i], q = prev[i], b = pre[i];
+        q.set(q.x + (p.x - b.x) * keep, q.y + (p.y - b.y) * keep, q.z + (p.z - b.z) * keep);
       }
     }
   }
