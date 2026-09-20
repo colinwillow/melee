@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m33</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m34</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m33</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m34</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm33';
+const BUILD = 'm34';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -3129,6 +3129,7 @@ const DUMMIES = [];
 //      whether adding a cell GROWS the run lets a short canopy cell (3.5..6.2) be swallowed by
 //      a full-height wall run (0..6.2), because it grows it by nothing -- and then the whole
 //      canopy comes out as one box reaching the ground. The test is on BOTH ends.
+// COLS:START
 function solidColumns(mesh, cfg, out) {
   const geo = mesh.geometry, pos = geo.attributes.position, idx = geo.index;
   if (!pos) return 0;
@@ -3143,80 +3144,101 @@ function solidColumns(mesh, cfg, out) {
   let cell = cfg.cell;
   while ((Math.ceil(W / cell) + 1) * (Math.ceil(D / cell) + 1) > cfg.maxCells) cell *= 1.5;
   const nx = Math.max(1, Math.ceil(W / cell)), nz = Math.max(1, Math.ceil(D / cell));
-  const lo = new Float32Array(nx * nz).fill(Infinity);
-  const hi = new Float32Array(nx * nz).fill(-Infinity);
+  const hits = new Array(nx * nz);
 
+  // EVERY HEIGHT AT WHICH A VERTICAL RAY THROUGH THE CELL CENTRE CROSSES THE SURFACE.
+  // A vertical face has no XZ area and a vertical ray cannot cross one, which is correct and is
+  // why the crossings all come from floors, roofs and slopes.
   for (let i = 0; i < n; i += 3) {
     const a = idx ? idx.getX(i) : i, b = idx ? idx.getX(i + 1) : i + 1, c = idx ? idx.getX(i + 2) : i + 2;
     A.fromBufferAttribute(pos, a).applyMatrix4(m);
     B.fromBufferAttribute(pos, b).applyMatrix4(m);
     C.fromBufferAttribute(pos, c).applyMatrix4(m);
+    const ax = A.x, az = A.z, ex = B.x - ax, ez = B.z - az, fx = C.x - ax, fz = C.z - az;
+    const det = ex * fz - fx * ez;
+    if (Math.abs(det) < 1e-12) continue;
     const x0 = Math.min(A.x, B.x, C.x), x1 = Math.max(A.x, B.x, C.x);
     const z0 = Math.min(A.z, B.z, C.z), z1 = Math.max(A.z, B.z, C.z);
-    const y0 = Math.min(A.y, B.y, C.y), y1 = Math.max(A.y, B.y, C.y);
-    // the plane, from the face normal
-    const ex = B.x - A.x, ey = B.y - A.y, ez = B.z - A.z;
-    const fx = C.x - A.x, fy = C.y - A.y, fz = C.z - A.z;
-    const nxn = ey * fz - ez * fy, nyn = ez * fx - ex * fz, nzn = ex * fy - ey * fx;
-    const flat = Math.abs(nyn) > 1e-7;
     const ci0 = Math.max(0, Math.floor((x0 - wb.min.x) / cell));
     const ci1 = Math.min(nx - 1, Math.floor((x1 - wb.min.x) / cell));
     const ck0 = Math.max(0, Math.floor((z0 - wb.min.z) / cell));
     const ck1 = Math.min(nz - 1, Math.floor((z1 - wb.min.z) / cell));
+    const ey = B.y - A.y, fy = C.y - A.y;
     for (let ci = ci0; ci <= ci1; ci++) {
-      const cx = wb.min.x + (ci + .5) * cell;
+      const px = wb.min.x + (ci + .5) * cell - ax;
       for (let ck = ck0; ck <= ck1; ck++) {
-        const cz = wb.min.z + (ck + .5) * cell;
-        let a0 = y0, a1 = y1;
-        if (flat) {
-          const y = A.y - (nxn * (cx - A.x) + nzn * (cz - A.z)) / nyn;
-          a0 = a1 = Math.min(y1, Math.max(y0, y));
-        }
+        const pz = wb.min.z + (ck + .5) * cell - az;
+        // **THE BOUNDING BOX PICKS THE CELLS; THE TRIANGLE DECIDES.** Marking every cell in the
+        // bbox is the same "a triangle's bounding box is not its shape" error this file already
+        // has a note about, in XZ this time.
+        const u = (px * fz - fx * pz) / det, v = (ex * pz - px * ez) / det;
+        if (u < -1e-6 || v < -1e-6 || u + v > 1 + 1e-6) continue;
         const k = ci * nz + ck;
-        if (a0 < lo[k]) lo[k] = a0;
-        if (a1 > hi[k]) hi[k] = a1;
+        (hits[k] || (hits[k] = [])).push(A.y + u * ey + v * fy);
       }
     }
   }
 
-  // IS IT JUST A BOX? Most buildings are, and collapsing costs nothing and saves every frame.
-  let used = 0, spanning = 0;
+  // PAIR THE CROSSINGS: in, out, in, out. That is what "inside the solid" MEANS, and it is what
+  // the old lowest-and-highest-triangle reading could not express.
+  // **AN ODD COUNT MEANS THE SHELL IS OPEN UNDERNEATH**, which is what a generated building
+  // usually is -- a skin with no floor. One crossing on the way up is a roof with nothing below
+  // it, and reading that as lowest-to-highest gives a ZERO-HEIGHT box floating at roof level.
+  // Closing it at the model's own floor is the honest repair: the solid runs from the ground to
+  // the surface, which is what a building standing on the ground is.
   const H = wb.max.y - wb.min.y;
-  for (let k = 0; k < lo.length; k++) {
-    if (lo[k] === Infinity) continue;
-    used++;
-    if (hi[k] - lo[k] >= H * cfg.full) spanning++;
+  const spans = new Array(nx * nz);
+  let used = 0, boxy = 0;
+  for (let k = 0; k < hits.length; k++) {
+    const h = hits[k];
+    if (!h || !h.length) continue;
+    h.sort((p, q) => p - q);
+    if (h.length & 1) h.unshift(wb.min.y);
+    const sp = [];
+    for (let i = 0; i + 1 < h.length; i += 2) if (h[i + 1] - h[i] > 1e-4) sp.push(h[i], h[i + 1]);
+    if (!sp.length) continue;
+    spans[k] = sp; used++;
+    if (sp.length === 2 && sp[1] - sp[0] >= H * cfg.full) boxy++;
   }
   if (!used) return 0;
-  if (spanning / used >= cfg.full) {
+
+  // IS IT JUST A BOX? Most buildings are, and collapsing costs nothing and saves every frame.
+  if (boxy / used >= cfg.full) {
     out.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
                minz: wb.min.z, maxz: wb.max.z });
     return 1;
   }
 
-  // merge along X into runs of AGREEING columns
+  // merge along X into runs of AGREEING spans. A cell may hold SEVERAL -- an overhang is a
+  // second span with air under it -- so the open runs are a small list rather than one.
   let made = 0;
+  const push = r => { out.push({ minx: wb.min.x + r.i0 * cell, maxx: wb.min.x + (r.i1 + 1) * cell,
+                                 miny: r.lo, maxy: r.hi,
+                                 minz: wb.min.z + r.ck * cell, maxz: wb.min.z + (r.ck + 1) * cell });
+                      made++; };
   for (let ck = 0; ck < nz; ck++) {
-    let run = null;
-    const flush = () => {
-      if (!run) return;
-      out.push({ minx: wb.min.x + run.i0 * cell, maxx: wb.min.x + (run.i1 + 1) * cell,
-                 miny: run.lo, maxy: run.hi,
-                 minz: wb.min.z + ck * cell, maxz: wb.min.z + (ck + 1) * cell });
-      made++; run = null;
-    };
+    let open = [];
     for (let ci = 0; ci < nx; ci++) {
-      const k = ci * nz + ck;
-      if (lo[k] === Infinity) { flush(); continue; }
-      if (run && Math.abs(lo[k] - run.lo) < cfg.tol && Math.abs(hi[k] - run.hi) < cfg.tol) {
-        run.i1 = ci;
-        run.lo = Math.min(run.lo, lo[k]); run.hi = Math.max(run.hi, hi[k]);
-      } else { flush(); run = { i0: ci, i1: ci, lo: lo[k], hi: hi[k] }; }
+      const sp = spans[ci * nz + ck], next = [];
+      if (sp) for (let i = 0; i < sp.length; i += 2) {
+        const lo = sp[i], hi = sp[i + 1];
+        let r = null;
+        for (let j = 0; j < open.length; j++) {
+          const o = open[j];
+          if (o && Math.abs(o.lo - lo) < cfg.tol && Math.abs(o.hi - hi) < cfg.tol) { r = o; open[j] = null; break; }
+        }
+        if (r) { r.i1 = ci; r.lo = Math.min(r.lo, lo); r.hi = Math.max(r.hi, hi); }
+        else r = { i0: ci, i1: ci, lo, hi, ck };
+        next.push(r);
+      }
+      for (const o of open) if (o) push(o);
+      open = next;
     }
-    flush();
+    for (const o of open) if (o) push(o);
   }
   return made;
 }
+// COLS:END
 
 const BUILDINGS = [];
 function buildBuildings(g) {
@@ -3281,31 +3303,38 @@ function buildBuildings(g) {
                  loY: bb.min.y, mid: mid.clone().divideScalar(BLD.height), cols: null };
     // THE REAL SHAPE, NOT ITS BOUNDING BOX -- and the world matrix has to be current, because
     // the rasteriser reads WORLD triangle positions and the clone was placed a line ago.
-    let cols = 0;
-    if (BLD.cols) {
-      o.updateMatrixWorld(true);
-      const got = [];
-      o.traverse(t => { if (t.isMesh) cols += solidColumns(t, BLD, got); });
-      for (const c of got) BOXES.push(c);
-      b0.cols = got;
-    }
-    if (!cols) BOXES.push(bx);
+    bldCols(b0);
     BUILDINGS.push(b0);
   }
   console.log('[melee] building x' + k.toFixed(3) + ' -> ' + w.toFixed(1) + ' x ' +
               BLD.height.toFixed(1) + ' x ' + d.toFixed(1) + ' m, ' + BLD.at.length + ' placed, ' +
               BUILDINGS.reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) + ' collider boxes');
 }
-// Re-rasterise after a re-size. The columns are WORLD boxes, so they cannot be scaled in place
-// -- and leaving the old ones behind is a building you walk into at its previous size, which is
-// the "picture and collider re-sized apart" bug wearing its other face.
-function bldRecol(b) {
-  if (!b.cols) return;
-  for (const c of b.cols) { const i = BOXES.indexOf(c); if (i >= 0) BOXES.splice(i, 1); }
-  b.cols.length = 0;
-  b.o.updateMatrixWorld(true);
-  b.o.traverse(t => { if (t.isMesh) solidColumns(t, BLD, b.cols); });
-  for (const c of b.cols) BOXES.push(c);
+// WHAT THIS BUILDING CONTRIBUTES TO THE COLLIDER -- columns if they are any good, its bounding
+// box if they are not. ONE function, called at build time AND after a re-size, because the
+// columns are WORLD boxes and cannot be scaled in place: leaving the old ones behind is a
+// building you walk into at its previous size, and two copies of the decision is two places for
+// the fallback below to be missing from.
+function bldCols(b) {
+  // take out whatever it contributes now, whichever of the two that is
+  const drop = c => { const i = BOXES.indexOf(c); if (i >= 0) BOXES.splice(i, 1); };
+  if (b.cols) b.cols.forEach(drop); else drop(b.bx);
+  b.cols = null;
+  let got = [];
+  if (BLD.cols) {
+    b.o.updateMatrixWorld(true);
+    b.o.traverse(t => { if (t.isMesh) solidColumns(t, BLD, got); });
+    // **A COLLIDER NOTHING CAN REACH IS NOT A COLLIDER, AND THAT IS WHAT SHIPPED (m34).** Every
+    // column came out floating at roof height, the rasteriser therefore reported success, the
+    // bounding-box fallback never fired, and `resolveBoxes` skipped every one of them on
+    // `p.y + hh < b.miny` -- *"there is no collider on the building whatsoever"*, exactly. The
+    // rasteriser is fixed above and this is the net under it: walking through a building is
+    // strictly worse than a boxy collider, so the two must not be one silent coin toss.
+    if (!got.some(c => c.miny <= MOVE.step && c.maxy > MOVE.step)) { got = []; note('BLD FLAT'); }
+  }
+  if (got.length) { got.forEach(c => BOXES.push(c)); b.cols = got; }
+  else BOXES.push(b.bx);
+  return b.cols ? b.cols.length : 1;
 }
 
 function buildDummies(g) {
@@ -3627,8 +3656,14 @@ function frame() {
       (gunOut() && committed() ? ' · B' + (p.bias == null ? '--' : dg(p.bias)) + '/C' + dg(p.comp || 0) : '');
     const hue = RIG.showHue
       ? ' · H' + (ALIENU.hue.value * 360).toFixed(0) + '/' + (GUNU.hue.value * 360).toFixed(0) : '';
+    // **HOW MANY BOXES THE BUILDINGS PUT IN THE COLLIDER.** Three builds were spent on *"I walk
+    // through this building"* with nothing on screen able to tell a builder that threw from a
+    // rasteriser that produced boxes nobody can reach -- and there is no console on a phone.
+    // `BX0` is the fault, any number at all is not. `gun<n>CM`'s rule, one system over.
+    const bx = BUILDINGS.length
+      ? ' · BX' + BUILDINGS.reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
 }
 
@@ -3781,7 +3816,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
       // on screen disagrees with anything.
       b.bx.minx = b.x - ww / 2; b.bx.maxx = b.x + ww / 2;
       b.bx.minz = b.z - dd / 2; b.bx.maxz = b.z + dd / 2; b.bx.maxy = H;
-      bldRecol(b);
+      bldCols(b);
     }
     return 'BLD.height = ' + H.toFixed(1) + ' m, footprint ' +
            (BUILDINGS[0] ? (BUILDINGS[0].w * H).toFixed(1) + ' x ' + (BUILDINGS[0].d * H).toFixed(1) : '-') +

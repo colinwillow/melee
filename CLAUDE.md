@@ -615,6 +615,49 @@ same picture from a phone.
   the correct stop is −4.56 — a clean stop failed a made-up threshold. Derive the pass mark from
   the geometry, never from what looks about right.
 
+- **THE COLUMNS WERE ALL FLOATING, AND "IT PRODUCED BOXES" IS NOT "IT PRODUCED A COLLIDER"
+  (m34, `npm run bld`).** *"No. There is no collider on the building whatsoever."* m32 fixed the
+  TDZ and the boxes really were reaching `BOXES` after it -- **and every one of them was
+  hanging in the air at roof height**, so `resolveBoxes` skipped the lot on
+  `p.y + hh < b.miny` and nothing changed on the phone.
+  **A GENERATED BUILDING HAS NO VERTICAL FACES.** m26's reading took a triangle's PLANE height
+  at the cell centre as both the low and the high mark whenever the face was not exactly
+  vertical, and kept the full y span only when it was. That is right for an architectural box
+  and meaningless for a Tripo shell, where every triangle is slanted: each cell got ONE number,
+  lo == hi, and the whole collider came out as zero-height plates lying on the surface. The
+  `flat` branch was the bug and it looked like the careful half of the function.
+  **SO IT IS A PARITY VOXELISER NOW, WHICH IS WHAT "INSIDE THE SOLID" MEANS.** Every height at
+  which a vertical ray through the cell centre crosses the surface, sorted, paired in-out-in-out.
+  A vertical face has no XZ area and a vertical ray cannot cross one, which is correct: the
+  crossings come from floors, roofs and slopes, and a canopy is simply a second pair.
+  **AND AN ODD COUNT MEANS THE SHELL IS OPEN UNDERNEATH**, which a generated building usually
+  is -- a skin with no floor. One crossing on the way up is a roof with nothing below it.
+  Closing it at the model's own floor is the honest repair: the solid runs from the ground to
+  the surface, which is what a building standing on the ground IS.
+  **THE BOUNDING BOX PICKS THE CELLS AND THE TRIANGLE DECIDES**, in XZ now as well -- marking
+  every cell in the bbox is the same "a triangle's bounding box is not its shape" error this
+  file already had a note about, one axis pair over.
+  **AND THERE IS A NET UNDER IT (`bldCols`, `BLD FLAT`).** Walking through a building is
+  strictly worse than a boxy collider, so if no column comes within `MOVE.step` of the ground
+  the columns are thrown away, the bounding box goes in instead and the chip says so. One
+  function does that at build time AND after `mel.bld()` re-sizes, because two copies of the
+  decision is two places for the fallback to be missing from.
+  **THE CHIP CARRIES `BX<n>`.** Three builds went on this with nothing on screen able to tell a
+  builder that threw from a rasteriser that produced boxes nobody can reach, and there is no
+  console on a phone. `BX0` is the fault; any number at all is not.
+  **A VERTICAL COLUMN CANNOT EXPRESS A DOORWAY THROUGH A ROOFED SHELL**, and that is a stated
+  limit rather than an oversight: a ray down through the doorway still hits the roof and the
+  floor, so it reads as inside. Overhangs, canopies and setbacks it does express. m26's note
+  listed a doorway among the things columns fix; that was never true.
+  **`npm run bld` LIFTS THE SHIPPED `solidColumns`** between the `COLS:` markers and runs it
+  over shells built in the harness -- no GLB, because the building is draco and nothing here can
+  decode it. **Verified by running it against the m33 file**: the slanted no-floor shell comes
+  back **8 of 335 boxes touching the ground** against 222 of 236 after.
+  **AND ITS FIRST TWO VERSIONS BOTH MEASURED NOTHING.** The shells all had VERTICAL walls, which
+  is the one case m33 got right, so it passed the broken code -- a harness whose fixtures avoid
+  the failing shape is a harness that measures a different asset. And the canopy assertion asked
+  for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
+  correct answer: **derive the pass mark from the geometry, never from what looks about right.**
 - **A BOUNDING BOX IS NOT A BUILDING (m26, `solidColumns`).** *"I'm just running into invisible
   walls."* Right, and it is structural: a single AABB is solid everywhere the SHAPE is not -- a
   doorway, a setback, a tapered wall, the air over a canopy. So the collider is rasterised out

@@ -12,7 +12,8 @@
     "gait": "node tools/gait.mjs",
     "rig": "node tools/rig.mjs",
     "sim": "node tools/sim.mjs",
-    "glsl": "node tools/glsl.mjs"
+    "glsl": "node tools/glsl.mjs",
+    "bld": "node tools/bld.mjs"
   },
   "type": "module"
 }
