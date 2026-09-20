@@ -683,6 +683,27 @@ same picture from a phone.
   **The cost is nothing**: ~138 particles at 3 constraint passes is a few thousand flops against
   a mixer that already skins 11,000 vertices. It belongs to the ARTICULATE characters only —
   a crowd copy runs without it.
+  **EVERY RATE IS PER SECOND, AND THE FIRST VERSION APPLIED THEM PER SUBSTEP (m29).** *"The tail
+  is kind of glitchy, not really moving much. The hair moved a tiny bit... but when she got up
+  on the cube it jiggled really nicely."* One arithmetic error described precisely: at `drag`
+  .06 a substep and 90 substeps a second the velocity retained **0.94^90 = 0.4% per second** --
+  dead inside a tenth of a second -- and `stiff` .16 a substep glued every particle to the pose
+  in **69 ms**. Small motions were erased entirely and only a big impulse could show at all.
+  Converted with `exp(-k*h)` per substep, which is **this file's own standing rule about never
+  scrubbing a value with a bare per-frame factor** -- it had simply never been applied here.
+  After: hair retains 25% of its velocity per second and settles toward the pose in 0.20 s at
+  the root, 1.0 s at the tip.
+  **AND THE CONE CLAMP DOUBLE-NEGATED ACROSS w = 0 (m29).** q and -q are the same rotation, so
+  on the far side the stored AXIS is flipped too -- clamping to `-cone` about an already flipped
+  axis negates twice and the joint SNAPS the wrong way. That is the "glitchy" half, and it is
+  the same q/-q trap this file already has a note about one measurement over. Canonicalise all
+  four components first; then the angle is always in [0, pi] and the clamp is unsigned.
+  **AND SIDEDNESS IS THE FILE'S TO DECIDE (m29).** Forcing `FrontSide` was right on the BUILDING
+  -- a closed shell has no use for its inside -- and wrong on a CHARACTER: hair cards, a skirt
+  and anything with an open edge are authored to be seen from both sides, and on a mesh whose
+  winding is inverted it shows you the inside, which reads as *"seeing the back of the
+  normals"*. The TRANSPARENCY fix stays, because BLEND genuinely does sort against itself.
+  `SHE.side` is the dial and 'auto' honours the export.
   `mel.she.spin = 2` turns her on the spot, which is the best look at what the chains are doing;
   `mel.CHAIN.on = 0` freezes the solver so the authored pose can be compared against it.
 
