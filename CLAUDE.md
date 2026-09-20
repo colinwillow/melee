@@ -132,6 +132,19 @@ same picture from a phone.
   He replaced this one IN PLACE, 4K down to 2048, same path, new bytes: without the hash a phone
   that already had the URL keeps the 4K for ever, and from where he is standing that is
   indistinguishable from the resize not having happened.
+- **HER MATERIAL WAS NEVER BROKEN AND THE `alphaTest` WAS MINE (m30).** *"Normals are still
+  messed up... I can re-export the file, I don't know what I did to the materials."* He did
+  nothing. Read straight out of the file: metallic 0, roughness 0.9, one base colour texture,
+  **no normal map**, a grey `KHR_materials_specular` -- there is nothing wrong in there.
+  **What `alphaTest .5` does to a texture whose alpha is not a cutout mask is punch holes
+  through her, and what you see through a hole is the inside of her far surface** -- which is
+  *"like I'm seeing the back of the normals"* exactly. It survived m29 because m29 only took
+  back the sidedness.
+  **A FIX THAT IS NOT JUSTIFIED BY A MEASUREMENT IS A SECOND BUG**, and this was the third time
+  in two builds that two things about one material were changed at once. What stays is the one
+  change that IS justified: `BLEND` is the exporter default whenever a texture carries an alpha
+  channel at all, and a transparent skin sorts against itself, so the flag comes off. Nothing
+  else is touched. `SHE.alphaTest` exists and is 0.
 - **`models/characters/alien_female_purple.glb`** — 10,966 tris, one material, one 2K WebP
   (406 KB on the wire, ~22 MB resident), draco + `EXT_texture_webp` + `KHR_materials_specular`.
   **Authored height 0.9995 m**, toes read **+1.2 deg** so she faces +Z like the alien. **No
@@ -698,6 +711,14 @@ same picture from a phone.
   axis negates twice and the joint SNAPS the wrong way. That is the "glitchy" half, and it is
   the same q/-q trap this file already has a note about one measurement over. Canonicalise all
   four components first; then the angle is always in [0, pi] and the clamp is unsigned.
+  **CREAMY IS CRITICAL DAMPING, AND IT IS DERIVED FROM THE STIFFNESS (m30).** *"Everything is
+  kind of wiggling around a lot now -- can we add damping? I had a good amount of it and it was
+  making it nice and smooth and creamy."* What creamy IS, is critical damping: a spring of rate
+  k stops ringing at exactly `c = 2*sqrt(k)`, and anything under that overshoots, which is the
+  wiggle. Typing the two separately means they drift apart the moment either is tuned, so
+  `damping` is a RATIO -- 1.0 critical, over creamy, under springy -- and the drag falls out of
+  whatever stiffness that particle actually has. The tip is softer than the root, so its damping
+  is softer too, by construction and with no second number.
   **AND SIDEDNESS IS THE FILE'S TO DECIDE (m29).** Forcing `FrontSide` was right on the BUILDING
   -- a closed shell has no use for its inside -- and wrong on a CHARACTER: hair cards, a skirt
   and anything with an open edge are authored to be seen from both sides, and on a mesh whose

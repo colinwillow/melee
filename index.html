@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m29</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m30</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m29</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m30</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm29';
+const BUILD = 'm30';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"a8e1c744","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -701,12 +701,20 @@ const CHAIN = {
   // is exactly why *"when she got up on the cube it jiggled really nicely"* and nothing else
   // did. Converted with `exp(-k*h)` per substep, which is this file's own rule about never
   // scrubbing a value with a bare per-frame factor -- it just had never been applied here.
+  // **AND THE DAMPING IS DERIVED FROM THE STIFFNESS, NOT TYPED BESIDE IT.** *"Can we add
+  // damping -- I had a good amount of it and it was making it nice and smooth and creamy."*
+  // What creamy IS, is CRITICAL damping: a spring of rate k stops ringing at exactly
+  // `c = 2*sqrt(k)`, and anything under that overshoots and wobbles, which is the wiggle.
+  // Typing the two separately means they drift apart the moment either is tuned, so `damping`
+  // is a RATIO -- 1.0 is critical, over is creamy, under is springy -- and the drag falls out
+  // of whatever stiffness the particle actually has. The tip is softer than the root, so its
+  // damping is softer too, by construction and without a second number.
   kinds: [
-    //              gravity  drag/s  stiff/s  tip/s  cone
-    { test: /^Hair/i, g: -7.5, drag: 1.4, stiff: 5.0, tipStiff: 1.0, cone: .70 },
-    { test: /^Tail/i, g: -9.5, drag: 2.0, stiff: 4.0, tipStiff:  .8, cone: .78 },
+    //              gravity  stiff/s  tip/s  damping  cone
+    { test: /^Hair/i, g: -7.5, stiff: 5.0, tipStiff: 1.2, damping: 1.15, cone: .70 },
+    { test: /^Tail/i, g: -9.5, stiff: 4.0, tipStiff: 1.0, damping: 1.30, cone: .78 },
   ],
-  def: { g: -8, drag: 1.6, stiff: 4.5, tipStiff: .9, cone: .75 },
+  def: { g: -8, stiff: 4.5, tipStiff: 1.0, damping: 1.2, cone: .75 },
   // WHAT THE CHAINS BUMP INTO. Without these the hair goes through her shoulders, which is the
   // one thing that makes this read as broken rather than as hair. A fraction of her height, so
   // a re-export at any size still fits.
@@ -733,6 +741,7 @@ const SHE = {
   at: 1.4,           // how near a waypoint counts as arrived
   // 'auto' honours the export, 'front' culls backfaces, 'double' draws both. See `buildShe`.
   side: 'auto',
+  alphaTest: 0,      // her alpha is not a cutout mask; at .5 it punches holes through her
 };
 
 const DUMMY = {
@@ -2835,10 +2844,13 @@ function chainStep(skin, dt) {
       // **PARTICLE 0 IS PINNED TO THE SKELETON**, which is the whole mechanism: it goes exactly
       // where her head goes, and everything behind it arrives late.
       bones[0].getWorldPosition(pts[0]); prev[0].copy(pts[0]);
-      // per SECOND, converted to this substep -- see the note on `CHAIN.kinds`
-      const damp = Math.exp(-kind.drag * h);
-      const sK = 1 - Math.exp(-kind.stiff * h), tK = 1 - Math.exp(-kind.tipStiff * h);
+      // per SECOND, converted to this substep -- see the note on `CHAIN.kinds`. The drag is
+      // `2*sqrt(stiff) * damping`, which is critical damping scaled, so the two can never
+      // drift apart when one of them is tuned.
       for (let i = 1; i <= n; i++) {
+        const u = (i - 1) / Math.max(1, n - 1);
+        const k = lerp(kind.stiff, kind.tipStiff, u);
+        const damp = Math.exp(-2 * Math.sqrt(k) * kind.damping * h);
         const p = pts[i], q = prev[i];
         const vx = (p.x - q.x) * damp, vy = (p.y - q.y) * damp, vz = (p.z - q.z) * damp;
         q.copy(p);
@@ -2857,7 +2869,8 @@ function chainStep(skin, dt) {
         _cq.multiply(C.home[i]);
         _cd.copy(C.axis[i]).applyQuaternion(_cq).normalize().multiplyScalar(rest[i]);
         _ch.add(_cd);
-        pts[i + 1].lerp(_ch, lerp(sK, tK, i / Math.max(1, n - 1)));
+        const k = lerp(kind.stiff, kind.tipStiff, i / Math.max(1, n - 1));
+        pts[i + 1].lerp(_ch, 1 - Math.exp(-k * h));
       }
       for (let it = 0; it < CHAIN.iters; it++) {
         for (let i = 0; i < n; i++) {
@@ -2948,17 +2961,20 @@ function buildShe(g) {
     const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
     for (const m of mats) {
       if (!m.isMeshStandardMaterial) continue;
-      // **`BLEND` IS THE EXPORTER DEFAULT WHENEVER THE TEXTURE CARRIES ALPHA, AND IT MAKES HER
-      // SEE-THROUGH**: a transparent skin sorts against ITSELF, so her far side draws over her
-      // near side. A CUTOUT does the same job for hair edges and writes depth like anything
-      // else, so that part stays.
-      if (m.transparent) { m.transparent = false; m.alphaTest = .5; }
-      // **BUT THE SIDEDNESS IS THE FILE'S TO DECIDE.** Forcing `FrontSide` on the building was
-      // right -- a closed shell has no use for its inside. Forcing it on a CHARACTER is not:
-      // hair cards, a skirt and anything with an open edge are authored to be seen from both
-      // sides, and on a mesh whose winding is inverted it shows you the inside, which is
-      // *"like I'm seeing the back of the normals"*. `SHE.side` is the dial, and 'auto' means
-      // whatever the export asked for.
+      // **THE EXPORT IS FINE AND THE `alphaTest` WAS MINE.** Read straight out of the file:
+      // metallic 0, roughness 0.9, one base colour texture, NO normal map, a grey
+      // `KHR_materials_specular` -- there is nothing wrong in there. What `alphaTest .5` does
+      // to a texture whose alpha is NOT a cutout mask is punch holes through her, and what you
+      // see through a hole is the inside of her far surface. That is *"like I'm seeing the back
+      // of the normals"* exactly, and it survived m29 because m29 only took back the sidedness.
+      // **A FIX THAT IS NOT JUSTIFIED BY A MEASUREMENT IS A SECOND BUG**, and this is the third
+      // time in two builds I have changed two things about her material at once.
+      // What DOES stay: `BLEND` is the exporter default whenever a texture carries an alpha
+      // channel at all, and a transparent skin sorts against ITSELF -- her far side drawing
+      // over her near side. With the alpha opaque that flag buys nothing and risks that, so it
+      // comes off. Nothing else about the material is touched.
+      if (m.transparent) { m.transparent = false; m.depthWrite = true; }
+      m.alphaTest = SHE.alphaTest;                 // 0. Raise it only if she needs cut-out hair.
       if (SHE.side === 'front') m.side = THREE.FrontSide;
       else if (SHE.side === 'double') m.side = THREE.DoubleSide;
       if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffffff); }
