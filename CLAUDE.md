@@ -115,9 +115,23 @@ same picture from a phone.
   **Tripo writes `doubleSided: true` on everything** and it is turned off — on a closed shell
   that is pure wasted fill on the one part of a mobile GPU that is actually scarce, and it
   disables backface culling for no benefit at all. **Check it on every generated asset.**
-  **The 842 KB WebP is 842 KB on the WIRE and full RGBA in memory** — probably ~21 MB for a
-  2048². Compression in the file only buys download time. `gltf-transform uastc`/`etc1s` to KTX2
-  is what shrinks the resident cost, and that is the one that kills a tab on iOS.
+  **2048 IS THE RIGHT CALL AND IT WAS CHECKED RATHER THAN ARGUED.** Texel density, not how it
+  looks in a viewport: the atlas unwraps the WHOLE shell, so ~4.19M texels spread over roughly
+  400 m² of surface is **~80 texels per metre** after packing waste. Against a 390 px phone at
+  dpr 3, a 55° lens at fifteen metres sees 15.6 m across 1170 physical pixels — **75 px per
+  metre.** So 2048 is almost exactly 1:1 at the distance the building is actually looked at, and
+  1024 would be 40 against 75, which is the soft he saw. **Judging a map's size by zooming in
+  in Blender measures a camera the game never uses.**
+  **The 400 KB WebP is 400 KB on the WIRE and full RGBA in memory** — 2048² × 4 × 1.33 with
+  mips is **~22 MB**. Compression in the file only buys download time. One building at that is
+  nothing; TWENTY distinct ones is 440 MB and a dead tab. **The fix is never a smaller map** --
+  it is `gltf-transform uastc`/`etc1s` to KTX2, which stays GPU-compressed in MEMORY and takes
+  22 MB to about 5.6 with the same picture. Do it when the count makes it matter.
+  **AND `models/buildings` HAD TO GO INTO `bump.mjs`'s `DIRS`** (m25) — `readdirSync` is not
+  recursive, so a new asset folder is a new entry there or every file in it goes stale silently.
+  He replaced this one IN PLACE, 4K down to 2048, same path, new bytes: without the hash a phone
+  that already had the URL keeps the 4K for ever, and from where he is standing that is
+  indistinguishable from the resize not having happened.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
   height; hammer 0.614 m = 68%. "As authored" means proportional to the wearer, so they keep
   those percentages at any `RIG.height` and **no scale is applied to either**.
