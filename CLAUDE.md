@@ -384,12 +384,52 @@ same picture from a phone.
   **Locked is a different MARK, not a brighter one**: it goes warm and the brackets stop
   breathing and snap in, so "the gun has something" is a glance rather than a comparison against
   a memory of what it looked like a second ago.
-- **THE MARK AND THE SHOT ARE ONE BEARING, BY CONSTRUCTION.** `aimPoint` walks from the muzzle
-  along `cam.az`, the reticle is drawn where that lands, and `fireBolt` aims at the same point.
-  Two places agreeing is not the same as one place deciding — **a mark the gun does not keep is
-  worse than no mark at all**. And the walk **bisects**: a quantised probe only ever returns
-  values a step apart, and because he is moving the phase of the walk slides under him, so the
-  break lands a step earlier or later each frame and the mark jumps a metre along the shot.
+- **THE MARK AND THE SHOT HAVE TO BE ONE ANSWER, AND "BY CONSTRUCTION" IS A CLAIM THAT HAS TO
+  BE TRUE (m20).** *"Even though it was locked on and the reticle was locked on, as soon as you
+  release it shoots where the camera is pointing and not where the reticle is. I've had this
+  exact same problem in other games."* The note that used to sit here said this was impossible:
+  `aimPoint` walks from the muzzle along `cam.az`, the reticle is drawn at what it finds and
+  `fireBolt` aims at the same point. All true -- **and `paintRetic` drew the mark on the LOCKED
+  MAN instead, while `fireBolt` went on calling `aimPoint`, which has never heard of the lock.**
+  Two places agreeing about the unlocked case and disagreeing about the locked one is exactly
+  what "by construction" is supposed to rule out, so the claim was the bug hiding the bug.
+  `aimTarget()` is the one answer now and both call it. **A mark the gun does not keep is worse
+  than no assist at all** -- and worse than it sounds, because the lock is what makes you stop
+  aiming.
+- **AN ASSIST'S CONE IS SIZED FOR WHAT IT DELIVERS, NOT FOR WHAT IT DRAWS (m20).** `LOCK.cone`
+  was 1.05 rad -- **sixty degrees either side** to acquire, and with `LOCK.keep` **eighty-seven**
+  to hold. That is survivable for a mark that only draws and absurd for one the round follows:
+  *"I was aiming almost ninety degrees away from one cop and it kept locking onto one further to
+  the left."* .30 / .12 / 1.25 -- about 17 deg to acquire, 7 once the shot is loaded. The
+  subtlety is the cone; the DELIVERY still has to be total, or it is the bullet above again.
+- **A RETICLE IS A POINTER, AND AT 146 px IT COVERED A MAN AT TWENTY METRES.** 74. The one thing
+  a mark must not do is hide the thing it is marking.
+- **A BLOW IS THE LIMB ARRIVING, NOT A RANGE CHECK (m20).** *"The cops are getting hit before the
+  swing even happens. It's just sort of: are you within range? did you melee? yes, OK, cop has
+  been hit. It's not really actually having a velocity collider effect."* Precisely what it was,
+  in two places at once:
+    1. `dummyHit` tested a CIRCLE about the player's centre and used `dirH` only to decide which
+       way to throw him -- **so there was no direction test at all** and a man standing BEHIND
+       him was hit by a punch thrown forwards.
+    2. and with a melee lock, the contact fired the moment he was inside `MELEE.reach`, which on
+       a nine-metre lunge is well before the arm has begun to move. `MELEE.lockAt` then fired it
+       on a timer if he never arrived.
+  **So the fist, the boot and the weapon's far end are SWEPT.** Each frame of a strike their
+  world positions come off the rig and the segment from last frame to this one is tested against
+  the body as a vertical cylinder. Nothing is typed per clip and nothing has to say which strike
+  is a punch and which is a kick: whichever limb reaches him is the one that lands.
+  **AND THE SPEED IS MEASURED IN HIS OWN FRAME.** A fist carried along by a nine-metre lunge is
+  not a punch -- without subtracting the root's own travel every strike connects with everything
+  it runs past, which is a range check wearing a sweep's clothes.
+  **The sweep runs every frame of the strike even while the window is shut**, because the
+  positions it measures against have to stay exactly one frame old; a sweep seeded three frames
+  back is a segment across half the room. It is re-seeded at the start of each strike for the
+  same reason.
+  **`MELEE.at` stops FIRING the blow and only opens the window**, and `MELEE.arrive` came down
+  to 1.05 m so the solved lunge lands inside what a swept fist can actually reach. A swing that
+  does not reach him now misses, which is the point.
+  **The chip marks a connected swing with `!`** (`melee2!`, `swing!`) -- "it hit him before the
+  swing" and "it never reached him at all" are opposite bugs and one picture from a phone.
 - **THE MUZZLE IS MEASURED; `weapon_tip` IS NOT IT.** On the blaster the mesh runs from +11.7 to
   −38.2 along the mount's X while the tip marker sits at −14.3, about 28% along. The marker pair
   defines the mount's POSITION and AXIS, which is all it is for. The muzzle is the far end of

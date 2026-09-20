@@ -176,7 +176,8 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
    should look is a look-at-it decision and those do not belong in a commit. */
 #retic {
   position: fixed; z-index: 3; left: 0; top: 0;
-  --size: 146px;               /* was 210 */
+  --size: 74px;                /* 210 -> 146 -> 74. A mark is a POINTER: at 146 it covered a
+                                  man at twenty metres, which is the one thing it must not do. */
   --w: 1;                      /* stroke weight multiplier */
   --h: 196;                    /* the hue it rests at -- azure */
   --lh: 34;                    /* and the one it locks at -- amber */
@@ -264,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m19</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m20</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m19</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m20</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -305,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm19';
+const BUILD = 'm20';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -441,8 +442,14 @@ const MELEE = {
   aimCone: .95,        // ~54 degrees either side of the flick
   aimNear: .35,        // what a metre of distance is worth against a metre of miss
   maxV: 21,            // the fastest a lunge may be solved to
-  arrive: 1.25,        // the gap he is solved to leave -- arm's length, not his centre
-  lockAt: .58,         // and if he never arrives, the blow swings anyway at this much of the clip
+  arrive: 1.05,        // the gap he is solved to leave -- arm's length, not his centre. It has
+                       // to be inside what the swept fist can REACH now that the sweep decides:
+                       // the hand is about .75 m off his centre at full extension and carries
+                       // `STRIKE.r`, against a body surface at `arrive - DUMMY.r`.
+  // `lockAt` IS DEAD AND KEPT AS A NOTE. It fired the blow on a timer when the lunge had not
+  // arrived, which is the *"cop has been hit"* half of the range-check complaint. A swing that
+  // does not reach him now simply misses -- see `STRIKE`.
+  lockAt: .58,
   carryAvg: .725,      // the `carry` profile's average speed: carry + (1 - carry) / 2
   finishRange: 19,     // the charged swing reaches about double what a strike does
   // and what each one is worth. The finisher and the charged swing put him down outright.
@@ -467,6 +474,36 @@ const MELEE = {
   // was, so the hold buys the distance -- and the UP term takes him off the ground, which is
   // what makes it land as a blow rather than arrive as a shuffle.
   finishV: 18.0, finishUp: 4.6, finishMin: .45,
+};
+
+// ============================================================================================
+// A BLOW IS THE LIMB ARRIVING, NOT A RANGE CHECK
+//
+// *"The cops are getting hit before the swing even happens. It's just sort of: are you within
+// range? did you melee? yes, OK, cop has been hit. It's not really actually having a velocity
+// collider effect."* Exactly what it was, in two places:
+//   1. `dummyHit` tested a CIRCLE about the player's centre and used `dirH` only to decide
+//      which way to throw him -- so there was no direction test at all and a man standing
+//      BEHIND him was hit by a punch thrown forwards.
+//   2. and once the melee assist had a target, the contact fired the moment he was within
+//      reach, which on a nine-metre lunge is well before the arm has started moving.
+//
+// **SO THE FIST, THE BOOT AND THE HAMMER HEAD ARE SWEPT.** Each frame of a strike their world
+// positions are read off the rig and the segment from last frame to this one is tested against
+// the body as a vertical cylinder. It needs nothing typed per clip and nothing to say which
+// strike is a punch and which is a kick: whichever limb actually reaches him is the one that
+// lands, which is the whole of what he is asking for.
+//
+// **AND THE SPEED IS MEASURED IN HIS OWN FRAME.** A fist carried along by a nine-metre lunge
+// is not a punch -- without subtracting the root's own travel, every strike connects with
+// everything it runs past and we are straight back to a range check wearing a sweep's clothes.
+const STRIKE = {
+  // both hands, both feet. The weapon's own far end is added when one is out.
+  bones: ['mixamorig_RightHand', 'mixamorig_LeftHand', 'mixamorig_RightFoot', 'mixamorig_LeftFoot'],
+  r: .26,            // the fist/boot, as a sphere swept along its own path
+  from: .55,         // the window opens at this fraction of the clip's authored contact frame
+  to: 1.0,           // and runs to the end of the strike
+  swing: 2.4,        // m/s IN HIS OWN FRAME. Under this a limb is being carried, not swung.
 };
 
 const WEAP = {
@@ -553,11 +590,15 @@ const DUMMY = {
 const LOCK = {
   range: 24,        // how far he will take a target
   // THE RETICLE'S SHRINKING RING *IS* THE LOCK WINDOW -- that is what it is drawing. It opens
-  // wide the moment the trigger arms and closes as the charge fills, so holding a target inside
-  // it is the thing you are actually doing while the shot winds up.
-  cone: 1.05, coneTight: .30,
-  keep: 1.45,       // and whatever is already locked keeps it on a wider cone, or the mark
-                    // flickers between two men standing shoulder to shoulder
+  // the moment the trigger arms and closes as the charge fills, so holding a target inside it
+  // is the thing you are actually doing while the shot winds up.
+  // **AN ASSIST, NOT A MAGNET.** These were 1.05 / .30 / 1.45 -- SIXTY degrees either side to
+  // acquire and, with `keep`, EIGHTY-SEVEN to hold, which is *"I was aiming almost ninety
+  // degrees away from one cop and it kept locking onto one further left"* stated as arithmetic.
+  // A number tuned for a mark that only DRAWS is far too wide for one the shot now follows.
+  cone: .30, coneTight: .12,
+  keep: 1.25,       // and whatever is already locked keeps it on a slightly wider cone, or the
+                    // mark flickers between two men standing shoulder to shoulder
   near: .5,         // how much nearer beats how much straighter, when two are in the cone
   face: 9,          // how fast he comes round to it
   cam: 2.4,         // and how fast the lens does
@@ -1445,6 +1486,22 @@ function aimPoint() {
   return { p: _ap, hit, dist: d };
 }
 
+// WHERE THE SHOT IS ACTUALLY GOING. **THE MARK AND THE BOLT ARE ONE ANSWER, AND FOR FIVE
+// BUILDS THEY WERE TWO.** `paintRetic` drew the mark on the LOCKED MAN while `fireBolt` called
+// `aimPoint`, which walks down `cam.az` and has never heard of the lock -- so the reticle sat on
+// him and the round went past him, which is *"even though it was locked on, as soon as you
+// release it shoots where the camera is pointing and not where the reticle is"*.
+// My own note said this was true BY CONSTRUCTION. It was not: two places were agreeing about
+// the unlocked case and disagreeing about the locked one, which is exactly what "by
+// construction" is supposed to rule out. **A mark the gun does not keep is worse than no assist
+// at all** -- and it is worse than it sounds, because the lock is what makes you stop aiming.
+function aimTarget() {
+  const L = player.lock;
+  if (!L) return aimPoint();
+  return { p: _ap.set(L.root.position.x, L.root.position.y + DUMMY.h * LOCK.chest, L.root.position.z),
+           hit: 1, lock: 1, dist: Math.hypot(L.root.position.x - player.pos.x, L.root.position.z - player.pos.z) };
+}
+
 // ---- the charge ball at the muzzle ----
 const chargeFx = glowBall(.22);
 chargeFx.visible = false;
@@ -1454,7 +1511,7 @@ scene.add(chargeFx);
 const BOLTS = [];
 function fireBolt(chg) {
   const m = muzzleWorld().clone();
-  const a = aimPoint();
+  const a = aimTarget();
   const dir = new THREE.Vector3(a.p.x - m.x, a.p.y - m.y, a.p.z - m.z);
   if (dir.lengthSq() < 1e-6) dir.set(Math.sin(cam.az), 0, Math.cos(cam.az));
   dir.normalize();
@@ -1517,16 +1574,16 @@ function paintRetic() {
   // LOCKED, THE MARK IS ON HIM -- not on whatever the level walk happened to find. The mark IS
   // the promise, and a mark that sits beside the thing the gun is committed to is worse than
   // no mark at all.
-  const L = p.lock;
-  const a = L ? { p: _ap.set(L.root.position.x, L.root.position.y + DUMMY.h * LOCK.chest, L.root.position.z), hit: 1 }
-              : aimPoint();
+  const a = aimTarget();
   _rv.copy(a.p).project(camera);
   if (_rv.z > 1) { reticEl.classList.remove('on'); return; }
   const x = (_rv.x * .5 + .5) * innerWidth, y = (-_rv.y * .5 + .5) * innerHeight;
   reticEl.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
   reticEl.style.setProperty('--c', p.chg.toFixed(3));
   reticEl.classList.add('on');
-  reticEl.classList.toggle('lock', !!a.hit);
+  // LOCKED IS A DIFFERENT MARK -- and it means the shot is COMMITTED to a body, not merely
+  // that the level walk found a wall, which is what `hit` says and is true almost everywhere.
+  reticEl.classList.toggle('lock', !!a.lock);
 }
 
 // ============================================================================================
@@ -1749,7 +1806,7 @@ function meleeGo(h) {
   if (!rig.actions[name]) { note('NO CLIP ' + name); return; }
   p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name;
   p.meleeDur = MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
-  p.meleeChain = 0; p.melFired = 0;
+  p.meleeChain = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   const base = MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
   // what this strike could cover at full tilt is what it is allowed to acquire inside
   const reachMax = MELEE.maxV * p.meleeDur * MELEE.carryAvg;
@@ -1784,7 +1841,7 @@ function chargeRelease() {
   const full = t0 >= MELEE.charge * .5;
   p.charge = 0; p.chargeT = 0;
   if (!full) return;                                   // a short hold is not a swing
-  p.chargeGo = 1; p.chargeGoT = 0; p.melFired = 0;
+  p.chargeGo = 1; p.chargeGoT = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   // IT LAUNCHES AT WHOEVER HE IS LOCKED ON. That is the whole point of having orbited him:
   // you let go and you arrive. Twice a strike's range, and the launch is solved for the gap
   // exactly the way a strike's is.
@@ -2096,27 +2153,20 @@ function stepPlayer(dt) {
     // half the launch speed, so every metre of travel has to be bought with a speed spike at
     // the front -- which reads as a rocket rather than a lunge.
     const k = u < MELEE.carry ? 1 : 1 - (u - MELEE.carry) / (1 - MELEE.carry);
-    // THE BLOW LANDS ON ITS CONTACT FRAME, once.
-    if (!p.melFired && !p.roll) {
+    // THE BLOW LANDS WHEN THE LIMB REACHES HIM, AND NOT BEFORE. `at` no longer FIRES the hit --
+    // it opens the window the sweep is allowed to count in, so a swing that misses misses.
+    if (!p.roll) {
       const at = p.melee ? MELEE.at[Math.min(p.meleeIx, MELEE.at.length - 1)] : MELEE.finishAt;
-      // WHEN HE IS LOCKED, THE CONTACT FRAME IS WHEN HE ARRIVES. `at` is where the fist lands
-      // IN THE CLIP -- right for a jab thrown on the spot, wrong for a lunge still closing four
-      // metres, which swings at the air he is about to arrive in. The picture and its
-      // consequence have to be ONE event. It swings anyway at `lockAt` if he never gets there.
-      let go = u >= at;
-      if (p.melTgt) {
-        const t2 = aimAt(p.melTgt);
-        go = t2.dist <= MELEE.reach || u >= MELEE.lockAt;
-      }
-      if (go) {
+      const pw = p.melee ? MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)]
+                         : 1.0 * (p.chargeGoK || 1);
+      // THE SWEEP RUNS EVERY FRAME even while the window is shut, because the previous
+      // positions it measures against have to stay one frame old -- a sweep seeded three
+      // frames back is a segment through half the room.
+      if (strikeSweep(dt, pw, !p.melFired && u >= at * STRIKE.from && u <= STRIKE.to)) {
         p.melFired = 1;
-        const pw = p.melee ? MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)]
-                           : 1.0 * (p.chargeGoK || 1);
-        if (dummyHit(p.pos.x, p.pos.z, p.faceH, pw, MELEE.reach)) {
-          // a hammer rings and a fist thuds -- the weapon decides, not the strike
-          if (slotNow().charge) snd('clang', { g: .85, r: .9 + Math.random() * .2 });
-          else snd('thud', { g: .8, r: 1.05 + Math.random() * .15 });
-        }
+        // a hammer rings and a fist thuds -- the weapon decides, not the strike
+        if (slotNow().charge) snd('clang', { g: .85, r: .9 + Math.random() * .2 });
+        else snd('thud', { g: .8, r: 1.05 + Math.random() * .15 });
       }
     }
     const h = p.roll ? p.rollH : p.faceH;
@@ -2439,6 +2489,55 @@ function buildDummies(g) {
 
 // WHICH WAY HE FALLS IS WHICH WAY THE BLOW WAS TRAVELLING. A blow going the same way he faces
 // hit his BACK, so he goes over forwards.
+// A SWEPT SPHERE AGAINST A STANDING BODY. The body is a vertical cylinder, so the XZ problem
+// is a segment against a point and the height is one range test at the parameter it closes at.
+function segBody(a, b, cx, cz, rad, hTop) {
+  const dx = b.x - a.x, dz = b.z - a.z, L2 = dx * dx + dz * dz;
+  let t = L2 > 1e-9 ? ((cx - a.x) * dx + (cz - a.z) * dz) / L2 : 0;
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  const ex = a.x + dx * t - cx, ez = a.z + dz * t - cz;
+  if (ex * ex + ez * ez > rad * rad) return false;
+  const y = a.y + (b.y - a.y) * t;
+  return y > -STRIKE.r && y < hTop + STRIKE.r;
+}
+const _sw = new THREE.Vector3();
+// Runs every frame of a strike -- `live` only gates whether a contact COUNTS, because the
+// previous positions have to stay fresh whether the window is open or not.
+function strikeSweep(dt, power, live) {
+  const p = player;
+  const prev = p.swPrev || (p.swPrev = {});
+  const dpx = p.pos.x - (p.swRootX == null ? p.pos.x : p.swRootX);
+  const dpz = p.pos.z - (p.swRootZ == null ? p.pos.z : p.swRootZ);
+  p.swRootX = p.pos.x; p.swRootZ = p.pos.z;
+  const w = WEAP.worn[slotNow().key];
+  let hit = 0;
+  for (let i = 0; i <= STRIKE.bones.length; i++) {
+    const wep = i === STRIKE.bones.length;
+    if (wep) { if (!(w && w.muzzle && w.host)) continue; _sw.copy(muzzleWorld()); }
+    else { const b = rig.bones[STRIKE.bones[i]]; if (!b) continue; b.getWorldPosition(_sw); }
+    const key = wep ? '#weapon' : STRIKE.bones[i];
+    const q = prev[key];
+    if (!q) { prev[key] = _sw.clone(); continue; }
+    if (live && !hit) {
+      // IN HIS OWN FRAME -- the root's travel taken back out, or the lunge does the hitting.
+      const lx = (_sw.x - q.x) - dpx, ly = _sw.y - q.y, lz = (_sw.z - q.z) - dpz;
+      if (Math.hypot(lx, ly, lz) / Math.max(1e-4, dt) > STRIKE.swing) {
+        for (const d of DUMMIES) {
+          if (d.cool > 0) continue;
+          if (!segBody(q, _sw, d.root.position.x, d.root.position.z, DUMMY.r + STRIKE.r,
+                       d.root.position.y + DUMMY.h)) continue;
+          // the blow travels the way the LIMB was going, which is the direction already stored
+          const bh = Math.atan2(_sw.x - q.x, _sw.z - q.z);
+          dummyBlow(d, Math.hypot(lx, lz) > .02 ? bh : p.faceH, power);
+          hit = 1; break;
+        }
+      }
+    }
+    q.copy(_sw);
+  }
+  return hit;
+}
+
 function dummyHit(x, z, dirH, power, reach) {
   let hit = 0;
   for (const d of DUMMIES) {
@@ -2446,37 +2545,44 @@ function dummyHit(x, z, dirH, power, reach) {
     const dx = d.root.position.x - x, dz = d.root.position.z - z;
     if (dx * dx + dz * dz > (reach + DUMMY.r) * (reach + DUMMY.r)) continue;
     hit = 1;
-    d.cool = DUMMY.cool;
-    // A MAN ON THE GROUND IS STILL A BODY. Hitting him while he is down does not stand him up
-    // to play a reaction -- it PUNTS him, and restarts the clock on the lie, so kicking him
-    // along the floor works for as long as you like and he still eventually gets up.
-    if (d.st === 'down') {
-      d.vx = Math.sin(dirH) * DUMMY.flyV * .35 * power;
-      d.vz = Math.cos(dirH) * DUMMY.flyV * .35 * power;
-      d.vy = DUMMY.flyUp * .30 * power;
-      d.t = Math.min(d.t, DUMMY.downBeat);
-      continue;
-    }
-    d.hp -= 1;
-    const down = d.hp <= 0 || power >= DUMMY.hard;
-    if (!down) {
-      d.st = 'hit'; d.t = 0;
-      const nm = DUMMY.clips.hits[(Math.random() * DUMMY.clips.hits.length) | 0];
-      d.cur = nm;
-      skinPlay(d, nm, skinLen(d, nm) / DUMMY.hitBeat);
-      continue;
-    }
-    // OVER HE GOES. Ballistic, and the GROUND ends the flight rather than a timer -- a timer
-    // drops him through whatever he was thrown onto and leaves him hanging over a hole.
-    d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
-    d.st = 'down'; d.t = 0; d.hp = DUMMY.hp;
-    d.vx = Math.sin(dirH) * DUMMY.flyV * power;
-    d.vz = Math.cos(dirH) * DUMMY.flyV * power;
-    d.vy = DUMMY.flyUp * power;
-    d.cur = d.back ? DUMMY.clips.downB : DUMMY.clips.downF;
-    skinPlay(d, d.cur, skinLen(d, d.cur) / DUMMY.downBeat);
+    dummyBlow(d, dirH, power);
   }
   return hit;
+}
+
+// WHAT A LANDED BLOW DOES TO ONE MAN. Split out of `dummyHit` because there are two ways to
+// reach it now -- a bolt arriving, which IS a proximity test at the bolt's own position, and a
+// limb sweeping through him -- and one of them must never grow a second copy of this.
+function dummyBlow(d, dirH, power) {
+  d.cool = DUMMY.cool;
+  // A MAN ON THE GROUND IS STILL A BODY. Hitting him while he is down does not stand him up
+  // to play a reaction -- it PUNTS him, and restarts the clock on the lie, so kicking him
+  // along the floor works for as long as you like and he still eventually gets up.
+  if (d.st === 'down') {
+    d.vx = Math.sin(dirH) * DUMMY.flyV * .35 * power;
+    d.vz = Math.cos(dirH) * DUMMY.flyV * .35 * power;
+    d.vy = DUMMY.flyUp * .30 * power;
+    d.t = Math.min(d.t, DUMMY.downBeat);
+    return;
+  }
+  d.hp -= 1;
+  const down = d.hp <= 0 || power >= DUMMY.hard;
+  if (!down) {
+    d.st = 'hit'; d.t = 0;
+    const nm = DUMMY.clips.hits[(Math.random() * DUMMY.clips.hits.length) | 0];
+    d.cur = nm;
+    skinPlay(d, nm, skinLen(d, nm) / DUMMY.hitBeat);
+    return;
+  }
+  // OVER HE GOES. Ballistic, and the GROUND ends the flight rather than a timer -- a timer
+  // drops him through whatever he was thrown onto and leaves him hanging over a hole.
+  d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
+  d.st = 'down'; d.t = 0; d.hp = DUMMY.hp;
+  d.vx = Math.sin(dirH) * DUMMY.flyV * power;
+  d.vz = Math.cos(dirH) * DUMMY.flyV * power;
+  d.vy = DUMMY.flyUp * power;
+  d.cur = d.back ? DUMMY.clips.downB : DUMMY.clips.downF;
+  skinPlay(d, d.cur, skinLen(d, d.cur) / DUMMY.downBeat);
 }
 
 function stepDummies(dt) {
@@ -2624,7 +2730,10 @@ function frame() {
   if (fpsT > .5) {
     fps = frames / fpsT; frames = 0; fpsT = 0;
     const p = player;
-    const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) : p.chargeGo ? 'swing'
+    // A SWING THAT CONNECTED SAYS SO. "It hit him before the swing" and "it never reached him"
+    // are opposite bugs and identical from a phone, and the sweep can now produce either.
+    const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) + (p.melFired ? '!' : '')
+      : p.chargeGo ? 'swing' + (p.melFired ? '!' : '')
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
       : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
     // B IS THE POSE'S OWN OFFSET AND C IS WHAT IS BEING TAKEN OFF IT, because "the gun points
@@ -2756,9 +2865,9 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, dummyHit, stepDummies, findLock, SFX, CHARGE, POSE, snd,
+  DUMMY, DUMMIES, LOCK, STRIKE, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
-  resolveBoxes, camFree, aimPoint, fireBolt, BOLTS, gunOut,
+  resolveBoxes, camFree, aimPoint, aimTarget, fireBolt, BOLTS, gunOut,
   kit: () => cycleKit(),
   clips: () => Object.keys(rig.clips).map(n => n + ' ' + rig.clips[n].duration.toFixed(3) + 's').join('\n'),
   where: () => `${player.pos.x.toFixed(1)}, ${player.pos.y.toFixed(2)}, ${player.pos.z.toFixed(1)}`,
