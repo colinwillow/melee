@@ -545,6 +545,45 @@ same picture from a phone.
   the correct stop is −4.56 — a clean stop failed a made-up threshold. Derive the pass mark from
   the geometry, never from what looks about right.
 
+- **A BOUNDING BOX IS NOT A BUILDING (m26, `solidColumns`).** *"I'm just running into invisible
+  walls."* Right, and it is structural: a single AABB is solid everywhere the SHAPE is not -- a
+  doorway, a setback, a tapered wall, the air over a canopy. So the collider is rasterised out
+  of the mesh's own triangles: the footprint is gridded, each cell learns the lowest and highest
+  triangle over it, and runs of AGREEING cells merge into boxes. Where there is no geometry
+  there is no box, which is the whole fix.
+  **Two things are load-bearing and Shredworld paid for both:**
+    1. **A TRIANGLE'S BOUNDING BOX IS NOT ITS SHAPE.** A sloped quad running from the foot of a
+       wall to the top of a canopy has a box covering the whole span, so taking the height from
+       the BOX tells every cell under the canopy that the wall reaches the ground. The box picks
+       the CELLS; the height over each comes from the triangle's PLANE, clamped back inside that
+       triangle's own y range. A vertical face has no useful plane in y and keeps its full span.
+    2. **A CELL MUST AGREE WITH THE RUN IT JOINS, not merely fail to enlarge it.** Asking whether
+       a cell GROWS the run lets a short canopy cell (3.5..6.2) be swallowed by a full-height
+       wall run (0..6.2) -- it grows it by nothing -- and the whole canopy then comes out as one
+       box reaching the ground. The test is on BOTH ends.
+  **A mesh whose columns nearly all span its full height IS its bounding box** (`BLD.full`) and
+  collapses back to one, which is most plain blocks and costs nothing. **The cell GROWS to fit
+  `maxCells`** rather than the mesh being skipped. `BLD.cols = 0` is the old single box.
+  **And `mel.bld(h)` RE-RASTERISES**, because the columns are WORLD boxes and cannot be scaled
+  in place -- leaving the old ones is a building you walk into at its previous size.
+- **A MAN IS A SOLID, AND HE WAS NOT IN THE COLLIDER AT ALL (m26, `pushBodies`).** *"Can we put
+  collide on the police officers, because right now I can just run through them."* `BOXES` is
+  built once at load, so nothing that WALKS can ever be in it. His body is handed to the
+  player's own resolver every frame instead, the way a car's is in Shredworld: one physics path,
+  not two to keep in step.
+  **A CIRCLE, NOT A BOX.** A man is round; an axis-aligned box the width of his shoulders reads
+  wrong at the corners, and an oriented one would swing as he turns and have to be tested in its
+  own frame for nothing gained.
+  **AND WHO IS SOLID IS A STATE, NOT A SWITCH.** Standing or staggering he stops you, which is
+  the weight a fight needs. DOWN or GETTING UP he does not -- stepping over a man on the floor
+  is right and being shoved off him is not. And nobody is solid during the charged LEAP, whose
+  whole arc was solved to land ON him: bouncing off would undo m21.
+- **A SOUND CUT MID-WAVEFORM IS A CLICK (m26, `snd`'s `dur`).** *"There's a residual electric
+  noise when you shoot somebody and it just keeps playing for the full gambit of the noise."*
+  `SFX.edge` trims the SILENCE off a recording and has nothing to say about a file that is
+  simply longer than the event it stands for -- `electricity_beam_01.mp3` is a BEAM, seconds of
+  it, and arming the trigger is an instant. `dur` caps it, with a linear ramp over the last
+  fraction, because stopping a buffer mid-waveform is a step discontinuity.
 - **A PICTURE AND THE THING YOU WALK INTO ARE ONE OBJECT (m24).** A building pushes its
   footprint into `BOXES` -- the same list the collider, the floor test and the camera boom all
   read -- so there is one description of the world rather than two to keep in step. `mel.bld(h)`
