@@ -448,6 +448,23 @@ same picture from a phone.
   **And he holds his speed before he scrubs it** (`MELEE.carry`): a flat linear bleed averages
   half the launch speed, so every metre of travel has to be bought with a speed spike at the
   front — which reads as a rocket rather than a lunge.
+- **THE CHARGED SWING IS A SOLVED ARC, NOT A FIXED LEAP (m21).** *"If he's much closer he'll
+  jump way higher, and if he's farther away he'll jump way farther. Right now it's always the
+  same distance, so if he's really close and you try the charge attack he just jumps through
+  them."* A constant launch can only do one distance, and every other distance is either short
+  or through him. The gap decides the SHAPE:
+      apex   lerp(finishHiNear 2.4, finishHiFar 1.1) by how far away he is
+      vy     sqrt(2 g h) -- so the apex IS the number being set, not a velocity guessed at
+      T      2 vy / g -- the flight time falls out of the arc rather than being typed
+      vx     gap / T, which lands him ON the man by construction at any distance
+  Full charge, g = 20: gap 0 -> 2.4 m up, 0.98 s, no travel; gap 8 -> 1.45 m, 0.76 s, 10.5 m/s;
+  gap 11 (the reach) -> 1.1 m, 0.66 s, 16.6 m/s.
+  **AND THE CLIP IS COMPRESSED TO T**, because a state whose length disagrees with the clip it
+  plays can only ever cut that clip off -- paid for once already at m8.
+  **A LEAP IN THE AIR KEEPS ITS SPEED.** `MELEE.carry`'s bleed is for a grounded lunge; applied
+  to a ballistic arc it lands him short of everything it was solved for. The charged swing only
+  takes the bleed once his feet are back down, where it is a skid.
+  **The chip reads `swing<gap>/<apex>`** and gains `!` when the sweep connects.
 - **THE TAIL OF A STRIKE IS CANCELLABLE.** Holding the whole clip makes a chain feel like
   watching rather than playing; past `MELEE.hold` the stick takes him out of the recovery, which
   is what makes each link a decision.

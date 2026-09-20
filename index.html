@@ -265,10 +265,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m20</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m21</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m20</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m21</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -306,7 +306,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm20';
+const BUILD = 'm21';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -470,9 +470,25 @@ const MELEE = {
   charge: 1.0,       // seconds to a full hammer charge
   chargeBeat: .55, finishBeat: .80,
   // THE RELEASE IS A LEAP, NOT A STEP. It was 3 m/s flat, which is slower than a walk and
-  // reads as a man swinging at the air in front of him. Both scale with how full the charge
-  // was, so the hold buys the distance -- and the UP term takes him off the ground, which is
-  // what makes it land as a blow rather than arrive as a shuffle.
+  // reads as a man swinging at the air in front of him.
+  // **AND IT IS A SOLVED ARC NOW, NOT A FIXED ONE.** *"If he's much closer he'll jump way
+  // higher, and if he's farther away he'll jump way farther -- right now it's always the same
+  // distance, so if he's really close and you do the charge attack he just jumps through
+  // them."* Exactly what a constant launch does. The gap decides how the leap is SHAPED:
+  //     apex   lerp(hiNear, hiFar) by how far away he is -- close goes UP, far goes OUT
+  //     vy     sqrt(2 g h), so the apex IS the number being set
+  //     T      2 vy / g -- the flight falls out of the arc rather than being typed
+  //     vx     gap / T, which lands him ON the man by construction at any distance
+  // and the CLIP is compressed to T, because a state whose length disagrees with the clip it
+  // is playing can only ever cut that clip off. Everything scales with `chargeGoK`, so a half
+  // charge is a smaller hop that reaches less far.
+  finishReach: 11,     // the farthest the leap will carry at a full charge
+  finishHiNear: 2.4,   // the apex standing on top of him, in metres
+  finishHiFar: 1.1,    // and at full reach. Close is a stomp; far is a flying leap.
+  finishFree: 4.5,     // an unlocked swing has no gap to solve, so it leaps this far
+  finishTail: .22,     // the recovery after he lands, so the clip has somewhere to finish
+  // `finishV` and `finishUp` ARE DEAD AND KEPT AS A NOTE -- the flat 18 m/s and 4.6 m/s that
+  // WERE the leap, before the gap had anything to say about it.
   finishV: 18.0, finishUp: 4.6, finishMin: .45,
 };
 
@@ -1850,17 +1866,28 @@ function chargeRelease() {
   else p.melTgt = null;
   // how full it was, from the half-charge floor up -- so even the shortest real swing moves
   p.chargeGoK = MELEE.finishMin + (1 - MELEE.finishMin) * clamp(t0 / MELEE.charge, 0, 1);
-  playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / MELEE.finishBeat);
   snd('swoosh', { r: .72, g: 1 });
-  const base = MELEE.finishV * p.chargeGoK;
-  const v = (CL && p.melTgt)
-    ? clamp((CL.dist - MELEE.arrive) / (MELEE.finishBeat * MELEE.carryAvg), base, MELEE.maxV * 1.6)
-    : base;
-  p.melV = v;
-  p.vel.x = Math.sin(p.faceH) * v; p.vel.z = Math.cos(p.faceH) * v;
+
+  // ---- THE ARC IS SOLVED FROM THE GAP ----
+  const k = p.chargeGoK, reach = MELEE.finishReach * k;
+  // the gap is to his SURFACE at arm's length, not to his centre -- the leap has to land him
+  // where the swept fist can reach, not inside him
+  const gap = (CL && p.melTgt) ? clamp(CL.dist - MELEE.arrive, 0, reach) : MELEE.finishFree * k;
+  const f = reach > .01 ? clamp(gap / reach, 0, 1) : 0;
+  // CLOSE GOES UP, FAR GOES OUT. One lerp, and the whole shape of the move falls out of it.
+  const hi = lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * k;
+  const vy = Math.sqrt(2 * MOVE.g * hi);
+  const T = 2 * vy / MOVE.g;                 // the flight time IS the arc, never a typed beat
+  const vx = clamp(gap / T, 0, MELEE.maxV);  // and this lands him on the man at any distance
+  p.melV = vx; p.goGap = gap; p.goHi = hi;
+  // THE CLIP IS COMPRESSED TO THE FLIGHT. A state whose length disagrees with the clip it is
+  // playing can only ever cut that clip off -- which this file has already paid for once.
+  p.goDur = T + MELEE.finishTail;
+  playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / p.goDur);
+  p.vel.x = Math.sin(p.faceH) * vx; p.vel.z = Math.cos(p.faceH) * vx;
   // AND IT LEAVES THE GROUND. `integrate` runs gravity and the ground collider on this state
   // like any other, so the hop is ballistic and lands itself with nothing new to write.
-  p.vel.y = MELEE.finishUp * p.chargeGoK;
+  p.vel.y = vy;
   p.grounded = false; p.airT = 0;
 }
 
@@ -2146,7 +2173,7 @@ function stepPlayer(dt) {
   //      and the ground collider, so the ground hands him straight back to the air code.
   if (p.roll || p.melee || p.chargeGo) {
     const which = p.roll ? 'roll' : p.melee ? 'melee' : 'charge';
-    const dur = p.roll ? MELEE.rollDur : p.melee ? p.meleeDur : MELEE.finishBeat;
+    const dur = p.roll ? MELEE.rollDur : p.melee ? p.meleeDur : (p.goDur || MELEE.finishBeat);
     const tRef = p.roll ? (p.rollT += dt) : p.melee ? (p.meleeT += dt) : (p.chargeGoT += dt);
     const u = clamp(tRef / dur, 0, 1);
     // full speed for `carry` of the move, then linear to zero. A flat linear bleed averages
@@ -2171,7 +2198,11 @@ function stepPlayer(dt) {
     }
     const h = p.roll ? p.rollH : p.faceH;
     const v0 = p.roll ? MELEE.rollV : (p.melV || MELEE.finishV * (p.chargeGoK || 1));
-    p.vel.x = Math.sin(h) * v0 * k; p.vel.z = Math.cos(h) * v0 * k;
+    // A LEAP IN THE AIR KEEPS ITS SPEED -- that is what ballistic MEANS, and the whole reason
+    // the arc lands where it was solved to. The `carry` bleed is for a grounded lunge, so the
+    // charged swing only takes it once his feet are back down and it becomes a skid.
+    const kk = (p.chargeGo && !p.grounded) ? 1 : k;
+    p.vel.x = Math.sin(h) * v0 * kk; p.vel.z = Math.cos(h) * v0 * kk;
     p.faceH = h; p.heading = h;
     integrate(dt, 0, 0, 0, false);
     // THE TAIL IS CANCELLABLE. Holding the whole clip makes a three-punch chain feel like three
@@ -2733,7 +2764,9 @@ function frame() {
     // A SWING THAT CONNECTED SAYS SO. "It hit him before the swing" and "it never reached him"
     // are opposite bugs and identical from a phone, and the sweep can now produce either.
     const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) + (p.melFired ? '!' : '')
-      : p.chargeGo ? 'swing' + (p.melFired ? '!' : '')
+      // THE SOLVED ARC, ON SCREEN. How far it leapt and how high is the whole of what he is
+      // judging -- "it jumps through them" and "it falls short" are one word apart otherwise.
+      : p.chargeGo ? 'swing' + (p.goGap || 0).toFixed(1) + '/' + (p.goHi || 0).toFixed(1) + (p.melFired ? '!' : '')
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
       : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
     // B IS THE POSE'S OWN OFFSET AND C IS WHAT IS BEING TAKEN OFF IT, because "the gun points
