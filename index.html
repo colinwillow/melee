@@ -264,10 +264,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m18</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m19</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m18</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m19</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -305,7 +305,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm18';
+const BUILD = 'm19';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -498,16 +498,14 @@ const WEAP = {
   // having happened rather than as a fast shot.
   shootBeat: .26,
   shootHold: .30,
-  // WHERE THE AIM POSE IS CUT FROM -- and this moved, because the first choice was the cause of
-  // *"the upward motion when you shoot goes a little crooked"*. `rifle_run` is a RUNNING STRIDE:
-  // it holds the weapon across the body, about ninety degrees off his nose, so the spine twist
-  // had to drag the whole waist round to point the barrel and what that looks like is crooked.
-  // My own note under TWIST.max said it: the honest fix for an over-twist is an aim pose that
-  // holds the gun forward, not a bigger allowance.
-  // `shoot` is that pose. Measured: 30 bones move across the WHOLE clip and the worst of them
-  // turns 13.7 degrees -- it is a man standing still and firing, so its first frame already
-  // points down the sight. The twist is then correcting a few degrees rather than ninety, and
-  // the release into the recoil is in register by construction because it is the same clip.
+  // WHERE THE AIM POSE IS CUT FROM. MEASURED, posing the real rig and reading the mount's own
+  // root->tip axis in each clip:
+  //     shoot        barrel -18.3 deg off his nose, and STEADY (-16.4 half way through)
+  //     rifle_run    barrel  +0.7 -- straight, but it is a RUNNING STRIDE and its legs are wrong
+  //     idle_rifle   barrel -29.0, the gun carried at rest
+  // `shoot` is the pose: a man standing still and firing, so its first frame is already down the
+  // sight, and the release into the recoil is in register by construction because it is the same
+  // clip. The 18 degrees it holds across the body is `POSE`'s to take off with a rigid yaw.
   aimFrom: 'shoot',
   range: 60,         // how far the aim is walked to find what he is pointing at
   boltV: 44,         // m/s. Slow enough to SEE, which is the whole point of a charged ball
@@ -591,9 +589,28 @@ const CLIPS = {
 //     `__legs`  every spine-up track REMOVED -- root, hips, both legs, both feet
 // Played together at full weight they compose into one body: he strafes with his legs and holds
 // the gun with his arms, and neither half knows the other is there.
-// **HIPS STAYS WITH THE LEGS.** It is not a spine-up bone, and its POSITION is what carries the
-// whole body's travel and bounce -- handing it to the pose nails him to one height.
+// **THE HIPS IS SPLIT DOWN THE MIDDLE, AND THAT IS THE WHOLE REASON THE SPLIT WORKS AT ALL.**
+// MEASURED, off the real clips: every one of these stances is a BLADED body, and the turn that
+// blades it lives in the HIPS, not in the spine --
+//     shoot                hips yawed -61.7 deg,  barrel -18.3 off his nose
+//     rifle_run            hips        -34.6,     barrel  +0.7  -- dead straight
+//     weapon_melee_charge  hips        -74.5      (the sideways wind-up, and it reads RIGHT)
+//     strafe_left / right  hips        -13.6 / +3.4
+// Every spine-up track in `shoot` is authored to sit on a hips at -61.7. Hand the hips to the
+// LEGS half and it arrives at the strafe's -13.6 instead, so the entire upper body -- and the
+// gun with it -- comes out **48 degrees round**, and the melee charge 61. That is the "he is
+// facing ninety degrees the wrong way" and the "blaster aiming is still just very wrong", and
+// it is one fact: an override split is only valid if both halves share a frame.
+// So the hips ROTATION is the STANCE and goes UP with the pose that was built on it; the hips
+// TRANSLATION is the body's height off the ground and the stride's bounce, and stays with the
+// LEGS -- handing that to the pose nails him to one height. The legs are children of the hips,
+// so they come round with the blade, which is what a bladed stance strafing actually looks like.
 const UPPER = /Spine|Neck|Head|Shoulder|Arm|Hand|weapon_/;
+const isUpper = name => {
+  const i = name.lastIndexOf('.'), bone = i < 0 ? name : name.slice(0, i), prop = i < 0 ? '' : name.slice(i + 1);
+  if (/Hips$/.test(bone)) return prop === 'quaternion';
+  return UPPER.test(bone);
+};
 const UP = '__up', LEGS = '__legs';
 const SPLIT = {
   up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo'],
@@ -1058,7 +1075,7 @@ function deriveClips(clips) {
   // `KeyframeTrack.clone()` slices its own times AND values, so these are new arrays and the
   // shared-buffer landmine cannot follow them here.
   const half = (clip, wantUpper, suffix) => {
-    const keep = clip.tracks.filter(t => UPPER.test(t.name.split('.')[0]) === wantUpper);
+    const keep = clip.tracks.filter(t => isUpper(t.name) === wantUpper);
     if (!keep.length) return null;
     return new THREE.AnimationClip(clip.name + suffix, clip.duration, keep.map(t => t.clone()));
   };
@@ -1574,7 +1591,8 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
-  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, twist: 0, melQ: null,
+  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
+  comp: 0, compHold: 0, bias: null,   // the aim-pose correction, and the pose offset it is undoing
   slot: 0,
   r: .34, hh: 1.6,
 };
@@ -1622,7 +1640,7 @@ function gunOut() { return !!slotNow().aim; }
 // carrying gait, which standing still is `idle_rifle`. **The shoot clip was started and then
 // never given any weight at all**, which is exactly *"it plays and then it quickly transitions
 // into the next thing and it doesn't feel like he shot the gun"*: it was not playing.
-// Folding the recoil in here keeps the lock, the facing, the leg set and the spine twist for
+// Folding the recoil in here keeps the lock, the facing, the leg set and the aim comp for
 // the whole follow-through, which is the dramatic beat rather than a decoration on it.
 function committed() { return !!(player.aim || player.charge || player.fireT > 0); }
 function findLock() {
@@ -2276,46 +2294,47 @@ function rigAnim(dt) {
 }
 
 // ============================================================================================
-// POINTING THE GUN AT THE TARGET
+// POINTING THE GUN STRAIGHT AHEAD
 //
-// The aim pose is the first frame of `rifle_run` and a running stride holds the weapon across
-// the body, so the barrel sits a long way off his nose -- and the strafe clips turn him further
-// still. Facing the target with his FEET therefore does not point the GUN at it.
+// *"He's supposed to be always pointing straight ahead... when it charges it doesn't need to
+// move at all, but when he releases it's supposed to kick up and he's supposed to move back."*
 //
-// THE LOOP IS CLOSED ON THE BARREL, NOT ON A TYPED BIAS. How far off the pose holds the weapon
-// is a property of the ANIMATION: it differs per clip, it moves during the recoil, and it would
-// differ again on a re-export. So it is never calculated -- the barrel's own world bearing is
-// READ each frame (the mount markers are exactly two points on it) and the residual is folded
-// back in, which converges on "the gun is on the mark" whatever the pose underneath is doing.
+// THREE SPINE TWISTS WENT INTO THIS AND ALL THREE MADE IT WORSE, SO THE MECHANISM IS GONE.
+// m16 read the parent frame off a SCALED `matrixWorld`, which returns a non-unit quaternion, so
+// the conjugation was a shear and it hunched him. m17 fixed that -- and the correction promptly
+// wound up to its own clamp and parked there, because `aimUntwist` + `mixer.update` wipe the
+// edit before `barrelH` measures again, so the integrator never once saw its own output. m18
+// closed that in closed form and it STILL swung, because three's world matrices are a frame
+// stale at that point, so the reading carried the previous frame's correction after all --
+// which is exactly *"his gun starts out pointing to the right and he moves it across his chest
+// all the way to the left"*. Each fix was real and each one uncovered the next: **a per-bone
+// edit whose own effect feeds the thing that measures it has no version that is simply right.**
 //
-// AND THE EDIT IS TAKEN OFF BEFORE THE MIXER WRITES. A relative edit on a bone is only safe if
-// something rewrites that bone from scratch every frame -- and the `__legs` clones have every
-// spine track REMOVED by construction, so on precisely the state this exists for there may be
-// nothing driving Spine1/Spine2 at all. Last frame's twist would still be sitting on them and
-// the next one would stack: a few degrees a frame at 60 Hz, which is a spine unravelling.
-// `aimUntwist` is correct without having to know which case it is in: if the mixer owns the
-// bone it overwrites this and nothing is lost, and if it does not, the bone is back where the
-// twist started.
+// **SO THE BODY TURNS, NOT THE SPINE.** How far the pose holds the weapon off his nose is a
+// RIGID property of that pose, so undoing it is a rigid yaw on the ROOT: one number, no
+// conjugation, no bone to unravel, nothing to take off again before the mixer writes -- and it
+// cannot shear anything, because a root yaw is the same turn every bone was already getting.
+//
+// AND IT IS MEASURED WITH NO LOOP IN IT. `barrelH` returns a WORLD bearing and the comp is part
+// of the root yaw that produced it, so subtracting the yaw THAT FRAME WAS ACTUALLY DRAWN AT
+// removes the comp exactly. `bias` is therefore invariant to the comp -- it is the pose's own
+// offset and nothing else, which is the one thing an integrator on the spine could never be
+// told. `rig.drawnYaw` is stored where it is written rather than recomputed here, because a
+// frame-stale reading against a freshly written yaw is the whole bug this note is about.
 // ============================================================================================
-const TWIST = {
-  bones: ['mixamorig_Spine1', 'mixamorig_Spine2'],
-  // A REAL WAIST TURN, AND TAPERED. It was 1.75 rad while it was absorbing a ninety-degree pose
-  // bias, then .95; with the pose pointing forward and the conjugation fixed, the correction is
-  // a few degrees in normal play, so this is a ceiling that can only ever stop something going
-  // wrong rather than a number the loop lives at.
+const POSE = {
+  // A CEILING, not a number it lives at. Measured off the real clips, `shoot` holds the weapon
+  // 18 deg off his nose and `rifle_run` holds it dead straight, so this can only ever stop
+  // something going wrong.
   max: .70,
-  // A HALF-LIFE, not a gain: the target is exact and closed-form, so all this decides is how
-  // quickly he gets there. Short, because the answer is already right.
+  // a half-life, not a gain: the target is exact, so all this decides is how fast he gets there
   half: .07,
+  on: 1,
 };
-const TWISTQ = new THREE.Quaternion(), TWISTP = new THREE.Quaternion(), TWISTI = new THREE.Quaternion();
-const TWISTUP = new THREE.Vector3(0, 1, 0);
-const twistSave = [];
-function aimUntwist() {
-  for (let i = twistSave.length - 1; i >= 0; i--) twistSave[i].b.quaternion.copy(twistSave[i].q);
-  twistSave.length = 0;
-}
 const _wa = new THREE.Vector3(), _wb = new THREE.Vector3();
+// THE BARREL'S OWN WORLD BEARING. The two mount markers are exactly two points on it, so
+// nothing about where the gun points is typed here -- and `weapon_tip` being the mount's AXIS
+// marker rather than the muzzle is all this needs it to be.
 function barrelH() {
   const w = WEAP.worn[slotNow().key];
   const host = w && w.host; if (!host) return null;
@@ -2327,57 +2346,35 @@ function barrelH() {
   if (dx * dx + dz * dz < 1e-8) return null;
   return Math.atan2(dx, dz);
 }
-// THE LOOP WAS OPEN, WHICH IS WHY IT PARKED AT THE CLAMP.
-// `aimUntwist` restores the locals and the mixer then overwrites them, so by the time
-// `barrelH()` is called the pose on the bones is the UNTWISTED one -- every frame. An
-// integrator fed "the error before my correction" never sees its own correction, so it winds up
-// until it hits `max` and stays there for ever. That is not a loop, it is a ramp.
-//
-// AND IT DOES NOT NEED TO BE A LOOP AT ALL. The correction is a yaw about world UP, and a yaw
-// about world up adds EXACTLY to a horizontal bearing -- rotating any direction by R_y(t) turns
-// atan2(d.x, d.z) into atan2(...) + t, for any d. So the twist that puts the barrel on the mark
-// is simply `want - barrel_untwisted`, in closed form, measured fresh every frame. No
-// integrator, no wind-up, and nothing to converge.
-function aimTwist(dt) {
+// How far the POSE holds the weapon off his nose, in his own frame -- read fresh every frame so
+// it tracks the recoil and survives a re-export, and free of the comp by construction.
+function poseBias() {
+  if (rig.drawnYaw == null) return null;
+  const bh = barrelH();
+  return bh == null ? null : wrapAngle(bh - rig.drawnYaw);
+}
+// The rigid yaw that puts the barrel down his nose. RETURNED rather than applied, so there is
+// exactly one place in the file the root's rotation is written.
+function aimComp(dt) {
   const p = player;
-  if (!committed() || !gunOut() && !p.charge) { p.twist = damp(p.twist || 0, 0, .12, dt); }
-  // AND IT FREEZES WHILE THE SHOT IS IN THE AIR. The bolt has already left on the bearing it
-  // left on; re-aiming the barrel underneath the recoil makes the gun swing during the one beat
-  // that is meant to be held.
-  else if (p.fireT > 0) { /* hold whatever it was at the moment of the shot */ }
-  else {
-    const want = p.lock ? lockH(p.lock) : cam.az;
-    const bh = barrelH();
-    // with nothing to read the barrel off -- an unarmed melee, a weapon that never loaded --
-    // there is nothing to correct and the clip is left exactly as authored
-    if (bh == null) p.twist = damp(p.twist || 0, 0, .12, dt);
+  let tgt = 0;
+  // GUN ONLY. `committed()` also covers the hammer being wound, and the melee wind-up is a
+  // deliberately BLADED stance -- *"he's kind of in a sideways ninja stance and that's all
+  // good"* -- so pointing the hammer down his nose would straighten out the one pose he likes.
+  if (POSE.on && gunOut() && committed()) {
+    // AND IT HOLDS THROUGH THE RECOIL. The bolt has already left on the bearing it left on, and
+    // re-aiming underneath the follow-through swings the gun during the one beat that is meant
+    // to be held still.
+    if (p.fireT > 0) tgt = p.compHold || 0;
     else {
-      const tgt = clamp(wrapAngle(want - bh), -TWIST.max, TWIST.max);
-      p.twist = damp(p.twist || 0, tgt, TWIST.half, dt);
-      p.twistRaw = tgt;
+      const b = poseBias();
+      p.bias = b;
+      if (b != null) tgt = clamp(-b, -POSE.max, POSE.max);
+      p.compHold = tgt;
     }
-  }
-  if (Math.abs(p.twist || 0) < .004) return;
-  const per = p.twist / TWIST.bones.length;
-  TWISTQ.setFromAxisAngle(TWISTUP, per);
-  for (const nm of TWIST.bones) {
-    const b = rig.bones[nm]; if (!b || !b.parent) continue;
-    twistSave.push({ b, q: b.quaternion.clone() });
-    // THE PARENT CHAIN IS RE-READ PER BONE, because twisting one moves the next one's frame;
-    // applying both against one stale parent is a shear rather than a turn.
-    // **AND IT IS `getWorldQuaternion`, NOT `setFromRotationMatrix(matrixWorld)`.** That was the
-    // whole bug, and three says so in its own source: `setFromRotationMatrix` "assumes the upper
-    // 3x3 of m is a pure rotation matrix (i.e, unscaled)". These bones live under an `Armature`
-    // scaled 0.01 with the model scaled 1.926 on top, so the matrix carries a uniform scale of
-    // about 0.0193 -- and fed that, the trace formula returns a non-unit, WRONG quaternion. The
-    // conjugation `P^-1 Q P` then stops being a yaw at all and becomes a skew, which is exactly
-    // what the screenshots showed: hunched over, gun swung off to the side, in a clip that was
-    // ANIMATED STRAIGHT. `getWorldQuaternion` decomposes, so the scale cannot poison it.
-    b.parent.getWorldQuaternion(TWISTP);
-    TWISTI.copy(TWISTP).invert();
-    b.quaternion.premultiply(TWISTP).premultiply(TWISTQ).premultiply(TWISTI);
-    b.updateMatrixWorld(true);
-  }
+  } else p.bias = null;
+  p.comp = damp(p.comp || 0, tgt, POSE.half, dt);
+  return p.comp;
 }
 
 // ============================================================================================
@@ -2603,14 +2600,13 @@ function frame() {
     stepPlayer(dt);
     stepDummies(dt);
     rigAnim(dt);
-    aimUntwist();            // take last frame's edit off BEFORE the clips are written
     rig.mixer.update(dt);
-    // DRAWN AT `faceH`, not at `heading`. AND THIS HAS TO COME BEFORE THE TWIST: `barrelH`
-    // reads WORLD positions and the root's yaw is part of them, so measuring first makes every
-    // reading a frame stale in his own facing.
+    // DRAWN AT `faceH`, not at `heading`, plus the rigid yaw that puts the barrel down his nose.
+    // `aimComp` reads the barrel off world matrices that are a frame old, which is exactly why
+    // it subtracts `rig.drawnYaw` -- the yaw THAT frame was drawn at -- rather than this one.
     rig.root.position.copy(player.pos);
-    rig.root.rotation.y = player.faceH + rig.faceOff + RIG.spin;
-    aimTwist(dt);            // and put this frame's correction on top of the pose
+    rig.root.rotation.y = player.faceH + rig.faceOff + RIG.spin + aimComp(dt);
+    rig.drawnYaw = rig.root.rotation.y;
   }
   stepCam(dt);
   // AFTER the camera, because the reticle is PROJECTED through it -- drawn from last frame's
@@ -2631,8 +2627,12 @@ function frame() {
     const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) : p.chargeGo ? 'swing'
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
       : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
+    // B IS THE POSE'S OWN OFFSET AND C IS WHAT IS BEING TAKEN OFF IT, because "the gun points
+    // the wrong way" is two different bugs from a phone: a bias near 0 means the clip is
+    // straight and anything crooked is elsewhere, a big one means the clip carries it.
+    const dg = r => (r * 180 / Math.PI).toFixed(0);
     const lk = (p.lock ? ' · LOCK' : '') +
-      (committed() ? ' · T' + ((p.twist || 0) * 180 / Math.PI).toFixed(0) : '');
+      (gunOut() && committed() ? ' · B' + (p.bias == null ? '--' : dg(p.bias)) + '/C' + dg(p.comp || 0) : '');
     const hue = RIG.showHue
       ? ' · H' + (ALIENU.hue.value * 360).toFixed(0) + '/' + (GUNU.hue.value * 360).toFixed(0) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
@@ -2756,7 +2756,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, dummyHit, stepDummies, findLock, SFX, CHARGE, TWIST, snd,
+  DUMMY, DUMMIES, LOCK, dummyHit, stepDummies, findLock, SFX, CHARGE, POSE, snd,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, fireBolt, BOLTS, gunOut,
   kit: () => cycleKit(),

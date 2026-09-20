@@ -265,6 +265,50 @@ same picture from a phone.
   the last clear one means the answer only ever takes values `probe` apart, so the boom jumps
   half a metre at a time as the shot sways past a wall. A quantised probe is fine for a yes/no
   and wrong the moment something continuous is drawn from it.
+- **AN OVERRIDE SPLIT IS ONLY VALID IF BOTH HALVES SHARE A FRAME, AND THE STANCE TURN IS IN THE
+  HIPS (m19).** *"As soon as you press left or right he's facing 90 degrees the wrong direction...
+  and the blaster aiming is still just very wrong."* One fact, and it is measurable straight off
+  the clips -- every one of these poses is a BLADED body, and the turn that blades it lives in the
+  Hips rather than in the spine:
+      shoot                hips yawed -61.7 deg   barrel -18.3 off his nose
+      rifle_run            hips        -34.6      barrel  +0.7  -- dead straight
+      weapon_melee_charge  hips        -74.5      (the sideways wind-up, and it reads RIGHT)
+      strafe_left / right  hips        -13.6 / +3.4
+  Every spine-up track in `shoot` is authored to sit on a hips at -61.7. The split sent the Hips
+  DOWN with the legs, so it arrived at the strafe's -13.6 instead -- and the whole upper body,
+  gun included, came out **48 degrees round**, the melee charge 61. Standing still (the whole
+  clip, no split) it was right; the first step sideways swung it. That is both halves of his
+  report and it is one line.
+  **The hips ROTATION is the stance and goes UP with the pose built on it; the hips TRANSLATION
+  is the body's height and the stride's bounce and stays with the LEGS.** So the filter is on the
+  TRACK, not on the bone name -- `isUpper('mixamorig_Hips.quaternion')` is true and
+  `...Hips.position` is false. The legs are children of the hips and come round with the blade,
+  which is what a bladed stance strafing actually looks like.
+- **A PER-BONE EDIT WHOSE OWN EFFECT FEEDS THE THING THAT MEASURES IT HAS NO VERSION THAT IS
+  SIMPLY RIGHT (m19).** The spine twist that pointed the gun at the mark was wrong four separate
+  ways and is gone. m16 read the parent frame off a SCALED `matrixWorld` (below) so the
+  conjugation was a shear and it hunched him. m17 fixed that, and the integrator promptly wound
+  up to its own clamp and parked there -- `aimUntwist` + `mixer.update` wipe the edit before
+  `barrelH` measures again, so it never once saw its own output. m18 solved it in closed form and
+  it STILL swung, because three's world matrices are a frame stale at that point and the reading
+  carried the previous frame's correction after all: *"his gun starts out pointing to the right
+  and he moves it across his chest all the way to the left."* Every fix was real and every one
+  uncovered the next.
+  **THE BODY TURNS, NOT THE SPINE.** How far a pose holds the weapon off his nose is a RIGID
+  property of that pose, so undoing it is a rigid yaw on the ROOT: one number, no conjugation, no
+  bone to unravel, nothing to take off again before the mixer writes, and it cannot shear anything
+  because a root yaw is the same turn every bone was already getting.
+  **And it is measured with no loop in it.** `barrelH` returns a WORLD bearing and the comp is
+  part of the root yaw that produced it, so subtracting the yaw THAT FRAME WAS DRAWN AT
+  (`rig.drawnYaw`, stored where it is written) removes the comp exactly. The bias is invariant to
+  the comp -- it is the pose's own offset and nothing else, which is the one thing an integrator
+  on the spine could never be told.
+  **It is gated on `gunOut()`, not on `committed()`**, because the hammer wind-up is a
+  deliberately bladed stance he likes and straightening it would be the fix breaking the one pose
+  that was right.
+  **The chip carries `B<bias>/C<comp>`**: a bias near 0 means the clip is straight and anything
+  crooked is elsewhere, a big one means the clip carries it. `mel.POSE.on = 0` turns the whole
+  correction off so the raw authored pose can be looked at.
 - **`setFromRotationMatrix` ASSUMES AN UNSCALED MATRIX, AND EVERY BONE HERE IS SCALED (m17).**
   *"He's not pointing straight and I'm pretty sure I made that animation straight."* He did. The
   clip was fine and the pipeline was bending him: `aimTwist` extracted the parent's world
