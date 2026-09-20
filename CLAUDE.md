@@ -152,11 +152,12 @@ same picture from a phone.
   7.54 s) plus `CINEMA_4D_Main` residue, dropped.
   **193 JOINTS, AND 135 OF THEM ARE HAIR AND TAIL**: six chains off `mixamorig_Head` at 16 / 23
   / 19 / 16 / 23 / 19 bones, and a 19-bone tail off `mixamorig_Hips`.
-  **HER MATERIAL EXPORTS AS `BLEND` + `doubleSided`**, which is the exporter default whenever
-  the texture carries alpha — and a transparent double-sided skin **sorts against itself**, so
-  her far side draws over her near side and she reads as see-through. It becomes a CUTOUT
-  (`alphaTest .5`) and single-sided, which does the same job for hair edges and writes depth.
-  Rollergirl paid for this one first; **check it on every character export.**
+  **SHE IS OPAQUE AND `doubleSided` AS OF THE m31 RE-EXPORT** — `alphaMode` is absent, which is
+  the glTF default, so `buildShe` does nothing to her material but the emissive lift. The first
+  export was `BLEND`, which is what an exporter writes whenever the texture carries an alpha
+  channel at all, and a transparent skin **sorts against itself**: her far side draws over her
+  near side. **Check `alphaMode` on every character export** — but see the m30 note below
+  before "fixing" it, because the cure there was worse than the disease.
   **Measured gait** (planted foot, `npm run gait`'s own method): walk 0.898, run 2.478 m/s at
   her ×1.751.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
