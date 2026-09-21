@@ -822,6 +822,48 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **WHERE HE ENDS UP IS WHERE HE IS (m54).** *"When I press up on the right stick to send him
+  about the camera it works, it's good. But then when you release, he goes back to his original
+  position, which is not ideal -- that should just be his new position."* Exactly what it did,
+  and it is one line: **`p.heading` is only ever written from the THUMB**, and the `!aiming`
+  gate freezes it for the whole hold -- so on release `faceTgt` fell back to whatever he was
+  facing before the hold began and he eased all the way round again.
+  **IT FOLLOWS `faceH` WHILE AIMING RATHER THAN BEING ADOPTED ON AN EDGE.** An edge is a thing
+  to remember in three places -- the trigger, the guard and the square-up all freeze it the same
+  way -- and a thing to get wrong once. Following it means there is nothing to hand over,
+  because on the release frame `faceTgt` is already `faceH` and he simply stops.
+  **RELEASED MID-TURN HE HOLDS WHERE HE GOT TO**, which is the predictable answer: carrying on
+  to finish a turn nobody is asking for any more is the same surprise pointed the other way.
+  **AND IT COSTS NOTHING WHILE THE LEFT STICK IS HELD**, because `heading` is rewritten from the
+  thumb the moment `aiming` ends. It only ever shows standing still -- which is exactly when he
+  is turning to look at something. **`p.heading` has precisely one reader (`faceTgt`)**, checked
+  rather than assumed, which is what makes following it safe.
+- **HE HAS NO TURN CLIPS, AND THE HOOK IS WIRED (m54, `CLIPS.turnL`/`turnR`, `GAIT.turn*`).**
+  *"I do need to add some animations for when he turns, if we don't already have turn left /
+  turn right, because he just rotates, not moving his feet at all -- and that would be the time
+  to use those."* **Read straight out of the file: 24 clips and not a turn among them.** The
+  WARRIOR has four (`standing_turn_*`), which is probably where the memory comes from, and they
+  are on a different rig. So this is wired and waiting rather than guessed at, `CLIPS.block`'s
+  own pattern: name one and it blends, leave it empty and `turnWeight` is zero and nothing in
+  the gait changes.
+  **IT IS DRIVEN BY THE BODY'S TURN RATE, NOT BY THE ANGLE STILL TO GO.** The residual says how
+  far he has LEFT, which is large the instant a turn starts and large again if he is standing
+  still facing the wrong way; the rate says whether he is actually moving. Damped, because one
+  frame of jitter must not flicker a clip in and out. **+X IS HIS LEFT**, so a positive rate
+  picks `turnL`.
+  **AND IT TAKES WEIGHT RATHER THAN ADDING IT.** The gait below is a four-clip CHAIN that sums
+  to exactly 1 by construction, and a table over or under 1 bleeds the BIND pose in -- the
+  T-pose exactly. So the turn is paid for out of `rest`, the same budget the landing already
+  comes out of, and every branch downstream keeps summing to what it was handed.
+  **IT SITS ABOVE THE BRANCHES**, because turning on the spot happens in the ordinary gait AND
+  in the committed one -- squaring up to the camera and pivoting is the case he reported it
+  from -- so computing it once is what stops it being two copies.
+  **AND IT IS GONE BY A WALK** (`turnUpTo` 1.1): once the gait is already showing his feet move,
+  a turn clip on top of it is two strides at once. Measured through the curve: standing and
+  turning deliberately it reaches .90, at half a metre a second .51, at a walk and above zero.
+  **THE RATE SCALING WANTS MEASURING WHEN THEY LAND** -- `npm run gait`'s planted-foot method
+  reads a walk, and the equivalent for a turn is degrees per second of the HIPS. Until then they
+  play at 1.0x, which is what a turn clip is usually authored at.
 - **I MADE THE SPEED PROPORTIONAL AND THAT WAS THE OPPOSITE OF THE ASK (m53,
   `GAIT.scaleSpeed`).** *"I thought making him smaller would make the locomotion seem a little
   quicker despite him technically moving at the same rate -- because he has these big giant

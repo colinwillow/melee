@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m53</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m54</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m53</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m54</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm53';
+const BUILD = 'm54';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -602,6 +602,12 @@ const GAIT = {
   // AND THE CEILING CAME DOWN. At 1.9 the walk clip is a cartoon scramble for the whole of the
   // crossfade; 1.6 is the most a cycle here takes before it stops reading as the gait it is.
   tsLo: .62, tsHi: 1.6,
+  // TURNING ON THE SPOT. `turnAt`/`turnFull` are rad/s of body rotation -- under the first it
+  // is a correction and not a turn, and `MOVE.face0` is 11, so `turnFull` 2.2 is reached by any
+  // deliberate swing. `turnUpTo` is the speed it is GONE by, because once he is walking the
+  // gait is already showing his feet move and a turn clip on top of it is two strides at once.
+  // `turnMax` leaves a little of the idle underneath, so he still breathes while he pivots.
+  turnAt: .55, turnFull: 2.2, turnUpTo: 1.1, turnMax: .9,
   // `run_fwd_fast`'s two feet disagree by 34% (L 2.77, R 1.96) -- a real asymmetry in the clip,
   // reported by the tool rather than hidden by it. If the sprint ever reads limpy, that is why.
 };
@@ -1598,6 +1604,17 @@ const CLIPS = {
   // empty name falls through to the gait with no branch to add, which is how `GAIT.sprint` and
   // `HANG.clip` are written one repo over.
   block: '',
+  // **AND SO ARE THESE (m53).** *"I do need to add some animations for when he turns, if we
+  // don't already have turn left / turn right, because he just rotates, not moving his feet at
+  // all -- and that would be the time to use those."* **He does not have them**: read straight
+  // out of the file, the export is 24 clips and there is no turn in it (the WARRIOR has four,
+  // which is probably where the memory comes from). So this is wired and waiting rather than
+  // guessed at: `rigAnim` blends by the body's own TURN RATE and picks the side off its sign,
+  // and until a name is here `turnWeight` returns zero and nothing in the gait changes.
+  // **THE RATE SCALING WANTS MEASURING WHEN THEY LAND** -- `npm run gait`'s planted-foot method
+  // reads a walk, and the equivalent for a turn is degrees per second of the HIPS. Until then
+  // they play at 1.0x, which is honest and is what a turn clip is usually authored at.
+  turnL: '', turnR: '',
 };
 // STRAFING WITH THE GUN UP IS AN OVERRIDE, NOT A BLEND -- and that distinction is the whole
 // thing. `strafe_left` is a full-body clip with his arms swinging; laying a rifle pose ON TOP
@@ -3196,7 +3213,7 @@ const skinLen = (skin, name) => { const c = skin.clips && skin.clips[name]; retu
 // ============================================================================================
 const player = {
   pos: new THREE.Vector3(0, 0, 4), vel: new THREE.Vector3(),
-  heading: 0, faceH: 0, speed: 0, grounded: true, airT: 0, coyote: 0,
+  heading: 0, faceH: 0, turnRate: 0, speed: 0, grounded: true, airT: 0, coyote: 0,
   goT: 0,                          // how long he has been asking to move -- the gather
   jump: 0, jumps: 0, fallV: 0,
   land: 0, landT: 0, landHard: 0,  // the landing state
@@ -4185,7 +4202,27 @@ function stepPlayer(dt) {
   // LOCKED, HE FACES THE TARGET -- not the lens. That is what makes the strafes read.
   const faceTgt = p.lock ? lockH(p.lock) : aiming ? cam.az : p.heading;
   const fRate = (p.lock ? LOCK.face : aiming ? MOVE.face0 : lerp(MOVE.face0, MOVE.face1, clamp(p.speed / MOVE.max, 0, 1))) * dt;
-  p.faceH += clamp(wrapAngle(faceTgt - p.faceH), -fRate, fRate);
+  const turned = clamp(wrapAngle(faceTgt - p.faceH), -fRate, fRate);
+  p.faceH += turned;
+  // **AND WHERE HE ENDS UP IS WHERE HE IS (m53).** *"When you release, he goes back to his
+  // original position, which is not ideal -- that should just be his new position."* Exactly
+  // what it did: `p.heading` is only written from the THUMB, and the `!aiming` gate above
+  // freezes it for the whole hold -- so on release `faceTgt` fell back to whatever he was
+  // facing before it started and he eased all the way round again.
+  // **IT FOLLOWS `faceH` WHILE AIMING RATHER THAN BEING ADOPTED ON AN EDGE.** An edge is a
+  // thing to remember in three places (the trigger, the guard and the square-up all freeze it
+  // the same way) and a thing to get wrong once; following it means there is nothing to hand
+  // over, because on the release frame `faceTgt` is already `faceH` and he simply stops.
+  // Released mid-turn he holds where he GOT to, which is the predictable answer -- carrying on
+  // to finish a turn nobody is asking for any more is the same surprise pointed the other way.
+  // **IT COSTS NOTHING WHILE THE LEFT STICK IS HELD**, because `heading` is rewritten from the
+  // thumb the moment `aiming` ends. This only ever shows standing still, which is exactly when
+  // he is turning to look at something.
+  if (aiming) p.heading = p.faceH;
+  // HOW FAST THE BODY IS COMING ROUND, for the turn-on-the-spot clips. Damped, because one
+  // frame of jitter must not flicker a clip in and out, and it is a RATE rather than the angle
+  // still to go -- the residual says how far he has left, not whether he is moving.
+  p.turnRate = damp(p.turnRate || 0, dt > 1e-6 ? turned / dt : 0, .06, dt);
 
   // PLANT. At a walk the legs push where the thumb says; at a run, along `faceH`.
   let wx = s.x, wz = s.z;
@@ -4243,7 +4280,26 @@ function rigAnim(dt) {
     t[nm] = (t[nm] || 0) + w;
     if (ref) setScale(nm, clamp(sp / ref, GAIT.tsLo, GAIT.tsHi));
   };
-  const rest = p.land ? 1 - (t[p.landHard ? CLIPS.landHard : CLIPS.landSoft] || 0) : 1;
+  let rest = p.land ? 1 - (t[p.landHard ? CLIPS.landHard : CLIPS.landSoft] || 0) : 1;
+
+  // ---- TURNING ON THE SPOT (m53). *"He just rotates, not moving his feet at all."*
+  // **IT TAKES WEIGHT RATHER THAN ADDING IT**, which is the only safe way to put a clip on top
+  // of the gait here: the four-clip chain below sums to exactly 1 BY CONSTRUCTION, and a table
+  // that goes over or under 1 bleeds the BIND pose in -- the T-pose exactly. So the turn is
+  // paid for out of `rest`, the same budget the landing already comes out of, and every branch
+  // downstream keeps summing to what it was handed.
+  // **IT SITS ABOVE THE BRANCHES ON PURPOSE.** Turning on the spot happens in the ordinary
+  // gait AND in the committed one -- squaring up to the camera and pivoting is the case he
+  // reported it from -- so computing it once here is what stops it being two copies.
+  // **AND IT IS ZERO UNTIL A CLIP IS NAMED**, so today this changes nothing at all.
+  {
+    const tn = p.turnRate > 0 ? CLIPS.turnL : CLIPS.turnR;   // +X IS HIS LEFT
+    const tw = (tn && rig.actions[tn])
+      ? GAIT.turnMax * smooth(GAIT.turnAt, GAIT.turnFull, Math.abs(p.turnRate || 0)) *
+        (1 - smooth(0, GAIT.turnUpTo, sp))
+      : 0;
+    if (tw > 0) { add(tn, rest * tw, 0); rest *= 1 - tw; }
+  }
 
   // ---- COMMITTED: the legs strafe, the arms hold the weapon, and neither knows about the
   //      other. Every bone is claimed exactly once, so they compose rather than average.
