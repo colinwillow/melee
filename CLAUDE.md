@@ -689,6 +689,98 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **THE ASSIST MOVED FROM THE AIM TO THE BOLT (m36, `WEAP.home`, `LOCK.on = 0`).** *"We're
+  gonna get rid of the aim assist on the blaster... instead if you shoot in the general
+  direction of a player the ball ever so slightly curves to hit them. The reticle aimer thing is
+  really annoying to use."* A better idea than the thing it replaces, and the reason is worth
+  writing down: **a mark that moves where you are POINTING takes the aim off your thumb, so you
+  stop aiming; a ball that curves is something you WATCH**, and it can only ever finish a shot
+  you had already very nearly made.
+  **IT IS A TURN RATE, NOT A SEEK.** `rate` radians a second is the whole of "ever so slightly"
+  -- a bolt doing 44 m/s turning at 2.1 rad/s has a 21 m radius, so it closes a few degrees over
+  its flight and cannot fetch a shot thrown at the sky. And it LEADS him off `d.wvx/wvz`, the
+  body's own measured world velocity, because a walking man is not where he was when the ball
+  left. `stepDummies` measures that rather than any state machine being asked.
+  **THE LOCK TOOK THREE THINGS WITH IT** -- the mark, the camera coming round, and the left
+  stick's orbit mode -- because two of them exist only to serve the mark. Nothing is deleted:
+  `mel.LOCK.on = 1` restores the whole loop and `mel.LOCK.retic = 1` draws the mark without it.
+  **THE MELEE LUNGE IS NOT THIS AND STAYS.** *"Take the lock off the melee charge -- it's just
+  physically going to assist you."* `meleeLock` solves the launch for the gap so a swing thrown
+  at a man ARRIVES. That is a physical assist with nothing drawn and nothing taken off the
+  thumb, which is the half he asked to keep.
+- **THE BALL IS THE CHARGE, IN ALL FOUR PLACES AT ONCE (m36).** *"Make the blast a little
+  bigger, and the size should depend on how long you charge it -- a full charge should be a
+  fairly hefty ball and the effect greater, it'll actually send them flying."* `chg` drives the
+  picture (`ball0/ball1`), what it collides with, how wide the blast catches (`blast0/blast1`),
+  and the power -- one number, so they cannot drift.
+  **AND `dummyHit` NEVER DID BREAK ON THE FIRST BODY.** *"If I shoot a ball and it hits in the
+  general area of a few of them, that should hit more than one."* It always looped them all; the
+  RADIUS was `boltR + .45`, which is one man wide. A full charge now reaches over two and a half
+  metres and a crowd goes over together. **Suspect the number before the loop.**
+  **`FOE.fling` IS HOW `hard`'s UNREACHABILITY GOT ANSWERED.** m35 set `hard: 1.01` so DAMAGE is
+  what puts a warrior down -- right for a fist, wrong for the biggest shot in the game. A blow
+  at or over `fling` launches him whatever his health says, and the launch is graded above
+  whichever threshold actually tripped.
+- **AND THE MELEE SWEEP DID BREAK ON THE FIRST (m36).** *"There were three of them piled up and
+  I was meleeing, but it would only ever hit one at a time."* Exactly that -- a `break`, which is
+  the right shape for a bullet and the wrong one for a swing. **A mace does not stop at the first
+  man.** `MELEE.hitAll`.
+- **THE CHARGED SWING IS FLAT NOW, AND THE HOLD DECIDES THE DISTANCE (m36).** *"Make it so that
+  jump attack doesn't go high up in the air any more -- it's just a straightforward launch, and
+  how far you go depends on how long you hold the charge."* So the apex stops coming from the
+  GAP and becomes one low hop (`flatHi`), and the distance comes from `chargeGoH`, the hold's own
+  curve. m21's finding stands and is simply no longer wanted.
+  **AND THE CEILING IS THE HOP, NOT THE NUMBER.** A .55 m apex is 0.47 s of flight, so at
+  `maxV` 21 the furthest it can carry is about 9.9 m -- `flatFar` 14 was clamped there and a half
+  hold landed in the same place as a full one, which is the hold buying nothing all over again.
+  Both ends sit inside what the hop can deliver, and `p.goGap` reports `vx * T` rather than what
+  was asked for: **a number that ignores its own clamp lies on exactly the interesting frame.**
+  A man in front still shortens it, because a leap solved to land ON him is what stops the charge
+  going through people. `mel.MELEE.flatHi = 3` is the A/B back to the arc.
+- **RAPID FIRE IS A MODE, NOT A MODEL (m36).** *"A version of the gun that's more like a machine
+  gun -- I'll probably make a different model but we can use this for now. When you hold forward
+  it just shoots automatically."* Same file, same mount, same four trigger gates: `auto` spends
+  the hold as ROUNDS instead of banking it as a charge, and `p.chg` is pinned at `autoChg` so the
+  ball, the blast, the power and the recoil all still come off the one number they always did.
+  The release fires nothing, because everything was already fired. It is a separate SLOT rather
+  than a toggle because the kit is already a tap-to-cycle list and **a hidden mode is a state you
+  can be in without knowing it**. Its own GLB later is one `file:` in the roster.
+- **THREE MEN RUNNING ONE SCRIPT IS NOT THREE MEN (m36, `FOE.vary`, `foeRoll`, `foePlan`).**
+  *"They all slowly walk towards me in the exact same walk -- there's no variation, no speed
+  variation, they don't try to block at all and they only ever do one swing. Very, very
+  repetitive."* Every one of those is the same fault. Each body rolls his own `pace`, `nerve`,
+  `react` and `guard` once at spawn, and **none of them change what he DOES** -- only how fast,
+  how close, how eager and how soon -- so the state machine stays one thing to reason about.
+  **AND HE CIRCLES, COMBOS AND GIVES GROUND.** `standing_walk_left/right` were in the file and
+  unused; a man who only ever walks straight at you is the whole complaint. `foePlan` is one
+  place deciding between a guard, a circle, giving ground and a swing, so the mix reads as a
+  sentence rather than being reconstructed from four scattered branches.
+  **HE ALSO SWUNG FROM OUTSIDE HIS OWN REACH, WHICH IS WHY IT LOOKED LIKE ONE ANIMATION ON A
+  LOOP.** The walk stopped at `hold` 3.4 m and the mace reaches 2.4 + your .34 = 2.74, so every
+  swing at a player standing still was thrown at air a foot in front of him.
+  **AND `nerve` COULD PUT HIM SOMEWHERE HE COULD NEVER ATTACK FROM.** At 1.25 `hold` became
+  3.25 m against a `hitR` of 2.6, so a wary one who had closed once stood there, failed
+  `foePlan`'s range test for ever and **never swung again**. `npm run sim` caught it as **0
+  swings in 40 s on about one roll in four** -- which is exactly the shape of a bug that reads as
+  "sometimes one of them just stands there" and would never have been found by reading. Both
+  distances are clamped inside `hitR` now: **a distance he cannot attack from is not a distance
+  to stand at.**
+  **AND THEY DO NOT STAND INSIDE EACH OTHER (`bodySep`).** `pushBodies` was only reached from the
+  walking branch, so the moment two of them stopped -- which is exactly when they are both
+  standing on you -- nothing kept them apart. It runs for every body every frame now, and it is
+  SYMMETRIC: each pushes out by half, so neither shoves the other across the street.
+  **A HARNESS CASE THAT COUNTS ONE THING CANNOT SEE "REPETITIVE".** `npm run sim` counts distinct
+  swing CLIPS and distinct STATES over a forty-second fight, because "he swings twice" passes
+  happily on a man doing the identical thing twice.
+- **THE STRIKE CLIPS ARE THE REAL PROBLEM AND THEY ARE BEING REDRAWN (m36).** *"The animations
+  look really bad -- they're really fast and you can't even tell what he's doing. I'll probably
+  just put in strike poses, so it'll be like a dash ending in a strike pose, close to those 2D
+  side-scroller fighting games based on old arcade games where the poses are really
+  exaggerated."* `MELEE.beat` went .44/.50/.62 -> .62/.68/.82, which is the most that can be done
+  from this side: a 1.0-1.75 s clip at 3x is a blur with no pose in it, and at 2x it is a blur
+  slightly longer. **A dash-and-hold pose is a different SHAPE of move, not a slower clip** --
+  the travel would come first and the pose would be held at the end, which is `MELEE.carry`
+  inverted. Wire it when the clips land; do not try to fake it by retuning `carry`.
 - **A NEW ENEMY IS A TABLE AND A BRAIN, NOT A SECOND EVERYTHING (m35, `FOE`, `d.K`, `foeAI`).**
   *"Make him walk around, make it so I can shoot him, make him fight back."* The warrior goes
   into the SAME `DUMMIES` list the officer is in, because the bolt, the swept limb, the aim
@@ -954,6 +1046,8 @@ means anything you can carry from one situation to the next.
 - **The warrior does not chase you far and cannot catch you.** `FOE.run` 2.6 m/s against a
   player who sprints at 7.2 -- deliberate for now, and limited by what `standing_run_forward` is
   actually walking at. A faster approach than the clip can sell is a scramble.
+- **The rapid fire shares the blaster's model**, which makes the two slots identical to look at.
+  Its own GLB is one `file:` in `WEAP.slots`.
 - **No stun weapons, no rocket launcher, no arrest.** `FOE.dmg` is the hook: a weapon is an entry
   in it, and a different EFFECT (a stun, a launch) is a field beside the number.
 - **Nothing uses `crouch_*`, the whole `unarmed_*` locomotion family, the disarms, the kicks, the

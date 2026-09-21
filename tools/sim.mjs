@@ -301,54 +301,48 @@ killedAt = tt;
 ok('the stick cannot run him out before landFree', killedAt >= MOVE.landHard * MOVE.landFree - DT * 2,
    `broke out at ${killedAt.toFixed(2)} s, floor is ${(MOVE.landHard * MOVE.landFree).toFixed(2)}`);
 
-console.log('\n-- 13. THE CHARGED SWING IS A SOLVED ARC, NOT A FIXED LEAP --');
-// **THIS CASE USED TO MEASURE A RULE THE GAME NO LONGER HAS.** It asserted the release drives
-// him forward at over 9 m/s, which was true of the fixed leap m21 replaced -- and m21's whole
-// point is that a constant launch can only do one distance, so with NOBODY in front of him the
-// correct answer is nearly straight up. It failed for three builds while the code was right.
-// The rule now: close goes UP, far goes OUT, and the gap decides.
-reset(0, 0); cam.az = 0; p.slot = 2;            // hammer
+console.log('\n-- 13. THE CHARGED SWING IS FLAT, AND THE HOLD DECIDES HOW FAR --');
+// **THIS CASE HAS NOW MEASURED A RULE THE GAME NO LONGER HAD, TWICE.** m21 replaced a fixed
+// leap with an arc solved from the GAP, and m36 replaced the arc with a flat launch solved from
+// the HOLD: *"it doesn't go high up in the air any more -- it's a straightforward launch, and
+// how far you go depends on how long you hold the charge."* Both times the case went red while
+// the code was right, which is a suite nobody reads. **When a rule changes, the case moves with
+// it in the same commit.**
+reset(0, 0); cam.az = 0; p.slot = 3;            // hammer
 p.charge = 1; p.chargeT = M.MELEE.charge;       // fully wound
 M.chargeRelease();
-ok('the release leaves the ground', p.vel.y > 2 && !p.grounded, `vy ${p.vel.y.toFixed(2)} m/s`);
-const hiFree = p.goHi, vFree = p.melV;
-ok('with nobody in front of him it goes UP', hiFree > 1.5 && vFree < 5,
-   `apex ${hiFree.toFixed(2)} m, ${vFree.toFixed(2)} m/s forward`);
+ok('the release leaves the ground', p.vel.y > 1 && !p.grounded, `vy ${p.vel.y.toFixed(2)} m/s`);
+const hiFull = p.goHi, farFull = p.goGap;
+ok('it is a HOP, not a leap', hiFull <= M.MELEE.flatHi + .01 && hiFull < 1.2,
+   `apex ${hiFull.toFixed(2)} m -- flatHi is ${M.MELEE.flatHi}`);
 const yGo = p.pos.y;
-let goApex = 0;
+let goApex = 0, zGo = p.pos.z;
 run(1.6, () => { goApex = Math.max(goApex, p.pos.y - yGo); });
-ok('and it reaches the apex it solved for', Math.abs(goApex - hiFree) < .35 && p.grounded,
-   `${goApex.toFixed(2)} m against ${hiFree.toFixed(2)}, back down ${p.grounded}`);
-// AND A MAN IN FRONT OF HIM TURNS IT INTO A LEAP. The distance is what changes, not the power.
+ok('and it never gets far off the ground', goApex < 1.0 && p.grounded,
+   `${goApex.toFixed(2)} m up, back down ${p.grounded}`);
+ok('a full hold carries a long way', p.pos.z - zGo > 6, `${(p.pos.z - zGo).toFixed(2)} m`);
+// a half charge goes less far, and it is the DISTANCE that changes now, not the height
+reset(0, 0); cam.az = 0; p.slot = 3;
+p.charge = 1; p.chargeT = M.MELEE.charge * .5;
+M.chargeRelease();
+ok('a half hold carries less far', p.goGap < farFull * .8, `${p.goGap.toFixed(2)} m against ${farFull.toFixed(2)}`);
+ok('and to the same height', Math.abs(p.goHi - hiFull) < .01, `apex ${p.goHi.toFixed(2)} against ${hiFull.toFixed(2)}`);
+// and a man in front of him still shortens it, so it lands ON him rather than through him
 {
   const K = M.FOE;
   M.DUMMIES.length = 0;
-  const far = { K, root: { position: { x: 0, y: 0, z: 7 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
-                hpMax: K.hp, cool: 0, h: 0, actions: {}, clips: {}, cw: {}, bar: null };
-  M.DUMMIES.push(far);
-  reset(0, 0); cam.az = 0; p.slot = 2;
+  M.DUMMIES.push({ K, root: { position: { x: 0, y: 0, z: 5 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
+                   hpMax: K.hp, cool: 0, h: 0, actions: {}, clips: {}, cw: {}, bar: null });
+  reset(0, 0); cam.az = 0; p.slot = 3;
   p.charge = 1; p.chargeT = M.MELEE.charge;
   M.chargeRelease();
-  // THE PASS MARK IS THE RULE, NOT A NUMBER THAT LOOKED RIGHT. `vFree + 3` was invented and
-  // failed a correct answer at 5.26; what m21 actually promises is that the GAP is what he
-  // solves for, so it is a real gap and it is faster than the standing one.
-  ok('a man seven metres off turns it into a leap', p.melV > vFree && p.goGap > 4,
-     `${p.melV.toFixed(2)} m/s over a ${p.goGap.toFixed(2)} m gap, against ${vFree.toFixed(2)} free`);
-  ok('and it goes LOWER than the standing one', p.goHi < hiFree,
-     `apex ${p.goHi.toFixed(2)} m against ${hiFree.toFixed(2)}`);
-  const zGo = p.pos.z;
+  ok('a man in the way shortens it', p.goGap < farFull, `${p.goGap.toFixed(2)} m for a man at 5, free is ${farFull.toFixed(2)}`);
+  const z1 = p.pos.z;
   run(1.6);
-  const landed = p.pos.z - zGo;
-  ok('it lands him ON him rather than through him',
-     Math.abs(landed - p.goGap) < 1.2 && p.grounded, `travelled ${landed.toFixed(2)} m for a ${p.goGap.toFixed(2)} m gap`);
+  ok('and it lands him ON him', Math.abs((p.pos.z - z1) - p.goGap) < 1.2 && p.grounded,
+     `travelled ${(p.pos.z - z1).toFixed(2)} m for a ${p.goGap.toFixed(2)} m solve`);
   M.DUMMIES.length = 0;
 }
-// a half charge must still move him, but less
-reset(0, 0); cam.az = 0; p.slot = 2;
-p.charge = 1; p.chargeT = M.MELEE.charge * .5;
-M.chargeRelease();
-ok('a half charge jumps lower than a full one', p.goHi < hiFree && p.goHi > .5,
-   `apex ${p.goHi.toFixed(2)} m against ${hiFree.toFixed(2)} at full`);
 
 console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
 // **HIS BODY IS FABRICATED AND THAT IS A STATED GAP.** The warrior GLB is draco and no harness
@@ -409,13 +403,38 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
   ok('and he faces you when he gets there', Math.abs(((d.h - Math.PI + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) < .3,
      `${(d.h * 180 / Math.PI).toFixed(0)} deg, you are at 180`);
 
-  // --- and he hits you
+  // --- and he hits you, and he does more than one thing while doing it
   clear(); reset(0, 0); p.hp = M.HEALTH.max;
   d = mkFoe(0, 2.2); d.aggro = 1; d.h = Math.PI;
-  let swings = 0, was = p.st;
-  for (let i = 0; i < 60 * 8; i++) { const s0 = d.st; M.stepDummies(DT); if (d.st === 'swing' && s0 !== 'swing') swings++; }
-  ok('he swings at you, more than once', swings >= 2, `${swings} swings in 8 s`);
+  // **WHAT "NOT REPETITIVE" MEANS IS MEASURABLE**: over a long fight he uses more than one
+  // state and more than one swing clip. *"They only ever do one swing, they don't try to block
+  // at all, there's no variation."* Counting swings alone cannot see any of that.
+  const seenSt = {}, seenSwing = {};
+  let swings = 0;
+  for (let i = 0; i < 60 * 40; i++) {
+    const s0 = d.st, c0 = d.cur;
+    M.stepDummies(DT);
+    seenSt[d.st] = (seenSt[d.st] || 0) + 1;
+    if (d.st === 'swing') { seenSwing[d.cur] = (seenSwing[d.cur] || 0) + 1; if (s0 !== 'swing' || c0 !== d.cur) swings++; }
+  }
+  ok('he swings at you, repeatedly', swings >= 3, `${swings} swings in 40 s`);
   ok('and it costs you health', p.hp < M.HEALTH.max, `HP ${p.hp.toFixed(0)} of ${M.HEALTH.max}`);
+  ok('he uses more than one swing clip', Object.keys(seenSwing).length >= 2,
+     Object.keys(seenSwing).length + ' of ' + K.clips.swings.length + ': ' + Object.keys(seenSwing).join(', '));
+  ok('and more than one state -- he blocks and circles too', Object.keys(seenSt).length >= 3,
+     JSON.stringify(seenSt));
+
+  // --- three of them do not stand inside each other
+  clear(); reset(0, 0);
+  const pack = [mkFoe(0, 8), mkFoe(.3, 8.2), mkFoe(-.2, 7.9)];
+  for (const f of pack) f.aggro = 1;
+  for (let i = 0; i < 60 * 10; i++) M.stepDummies(DT);
+  let worst = 99;
+  for (let i = 0; i < pack.length; i++) for (let j = i + 1; j < pack.length; j++)
+    worst = Math.min(worst, Math.hypot(pack[i].root.position.x - pack[j].root.position.x,
+                                       pack[i].root.position.z - pack[j].root.position.z));
+  ok('three of them keep out of each other', worst > K.sep * 1.6,
+     `closest pair ${worst.toFixed(2)} m, two radii is ${(K.sep * 2).toFixed(2)}`);
 
   // --- a swing thrown forwards does not hit a man standing behind him
   clear(); reset(0, 0); p.hp = M.HEALTH.max;
@@ -424,24 +443,57 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
   for (let i = 0; i < 60 * 2; i++) M.stepDummies(DT);
   ok('a swing the wrong way misses', p.hp === M.HEALTH.max, `HP ${p.hp.toFixed(0)}`);
 
-  // --- damage is per weapon, and he goes down at zero
+  // --- damage is per weapon, at a power a FIST actually carries
   clear(); reset(0, 0);
   d = mkFoe(0, 3); d.hp = K.hp;
-  M.dummyBlow(d, 0, 1, K.dmg.fist);  const afterFist = d.hp;
+  const PW = M.MELEE.power[0];                      // .45 -- the first punch of the chain
+  M.dummyBlow(d, 0, PW, K.dmg.fist);  const afterFist = d.hp;
   d.cool = 0; d.st = 'idle';
-  M.dummyBlow(d, 0, 1, K.dmg.bolt);  const afterBolt = d.hp;
+  M.dummyBlow(d, 0, PW, K.dmg.bolt);  const afterBolt = d.hp;
   ok('a bolt costs more than a fist', (K.hp - afterFist) < (afterFist - afterBolt),
      `fist ${(K.hp - afterFist).toFixed(2)}, bolt ${(afterFist - afterBolt).toFixed(2)}`);
-  let blows = 2;
-  while (d.st !== 'down' && blows < 40) { d.cool = 0; if (d.st !== 'down') d.st = 'idle'; M.dummyBlow(d, 0, 1, K.dmg.fist); blows++; }
-  ok('enough blows put him down', d.st === 'down', `${blows} at full power`);
-  ok('and it took more than one', blows > 3, `${blows}`);
+  // AND THE REAL CHAIN IS WHAT DECIDES HOW LONG A FIGHT IS -- three strikes at .45 / .52 / 1.0,
+  // the last of which is over `fling` and launches him by design. Measuring the first strike's
+  // power over and over measures a move nobody throws.
+  clear(); reset(0, 0);
+  d = mkFoe(0, 3); d.hp = K.hp;
+  let blows = 0;
+  while (d.st !== 'down' && blows < 40) {
+    d.cool = 0; if (d.st !== 'down') d.st = 'idle';
+    M.dummyBlow(d, 0, M.MELEE.power[blows % 3], K.dmg.fist); blows++;
+  }
+  ok('a melee chain puts him down', d.st === 'down', `${blows} strikes`);
+  ok('and it took more than one', blows > 1, `${blows}`);
 
-  // --- and he gets back up on his own clock
-  const t0 = performance.now();
+  // --- but ONE full-charge bolt flings him, whatever his health says
+  clear(); reset(0, 0);
+  d = mkFoe(0, 3); d.hp = K.hp;
+  M.dummyBlow(d, 0, 1.0, K.dmg.bolt);
+  ok('a full charge sends him flying outright', d.st === 'down' && Math.hypot(d.vx, d.vz) > 2,
+     `${Math.hypot(d.vx, d.vz).toFixed(1)} m/s out, ${d.vy.toFixed(1)} up -- fling is ${K.fling}`);
+  clear(); reset(0, 0);
+  d = mkFoe(0, 3); d.hp = K.hp;
+  M.dummyBlow(d, 0, .5, K.dmg.bolt);
+  ok('and a half charge does not', d.st !== 'down', `state ${d.st}, hp ${d.hp.toFixed(1)}`);
+
+  // --- a blast catches everybody in it
+  clear(); reset(0, 0);
+  const crowd = [mkFoe(0, 6), mkFoe(1.4, 6), mkFoe(-1.4, 6)];
+  const before = crowd.map(f => f.hp);
+  M.dummyHit(0, 6, 0, 1.0, M.WEAP.ball1 * .5 + M.WEAP.blast1, K.dmg.bolt);
+  const struck = crowd.filter((f, i) => f.hp !== before[i] || f.st === 'down').length;
+  ok('a full blast catches a crowd, not one of them', struck === 3, `${struck} of 3`);
+  clear();
+
+  // --- and he gets back up on his own clock. FROM HIS OWN KNOCK-DOWN, not from whatever state
+  // the case before happened to leave lying about -- a harness reading a body it did not put
+  // there measures the previous case.
+  clear(); reset(0, 0);
+  d = mkFoe(0, 9); d.hp = K.hp;          // far enough that he is not swinging while he stands up
+  M.dummyBlow(d, 0, 1.0, K.dmg.bolt);
   let upAt = -1;
-  for (let i = 0; i < 60 * 14; i++) { M.stepDummies(DT); if (upAt < 0 && d.st === 'idle') upAt = i * DT; }
-  ok('he gets back up by himself', upAt > 0, `standing again after ${upAt.toFixed(1)} s`);
+  for (let i = 0; i < 60 * 16; i++) { M.stepDummies(DT); if (upAt < 0 && d.st !== 'down') upAt = i * DT; }
+  ok('he gets back up by himself', upAt > 0, `off the floor after ${upAt.toFixed(1)} s`);
   ok('at full health', d.hp === d.hpMax, `${d.hp} of ${d.hpMax}`);
   clear();
 }

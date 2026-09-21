@@ -286,10 +286,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m35</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m36</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m35</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m36</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -329,7 +329,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm35';
+const BUILD = 'm36';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -468,7 +468,12 @@ const MELEE = {
   // which is only bearable if each one is over quickly -- so the beats come down and the clips
   // are compressed harder to match. A chain is 1.56 s of three landed blows rather than 2.3 s
   // of two and a half.
-  beat: [.44, .50, .62],
+  // **SLOWER AGAIN (m36).** *"The animations look really bad -- they're really fast and you
+  // can't even tell what he's doing."* A 1.0-1.75 s clip squeezed into .44 s is 3x, and at 3x a
+  // swing is a blur with no pose in it. These are the compromise while the clips are what they
+  // are: readable, and still short enough that a chain is not a film. **The real fix is the
+  // clips** -- see the note under `STRIKE` about the dash-and-pose set he is drawing.
+  beat: [.62, .68, .82],
   // WHERE IN THE CLIP THE BLOW LANDS, per strike. Firing on the INPUT frame puts the
   // consequence a third of a second before the hand gets there, and a swing and its effect
   // arriving as two events is what "you cannot actually hit things" looks like from outside.
@@ -494,6 +499,7 @@ const MELEE = {
   finishRange: 19,     // the charged swing reaches about double what a strike does
   // and what each one is worth. The finisher and the charged swing put him down outright.
   power: [.45, .52, 1.0],
+  hitAll: 1,         // a swing catches EVERY body it sweeps through, not the first one
   window: 1.05,      // how long after a strike the next flick continues the chain
   // `hold` IS DEAD AND KEPT AS A NOTE. It was the fraction of a strike after which the stick
   // could cancel the recovery -- and cancelling a strike is exactly what must not happen now.
@@ -529,10 +535,26 @@ const MELEE = {
   // 1.1 scaled only by `chargeGoK`, whose floor is `finishMin` .45 -- so the shortest real
   // swing already leapt 45% as high as the longest and the hold bought almost nothing you could
   // see. Doubled at the top, and `finishHiK0` is the floor at the bottom.
-  finishHiNear: 4.6,   // the apex standing on top of him, in metres, at a FULL charge
-  finishHiFar: 2.0,    // and at full reach. Close is a stomp; far is a flying leap.
-  finishHiK0: .30,     // and what a bare half-charge release gets -- a hop, not a leap
-  finishFree: 4.5,     // an unlocked swing has no gap to solve, so it leaps this far
+  // **AND IT IS FLAT NOW (m36).** *"Make it so that jump attack doesn't go high up in the air
+  // any more -- it's just a straightforward launch, and how far you go depends on how long you
+  // hold the charge."* So the arc stops being solved from the GAP and starts being solved from
+  // the HOLD: one low hop whatever the distance, and the charge alone decides how far it
+  // carries. m21's finding stands and is simply no longer wanted -- a constant launch can only
+  // do one distance, and this is still not constant, it is a function of the hold instead.
+  // **`flatHi` IS A HOP, NOT AN ARC.** Low enough to read as a lunge rather than a leap, and
+  // high enough that the ground does not eat the travel: the flight time still falls out of it
+  // (`T = 2 vy / g`), and the clip is still compressed to T.
+  flatHi: .55,         // metres. `mel.MELEE.flatHi = 3` is the old flying version.
+  // **AND THE CEILING IS THE HOP, NOT THIS NUMBER.** A .55 m apex is 0.47 s of flight, so at
+  // `maxV` 21 the furthest it can possibly carry is about 9.9 m -- `flatFar` 14 was clamped
+  // there and a half hold arrived at the same place as a full one, which is the hold buying
+  // nothing all over again. Both ends sit inside what the hop can actually deliver.
+  flatNear: 2.6,       // how far a bare half-charge release carries
+  flatFar: 9.0,        // and a full one
+  finishHiNear: 4.6,   // KEPT AS A NOTE -- the solved-arc apexes, unread while `flatHi` is set
+  finishHiFar: 2.0,
+  finishHiK0: .30,
+  finishFree: 4.5,
   finishTail: .22,     // the recovery after he lands, so the clip has somewhere to finish
   // `finishV` and `finishUp` ARE DEAD AND KEPT AS A NOTE -- the flat 18 m/s and 4.6 m/s that
   // WERE the leap, before the gap had anything to say about it.
@@ -577,6 +599,13 @@ const WEAP = {
   slots: [
     { key: 'none',    label: 'UNARMED', file: null,                                        melee: 'fist' },
     { key: 'blaster', label: 'BLASTER', file: 'models/weapons/alien_antenna_blaster_game.glb', melee: 'fist', aim: true },
+    // **THE RAPID FIRE IS A MODE, NOT A MODEL (m36).** *"I wanna make a version of the gun
+    // that's more like a machine gun. I'll probably make a different model but we can use this
+    // for now -- when you hold forward it just shoots automatically."* Same file, same mount,
+    // same trigger gates: `auto` is the whole difference, and swapping in its own GLB later is
+    // one `file:` here. It is a separate SLOT rather than a toggle because the kit is already a
+    // tap-to-cycle list and a hidden mode is a state you can be in without knowing it.
+    { key: 'rapid',   label: 'RAPID',   file: 'models/weapons/alien_antenna_blaster_game.glb', melee: 'fist', aim: true, auto: true },
     { key: 'hammer',  label: 'HAMMER',  file: 'models/weapons/alien_antenna_hammer_game.glb',  melee: 'weap', charge: true },
   ],
   // THE TRIGGER IS A FULL PULL, HELD. Four gates, and each rules out a different way of firing
@@ -610,6 +639,25 @@ const WEAP = {
   range: 60,         // how far the aim is walked to find what he is pointing at
   boltV: 44,         // m/s. Slow enough to SEE, which is the whole point of a charged ball
   boltLife: 2.4, boltR: .17,
+  // **THE BALL IS THE CHARGE, AND IT IS BIGGER THAN IT WAS (m36).** *"Make the blast of the
+  // ball a little bigger, and the size should depend on how long you charge it -- a full charge
+  // should be a fairly hefty ball and the effect greater."* One number drives all three: the
+  // picture, the thing it collides with, and how wide the blast reaches. They cannot drift.
+  ball0: .30, ball1: 1.15,          // metres across, fumble to full
+  blast0: .55, blast1: 2.60,        // how far from the impact a body is caught
+  // **AND A FULL CHARGE SENDS THEM FLYING WHATEVER THEIR HEALTH SAYS.** `FOE.hard` is
+  // unreachable on purpose so DAMAGE is what puts a warrior down -- which is right for a fist
+  // and wrong for the biggest shot in the game. `fling` is the power at which a blow launches
+  // him regardless, and it sits high enough that only a near-full charge reaches it.
+  autoRate: .11,     // seconds between rounds in `rapid`
+  autoChg: .16,      // and what each one is worth -- a fumble's power, fired eight times a second
+  // A SHOT THAT CURVES, RATHER THAN A MARK THAT PROMISES. *"No aim assist like with the
+  // reticle -- instead if you shoot in the general direction of a player the ball ever so
+  // slightly curves to hit them."* So the assist moves from the AIM to the BOLT, where it is
+  // something you can watch rather than something that moves your hands. Every number is a
+  // property of the SHOT: how far it looks, how far off its nose it will accept, and how hard
+  // it may turn -- which is what "ever so slightly" is, in radians per second.
+  home: { on: 1, range: 26, cone: .38, rate: 2.1, lead: .35 },
   // `zapDur` IS KEPT AS A NOTE. It capped `electricity_beam_01.mp3` -- a BEAM, seconds of it --
   // when arming used to fire one beside the charge hum. Nothing calls it now: the hum is the
   // charge and a second voice on the same event is what he was hearing. `snd`'s `dur` is
@@ -878,15 +926,45 @@ const FOE = {
   walkRef: .86, runRef: 1.79, tsHi: 1.7, tsLo: .7,
   walk: 1.0, run: 2.6,          // m/s. He is a threat you can outrun, deliberately, for now.
   turn: 3.2,                    // rad/s
+  // **NO TWO OF THEM THE SAME (m36).** *"They all slowly walk towards me in the exact same
+  // walk -- there's no variation, there's no speed variation, they don't try to block at all
+  // and they only ever do one swing. Very, very repetitive."* Every one of those is the same
+  // fault: three men running one script on the same frame. So each carries his own numbers,
+  // rolled once at spawn, and **none of them change what he DOES** -- only how fast, how
+  // close, how eager and how soon -- so the state machine stays one thing to reason about.
+  //     pace    how fast he moves, as a multiplier on `walk`/`run`
+  //     nerve   how near he will get, and how willing he is to swing rather than circle
+  //     react   how long he takes to notice, and the beat between his decisions
+  //     guard   how often he answers with a block instead
+  vary: { pace: [.78, 1.22], nerve: [.8, 1.25], react: [.15, .75], guard: [.10, .48] },
+  // **AND HE CIRCLES.** `standing_walk_left` and `standing_walk_right` were sitting in the file
+  // unused, and a man who only ever walks straight at you is the whole complaint. Circling is
+  // what makes three of them read as a group rather than as a queue.
+  strafe: 'standing_walk_left', strafeR: 'standing_walk_right',
+  strafeRef: .70,     // measured the same direction-free way as the walk
+  circle: .55,        // of the time spent in reach, rather than standing still
+  circleDur: [.8, 2.2],
+  // **AND HE SOMETIMES SWINGS TWICE.** One swing then a beat then another is a COMBINATION;
+  // one swing and a long pause is a metronome. The second comes quicker than the first.
+  combo: .38, comboGap: .18,
+  // **AND HE BACKS OFF.** Nothing in the old brain ever moved him AWAY, so a fight had no
+  // rhythm at all -- he arrived and stayed. After a swing he sometimes gives ground, which is
+  // also what leaves you room to answer.
+  backOff: .3, backDur: [.5, 1.1], backSpeed: .9,
   // THE BRAIN, and every number in it is a DISTANCE or a TIME, so it reads as a sentence:
   notice: 22,        // he does not care about you past this
   lose: 30,          // and gives up past this, which is wider so the edge does not flicker
-  reach: 2.6,        // how close he closes before swinging
-  hold: 3.4,         // and how far he will drift back out to before closing again
-  swingDur: .95,     // the clips run 2.3-3.0 s at 1x, which is a long time to watch
+  // **HE CLOSED TO `hold` AND SWUNG FROM THERE, WHICH IS OUTSIDE HIS OWN REACH (m36).** The
+  // walk stopped at 3.4 m and the mace reaches 2.4 + your .34 = 2.74, so every swing at a
+  // player standing still was thrown at air a foot in front of him -- which from where he is
+  // standing is a man doing one animation over and over for no reason. He closes to `reach`
+  // now and `hold` is only how far he may drift before closing again.
+  reach: 2.0,        // how close he closes before swinging -- inside `hitR`, by construction
+  hold: 2.6,         // and the slack on it, so he is not stepping in and out on the boundary
+  swingDur: 1.35,    // the clips run 2.3-3.0 s at 1x; at .95 it was a blur with no pose in it
   swingAt: .45,      // where in that beat the mace arrives
-  swingGap: 1.1,     // and the pause between swings
-  block: .28,        // how often he answers an approach with a guard instead of a swing
+  swingGap: .85,     // and the pause between swings
+  block: .22,        // the BASE chance of a guard instead of a swing -- `vary.guard` moves it
   blockDur: 1.1,
   blockCut: .35,     // what a blow costs him through a raised guard
   taunt: .25,        // how often a knock-down is answered with a battlecry on the way back in
@@ -900,7 +978,11 @@ const FOE = {
   dmg: { bolt: 1.9, fist: .8, weap: 1.3, finish: 3.2 },   // per full-power blow
   cool: .16,
   // WHAT HE DOES TO YOU. *"Make him fight back."*
-  hitR: 2.4,         // how far his mace reaches
+  // A BLOW AT OR OVER THIS POWER LAUNCHES HIM WHATEVER HIS HEALTH SAYS -- which is what a
+  // near-full charge buys, and the one place `hard`'s unreachability had to be answered.
+  fling: .90,
+  sep: 1.0,          // and how much room two of them take up between themselves
+  hitR: 2.6,         // how far his mace reaches
   hitArc: 1.15,      // and how far off his nose you may be and still be in it
   hitDmg: 12,
   push: 7.0, pushUp: 2.2,
@@ -917,6 +999,18 @@ const HEALTH = { max: 100, regen: 4.0, wait: 5.0 };
 // he faces it, the lens comes round to it, and the left stick stops meaning "a direction in the
 // world" and starts meaning "toward him, away from him, or AROUND him".
 const LOCK = {
+  // **OFF (m36).** *"We're gonna get rid of the aim assist on the blaster for now... the
+  // reticle aimer thing is really annoying to use."* The lock drove three things at once -- the
+  // mark, the camera coming round, and the left stick switching into an orbit -- and all three
+  // go together, because two of them exist to serve the mark. **Nothing is deleted**: `on = 1`
+  // brings the whole loop back exactly as it was, which is what makes this a decision rather
+  // than a rewrite. The assist it replaces lives in `WEAP.home` now, on the BOLT.
+  // **THE MELEE LUNGE IS NOT THIS AND STAYS.** *"Take the lock off the melee charge -- it's
+  // just physically going to assist you."* `meleeLock` solves the launch for the gap so a swing
+  // thrown at a man ARRIVES; that is a physical assist with nothing drawn and nothing taken off
+  // the thumb, and it is the half he asked to keep.
+  on: 0,
+  retic: 0,         // the mark itself, separately -- `mel.LOCK.retic = 1` draws it with no lock
   range: 24,        // how far he will take a target
   // THE RETICLE'S SHRINKING RING *IS* THE LOCK WINDOW -- that is what it is drawing. It opens
   // the moment the trigger arms and closes as the charge fills, so holding a target inside it
@@ -1942,12 +2036,62 @@ function fireBolt(chg) {
   const dir = new THREE.Vector3(a.p.x - m.x, a.p.y - m.y, a.p.z - m.z);
   if (dir.lengthSq() < 1e-6) dir.set(Math.sin(cam.az), 0, Math.cos(cam.az));
   dir.normalize();
-  const size = .16 + chg * .40;
+  // ONE NUMBER IS THE BALL: the picture, the thing it collides with, and how wide the blast
+  // reaches all come off `chg`, so they cannot drift apart.
+  const size = lerp(WEAP.ball0, WEAP.ball1, chg);
   const g = glowBall(size);
   g.position.copy(m);
   scene.add(g);
-  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size });
+  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size,
+               blast: lerp(WEAP.blast0, WEAP.blast1, chg) });
 }
+// **THE ASSIST IS ON THE SHOT NOW, NOT ON THE AIM (m36).** *"No aim assist like with the
+// reticle -- instead, if you shoot in the general direction of a player the ball ever so
+// slightly curves to hit them."* Which is a better idea than the thing it replaces, and for a
+// reason worth writing down: a mark that moves where you are POINTING takes the aim off your
+// thumb and you stop aiming; a ball that curves is something you WATCH, and it can only ever
+// finish a shot you had already very nearly made.
+// **IT IS A TURN RATE, NOT A SEEK.** `rate` radians a second is the whole of "ever so slightly"
+// -- a bolt covering 44 m/s turning at 2.1 rad/s has a 21 m radius, so it closes a few degrees
+// over the flight and cannot fetch a shot thrown at the sky.
+// **AND IT LEADS HIM.** A body that is walking is not where he is by the time the ball arrives,
+// so the point aimed at carries a fraction of his own travel -- small, because a full lead on a
+// slow ball is a homing missile.
+function boltHome(b, dt) {
+  const H = WEAP.home;
+  if (!H.on || !DUMMIES.length) return;
+  const v = b.vel, sp = v.length() || 1;
+  let best = null, bestS = -Infinity;
+  for (const d of DUMMIES) {
+    if (d.st === 'down' || d.st === 'up') continue;
+    const P = d.root.position;
+    let dx = P.x - b.pos.x, dy = (P.y + d.K.h * .55) - b.pos.y, dz = P.z - b.pos.z;
+    const dist = Math.hypot(dx, dy, dz);
+    if (dist > H.range || dist < .3) continue;
+    const dot = (dx * v.x + dy * v.y + dz * v.z) / (dist * sp);
+    if (dot < Math.cos(H.cone)) continue;
+    // straightest wins, nearest breaks it -- both as fractions of their own limit, so one
+    // cannot drown the other
+    const sc = dot - .35 * (dist / H.range);
+    if (sc > bestS) { bestS = sc; best = { d, dx, dy, dz, dist }; }
+  }
+  if (!best) return;
+  const D = best.d;
+  // LEAD: where he will be when it gets there, not where he is. `stepDummies` measures his own
+  // world velocity, so nothing here has to remember a previous frame.
+  const eta = H.lead * best.dist / sp;
+  _bh.set(best.dx + (D.wvx || 0) * eta, best.dy, best.dz + (D.wvz || 0) * eta).normalize();
+  _bv.copy(v).normalize();
+  // turn toward it by at most `rate * dt`, then put the speed back -- the bolt curves, it does
+  // not accelerate
+  const ang = Math.acos(clamp(_bv.dot(_bh), -1, 1));
+  if (ang < 1e-4) return;
+  const k = Math.min(1, (H.rate * dt) / ang);
+  _bv.lerp(_bh, k).normalize();
+  v.copy(_bv).multiplyScalar(sp);
+}
+const _bh = new THREE.Vector3(), _bv = new THREE.Vector3();
+
 function stepBolts(dt) {
   for (let i = BOLTS.length - 1; i >= 0; i--) {
     const b = BOLTS[i];
@@ -1956,6 +2100,7 @@ function stepBolts(dt) {
     // which is wide enough for a bolt to pass clean through a box.
     let dead = b.t > WEAP.boltLife;
     for (let k = 0; k < 2 && !dead; k++) {
+      boltHome(b, dt * .5);
       b.pos.addScaledVector(b.vel, dt * .5);
       // A BODY BEFORE A BOX. A bolt that tested the world first would pass through a man
       // standing against a wall, which is exactly where anybody stands.
@@ -1964,9 +2109,14 @@ function stepBolts(dt) {
       // lightest real shot already put a man on his back and there was nothing left for the
       // hold to buy. `pow0`/`pow1` put the crossing at half, and `DUMMY.fly0`'s squared ramp
       // does the rest: half is a shove, three-quarters carries him, full sends him flying.
+      // **AND THE BLAST CATCHES EVERYONE IN IT (m36).** *"If I shoot a ball and it hits in the
+      // general area of a few of them, that explosive effect should hit more than just one at a
+      // time."* `dummyHit` never did break on the first body -- it was the RADIUS, a bolt's own
+      // .17 plus .45, which is one man wide. The blast is the charge's now, so a full one is
+      // over two and a half metres across and a crowd goes over together.
       if (!dead && dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                             WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
-                            WEAP.boltR + .45, FOE.dmg.bolt)) dead = true;
+                            b.size * .5 + b.blast, FOE.dmg.bolt)) dead = true;
       if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
     }
     b.g.position.copy(b.pos);
@@ -2015,7 +2165,11 @@ function paintRetic() {
       } else mmarkEl.classList.remove('on');
     }
   }
-  if (!p.aim || !reticEl) { if (reticEl) reticEl.classList.remove('on'); return; }
+  // **THE RETICLE IS OFF WITH THE LOCK (m36).** *"The reticle aimer thing is really annoying to
+  // use."* It exists to draw the promise the assist makes, and there is no assist on the aim any
+  // more -- the ball curves instead (`WEAP.home`), which is a thing you watch rather than a mark
+  // that moves your hands. `mel.LOCK.retic = 1` brings it back on its own, without the lock.
+  if (!LOCK.retic || !p.aim || !reticEl) { if (reticEl) reticEl.classList.remove('on'); return; }
   // LOCKED, THE MARK IS ON HIM -- not on whatever the level walk happened to find. The mark IS
   // the promise, and a mark that sits beside the thing the gun is committed to is worse than
   // no mark at all.
@@ -2093,7 +2247,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
-  aim: 0, armT: 0, chg: 0, fireT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
+  aim: 0, armT: 0, chg: 0, fireT: 0, autoT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
   comp: 0, compHold: 0, bias: null,   // the aim-pose correction, and the pose offset it is undoing
   slot: 0,
   // HIS OWN HEALTH, which until m35 did not exist -- *"make him fight back"* has no consequence
@@ -2149,7 +2303,9 @@ function gunOut() { return !!slotNow().aim; }
 // the whole follow-through, which is the dramatic beat rather than a decoration on it.
 function committed() { return !!(player.aim || player.charge || player.fireT > 0); }
 function findLock() {
-  if (!committed()) return null;
+  // OFF SINCE m36. Everything below is intact and `mel.LOCK.on = 1` brings it back -- the
+  // reticle, the camera coming round and the stick's orbit mode all hang off the result.
+  if (!LOCK.on || !committed()) return null;
   const p = player;
   // wide when the trigger first arms, tight by the time it is loaded
   const cone = p.aim ? lerp(LOCK.cone, LOCK.coneTight, p.chg) : LOCK.cone;
@@ -2311,12 +2467,24 @@ function chargeRelease() {
   // where the swept fist can reach, not inside him
   const gap = (CL && p.melTgt) ? clamp(CL.dist - MELEE.arrive, 0, reach) : MELEE.finishFree * k;
   const f = reach > .01 ? clamp(gap / reach, 0, 1) : 0;
-  // CLOSE GOES UP, FAR GOES OUT. One lerp, and the whole shape of the move falls out of it.
-  const hi = lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * p.chargeGoH;
+  // **FLAT, AND THE HOLD IS WHAT DECIDES HOW FAR (m36).** *"Make it so that jump attack doesn't
+  // go high up in the air any more -- it's just a straightforward launch, and how far you go is
+  // dependent on how long you hold the charge."* So the apex stops coming from the GAP and
+  // becomes one low hop; the distance comes from `chargeGoH`, which is the hold's own curve.
+  // **A man in front of him still shortens it**, because a leap solved to land ON him is the
+  // one thing m21 got right and the one thing that stops the charge going through people.
+  // `mel.MELEE.flatHi = 3` restores the old arc for an A/B.
+  const flat = MELEE.flatHi > 0;
+  const hi = flat ? MELEE.flatHi : lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * p.chargeGoH;
   const vy = Math.sqrt(2 * MOVE.g * hi);
   const T = 2 * vy / MOVE.g;                 // the flight time IS the arc, never a typed beat
-  const vx = clamp(gap / T, 0, MELEE.maxV);  // and this lands him on the man at any distance
-  p.melV = vx; p.goGap = gap; p.goHi = hi;
+  // how far the HOLD wants to carry him, and the gap only ever shortens it
+  const wantD = lerp(MELEE.flatNear, MELEE.flatFar, p.chargeGoH);
+  const far = flat ? (p.melTgt ? Math.min(gap, wantD) : wantD) : gap;
+  const vx = clamp(far / T, 0, MELEE.maxV);
+  // the chip reports what it will ACTUALLY cover, not what was asked for -- `maxV` clamps and
+  // a number that ignores its own clamp is a number that lies on exactly the interesting frame
+  p.melV = vx; p.goGap = vx * T; p.goHi = hi;
   // THE CLIP IS COMPRESSED TO THE FLIGHT. A state whose length disagrees with the clip it is
   // playing can only ever cut that clip off -- which this file has already paid for once.
   p.goDur = T + MELEE.finishTail;
@@ -2489,7 +2657,7 @@ function stepKit(dt) {
       // the edge. Everything that ends the hold -- letting go, rolling the thumb back down,
       // sweeping off the arc, backgrounding the app -- comes through here as one release.
       if (p.aim) {
-        if (p.chg >= WEAP.minChg) {
+        if (!s.auto && p.chg >= WEAP.minChg) {
           fireBolt(p.chg);
           p.fireT = 1;
           snd(p.chg > .82 ? 'big' : 'shot', { g: .42 + p.chg * .3, r: 1.12 - p.chg * .3 });
@@ -2504,9 +2672,31 @@ function stepKit(dt) {
       }
       p.aim = 0; p.armT = 0;
     }
-    p.chg = p.aim ? Math.min(1, p.chg + dt / WEAP.chargeT) : 0;
-    if (p.aim) chargeStep(p.chg); else chargeStop();
-  } else { if (p.aim || CHARGE.gain) chargeStop(); p.aim = 0; p.armT = 0; p.chg = 0; }
+    // **RAPID FIRE IS THE SAME HOLD, SPENT DIFFERENTLY (m36).** *"When you hold forward it just
+    // shoots automatically."* So `auto` does not touch the four gates or the release -- it
+    // simply spends the hold as rounds instead of banking it as a charge, and `p.chg` is pinned
+    // at `autoChg` so the ball, the blast, the power and the recoil all still come off the one
+    // number they always did. The release fires nothing, because everything was already fired.
+    if (s.auto) {
+      p.chg = p.aim ? WEAP.autoChg : 0;
+      if (p.aim) {
+        p.autoT = (p.autoT || 0) - dt;
+        if (p.autoT <= 0) {
+          p.autoT = WEAP.autoRate;
+          fireBolt(WEAP.autoChg);
+          p.fireT = 1;
+          snd('shot', { g: .3, r: 1.28 + Math.random() * .1 });
+          const kv = WEAP.kick * .35;
+          p.vel.x -= Math.sin(cam.az) * kv; p.vel.z -= Math.cos(cam.az) * kv;
+          playPair(CLIPS.shoot, clipLen(CLIPS.shoot) / WEAP.shootBeat);
+        }
+      } else p.autoT = 0;
+      chargeStop();      // there is no ball to wind up; the shots ARE the feedback
+    } else {
+      p.chg = p.aim ? Math.min(1, p.chg + dt / WEAP.chargeT) : 0;
+      if (p.aim) chargeStep(p.chg); else chargeStop();
+    }
+  } else { if (p.aim || CHARGE.gain) chargeStop(); p.aim = 0; p.armT = 0; p.chg = 0; p.autoT = 0; }
 
   // the ball winds up ON the muzzle, and the gun's blue lifts with it
   const showBall = p.chg > .02;
@@ -3538,6 +3728,11 @@ function bodySpawn(P, K, x, z) {
   const d = { K, root, model, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff,
     st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
+    // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
+    // close, how eager and how soon -- so three of them read as three men rather than as one
+    // script running three times.
+    v: foeRoll(K),
+    combo: 0, circT: 0, circSide: 1, backT: 0, closed: 0,
     // FACING THE SPAWN. They all face +Z as authored and the spawn is behind that -- a rank of
     // men standing with their backs to you is a worse first impression than it sounds.
     h: Math.atan2(player.pos.x - x, player.pos.z - z) };
@@ -3563,9 +3758,22 @@ function bodySpawn(P, K, x, z) {
 
 // WHICH NAMES LOOP. Everything else is a one-shot, so this is derived from the table rather
 // than listed twice -- adding a swing cannot accidentally make it repeat.
+const rnd = a => a[0] + Math.random() * (a[1] - a[0]);
+// HIS OWN NUMBERS, rolled once and never changed. ONE function, so a fabricated body in a
+// harness gets the same shape the game builds -- a body without them used to throw inside the
+// brain, which is a harness measuring a game that cannot exist.
+function foeRoll(K) {
+  return K.vary
+    ? { pace: rnd(K.vary.pace), nerve: rnd(K.vary.nerve),
+        react: rnd(K.vary.react), guard: K.block * rnd([.4, 1.5]) }
+    : { pace: 1, nerve: 1, react: .3, guard: 0 };
+}
 function bodyLoops(K) {
   const L = new Set([K.clips.idle]);
   for (const k of ['walk', 'run', 'block']) if (K.clips[k]) L.add(K.clips[k]);
+  // the circling clips live beside the table rather than in it, and they loop like any gait
+  if (K.strafe) L.add(K.strafe);
+  if (K.strafeR) L.add(K.strafeR);
   return L;
 }
 
@@ -3695,7 +3903,12 @@ function strikeSweep(dt, power, live, dmg) {
           // the blow travels the way the LIMB was going, which is the direction already stored
           const bh = Math.atan2(_sw.x - q.x, _sw.z - q.z);
           dummyBlow(d, Math.hypot(lx, lz) > .02 ? bh : p.faceH, power, dmg);
-          hit = 1; break;
+          // **EVERY BODY THE LIMB PASSES THROUGH, NOT THE FIRST ONE (m36).** *"There were three
+          // of them piled up and I was meleeing, but it would only ever hit one at a time."*
+          // Exactly that: a `break` on the first hit, which is the right shape for a bullet and
+          // the wrong one for a swing -- a mace does not stop at the first man.
+          hit = 1;
+          if (!MELEE.hitAll) break;
         }
       }
     }
@@ -3744,7 +3957,10 @@ function dummyBlow(d, dirH, power, dmg) {
   const cost = K.dmg ? (dmg || K.dmg.fist) * (guard ? K.blockCut : 1) * Math.max(.35, power) : 1;
   d.hp -= cost;
   d.barT = K.bar ? K.bar.fade : 0;
-  const down = d.hp <= 0 || power >= K.hard;
+  // **AND A BIG ENOUGH BLOW LAUNCHES HIM WHATEVER HIS HEALTH SAYS.** `hard` is unreachable on
+  // the warrior so DAMAGE is what puts him down -- right for a fist, wrong for the biggest shot
+  // in the game. *"If you do a full charge it'll actually send them flying."*
+  const down = d.hp <= 0 || power >= K.hard || (K.fling !== undefined && power >= K.fling);
   if (!down) {
     if (guard) {
       d.st = 'block'; d.t = 0; d.blockT = K.blockDur;
@@ -3767,7 +3983,10 @@ function dummyBlow(d, dirH, power, dmg) {
   // drops him through whatever he was thrown onto and leaves him hanging over a hole.
   d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
   d.st = 'down'; d.t = 0; d.hp = K.hp;
-  const t = clamp((power - K.hard) / Math.max(.01, 1 - K.hard), 0, 1);
+  // how hard he goes is graded above whichever threshold actually tripped, squared -- a linear
+  // ramp spends most of its range looking the same and the top is the part worth having
+  const lo = Math.min(K.hard, K.fling !== undefined ? K.fling : K.hard);
+  const t = clamp((power - lo) / Math.max(.01, 1 - lo), 0, 1);
   const k = K.fly0 !== undefined ? K.fly0 + (1 - K.fly0) * t * t : .55;
   d.vx = Math.sin(dirH) * K.flyV * k;
   d.vz = Math.cos(dirH) * K.flyV * k;
@@ -3788,12 +4007,12 @@ function dummyBlow(d, dirH, power, dmg) {
 //     past `lose`       he stops caring, and `lose > notice` so the edge cannot flicker
 // ============================================================================================
 function foeAI(d, dt, t) {
-  const K = d.K;
+  const K = d.K, V = d.v || (d.v = foeRoll(K));
   const px = player.pos.x - d.root.position.x, pz = player.pos.z - d.root.position.z;
   const dd = Math.hypot(px, pz);
   const toP = Math.atan2(px, pz);
 
-  if (!d.aggro && dd < K.notice) d.aggro = 1;
+  if (!d.aggro && dd < K.notice) { d.aggro = 1; d.gap = V.react; }
   if (d.aggro && dd > K.lose) d.aggro = 0;
   d.gap = Math.max(0, d.gap - dt);
 
@@ -3804,14 +4023,23 @@ function foeAI(d, dt, t) {
     // own rule, which this file has paid for once on the player's side: a swing and its
     // consequence arriving as two events is what "you can't actually hit things" looks like.
     if (!d.swung && d.t >= K.swingDur * K.swingAt) { d.swung = 1; foeStrike(d); }
-    if (d.t >= K.swingDur) { d.st = 'idle'; d.t = 0; d.gap = K.swingGap; }
+    // HE LEANS INTO IT. A swing thrown by a man rooted to the spot is a puppet; a short step
+    // through the blow is most of what makes it read as weight.
+    if (d.t < K.swingDur * .6) foeMove(d, d.h, K.walk * V.pace * .8, dt);
+    if (d.t >= K.swingDur) {
+      d.t = 0;
+      // **A COMBINATION, NOT A METRONOME.** One swing and a long pause is the repetition he
+      // described; a second one on a shorter beat is a decision you have to answer.
+      if (d.combo > 0 && dd < K.hitR + 1) { d.combo--; foeSwing(d, K.comboGap); }
+      else { d.st = 'idle'; d.gap = K.swingGap * (2 - V.nerve); foePlan(d, dd); }
+    }
     return;
   }
   if (d.st === 'block') {
     t[d.cur || K.clips.block] = 1;
     d.blockT -= dt;
     if (d.blockT <= 0) { d.st = 'idle'; d.t = 0; d.cur = ''; d.gap = K.swingGap * .5; }
-    else if (d.cur !== K.clips.block && d.t >= K.hitBeat) { d.cur = K.clips.block; }
+    else if (d.cur !== K.clips.block && d.t >= K.hitBeat) d.cur = K.clips.block;
     faceTo(d, toP, dt);
     return;
   }
@@ -3839,42 +4067,125 @@ function foeAI(d, dt, t) {
   }
 
   faceTo(d, toP, dt);
-  // HOW CLOSE HE WANTS TO BE, with hysteresis: closing to `reach` and backing off at `hold`
-  // means he is not stepping in and out on the boundary every frame.
-  const want = dd > K.hold ? 1 : 0;
-  if (want) {
-    const sp = dd > K.notice * .55 ? K.run : K.walk;
-    const nm = sp >= K.run ? K.clips.run : K.clips.walk;
-    const ref = sp >= K.run ? K.runRef : K.walkRef;
-    const step = sp * dt;
-    const nx = d.root.position.x + Math.sin(d.h) * step, nz = d.root.position.z + Math.cos(d.h) * step;
-    // HE WALKS ON THE PLAYER'S OWN RESOLVER. A foe-shaped second physics path is a second
-    // physics path to keep in step with the first, which is the sentence `pushBodies` is
-    // written under one body along.
-    _fp.set(nx, d.root.position.y, nz);
-    resolveBoxes(_fp, K.r, K.h * .9);
-    pushBodies(_fp, K.r, d);
-    d.root.position.x = _fp.x; d.root.position.z = _fp.z;
-    d.root.position.y = groundAt(_fp.x, _fp.z, d.root.position.y, MOVE.step);
+
+  // GIVING GROUND IS A STATE OF ITS OWN, and it is what a fight has instead of a queue.
+  if (d.backT > 0) {
+    d.backT -= dt;
+    foeMove(d, toP + Math.PI, K.walk * V.pace * K.backSpeed, dt);
+    t[K.clips.walk] = 1;
+    setSkinScale(d, K.clips.walk, -clamp(K.walk * V.pace * K.backSpeed / K.walkRef, K.tsLo, K.tsHi));
+    return;
+  }
+  // AND SO IS CIRCLING. `standing_walk_left/right` were in the file and unused, and a man who
+  // only ever walks straight at you is the whole of *"there's no variation"*.
+  if (d.circT > 0 && dd < K.hold + 1.5) {
+    d.circT -= dt;
+    const side = d.circSide;
+    foeMove(d, toP + side * Math.PI / 2, K.walk * V.pace, dt);
+    const nm = side > 0 ? K.strafe : K.strafeR;
+    t[nm] = 1;
+    setSkinScale(d, nm, clamp(K.walk * V.pace / K.strafeRef, K.tsLo, K.tsHi));
+    if (d.circT <= 0) d.gap = Math.min(d.gap, V.react);
+    return;
+  }
+
+  // HOW CLOSE HE WANTS TO BE, with hysteresis: closing to `reach` and re-closing at `hold`
+  // means he is not stepping in and out on the boundary every frame. `nerve` moves both, so a
+  // bold one crowds you and a wary one hangs back -- from one rolled number, not a second AI.
+  // **AND BOTH ARE CLAMPED INSIDE HIS OWN REACH, WHICH IS THE WHOLE POINT.** `nerve` up at 1.25
+  // put `hold` at 3.25 m against a mace that reaches 2.6 -- so a wary one who had already closed
+  // once would stand at 3.25, fail the `dd <= hitR` test in `foePlan` for ever and never swing
+  // again. `npm run sim` caught it as **0 swings in 40 s** on about one roll in four, which is
+  // exactly the shape of a bug that reads as "sometimes one of them just stands there".
+  // A DISTANCE HE CANNOT ATTACK FROM IS NOT A DISTANCE TO STAND AT: both come off `hitR`.
+  const hold = Math.min(K.hold * V.nerve, K.hitR - .25);
+  const reach = Math.min(K.reach * V.nerve, hold - .2);
+  if (dd > (d.closed ? hold : reach)) {
+    d.closed = 0;
+    // **SPEED VARIATION IS TWO THINGS**: which clip, and his own pace. A far foe runs; a near
+    // one closes at a walk, which is what stops three of them arriving as a wall.
+    const fast = dd > K.notice * .45;
+    const sp = (fast ? K.run : K.walk) * V.pace;
+    const nm = fast ? K.clips.run : K.clips.walk;
+    const ref = fast ? K.runRef : K.walkRef;
+    foeMove(d, d.h, sp, dt);
     t[nm] = 1;
     // THE CLIP IS SCALED TO THE SPEED HE IS ACTUALLY GOING, capped -- a run played at twice its
     // reference is a scramble, and the honest fix for a slow clip is a faster clip.
     setSkinScale(d, nm, clamp(sp / ref, K.tsLo, K.tsHi));
     return;
   }
-  // in reach: swing, or put the guard up instead
-  if (d.gap <= 0) {
-    if (Math.random() < K.block) {
-      d.st = 'block'; d.t = 0; d.blockT = K.blockDur; d.cur = K.clips.block;
-      skinPlay(d, d.cur, 1);
-    } else {
-      const nm = K.clips.swings[(Math.random() * K.clips.swings.length) | 0];
-      d.st = 'swing'; d.t = 0; d.swung = 0; d.cur = nm;
-      skinPlay(d, nm, skinLen(d, nm) / K.swingDur);
-    }
+  d.closed = 1;
+  if (d.gap <= 0) foePlan(d, dd);
+  t[K.clips.idle] = 1;
+}
+
+// WHAT HE DOES NEXT, once he is in range and off cooldown. One place decides, so the mix can be
+// read as a sentence rather than reconstructed from four scattered branches.
+function foePlan(d, dd) {
+  const K = d.K, V = d.v || (d.v = foeRoll(K)), r = Math.random();
+  if (r < V.guard) {                       // a guard
+    d.st = 'block'; d.t = 0; d.blockT = K.blockDur; d.cur = K.clips.block;
+    skinPlay(d, d.cur, 1);
     return;
   }
-  t[K.clips.idle] = 1;
+  if (r < V.guard + K.circle * (2 - V.nerve) * .5 && dd < K.hold * 2) {   // circle for a moment
+    d.circT = K.circleDur[0] + Math.random() * (K.circleDur[1] - K.circleDur[0]);
+    d.circSide = Math.random() < .5 ? 1 : -1;
+    return;
+  }
+  if (r > 1 - K.backOff * (2 - V.nerve) * .5 && dd < K.hitR) {            // give ground
+    d.backT = K.backDur[0] + Math.random() * (K.backDur[1] - K.backDur[0]);
+    return;
+  }
+  if (dd <= K.hitR + .4) { d.combo = Math.random() < K.combo ? 1 : 0; foeSwing(d, 0); }
+  else d.gap = V.react;                    // not close enough yet -- look again shortly
+}
+
+// ONE PLACE STARTS A SWING, because two would be two chances to forget the rewind. A `ONCE`
+// clip holds its last frame, so re-entering one without resetting it plays nothing at all.
+function foeSwing(d, delay) {
+  const K = d.K;
+  const nm = K.clips.swings[(Math.random() * K.clips.swings.length) | 0];
+  d.st = 'swing'; d.t = -(delay || 0); d.swung = 0; d.cur = nm;
+  skinPlay(d, nm, skinLen(d, nm) / K.swingDur);
+}
+
+// HE WALKS ON THE PLAYER'S OWN RESOLVER, and is separated from the other bodies by the same
+// rule that separates the player from all of them -- one description of a body taking up room.
+function foeMove(d, h, sp, dt) {
+  const K = d.K, step = sp * dt;
+  _fp.set(d.root.position.x + Math.sin(h) * step, d.root.position.y, d.root.position.z + Math.cos(h) * step);
+  resolveBoxes(_fp, K.r, K.h * .9);
+  d.root.position.x = _fp.x; d.root.position.z = _fp.z;
+  d.root.position.y = groundAt(_fp.x, _fp.z, d.root.position.y, MOVE.step);
+}
+
+// **AND THEY DO NOT STAND INSIDE EACH OTHER (m36).** *"They shouldn't be able to overlap each
+// other."* `pushBodies` was only reached from the walking branch, so the moment two of them
+// stopped -- which is exactly when they are both standing on you -- nothing kept them apart.
+// It runs for EVERY body every frame now, walking or not, and it is symmetric: each pushes out
+// by half, so neither shoves the other across the street.
+function bodySep(dt) {
+  for (let i = 0; i < DUMMIES.length; i++) {
+    const a = DUMMIES[i];
+    if (a.st === 'down') continue;
+    for (let j = i + 1; j < DUMMIES.length; j++) {
+      const b = DUMMIES[j];
+      if (b.st === 'down') continue;
+      const rr = (a.K.sep || a.K.r) + (b.K.sep || b.K.r);
+      let dx = b.root.position.x - a.root.position.x, dz = b.root.position.z - a.root.position.z;
+      const l2 = dx * dx + dz * dz;
+      if (l2 >= rr * rr) continue;
+      // dead centre has no direction to push along, so take one rather than a vector whose
+      // sign is rounding -- `copFly`'s rule, one system over
+      let l = Math.sqrt(l2);
+      if (l < 1e-4) { dx = 1; dz = 0; l = 1; }
+      const push = (rr - l) * .5;
+      a.root.position.x -= dx / l * push; a.root.position.z -= dz / l * push;
+      b.root.position.x += dx / l * push; b.root.position.z += dz / l * push;
+    }
+  }
 }
 
 const _fp = new THREE.Vector3();
@@ -3913,8 +4224,13 @@ function playerHurt(dmg, dirH, push, up, stun) {
   snd('thud', { g: .95, r: .8 });
 }
 function stepDummies(dt) {
+  bodySep(dt);
   for (const d of DUMMIES) {
     const K = d.K;
+    // HIS OWN WORLD VELOCITY, measured rather than derived from whatever state he is in --
+    // `boltHome` leads him with it and a state machine is the wrong place to ask.
+    if (d.lx !== undefined && dt > 1e-5) { d.wvx = (d.root.position.x - d.lx) / dt; d.wvz = (d.root.position.z - d.lz) / dt; }
+    d.lx = d.root.position.x; d.lz = d.root.position.z;
     d.t += dt;
     if (d.cool > 0) d.cool -= dt;
     const t = {};
@@ -4236,7 +4552,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   BLD, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
   // flash and the bar can be looked at without standing in front of a mace.
-  FOE, HEALTH, foeAI, playerHurt, buildFoes,
+  FOE, HEALTH, foeAI, foePlan, foeRoll, bodySep, boltHome, playerHurt, buildFoes,
   hurt: d => playerHurt(d || 12, player.faceH + Math.PI, FOE.push, FOE.pushUp, FOE.stun),
   heal: () => { player.hp = HEALTH.max; return 'full'; },
   // HER, LIVE. `mel.she.spin = 2` turns her on the spot, which is the best look at what the
