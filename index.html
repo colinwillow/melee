@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m56</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m57</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m56</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m57</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm56';
+const BUILD = 'm57';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -458,7 +458,7 @@ const RIG = {
   // crosses the same floor at the same pace at four fifths the size, the boxes stand taller
   // over him and the building is bigger. Nothing about the CAMERA changed; what changed is how
   // much of the frame he occupies.
-  height: 1.45,
+  height: 1.25,
   // the height every typed body number below was chosen at, so `SZ` is the ratio and a change
   // to `height` moves all of them together rather than one at a time
   base: 1.75,
@@ -1187,6 +1187,9 @@ const SHE = {
 const DUMMY = {
   file: 'models/characters/dummy_officer.glb',
   h: 1.75, r: .42, hp: 3,
+  // a man in a uniform, not an orc in plate. `snd: 'clang'` is the one word if a vest
+  // should ring -- stated rather than assumed, because it is genuinely the arguable one.
+  snd: 'soft',
   at: [[3, -7], [-6, -2], [8, -14]],     // open ground, clear of every box
   clips: {
     idle: 'idle_01',
@@ -1243,6 +1246,7 @@ const FOE = {
   file: 'models/characters/alien_warrior.glb',
   weapon: 'models/weapons/spikey_mace.glb',
   h: 1.85, r: .46,
+  snd: 'clang',      // ARMOURED. The one body in here his "that's for people with armour" means.
   hp: 6,               // *"I'll probably take a few hits"* -- and a bar, so it is legible
   at: [[-11, 17], [13, 9], [-3, 26]],
   // one frame, 0 bones moving. TWO of them in this export, not one.
@@ -1397,7 +1401,7 @@ const FOE = {
 // separate things and this is what that buys.**
 const HICK = {
   file: 'models/characters/hick_skinny.glb',
-  h: 1.78, r: .40, hp: 3,
+  h: 1.78, r: .40, hp: 3, snd: 'soft',
   at: [[8, 21], [-17, 11], [21, 24], [-9, -13]],
   // **HIS CIGARETTE (m41).** *"I added a joint in the hick for the tip of his cigarette, so we
   // can make some fun smoke."* `cigarette_tip` is a child of `mixamorig_Head`, so it rides every
@@ -1489,7 +1493,7 @@ const HICK = {
 // nothing until they are named -- the mixer only builds an action per clip.
 const HOBO = {
   file: 'models/characters/hobo_01.glb',
-  h: 1.74, r: .40, hp: 4,
+  h: 1.74, r: .40, hp: 4, snd: 'soft',
   at: [[-22, -6], [14, -19], [-4, 27]],
   drop: /^CINEMA_4D/,
   ai: 1, pacifist: 1,
@@ -1736,12 +1740,32 @@ const SFX = {
     // `SFX.last` and either can be re-pointed without touching the other. The bytes come off
     // the HTTP cache the second time; only the decode is paid twice, on a short file.
     splat: ['audio/electricity_beam_01.mp3'],
+    // **A BLOW ON AN UNARMOURED MAN (m57). ALSO A STAND-IN, AND A WORSE ONE.** *"When you hit
+    // regular characters that are like NPCs it needs to be more of a [moan]. It shouldn't make
+    // the clang or the clink, cause that's for people with armour. Let me go make some custom
+    // noises."* There is nothing on disk that is a body being hit -- the fourteen files here are
+    // metal, air, electricity and explosions -- so this is the dull break played LOW and SHORT,
+    // which is merely closer to flesh than a metal ring is. **It is named and wired so the
+    // recording is a one-line swap**, the way `CLIPS.block` and the hick's empty pose names are.
+    // Its own key rather than sharing `thud`'s, so the player being hit and an NPC being hit
+    // cannot gate each other through `SFX.last` and either can be re-pointed alone.
+    soft: ['audio/box_break_01.mp3'],
     shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
     big: ['audio/plasma_canon.mp3'],
     boom: ['audio/explosion_small.mp3'],
     lock: ['audio/metal_ping_01.mp3'],
   },
   raw: {}, buf: {}, edge: {}, last: {},
+};
+// **WHAT A LANDED MELEE BLOW SOUNDS LIKE, KEYED ON THE MAN (m57).** A kind's `snd` names a row
+// here and the row carries the whole shape, because a stand-in that is the wrong FILE is usually
+// also the wrong LENGTH and the wrong PITCH -- `box_break_01` at its own rate is unmistakably a
+// crate, and dropped an octave and cut to a tenth of a second it is at least a dull impact.
+// The WEAPON's weight multiplies this; it does not replace it. A kind with no `snd` gets `clang`,
+// so a new body is never silent.
+const HITSND = {
+  clang: { key: 'clang', g: .90, r: .80, dur: 0 },     // armour. His word: the clang and the clink.
+  soft:  { key: 'soft',  g: .95, r: .55, dur: .13 },   // flesh. STAND-IN -- see `SFX.files.soft`.
 };
 // stage one: the bytes, at page load, with no context anywhere
 (function sfxFetch() {
@@ -4143,7 +4167,8 @@ function stepPlayer(dt) {
       // move is over in a few frames and the ordinary wind-up fraction puts the window behind
       // anybody standing close.
       const from = p.chargeGo && MELEE.dash ? STRIKE.dashFrom : STRIKE.from;
-      if (strikeSweep(dt, pw, !p.melFired && u >= at * from && u <= STRIKE.to, dm)) {
+      const hitB = strikeSweep(dt, pw, !p.melFired && u >= at * from && u <= STRIKE.to, dm);
+      if (hitB) {
         p.melFired = 1;
         // a hammer rings and a fist thuds -- the weapon decides, not the strike
         // **A BLOW ON A BODY RINGS (m55).** *"The sound effect for when he melees and hits
@@ -4154,11 +4179,23 @@ function stepPlayer(dt) {
         // and lower, a fist is lighter and higher -- which is the same distinction the metal
         // clangs one repo over are drawn with, three files standing in for three tiers by
         // PITCH rather than by three recordings.
-        // **WHAT IT HITS IS ARGUABLY THE BETTER KEY** -- a warrior is armoured and a drunk is
-        // not -- but `strikeSweep` reports a connect rather than a body, and `hitAll` means a
-        // swing can land on several at once. A `snd` on the KIND table is where that would go.
-        if (slotNow().charge) snd('clang', { g: .9, r: .80 + Math.random() * .12 });
-        else snd('clang', { g: .62, r: 1.22 + Math.random() * .16 });
+        // **AND WHAT IT HITS IS THE BETTER KEY, WHICH IS WHERE IT LIVES NOW (m57).** m55 left
+        // this as a stated gap and he closed it from the other side: *"it shouldn't make the
+        // clang or the clink, cause that's for people with armour."* A ringing blow is a fact
+        // about the MAN -- armour rings, a drunk in a coat does not -- so the key is a field on
+        // the KIND table and a body with no `snd` keeps the old ring rather than going silent.
+        // **The WEIGHT split stays here**, because that is a fact about the WEAPON: a hammer is
+        // heavier and lower, a fist lighter and higher, on whichever sound the body calls for.
+        {
+          const K = (hitB && hitB.K) || null;
+          const S = HITSND[(K && K.snd) || 'clang'] || HITSND.clang;
+          // heavier and lower for a weapon, lighter and higher for a fist -- ON whichever
+          // sound the body called for, so one table says what it is and the other how hard.
+          const w = slotNow().charge ? 1 : 0;
+          snd(S.key, { g: w ? S.g : S.g * .69,
+                       r: (w ? S.r : S.r * 1.52) * (1 + (Math.random() - .5) * .14),
+                       dur: S.dur });
+        }
       }
     }
     const h = p.roll ? p.rollH : p.faceH;
@@ -5382,7 +5419,13 @@ function strikeSweep(dt, power, live, dmg) {
           // of them piled up and I was meleeing, but it would only ever hit one at a time."*
           // Exactly that: a `break` on the first hit, which is the right shape for a bullet and
           // the wrong one for a swing -- a mace does not stop at the first man.
-          hit = 1;
+          // **AND IT NAMES THE BODY, NOT JUST THE FACT (m57).** *"When you hit regular
+          // characters that are like NPCs... it shouldn't make the clang or the clink, cause
+          // that's for people with armour."* A sound cannot be picked from a boolean: the
+          // FIRST body caught is what the swing sounds like, and `p.melFired` already gates it
+          // to one per strike however many `hitAll` goes on to catch. Every caller tests this
+          // for truth and nothing compares it to 1, so returning the man costs nothing.
+          if (!hit) hit = d;
           if (!MELEE.hitAll) break;
         }
       }

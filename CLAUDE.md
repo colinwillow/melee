@@ -822,6 +822,62 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A RINGING BLOW IS A FACT ABOUT THE MAN, NOT ABOUT THE WEAPON (m57, `HITSND`, `K.snd`).**
+  *"When you hit regular characters that are like NPCs, I think it needs to be more of a [moan].
+  It shouldn't make the clang or the clink, cause that's for people with armour. I know that I
+  need to make these noises, but I'm just thinking out loud."* m55 left this written down as a
+  stated gap -- *"what it hits is arguably the better key"* -- and he closed it from the other
+  side, in the same words.
+  **THE BLOCKER WAS A BOOLEAN.** `strikeSweep` returned 1, so the call site knew a swing had
+  connected and had no idea WITH WHAT -- which is why m55 could only split the sound by WEAPON.
+  It returns the first body caught now; `p.melFired` already gates the sound to one per strike
+  however many `hitAll` goes on to reach, and **every caller tests it for truth and nothing
+  compares it to 1**, so returning the man cost nothing and broke nothing.
+  **TWO TABLES, TWO FACTS, AND THAT IS THE WHOLE SHAPE.** `K.snd` on the KIND says what a blow on
+  that body sounds like; the weapon multiplies the weight on top of it -- heavier and lower for a
+  hammer, lighter and higher for a fist -- so a hammer on a drunk and a fist on a drunk are the
+  same sound at two weights, which is right. **A kind with no `snd` keeps `clang`**, so a body
+  added tomorrow is never silent.
+      warrior   clang   armoured, and the one body in here his sentence is about
+      officer   soft    a man in a uniform, not an orc in plate. ARGUABLE -- `snd: 'clang'` is
+                        the one word if a vest should ring, and it is stated rather than assumed
+      hick      soft
+      hobo      soft
+  **`HITSND` CARRIES THE WHOLE SHAPE AND NOT JUST THE FILE**, because a stand-in that is the
+  wrong file is almost always the wrong LENGTH and the wrong PITCH too. `box_break_01` at its own
+  rate is unmistakably a crate; dropped to .55 and cut to 130 ms it is at least a dull impact.
+  **AND THERE IS NOTHING ON DISK THAT IS A BODY BEING HIT.** All fourteen files are metal, air,
+  electricity or explosions, which is exactly why he is going to record these. So `SFX.files.soft`
+  is named, wired and **marked a stand-in**: drop a file at that path, `npm run bump`, and nothing
+  else moves. Same pattern as `CLIPS.block` and the hick's empty pose names -- write it to take
+  the asset the moment one exists.
+  **ITS OWN KEY RATHER THAN SHARING `thud`'s**, so the player taking a blow and an NPC taking one
+  cannot gate each other through `SFX.last`'s per-key `gap`, and either can be re-pointed alone.
+  That is `splat`'s own argument at m55, one event over.
+  **AND THE BOLT'S IMPACT IS ALREADY ON ITS OWN HOOK.** *"I like the electricity and the launch
+  noise of the ball, but when it hits them it needs a more punchy noise. Just the explosion noise
+  wasn't great."* m55 took it off `explosion_small.mp3` and onto `splat` -- the beam file cut to
+  an instant -- so if he is still hearing an explosion he is on m54 or older. **The stand-in is
+  deliberately NOT re-tuned here**: churning a sound he is about to replace is work that gets
+  thrown away, and the one-line swap is already in place.
+- **SMALLER AGAIN, AND THE COST IS ALL AT THE TOP OF THE STICK (m57, `RIG.height` 1.45 -> 1.25).**
+  *"I wanna try making the character smaller again."* `SZ` and `GAIT.refScale` between them make
+  this one edit, which is what m52 was for -- the collider, the camera, his step, his reach and
+  his fist all follow, the world does not, and every locomotion reference re-scales at load:
+      h 1.75   scale x1.926   sprintRef 4.55   sprint clip asks 1.58x   no slide
+      h 1.45   scale x1.596   sprintRef 3.77             1.91x          16% at full deflection
+      h 1.25   scale x1.376   sprintRef 3.25             2.22x          **28%**
+      warrior 1.85 is now 48% taller than he is; the hick 42%, the hobo 39%
+  **`scaleSpeed` IS 0, WHICH IS HIS OWN m53 DECISION AND IS WHAT COSTS THIS.** Keeping his world
+  speed at a smaller size is exactly the *"quicker despite him technically moving at the same
+  rate"* he asked for -- the stride covers more ground per step -- and the arithmetic of that is
+  `MOVE.max / sprintRef`, which grows every time he shrinks. Every band BELOW the sprint is inside
+  `tsHi` and simply reads faster; it is only the top of the stick that slides.
+  **`mel.GAIT.tsHi` IS THE DIAL AND IT IS NOT FREE**: it applies to every clip, and m53 brought it
+  to 1.6 because at 1.9 the walk clip is a cartoon scramble through the whole walk/run crossfade.
+  **A faster sprint clip is still the honest fix** and is still a stated open item.
+  `mel.RIG.height` is NOT live -- the scale is measured at load -- so it wants a reload.
+
 - **A BLAST RADIUS USED AS A COLLISION RADIUS IS AN EIGHT-METRE CORRIDOR (m56).** *"The radius
   of the collider of the Warrior aliens versus the charged blaster shot -- when they're almost off
   screen to my left, I still hit them. You need a little bit more specificity."* Exactly that, and
