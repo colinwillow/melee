@@ -511,6 +511,8 @@ same picture from a phone.
   he simply faces wherever the lens is pointed, which is the same number rather than a second
   one to keep in step. Two writers on a camera bearing is a loop that never settles and a
   picture that shakes, and it shows up every single time.
+  **AND THE PRICE OF THAT INVARIANT IS THAT THE CAMERA'S SENSITIVITY IS THE AIM'S** — see
+  `CAM.deadAim`. It is worth paying; it is not free, and a dead zone is where it gets paid.
 - **THE CAMERA COMES IN WHEN SOMETHING IS IN THE WAY, IT DOES NOT CLIMB OVER IT.** Shortening
   the boom keeps the SHOT — a level three-quarter view — while lifting the lens turns it into a
   top-down one, which is a different and much worse shot. **Snap in, ease out:** easing IN is
@@ -820,6 +822,29 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A THUMB PUSHED UP IS NEVER VERTICAL, AND THE AIM IS THE CAMERA (m48, `CAM.deadAim`).**
+  *"When I'm trying to shoot and I'm aiming, I'm holding up on the right stick, and it's slightly
+  sensitive -- the aimer goes right a little, goes left a little. I'd like it to just stay still,
+  and left and right you'd have to go a little wider to turn the camera."* A held thumb carries
+  an x of .1 to .3 the whole time, and at `yawRate` 2.6 that is up to **45 degrees a second** of
+  turn under a thumb asking for none. **One writer on `cam.az` means that drift IS the reticle
+  wandering** — the invariant that keeps the mark and the shot one answer is also what hands the
+  camera's sensitivity straight to the aim.
+  **AND IT IS A RESCALE, NOT A GATE.** `if (|rx| > .06) cam.az -= rx * rate` passes the FULL `rx`
+  through the moment it clears, which is a step at the threshold: nothing, nothing, then .06 of
+  rate all at once. Taking the dead zone OFF and stretching what is left back to 1 is continuous,
+  gentler in the middle — the other half of "slightly sensitive" — and leaves full deflection at
+  exactly the rate it always had. **A dead zone that subtracts is a dead zone; one that only
+  gates is a threshold with a jump on it.** Measured: 149.0 deg/s at full lock, unchanged.
+  **AND IT IS THE THUMB'S GEOMETRY, NOT `p.aim`.** Gating on the armed state leaves the `armT`
+  window before the trigger latches running on the narrow zone — measured, **a one-off kick of
+  2.5 to 3.4 degrees at the moment the aim starts**, which is the "it jumps a little" half. So it
+  reads `padUp`, which is true from the first frame the thumb is up there, and whose hysteresis
+  argument keeps it true once something IS armed: a thumb rolling inward mid-aim does not get the
+  twitchy zone back.
+  Measured over a two-second hold at 12 / 25 / 32 per cent off centre: **0.0 degrees**, against
+  19 / 60 / 82 before. A deliberate lean still swings 92 deg/s, so turning while aiming is
+  wider rather than gone.
 - **THE WIND-UP HAD NO DIRECTION TEST AT ALL (m46, `padUp`).** *"The melee charge should only
   initiate when you hold up on the right pad, not any direction."* The gate was
   `R.down && PADS.R.hold() > MOVE.tapT` — **a third of a second of the thumb being anywhere on

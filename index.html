@@ -301,10 +301,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m47</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m48</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m47</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m48</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -344,7 +344,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm47';
+const BUILD = 'm48';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -462,6 +462,11 @@ const GAIT = {
 
 const CAM = {
   dist: 5.0, distV: .10, el: .22, look: 1.05, yawRate: 2.6, half: .07,
+  // how far off centre the right thumb has to be before it turns the camera. `deadAim` is
+  // the one that matters: a thumb held UP to aim is never vertical, and the aim and the
+  // camera are the same bearing, so its residual x wanders the reticle. Both SUBTRACT
+  // rather than gate -- see `stepCam`.
+  dead: .06, deadAim: .34,
   fov: 58, fovRush: 7, rush0: 2.6, rushSpan: 3.2,
   // IT COMES IN WHEN SOMETHING IS IN THE WAY RATHER THAN CLIMBING OVER IT. Shortening the boom
   // keeps the SHOT -- a level three-quarter view -- while lifting the lens changes it into a
@@ -5207,7 +5212,29 @@ function camFree(tx, ty, tz, dx, dy, dz, want) {
 function stepCam(dt) {
   const p = player;
   const rx = stick.R.down ? stick.R.x : ((keys.j ? -1 : 0) + (keys.l ? 1 : 0));
-  if (Math.abs(rx) > .06) cam.az -= rx * CAM.yawRate * dt;
+  // **THE DEAD ZONE IS WIDER WHILE HE IS AIMING (m48, `CAM.deadAim`).** *"When I'm trying to
+  // shoot and I'm aiming, I'm holding up on the right stick, and it's slightly sensitive -- the
+  // aimer goes right a little, goes left a little. I'd like it to just stay still, and left and
+  // right you'd have to go a little wider to turn the camera."* A thumb pushed UP is never
+  // perfectly vertical, so it carries an x of .1 to .3 the whole time it is held -- and at
+  // `yawRate` 2.6 that is up to 45 degrees a second of drift under a thumb that is not asking
+  // for any. **The aim and the camera are the same bearing** (one writer, see above), so that
+  // drift IS the reticle wandering.
+  // **AND IT IS A RESCALE, NOT A GATE.** `if (|rx| > .06)` passing the FULL `rx` through is a
+  // step at the threshold: nothing, nothing, nothing, then .06 of rate all at once. Taking the
+  // dead zone OFF and stretching what is left back to 1 is continuous, and it is also gentler
+  // near the middle -- which is the other half of "slightly sensitive" -- while leaving full
+  // deflection at exactly the rate it always had. A dead zone that subtracts is a dead zone; a
+  // dead zone that only gates is a threshold with a jump on it.
+  // **AND IT IS THE THUMB'S GEOMETRY, NOT THE ARMED STATE.** Gating on `p.aim` leaves the
+  // `armT` window before the trigger latches running on the NARROW zone -- measured, it is a
+  // one-off kick of 2.5 to 3.4 degrees at the moment the aim starts, which is precisely the
+  // 'the aimer jumps a little' half of the complaint. `padUp` is true from the first frame the
+  // thumb is up there, and its hysteresis argument keeps it true once something IS armed, so a
+  // thumb rolling inward mid-aim does not suddenly get the twitchy zone back.
+  const dz = padUp(p.aim || p.charge) ? CAM.deadAim : CAM.dead;
+  const ax = Math.abs(rx);
+  if (ax > dz) cam.az -= Math.sign(rx) * ((ax - dz) / (1 - dz)) * CAM.yawRate * dt;
 
   // AND IT COMES ROUND TO A LOCKED TARGET. This is inside `stepCam` on purpose -- `cam.az` has
   // exactly one writer, and a second one somewhere else is a loop that never settles.

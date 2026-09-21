@@ -936,5 +936,51 @@ console.log('\n-- 20. THE WIND-UP IS A PUSH UP, NOT ANY DIRECTION --');
   stick.R.down = 0; stick.R.x = stick.R.y = 0;
 }
 
+
+console.log('\n-- 21. A THUMB HELD UP DOES NOT WANDER THE AIM --');
+{
+  const P = M.player, C = M.CAM;
+  // The aim and the camera are the same bearing, so a residual x on a thumb pushed UP is the
+  // reticle drifting. Held for two seconds, which is a long aim but not an unreasonable one.
+  const drift = (x, y, secs, slot) => {
+    M.DUMMIES.length = 0;
+    reset(40, 0); cam.az = 0; P.slot = slot === undefined ? 1 : slot;   // 1 is the blaster
+    stick.R.down = 1; stick.R.x = x; stick.R.y = y;
+    for (let i = 0; i < Math.round(secs / DT); i++) { M.stepKit(DT); M.stepPlayer(DT); M.stepCam(DT); }
+    const aimed = P.aim || P.charge;
+    stick.R.down = 0; stick.R.x = stick.R.y = 0; M.stepKit(DT);
+    return { deg: Math.abs(cam.az) * 180 / Math.PI, aimed };
+  };
+  // -y is UP. A thumb at the top of the pad leaning a little to one side.
+  for (const x of [.12, .25, .32]) {
+    const r = drift(x, -.95, 2.0);
+    ok(`aiming, ${(x * 100) | 0}% off centre, does not turn`, r.aimed && r.deg < 1,
+       `${r.deg.toFixed(1)} deg over 2 s${r.aimed ? '' : '  -- NOT AIMING, the case is wrong'}`);
+  }
+  // but a deliberate sideways push still turns, and full deflection is untouched
+  {
+    const r = drift(.75, -.6, 1.0);
+    ok('a deliberate lean still turns while aiming', r.deg > 20, `${r.deg.toFixed(1)} deg in 1 s`);
+  }
+  {
+    // NOT AIMING: the ordinary drag keeps its old authority at full lock. `yawRate` * 1 s, less
+    // the dead zone it now subtracts -- derived from the rule, not from a number that looked
+    // right. `slot 0` is UNARMED, so nothing on the pad arms and this is a pure camera drag --
+    // which is also the control that says the widening is the AIM's and not everybody's.
+    const r = drift(1, 0, 1.0, 0);
+    const want = C.yawRate * (1 - C.dead) / (1 - C.dead) * 180 / Math.PI;
+    ok('a full sideways drag is untouched', !r.aimed && Math.abs(r.deg - want) < 3,
+       `${r.deg.toFixed(1)} deg against ${want.toFixed(1)} expected`);
+  }
+  // and it SUBTRACTS rather than gates: just past the edge is nearly nothing, not a step
+  {
+    const r = drift(C.dead + .02, 0, 1.0, 0);
+    ok('and just past the dead zone is a crawl, not a step', r.deg > 0 && r.deg < 4,
+       `${r.deg.toFixed(2)} deg in 1 s at x ${(C.dead + .02).toFixed(2)}`);
+  }
+  M.DUMMIES.length = 0;
+  stick.R.down = 0; stick.R.x = stick.R.y = 0; cam.az = 0;
+}
+
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);
