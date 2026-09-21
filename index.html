@@ -301,10 +301,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m44</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m45</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m44</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m45</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -344,7 +344,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm44';
+const BUILD = 'm45';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -604,8 +604,11 @@ const MELEE = {
   // `maxV` 21 the furthest it can possibly carry is about 9.9 m -- `flatFar` 14 was clamped
   // there and a half hold arrived at the same place as a full one, which is the hold buying
   // nothing all over again. Both ends sit inside what the hop can actually deliver.
-  flatNear: 5.5,       // how far a bare half-charge release carries
-  flatFar: 24,         // and a full one. On the ground there is no hop capping it -- what caps
+  // **AND IT CAME BACK DOWN (m45).** *"Now it's wayyyy too far."* m43 was the build that made
+  // `flatFar` mean anything at all -- until then a man in front set the distance and these were
+  // decoration, so 24 had never once been SEEN. 11 m at a full hold, 3.5 at a bare one.
+  flatNear: 3.5,       // how far a bare half-charge release carries
+  flatFar: 11,         // and a full one. On the ground there is no hop capping it -- what caps
                        // it is `dashV` over `(dashDur + finishTail) * carryAvg`, which is
                        // 24.9 m, so this is a real distance rather than something the clamp
                        // quietly eats. It was 12.2 and he asked four times in one breath for
@@ -646,6 +649,15 @@ const STRIKE = {
   bones: ['mixamorig_RightHand', 'mixamorig_LeftHand', 'mixamorig_RightFoot', 'mixamorig_LeftFoot'],
   r: .26,            // the fist/boot, as a sphere swept along its own path
   from: .55,         // the window opens at this fraction of the clip's authored contact frame
+  // **AND A DASH OPENS AT ONCE (m45, `MELEE.dashFrom`).** `from` is right for a STANDING swing,
+  // where the arm has to get moving before it can hit anything -- and it is exactly wrong for a
+  // dash, where the blow IS the body arriving at speed. `finishAt` .38 x `from` .55 puts the
+  // window at u 0.21, which on a .30 s dash is 0.063 s, and by then he has travelled about four
+  // metres: **a man three metres ahead was passed through before the window ever opened, and
+  // took nothing at all.** Measured through the real pad -- 3 m `fired 0, he is idle`, 6 m and
+  // 12 m both clean knock-downs. That is half of *"they don't really go flying"*: the ones close
+  // enough to matter were never hit.
+  dashFrom: 0,
   to: 1.0,           // and runs to the end of the strike
   swing: 2.4,        // m/s IN HIS OWN FRAME. Under this a limb is being carried, not swung.
 };
@@ -1072,7 +1084,12 @@ const FOE = {
   // **AND A CHARGED DASH SENDS HIM (m40).** *"If you hit them it really sends them flying."*
   // These are the FULL-power launch and everything under `fling` is graded up to them, so the
   // ordinary jab is untouched and only the top of the range moved.
-  flyV: 15.0, flyUp: 6.4, flyG: 20, flyDrag: 1.4,
+  // **AND HE REALLY GOES (m45).** *"I want the charge hit to send them flyingggfff and they
+  // don't really."* 15 m/s out was a knock-down beside a man who had just covered 24 m; next
+  // to an 11 m dash at 29 m/s it has to be comparable or he reads as standing still. These
+  // are the FULL-power launch and everything under `fling` is graded up to them, so the
+  // ordinary jab is untouched and only the top of the range moved.
+  flyV: 24.0, flyUp: 8.5, flyG: 20, flyDrag: 1.15,
   // **A HEALTH BAR IS WHAT MAKES "A FEW HITS" LEGIBLE.** Without it a man who takes six blows
   // and a man who is ignoring you are the same picture. `hard` is no longer a one-shot
   // knock-down for him: damage is what puts him down, which is the whole point of the bar.
@@ -1164,7 +1181,7 @@ const HICK = {
   fleeMax: 12,
   hitBeat: 1.1, bigBeat: 1.4, downBeat: 1.2, upBeat: 1.2,
   out: 1.6,
-  flyV: 16.5, flyUp: 6.8, flyG: 20, flyDrag: 1.35,
+  flyV: 26.0, flyUp: 9.0, flyG: 20, flyDrag: 1.12,
   knock: 4.6, knockUp: .6, knockDrag: 5.5,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
   fling: .55,        // but he is a skinny man: it takes far less to launch him
@@ -1244,7 +1261,7 @@ const HOBO = {
   // deleted rather than knocked over.
   hitBeat: 1.2, bigBeat: 1.5, downBeat: 1.6, upBeat: 1.8,
   out: 2.0,          // how long he lies there. He is drunk; he is in no hurry.
-  flyV: 15.0, flyUp: 6.4, flyG: 20, flyDrag: 1.4,
+  flyV: 25.0, flyUp: 8.8, flyG: 20, flyDrag: 1.15,
   knock: 4.2, knockUp: .6, knockDrag: 5.5,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
   fling: .55,
@@ -3520,7 +3537,11 @@ function stepPlayer(dt) {
       // positions it measures against have to stay one frame old -- a sweep seeded three
       // frames back is a segment through half the room.
       const dm = p.chargeGo ? FOE.dmg.finish : slotNow().charge ? FOE.dmg.weap : FOE.dmg.fist;
-      if (strikeSweep(dt, pw, !p.melFired && u >= at * STRIKE.from && u <= STRIKE.to, dm)) {
+      // A DASH IS OPEN FROM THE FIRST FRAME -- see `STRIKE.dashFrom`. At dash speed the whole
+      // move is over in a few frames and the ordinary wind-up fraction puts the window behind
+      // anybody standing close.
+      const from = p.chargeGo && MELEE.dash ? STRIKE.dashFrom : STRIKE.from;
+      if (strikeSweep(dt, pw, !p.melFired && u >= at * from && u <= STRIKE.to, dm)) {
         p.melFired = 1;
         // a hammer rings and a fist thuds -- the weapon decides, not the strike
         if (slotNow().charge) snd('clang', { g: .85, r: .9 + Math.random() * .2 });

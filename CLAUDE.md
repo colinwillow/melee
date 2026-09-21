@@ -799,6 +799,31 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A MAN THREE METRES AHEAD WAS PASSED THROUGH AND TOOK NOTHING (m45, `STRIKE.dashFrom`).**
+  *"Now the charge melee is working and now it's wayyyy too far. However I want the charge hit to
+  send them flyingggfff and they don't really."* Two things, and the second one is a bug that
+  m43 uncovered rather than caused.
+  **THE WINDOW OPENED TOO LATE FOR A MOVE THIS FAST.** `STRIKE.from` .55 is a fraction of the
+  clip's authored CONTACT FRAME, which is right for a standing swing — the arm has to get moving
+  before it can hit anything. It is exactly wrong for a dash, where **the blow IS the body
+  arriving at speed**. `finishAt` .38 × `from` .55 puts the window at u 0.21, and on a .30 s dash
+  that is 0.063 s — by which point he has travelled about four metres. Measured through the real
+  pad, a full hold at a warrior:
+      3 m ahead    fired 0, he is idle, hp untouched   <- passed clean through him
+      6 m ahead    fired 1, down, 15.0 m/s out
+      12 m ahead   fired 1, down, 15.0 m/s out
+  **So the ones close enough to matter were never hit at all**, which is most of *"they don't
+  really"*. A dash opens at once (`dashFrom` 0) and the other strikes keep their wind-up.
+  **AND `flatFar` CAME BACK DOWN, 24 -> 11.** Worth saying plainly: **24 had never once been
+  SEEN.** m43 was the build that made `flatFar` mean anything at all — before it a man in front
+  set the distance and these numbers were decoration — so the first time the hold actually drove
+  the travel was also the first time anyone looked at what 24 m does. It is too far.
+  **AND THE LAUNCH IS COMPARABLE TO THE DASH NOW, WHICH IS WHAT "FLYING" MEANS.** 15 m/s out is
+  a perfectly good knock-down beside a man standing still and reads as nothing beside a man who
+  has just covered 24 m: **the launch is judged against YOUR speed, not against zero.** 24 m/s
+  and 8.5 up on the warrior, 26 / 9.0 on the hick, 25 / 8.8 on the hobo, with the drag eased so
+  the flight is long enough to watch. These are the FULL-power numbers and everything under
+  `fling` is graded up to them, so the ordinary jab is untouched.
 - **THREE BUILDS OF TUNING COULD NOT POSSIBLY HAVE SHOWN, BECAUSE THE DISTANCE WAS NEVER THE
   HOLD'S TO SET (m43, `MELEE.dashFree`).** *"The charge melee STILL isn't really going very far.
   I have a feeling you've been implementing something and it's somehow not working, because

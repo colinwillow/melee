@@ -842,5 +842,52 @@ console.log('\n-- 18. THE CHARGE THROUGH THE REAL PAD --');
   stick.R.down = 0; stick.R.x = stick.R.y = 0;
 }
 
+
+console.log('\n-- 19. DOES THE DASH ACTUALLY LAND, AND HOW HARD --');
+{
+  const P = M.player, MEL = M.MELEE, K = M.FOE;
+  let heldT = 0;
+  const realHold = M.PADS.R.hold;
+  M.PADS.R.hold = () => heldT;
+  // the sweep reads REAL bone world positions, which no harness here has -- so the limb is
+  // fabricated: a hand that swings forward of him at a believable own-frame speed. What is
+  // under test is the WINDOW and the LAUNCH, not the rig.
+  const hand = { x: 0, y: 1.1, z: .5 };
+  M.rig.bones = M.rig.bones || {};
+  let swing = 0;
+  const fake = { getWorldPosition(v) { v.set(P.pos.x + Math.sin(P.faceH) * (.5 + swing),
+                                             P.pos.y + 1.1,
+                                             P.pos.z + Math.cos(P.faceH) * (.5 + swing)); return v; } };
+  for (const b of M.STRIKE.bones) M.rig.bones[b] = fake;
+
+  const dash = (gap, secs) => {
+    M.DUMMIES.length = 0;
+    const d = { K, root: { position: { x: 40, y: 0, z: gap }, rotation: { y: 0 } }, st: 'idle',
+                hp: K.hp, hpMax: K.hp, cool: 0, h: Math.PI, actions: {}, clips: {}, cw: {}, bar: null,
+                vx: 0, vy: 0, vz: 0, t: 0, cur: '' };
+    M.DUMMIES.push(d);
+    reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0; swing = 0;
+    stick.R.down = 1; stick.R.x = 0; stick.R.y = -1;
+    for (let i = 0; i < Math.round(secs / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
+    stick.R.down = 0; stick.R.x = stick.R.y = 0; heldT = 0;
+    M.stepKit(DT);
+    const askedFor = P.goGap;
+    // the hand swings forward across the move, which is what `STRIKE.swing` is looking for
+    for (let i = 0; i < 60 && P.chargeGo; i++) { swing = (swing + .06) % .5; M.stepPlayer(DT); }
+    return { askedFor, fired: P.melFired, st: d.st, out: Math.hypot(d.vx, d.vz), up: d.vy, hp: d.hp };
+  };
+
+  for (const gap of [3, 6, 12]) {
+    const r = dash(gap, 1.4);
+    ok(`a full dash at a man ${gap} m ahead CONNECTS`, !!r.fired,
+       `fired ${r.fired}, he is ${r.st}, hp ${r.hp.toFixed(1)}, solve was ${r.askedFor.toFixed(1)} m`);
+    ok(`  and it sends him`, r.st === 'down' && r.out > K.flyV * .8,
+       `out ${r.out.toFixed(1)} m/s, up ${r.up.toFixed(1)} -- flyV is ${K.flyV}`);
+  }
+  M.PADS.R.hold = realHold;
+  M.DUMMIES.length = 0;
+  stick.R.down = 0; stick.R.x = stick.R.y = 0;
+}
+
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);
