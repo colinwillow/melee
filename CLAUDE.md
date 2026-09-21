@@ -964,6 +964,24 @@ same picture from a phone.
   an empty name falls straight through to the gait with no branch to add, which is how
   `GAIT.sprint` and `HANG.clip` are written one repo over. Until then **the chip says `BLOCK`**,
   because a defensive state you cannot see is one nobody uses twice.
+- **THE BOLT DOES NOT CURVE EITHER (m42, `WEAP.home.on = 0`).** *"I take back what I said about
+  the ball from the blaster curving to hit targets. Let's silence that."* So the blaster now has
+  **no assist of any kind**: m36 took the reticle's lock off on the argument that a mark which
+  moves where you are POINTING takes the aim off your thumb, and the curving ball was the
+  replacement — something you WATCH rather than something that moves your hands. It was a better
+  idea than the thing it replaced and it is still not wanted. **The gun goes exactly where it is
+  pointed, and that is the whole feature.**
+  **NOTHING IS DELETED, WHICH IS WHAT MAKES THIS A DECISION RATHER THAN A REWRITE.**
+  `mel.WEAP.home.on = 1` brings the curve back with every number untouched and `mel.LOCK.on = 1`
+  brings the other one back, so two rejected designs cost one character each to try again. Both
+  were shipped, looked at on the phone and turned down — **which is the loop working**, not two
+  wasted builds.
+  **AND THE RETICLE IS UNAFFECTED**, because since m39 it only ever drew where the shot was
+  already going. That is why it survived m36 and survives this: it is a POINTER, not a promise,
+  and `aimTarget` is still the one answer both it and `fireBolt` read.
+  **THE MELEE LUNGE IS STILL NOT THIS AND STILL STAYS.** `meleeLock` solves the launch for the
+  gap so a swing thrown at a man ARRIVES — a physical assist with nothing drawn and nothing taken
+  off the thumb. He has now asked to keep that half twice while turning down both of the others.
 - **THE ASSIST MOVED FROM THE AIM TO THE BOLT (m36, `WEAP.home`, `LOCK.on = 0`).** *"We're
   gonna get rid of the aim assist on the blaster... instead if you shoot in the general
   direction of a player the ball ever so slightly curves to hit them. The reticle aimer thing is
