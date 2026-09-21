@@ -710,6 +710,64 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **ONE DRAW CALL FOR EVERY PARTICLE IN THE GAME (m39, `SPK`, `spk`, `spkBurst`, `spkCling`).**
+  *"It's so primitive -- when you shoot it just looks like a flash, and when it hits them
+  there's barely anything. I want it to feel like it really hits them."* A sprite carries its
+  own material, so sixty of them is sixty draw calls on the one part of a mobile GPU that is
+  actually scarce. It is a POOL and a `Points` with per-point size, colour and alpha in
+  attributes: one call for the lot, and a burst allocates nothing -- which matters, because the
+  burst happens on the frame something is already being hit.
+  **`gl_PointSize` IS DERIVED, NOT TUNED.** Half the framebuffer height over the tangent of half
+  the vertical lens, so `aSize` is a size in WORLD METRES at any distance. A tuned constant
+  changes size whenever the fov does, and this game's fov moves.
+  **AND A SPARK CAN FOLLOW A BODY.** *"Maybe some little particles that go around their mesh."*
+  A burst thrown in world space at a man who is being knocked backwards is left behind by him; a
+  spark that carries his root and orbits it stays ON him. That is the whole difference between
+  "particles happened near him" and "something is happening TO him", and it is why `follow` is a
+  field on a spark rather than a second system.
+  **THE FADE IS SQUARED.** A spark that dims evenly reads as fog; bright-then-gone reads as a
+  spark.
+- **AND HIS OWN MESH FLASHES, WHICH MEANT GIVING HIM HIS OWN MATERIALS (m39, `bodyFlash`).**
+  *"Maybe their mesh kind of flashes."* The cheapest thing on screen that says a blow landed on
+  HIM. **`skeletonClone` SHARES materials across every copy of a kind** -- flashing one warrior
+  would have flashed all three -- so `bodySpawn` clones them per body. That is a second uniform
+  set and the SAME shader, so nothing recompiles and the draw calls are unchanged; it is only
+  ever worth saying no to if the count gets large.
+- **AN IMPACT IS THREE THINGS, AND EACH DOES A DIFFERENT JOB (m39, `boltHit`).** A hot core
+  flash that GROWS as it fades (a flash that only fades reads as a light being turned down; one
+  that expands reads as something arriving), a radial burst of debris, and the clinging swarm
+  plus the body flash above. All three scale off the same `chg` the ball's size and the blast
+  radius come from, so a fumble is a spit and a full charge is an event.
+  **AND THE BALL LEAVES A STREAK**, from the same pool: sparks dropped along its path with no
+  velocity and a very short life, so it reads as a line of cooling plasma rather than a blob
+  sliding across the screen.
+- **THE MARK IS BACK WITHOUT THE LOCK, AT HALF THE SIZE (m39).** *"The aimer is gone for the
+  blaster. I still want the aimer to be there -- it's just not the lock-on mode. Let's make it
+  half the size it was."* Which is the right reading of m36: **what was annoying was the aim
+  being TAKEN, not the mark being DRAWN.** `LOCK.retic` and `LOCK.on` were separated for exactly
+  this. 210 -> 146 -> 74 -> **37 px**.
+- **THE GUARD IS A STRAFE STANCE, AND IT BORROWS THE COMMITTED BRANCH (m39).** *"If he's
+  disarmed and you hold down on the right stick he goes into strafe mode left and right --
+  that's his guard. Same with the melee, honestly same with the blaster."* A stance faces
+  forward and moves sideways, which is **exactly what `aiming` already does**: face where the
+  lens is pointed and let `plant` go to zero so the legs carry him where the thumb says instead
+  of dragging his body round. So it joins that branch rather than growing a second one, and
+  `rigAnim`'s directional blend picks the strafe clip off the sign of his travel with nothing
+  new written.
+  **WITH NO BLOCK CLIP DRAWN, THERE IS NO UPPER POSE AT ALL** -- so `bare` plays the WHOLE
+  strafe clips rather than their `__legs` halves, because a rifle pose on an unarmed man is
+  worse than no pose. Name `CLIPS.block` and it becomes an override like every other.
+  **AND IT CLEARS THE TRIGGER AND THE WIND-UP AS IT ARMS.** They are the same thumb pushed the
+  other way and cannot both be true -- but a thumb sweeping from the top of the pad to the
+  bottom would otherwise arrive still armed. `MOVE.blockSp` caps him: a guard shuffles.
+- **`npm run sim`'s `run()` NEVER CALLED `stepKit` (m39).** Every case that held the RIGHT PAD
+  was measuring a game with no weapon logic in it -- the guard simply never armed, on any slot,
+  and the harness reported that as the feature being broken. **A harness that skips a step the
+  game takes is measuring a different game**, which is this repo's oldest mistake and the ninth
+  time it has been made.
+  **And the guard case's own first pass mark was inverted** -- it compared a wrapped angle delta
+  against pi and failed a correct answer of exactly zero. **Derive the pass mark from the rule**:
+  what "strafe" MEANS is that the body does not follow the legs, so the delta must be SMALL.
 - **A BODY THAT DOES NOT FIGHT IS ONE BRANCH, NOT A SECOND BRAIN (m38, `HICK`, `pacifist`,
   `foeWander`).** *"He's basically just an NPC, so he doesn't have attacks. He doesn't attack
   you -- if anything he'll run away. You shoot him, he flies through the air, lands on the

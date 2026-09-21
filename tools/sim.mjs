@@ -74,9 +74,13 @@ function reset(x = 0, z = 0) {
   stick.R.x = stick.R.y = stick.R.down = 0;
 }
 function hold(x, y) { stick.L.down = 1; stick.L.x = x; stick.L.y = y; }
+// **THE REAL FRAME CALLS `stepKit` AND THIS DID NOT**, so every case that held the right pad
+// was measuring a game with no weapon logic in it at all -- the guard simply never armed. A
+// harness that skips a step the game takes is measuring a different game, which is this repo's
+// oldest mistake.
 function run(secs, fn) {
   const n = Math.round(secs / DT);
-  for (let i = 0; i < n; i++) { if (fn) fn(i * DT); M.stepPlayer(DT); M.rigAnim(DT); }
+  for (let i = 0; i < n; i++) { if (fn) fn(i * DT); M.stepKit(DT); M.stepPlayer(DT); M.rigAnim(DT); }
 }
 // FABRICATED ACTIONS, WITH THE REAL DURATIONS. No harness here can build a skin (the GLB is
 // draco and DRACOLoader wants a Worker), and `meleeGo` rightly refuses to enter a state whose
@@ -306,7 +310,7 @@ console.log('\n-- 13. THE CHARGED SWING IS A GROUND DASH, AND THE HOLD DECIDES H
 // m36's flat hop solved from the hold, and m37's ground dash that never leaves the floor at all.
 // Each time it went red while the code was right until it was moved, which is a suite nobody
 // reads. **When a rule changes, its case changes in the same commit.**
-reset(0, 0); cam.az = 0; p.slot = 3;            // hammer
+reset(40, 0); cam.az = 0; p.slot = 3;            // hammer
 p.charge = 1; p.chargeT = M.MELEE.charge;       // fully wound
 M.chargeRelease();
 ok('it never leaves the ground', p.vel.y === 0 && p.grounded, `vy ${p.vel.y.toFixed(2)}, grounded ${p.grounded}`);
@@ -314,12 +318,14 @@ const farFull = p.goGap;
 const yGo = p.pos.y;
 let goApex = 0, zGo = p.pos.z;
 run(1.2, () => { goApex = Math.max(goApex, p.pos.y - yGo); });
+// **AT 30 m/s A 40 cm KERB IS A RAMP**, so this has to run on open ground or it measures the
+// test world rather than the move. x = 40 is clear of every box.
 ok('and stays on the floor the whole way', goApex < .05, `${goApex.toFixed(3)} m up`);
 ok('a full hold covers what it solved for', Math.abs((p.pos.z - zGo) - farFull) < 1.0,
    `travelled ${(p.pos.z - zGo).toFixed(2)} m for a ${farFull.toFixed(2)} m solve`);
 ok('and that is a real distance', farFull > 7, `${farFull.toFixed(2)} m`);
 // a half charge goes less far -- and that is the ONLY thing the hold changes now
-reset(0, 0); cam.az = 0; p.slot = 3;
+reset(40, 0); cam.az = 0; p.slot = 3;
 p.charge = 1; p.chargeT = M.MELEE.charge * .5;
 M.chargeRelease();
 ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2)} m against ${farFull.toFixed(2)}`);
@@ -327,9 +333,9 @@ ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2
 {
   const K = M.FOE;
   M.DUMMIES.length = 0;
-  M.DUMMIES.push({ K, root: { position: { x: 0, y: 0, z: 5 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
+  M.DUMMIES.push({ K, root: { position: { x: 40, y: 0, z: 5 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
                    hpMax: K.hp, cool: 0, h: 0, actions: {}, clips: {}, cw: {}, bar: null });
-  reset(0, 0); cam.az = 0; p.slot = 3;
+  reset(40, 0); cam.az = 0; p.slot = 3;
   p.charge = 1; p.chargeT = M.MELEE.charge;
   M.chargeRelease();
   ok('a man in the way shortens it', p.goGap < farFull, `${p.goGap.toFixed(2)} m for a man at 5, free is ${farFull.toFixed(2)}`);
@@ -343,13 +349,13 @@ ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2
 {
   const K = M.FOE;
   const mk = () => { M.DUMMIES.length = 0;
-    const f = { K, root: { position: { x: 0, y: 0, z: 3 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
+    const f = { K, root: { position: { x: 40, y: 0, z: 3 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
                 hpMax: K.hp, cool: 0, h: 0, vx: 0, vy: 0, vz: 0, actions: {}, clips: {}, cw: {}, bar: null };
     M.DUMMIES.push(f); return f; };
-  reset(0, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge;
+  reset(40, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge;
   M.chargeRelease();
   const powFull = 1.0 * p.chargeGoK;
-  reset(0, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge * .5;
+  reset(40, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge * .5;
   M.chargeRelease();
   const powHalf = 1.0 * p.chargeGoK;
   let f = mk(); M.dummyBlow(f, 0, powFull, K.dmg.weap);
@@ -359,6 +365,37 @@ ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2
   ok('a full charge flings him', downFull && flungFull > 3, `${flungFull.toFixed(1)} m/s, up ${f.vy.toFixed(1)}, power ${powFull.toFixed(2)} vs fling ${K.fling}`);
   ok('and a half charge flings him LESS', flungHalf < flungFull, `${flungHalf.toFixed(1)} against ${flungFull.toFixed(1)} m/s`);
   M.DUMMIES.length = 0;
+}
+
+console.log('\n-- 13b. THE GUARD IS A STRAFE STANCE, ON EVERY WEAPON --');
+// *"If he's disarmed and you hold down on the right stick he goes into strafe mode left and
+// right -- that's his guard. Same with the melee, same with the blaster."*
+{
+  const hold = (x, y) => { stick.R.down = 1; stick.R.x = x; stick.R.y = y; };
+  for (const slot of [0, 1, 3]) {
+    reset(40, 0); cam.az = 0; p.slot = slot;
+    hold(0, .9);                                  // straight DOWN on the pad (+y is down)
+    run(.4);
+    ok('slot ' + slot + ' (' + M.WEAP.slots[slot].key + ') guards on a down-hold', !!p.block, `block ${p.block}`);
+  }
+  // and it strafes rather than turning: the body keeps facing the lens while he travels sideways
+  reset(40, 0); cam.az = 0; p.slot = 0;
+  hold(0, .9); run(.3);
+  const f0 = p.faceH;
+  stick.L.down = 1; stick.L.x = 1; stick.L.y = 0;   // hard left on the pad
+  run(1.0);
+  ok('he travels sideways', Math.abs(p.pos.x - 40) > .8, `${(p.pos.x - 40).toFixed(2)} m across`);
+  // THE WRAPPED DELTA IS ZERO WHEN HE HAS NOT TURNED -- the first version of this line compared
+  // it against pi and failed a correct answer of exactly 0, which is the invented pass mark for
+  // the fourth time in this file. What "strafe" MEANS is that the body does not follow the legs.
+  const turned = Math.abs(((p.faceH - f0 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI);
+  ok('and does NOT turn to face it', turned < .3, `faceH moved ${(turned * 180 / Math.PI).toFixed(0)} deg`);
+  ok('and a guard does not sprint', p.speed <= M.MOVE.blockSp + .3, `${p.speed.toFixed(2)} m/s, cap is ${M.MOVE.blockSp}`);
+  // a sideways DRAG is still the camera, not a guard
+  reset(40, 0); cam.az = 0; p.slot = 0;
+  hold(.85, .35); run(.4);
+  ok('a sideways drag is still the camera', !p.block, `block ${p.block}`);
+  stick.R.down = 0; stick.R.x = stick.R.y = 0; stick.L.down = 0; stick.L.x = stick.L.y = 0;
 }
 
 console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');

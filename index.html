@@ -176,8 +176,9 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
    should look is a look-at-it decision and those do not belong in a commit. */
 #retic {
   position: fixed; z-index: 3; left: 0; top: 0;
-  --size: 74px;                /* 210 -> 146 -> 74. A mark is a POINTER: at 146 it covered a
-                                  man at twenty metres, which is the one thing it must not do. */
+  --size: 37px;                /* 210 -> 146 -> 74 -> 37. *"Half the size that it was."* A mark
+                                  is a POINTER: at 146 it covered a man at twenty metres, which
+                                  is the one thing it must not do. */
   --w: 1;                      /* stroke weight multiplier */
   --h: 196;                    /* the hue it rests at -- azure */
   --lh: 34;                    /* and the one it locks at -- amber */
@@ -286,10 +287,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m38</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m39</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m38</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m39</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -329,7 +330,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm38';
+const BUILD = 'm39';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -390,6 +391,9 @@ const MOVE = {
   // keeps answering the stick while the body has already turned.
   plantAt: 1.5, plantFull: 4.5,   // moved with `max`, or the plant saturates mid-range
   turnBrake: .40,     // a hard turn costs speed, which is what plants the feet
+  // A GUARD DOES NOT SPRINT. He shuffles sideways behind it, which is what a guard IS -- and
+  // it sits under `GAIT.runAt`, so the strafe clips play near their own reference.
+  blockSp: 2.4,
   // apex = jump^2 / 2g: 10.6 gives 2.81 m and 1.06 s of air, against 1.76 m before.
   jump: 10.6, g: 20, dead: .12, curve: 1.4, step: .5, coyote: .12,
   // ONE NUMBER PER LANDING, AND THE CLIP IS COMPRESSED TO EXACTLY IT. The state used to last
@@ -486,7 +490,8 @@ const MELEE = {
                        // is most of the screen, and the same complaint as `LOCK.cone`.
   aimNear: .55,        // what a metre of distance is worth against a metre of miss. Raised with
                        // the cone: swinging at two men, the NEAR one is what you meant.
-  maxV: 21,            // the fastest a lunge may be solved to
+  maxV: 28,            // the fastest a lunge may be solved to. *"When you charge it full he
+                       // really launches -- he launches pretty far and pretty fast."*
   arrive: 1.05,        // the gap he is solved to leave -- arm's length, not his centre. It has
                        // to be inside what the swept fist can REACH now that the sweep decides:
                        // the hand is about .75 m off his centre at full extension and carries
@@ -549,14 +554,15 @@ const MELEE = {
   // numbers below it are kept so `mel.MELEE.dash = 0` walks back to the m36 hop and
   // `flatHi = 3` from there to the m21 arc. Three behaviours, two switches, nothing deleted.
   dash: 1,
-  dashDur: .46,        // the beat, and what the clip is compressed to
+  dashDur: .38,        // the beat, and what the clip is compressed to. Shorter is FASTER for
+                       // the same distance, which is most of what "it has power to it" means.
   flatHi: .55,         // metres. `mel.MELEE.dash = 0` uses this instead.
   // **AND THE CEILING IS THE HOP, NOT THIS NUMBER.** A .55 m apex is 0.47 s of flight, so at
   // `maxV` 21 the furthest it can possibly carry is about 9.9 m -- `flatFar` 14 was clamped
   // there and a half hold arrived at the same place as a full one, which is the hold buying
   // nothing all over again. Both ends sit inside what the hop can actually deliver.
-  flatNear: 2.6,       // how far a bare half-charge release carries
-  flatFar: 10.0,       // and a full one. On the ground there is no hop capping it -- what caps
+  flatNear: 3.2,       // how far a bare half-charge release carries
+  flatFar: 12.2,       // and a full one. On the ground there is no hop capping it -- what caps
                        // it is `maxV` over `dashDur + finishTail`, which is 10.3 m, so this is
                        // a real distance rather than something the clamp quietly eats.
   finishHiNear: 4.6,   // KEPT AS A NOTE -- the solved-arc apexes, unread while `flatHi` is set
@@ -663,6 +669,9 @@ const WEAP = {
   // unreachable on purpose so DAMAGE is what puts a warrior down -- which is right for a fist
   // and wrong for the biggest shot in the game. `fling` is the power at which a blow launches
   // him regardless, and it sits high enough that only a near-full charge reaches it.
+  trailEvery: .012,  // seconds between the sparks the ball leaves behind it
+  trailLife: .22,
+  flashLife: .26,    // how long the impact flash lives before it is gone
   autoRate: .11,     // seconds between rounds in `rapid`
   autoChg: .16,      // and what each one is worth -- a fumble's power, fired eight times a second
   // A SHOT THAT CURVES, RATHER THAN A MARK THAT PROMISES. *"No aim assist like with the
@@ -998,7 +1007,9 @@ const FOE = {
   // same `bodyFly` the knock-down uses, so there is one place a body carries momentum.
   knock: 4.2, knockUp: .55, knockDrag: 5.5,
   out: 2.0,          // how long he lies there
-  flyV: 7.0, flyUp: 4.6, flyG: 20, flyDrag: 1.7,
+  // *"I still wanna launch them forward and have it have some power to it."* A launch you
+  // can see the end of is worth more than one that is technically happening.
+  flyV: 11.0, flyUp: 5.6, flyG: 20, flyDrag: 1.4,
   // **A HEALTH BAR IS WHAT MAKES "A FEW HITS" LEGIBLE.** Without it a man who takes six blows
   // and a man who is ignoring you are the same picture. `hard` is no longer a one-shot
   // knock-down for him: damage is what puts him down, which is the whole point of the bar.
@@ -1084,7 +1095,7 @@ const HICK = {
   fleeMax: 12,
   hitBeat: 1.1, bigBeat: 1.4, downBeat: 1.2, upBeat: 1.2,
   out: 1.6,
-  flyV: 8.0, flyUp: 5.2, flyG: 20, flyDrag: 1.5,
+  flyV: 12.0, flyUp: 6.0, flyG: 20, flyDrag: 1.35,
   knock: 4.6, knockUp: .6, knockDrag: 5.5,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
   fling: .55,        // but he is a skinny man: it takes far less to launch him
@@ -1122,7 +1133,12 @@ const LOCK = {
   // thrown at a man ARRIVES; that is a physical assist with nothing drawn and nothing taken off
   // the thumb, and it is the half he asked to keep.
   on: 0,
-  retic: 0,         // the mark itself, separately -- `mel.LOCK.retic = 1` draws it with no lock
+  // **THE MARK IS BACK, WITHOUT THE LOCK (m39).** *"The aimer is gone for the blaster. I still
+  // want the aimer to be there -- it's just not the lock-on mode."* Which is the right reading
+  // of m36: what was annoying was the aim being TAKEN, not the mark being DRAWN. It shows where
+  // the shot is going and nothing more; `aimTarget` falls through to `aimPoint`, so it draws
+  // the walk down the camera bearing and the bolt leaves on the same answer.
+  retic: 1,
   range: 24,        // how far he will take a target
   // THE RETICLE'S SHRINKING RING *IS* THE LOCK WINDOW -- that is what it is drawing. It opens
   // the moment the trigger arms and closes as the charge fills, so holding a target inside it
@@ -1900,6 +1916,177 @@ function glowSprite(colour, size) {
   sp.scale.setScalar(size);
   return sp;
 }
+// ============================================================================================
+// SPARKS -- ONE DRAW CALL FOR EVERY PARTICLE IN THE GAME (m39)
+//
+// *"It's so primitive that when you shoot it just looks like a flash, and when it hits them
+// there's barely anything. I want it to feel like it really hits them -- maybe some little
+// particles that go around their mesh, maybe their mesh flashes."*
+//
+// **A POOL AND A `Points`, NOT A SPRITE EACH.** A sprite carries its own material, so sixty of
+// them is sixty draw calls on the one part of a mobile GPU that is actually scarce. One
+// `Points` with per-point size, colour and alpha in attributes is ONE call for the lot, and the
+// pool means a burst allocates nothing at all -- which matters when the burst happens on the
+// frame something is already being hit.
+//
+// **`gl_PointSize` IS DERIVED, NOT TUNED.** Half the framebuffer height over the tangent of
+// half the vertical lens, so `aSize` is a size in WORLD METRES and a point is the same physical
+// size wherever it is. A tuned constant would change size whenever the fov does.
+//
+// **AND A SPARK CAN FOLLOW A BODY.** *"Particles that go around their mesh."* A burst thrown in
+// world space on a man who is being knocked backwards is left behind by him; one that carries
+// his root and orbits it stays ON him, which is the thing being asked for. `follow` is the
+// body, `ox/oy/oz` is where the spark sits relative to him.
+const SPK = {
+  on: 1, n: 260,
+  g: 9.5,            // m/s^2 -- sparks fall, which is most of what says they are debris
+  drag: 1.9,
+};
+const spark = { i: 0, live: 0, pts: null, pos: null, col: null, siz: null, alp: null,
+                v: [], life: [], age: [], follow: [], off: [], spin: [], rad: [] };
+{
+  const n = SPK.n, geo = new THREE.BufferGeometry();
+  spark.pos = new Float32Array(n * 3);
+  spark.col = new Float32Array(n * 3);
+  spark.siz = new Float32Array(n);
+  spark.alp = new Float32Array(n);
+  geo.setAttribute('position', new THREE.BufferAttribute(spark.pos, 3));
+  geo.setAttribute('aCol', new THREE.BufferAttribute(spark.col, 3));
+  geo.setAttribute('aSize', new THREE.BufferAttribute(spark.siz, 1));
+  geo.setAttribute('aAlpha', new THREE.BufferAttribute(spark.alp, 1));
+  for (let i = 0; i < n; i++) { spark.v.push(new THREE.Vector3()); spark.off.push(new THREE.Vector3());
+    spark.life.push(0); spark.age.push(0); spark.follow.push(null); spark.spin.push(0); spark.rad.push(0); }
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: DOT }, uPx: { value: 300 } },
+    vertexShader: `
+      attribute vec3 aCol; attribute float aSize; attribute float aAlpha;
+      varying vec3 vCol; varying float vA;
+      uniform float uPx;
+      void main() {
+        vCol = aCol; vA = aAlpha;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = aSize * uPx / max(0.05, -mv.z);
+      }`,
+    fragmentShader: `
+      uniform sampler2D uMap; varying vec3 vCol; varying float vA;
+      void main() {
+        vec4 t = texture2D(uMap, gl_PointCoord);
+        gl_FragColor = vec4(vCol * t.a * vA, t.a * vA);
+      }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+  });
+  spark.pts = new THREE.Points(geo, mat);
+  // THE BUFFER HOLDS WORLD POSITIONS, so its own origin means nothing and its bounds say
+  // nothing about where anything is -- the same reason every effect in this file opts out.
+  spark.pts.frustumCulled = false;
+  spark.pts.renderOrder = 3;
+  spark.mat = mat;
+  scene.add(spark.pts);
+}
+const _sk = new THREE.Vector3();
+// ONE spark. Everything else is a loop over this.
+function spk(x, y, z, vx, vy, vz, size, life, col, follow) {
+  if (!SPK.on) return;
+  const i = spark.i; spark.i = (spark.i + 1) % SPK.n;
+  spark.pos[i * 3] = x; spark.pos[i * 3 + 1] = y; spark.pos[i * 3 + 2] = z;
+  spark.v[i].set(vx, vy, vz);
+  spark.siz[i] = size; spark.life[i] = life; spark.age[i] = 0;
+  spark.col[i * 3] = col[0]; spark.col[i * 3 + 1] = col[1]; spark.col[i * 3 + 2] = col[2];
+  spark.alp[i] = 1;
+  spark.follow[i] = follow || null;
+  if (follow) {
+    spark.off[i].set(x - follow.root.position.x, y - follow.root.position.y, z - follow.root.position.z);
+    spark.spin[i] = (Math.random() * 2 - 1) * 5.0;
+    spark.rad[i] = Math.hypot(spark.off[i].x, spark.off[i].z);
+  }
+}
+// A RADIAL BURST. `spread` is m/s outward, `up` is what is added to it -- debris that only ever
+// goes sideways reads as a ring rather than as something breaking.
+function spkBurst(x, y, z, n, o) {
+  o = o || {};
+  const col = o.col || [.35, .85, 1], sp = o.spread || 6, up = o.up || 2.5;
+  for (let k = 0; k < n; k++) {
+    const a = Math.random() * Math.PI * 2, e = Math.acos(2 * Math.random() - 1);
+    const dx = Math.sin(e) * Math.cos(a), dy = Math.cos(e), dz = Math.sin(e) * Math.sin(a);
+    const v = sp * (.35 + Math.random() * .65);
+    spk(x + dx * (o.r || .1), y + dy * (o.r || .1), z + dz * (o.r || .1),
+        dx * v, dy * v + up * Math.random(), dz * v,
+        (o.size || .18) * (.55 + Math.random() * .9), (o.life || .55) * (.6 + Math.random() * .8),
+        col, o.follow);
+  }
+}
+// **AND A SWARM THAT CLINGS TO A BODY.** Spawned round his own height and radius and carrying
+// his root, so being knocked across the street takes the sparks with him -- which is the whole
+// difference between "particles happened near him" and "something is happening TO him".
+function spkCling(d, n, o) {
+  o = o || {};
+  const P = d.root.position, h = d.K.h, r = d.K.r;
+  for (let k = 0; k < n; k++) {
+    const a = Math.random() * Math.PI * 2, rr = r * (.7 + Math.random() * .9);
+    const y = h * (.15 + Math.random() * .8);
+    spk(P.x + Math.sin(a) * rr, P.y + y, P.z + Math.cos(a) * rr,
+        0, (o.rise || 1.1) * (.4 + Math.random()), 0,
+        (o.size || .15) * (.5 + Math.random()), (o.life || .8) * (.6 + Math.random() * .8),
+        o.col || [.55, .9, 1], d);
+  }
+}
+function stepSparks(dt) {
+  const P = spark.pos, A = spark.alp;
+  let live = 0;
+  for (let i = 0; i < SPK.n; i++) {
+    if (spark.life[i] <= 0) { A[i] = 0; continue; }
+    spark.age[i] += dt;
+    const u = spark.age[i] / spark.life[i];
+    if (u >= 1) { spark.life[i] = 0; A[i] = 0; spark.follow[i] = null; continue; }
+    live++;
+    const f = spark.follow[i];
+    if (f) {
+      // ORBIT HIM. The offset turns about his own axis and rises, so the swarm crawls over the
+      // body rather than hanging beside it.
+      const o = spark.off[i], th = spark.spin[i] * dt;
+      const c = Math.cos(th), sn = Math.sin(th);
+      const nx = o.x * c - o.z * sn, nz = o.x * sn + o.z * c;
+      o.set(nx, o.y + spark.v[i].y * dt, nz);
+      P[i * 3] = f.root.position.x + o.x;
+      P[i * 3 + 1] = f.root.position.y + o.y;
+      P[i * 3 + 2] = f.root.position.z + o.z;
+    } else {
+      const v = spark.v[i], k = Math.exp(-SPK.drag * dt);
+      v.y -= SPK.g * dt; v.x *= k; v.z *= k;
+      P[i * 3] += v.x * dt; P[i * 3 + 1] += v.y * dt; P[i * 3 + 2] += v.z * dt;
+      if (P[i * 3 + 1] < .02) { P[i * 3 + 1] = .02; v.y = 0; v.x *= .5; v.z *= .5; }
+    }
+    // BRIGHT THEN GONE, not a linear fade -- a spark that dims evenly reads as a fog
+    A[i] = (1 - u) * (1 - u);
+  }
+  spark.live = live;
+  spark.pts.visible = live > 0;
+  if (!live) return;
+  spark.pts.geometry.attributes.position.needsUpdate = true;
+  spark.pts.geometry.attributes.aAlpha.needsUpdate = true;
+  spark.pts.geometry.attributes.aCol.needsUpdate = true;
+  spark.pts.geometry.attributes.aSize.needsUpdate = true;
+  // half the framebuffer height over tan(fov/2): `aSize` is then metres, at any lens
+  spark.mat.uniforms.uPx.value =
+    renderer.domElement.height * .5 / Math.tan(camera.fov * Math.PI / 360);
+}
+
+// **AND THE BODY ITSELF FLASHES.** *"Maybe their mesh kind of flashes."* The cheapest thing on
+// screen that says "that landed on HIM" rather than "something happened near him": his own
+// emissive is driven up and decays. **His material has to be his OWN**, because `skeletonClone`
+// SHARES materials across every copy of a kind -- flashing one would flash all three. A clone
+// per body is three materials rather than one; the SHADER is identical, so nothing recompiles
+// and the draw calls are unchanged.
+function bodyFlash(d, k) { d.flash = Math.max(d.flash || 0, k); }
+function stepFlash(d, dt) {
+  if (!d.mats) return;
+  const was = d.flash || 0;
+  if (was <= 0) return;
+  d.flash = Math.max(0, was - dt / (d.K.flashT || .22));
+  for (const m of d.mats) m.emissiveIntensity = RIG.emissive + (d.K.flash || 2.2) * d.flash;
+}
+
 function glowBall(size) {
   const g = new THREE.Group();
   g.add(glowSprite(0x7a3cff, size * 1.9));     // violet haze
@@ -2209,6 +2396,60 @@ function boltHome(b, dt) {
 }
 const _bh = new THREE.Vector3(), _bv = new THREE.Vector3();
 
+const BOLT_COL = [.35, .85, 1], BOLT_HOT = [1, .96, .85], BOLT_VIO = [.62, .38, 1];
+// **WHAT ARRIVING LOOKS LIKE (m39).** *"When it hits them there's barely anything. I want it to
+// feel like it really hits them -- maybe little particles that go around their mesh, maybe
+// their mesh flashes."* Three things, and each does a different job:
+//   1. a HOT CORE FLASH at the point of impact, wide and brief -- the event
+//   2. a RADIAL BURST thrown outward and up -- the debris
+//   3. a SWARM THAT CLINGS to every body inside the blast, plus that body's own EMISSIVE
+//      driven up -- which is the half that says it happened to HIM rather than near him
+// All of it scales with the charge, off the same `chg` the ball's size and the blast radius
+// come from, so a fumble is a spit and a full charge is an event.
+function boltHit(b) {
+  const c = b.chg, big = .35 + c * .65;
+  // the flash: a stack of three at the impact, which is the charge ball's own trick -- one
+  // sprite going out is a dot and the stack is what reads as a detonation
+  const fx = new THREE.Group();
+  fx.add(glowSprite(0xffffff, b.size * 2.6));
+  fx.add(glowSprite(0x2ec8ff, b.size * 4.2));
+  fx.add(glowSprite(0x7a3cff, b.size * 6.4));
+  fx.position.copy(b.pos);
+  scene.add(fx);
+  FLASH.push({ g: fx, t: 0, life: WEAP.flashLife * (.7 + c * .6), base: b.size });
+  spkBurst(b.pos.x, b.pos.y, b.pos.z, Math.round(10 + 34 * big),
+           { col: BOLT_HOT, spread: 5 + 9 * big, up: 2 + 3 * big, r: b.size * .5,
+             size: .13 + .12 * c, life: .45 + .35 * c });
+  spkBurst(b.pos.x, b.pos.y, b.pos.z, Math.round(6 + 18 * big),
+           { col: BOLT_VIO, spread: 2.5 + 5 * big, up: 1.2, r: b.size * .8,
+             size: .2 + .2 * c, life: .7 + .5 * c });
+  // and everybody the blast reached wears it
+  const R = b.size * .5 + b.blast;
+  for (const d of DUMMIES) {
+    const dx = d.root.position.x - b.pos.x, dz = d.root.position.z - b.pos.z;
+    if (dx * dx + dz * dz > R * R) continue;
+    spkCling(d, Math.round(8 + 20 * big), { col: BOLT_COL, size: .11 + .08 * c,
+                                            life: .55 + .6 * c, rise: .9 + c });
+    bodyFlash(d, .6 + .4 * c);
+  }
+}
+const FLASH = [];
+function stepFlashes(dt) {
+  for (let i = FLASH.length - 1; i >= 0; i--) {
+    const f = FLASH[i];
+    f.t += dt;
+    const u = f.t / f.life;
+    if (u >= 1) { f.g.traverse(o => { if (o.material) o.material.dispose(); }); scene.remove(f.g); FLASH.splice(i, 1); continue; }
+    // IT GROWS AND GOES. A flash that only fades reads as a light being turned down; one that
+    // expands as it fades reads as something arriving.
+    const k = 1 + u * 1.9, a = (1 - u) * (1 - u);
+    f.g.children.forEach((sp, j) => {
+      sp.scale.setScalar(f.base * [2.6, 4.2, 6.4][j] * k);
+      sp.material.opacity = a;
+    });
+  }
+}
+
 function stepBolts(dt) {
   for (let i = BOLTS.length - 1; i >= 0; i--) {
     const b = BOLTS[i];
@@ -2240,8 +2481,21 @@ function stepBolts(dt) {
     // it flickers, which at sixty frames a second is what plasma looks like for the cost of
     // writing a scale
     ballSize(b.g, .9 + Math.random() * .22);
+    // **A STREAK, NOT A DOT.** Sparks dropped along the path with no velocity of their own and
+    // a very short life: the ball leaves a line of cooling plasma behind it rather than sliding
+    // across the screen as a single blob, and it costs nothing because they are the same pool
+    // every other effect uses.
+    b.tr = (b.tr || 0) + dt;
+    while (b.tr > WEAP.trailEvery) {
+      b.tr -= WEAP.trailEvery;
+      spk(b.pos.x + (Math.random() - .5) * b.size * .4,
+          b.pos.y + (Math.random() - .5) * b.size * .4,
+          b.pos.z + (Math.random() - .5) * b.size * .4,
+          0, 0, 0, b.size * (.28 + Math.random() * .3), WEAP.trailLife, BOLT_COL);
+    }
     if (dead) {
       snd('boom', { g: .28 + b.chg * .35, r: 1.25 - b.chg * .35 });
+      boltHit(b);
       b.g.traverse(o => { if (o.material) o.material.dispose(); });
       scene.remove(b.g); BOLTS.splice(i, 1);
     }
@@ -2776,10 +3030,20 @@ function stepKit(dt) {
     const downish = R.down && up < 0 && Math.abs(Math.atan2(R.x, -up)) < WEAP.blockArc;
     const arming = downish && mag > WEAP.blockAt;
     const keeping = p.block && downish && mag > WEAP.blockKeep;
-    const busy = p.melee || p.roll || p.chargeGo || p.aim || p.charge || !p.grounded;
+    // **EVERY WEAPON, AND UNARMED.** *"If he's disarmed and you hold down on the right stick he
+    // goes into strafe mode left and right -- that's his guard. Same thing with the melee,
+    // honestly same thing with the blaster."* So the only things that refuse it are the ones
+    // that OWN the body: a strike, a roll, the dash, and being off the ground. The trigger and
+    // the wind-up are not in the list because they are the same thumb pushed the other way and
+    // cannot both be true -- but they are cleared here anyway, or a thumb sweeping from the top
+    // of the pad to the bottom would arrive still armed.
+    const busy = p.melee || p.roll || p.chargeGo || !p.grounded;
     if ((arming || keeping) && !busy) {
       p.blockT += dt;
-      if (p.blockT >= WEAP.blockT) p.block = 1;
+      if (p.blockT >= WEAP.blockT) {
+        p.block = 1;
+        if (p.aim || p.charge) { p.aim = 0; p.armT = 0; p.chg = 0; p.charge = 0; p.chargeT = 0; chargeStop(); }
+      }
     } else { p.block = 0; p.blockT = 0; }
   }
 
@@ -3043,7 +3307,7 @@ function stepPlayer(dt) {
   // is why `plant` has to go to zero here. `plant` swings the velocity onto his facing as he
   // speeds up, which is right for running and exactly wrong while aiming, since it would drag
   // every step round to point down the barrel.
-  const aiming = committed() || !!p.lock;
+  const aiming = committed() || p.block || !!p.lock;
   let wantSp = MOVE.max * s.mag;
   if (aiming) wantSp = Math.min(wantSp, GAIT.aimRunRef);
   if (p.land) wantSp *= .35;
@@ -3051,6 +3315,13 @@ function stepPlayer(dt) {
   // a mace landing is a small push you steer straight out of, and getting hit reads as nothing.
   // It is short on purpose -- being unable to move is the least fun state in any game, and the
   // knockback is doing most of the work.
+  // **THE GUARD IS A STANCE, AND A STANCE FACES FORWARD AND MOVES SIDEWAYS (m39).** *"He goes
+  // into strafe mode left and right -- that's like his block, it'll be his guard."* It is
+  // exactly what `aiming` already does: face where the lens is pointed, and let `plant` go to
+  // zero so the legs carry him wherever the thumb says instead of dragging his body round to
+  // point that way. So it joins that branch rather than growing a second one, and `rigAnim`'s
+  // strafe blend picks the clip off the sign of his travel with nothing new written.
+  if (p.block) wantSp = Math.min(wantSp, MOVE.blockSp);
   if (p.hurtT > 0) { p.hurtT = Math.max(0, p.hurtT - dt); wantSp = 0; }
   // AND IT COMES BACK ON ITS OWN, after a pause long enough that a fight is not free. There is
   // no death yet, so what running out of health costs you is nothing -- stated, not hidden.
@@ -3132,24 +3403,31 @@ function rigAnim(dt) {
 
   // ---- COMMITTED: the legs strafe, the arms hold the weapon, and neither knows about the
   //      other. Every bone is claimed exactly once, so they compose rather than average.
-  if (committed()) {
-    const up = p.fireT > 0 ? CLIPS.shoot : p.charge ? CLIPS.chargeUp : CLIPS.aimPose;
+  if (committed() || p.block) {
+    // **THE GUARD BORROWS THE COMMITTED BRANCH, WHICH IS WHAT IT ALREADY IS**: a body facing
+    // forward with its legs answering the thumb sideways. The only difference is which pose the
+    // top half holds -- and with no block clip drawn yet there is no upper pose at all, so the
+    // WHOLE strafe clips play rather than their `__legs` halves. Name `CLIPS.block` and it
+    // becomes an override like every other.
+    const bare = p.block && !(CLIPS.block && rig.actions[CLIPS.block]);
+    const up = p.block ? CLIPS.block
+             : p.fireT > 0 ? CLIPS.shoot : p.charge ? CLIPS.chargeUp : CLIPS.aimPose;
     const moving = sp > .25;
     // STANDING STILL IS THE WHOLE CLIP, NOT THE HYBRID. The split exists to put a weapon pose
     // on STRAFING legs; standing there are no strafing legs to put it on, and half a running
     // stride held under a pose reads as a man caught mid-step -- which is exactly what it was.
     // The hybrid is for moving left and right and nothing else.
-    if (!moving) { add(up, rest, 0); setWeights(t, dt); return; }
+    if (!moving) { add(bare ? CLIPS.idle : up, rest, 0); setWeights(t, dt); return; }
     // the UPPER half: what he is doing with the weapon
-    add(rig.actions[up + UP] ? up + UP : up, rest, 0);
+    if (!bare) add(rig.actions[up + UP] ? up + UP : up, rest, 0);
     // the LOWER half: which way he is travelling RELATIVE TO HIS NOSE, because he is facing
     // the target and "how fast" no longer picks the clip -- "which way" does.
-    const L = n => (rig.actions[n + LEGS] ? n + LEGS : n);
+    const L = n => (!bare && rig.actions[n + LEGS] ? n + LEGS : n);
     {
       const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
       const c = Math.cos(rel), sn = Math.sin(rel);
       const fwd = Math.abs(c), lat = Math.abs(sn), tot = fwd + lat || 1;
-      if (c >= 0) add(L(CLIPS.aimRun), rest * fwd / tot, GAIT.aimRunRef);
+      if (c >= 0) add(L(bare ? CLIPS.run : CLIPS.aimRun), rest * fwd / tot, bare ? GAIT.runRef : GAIT.aimRunRef);
       else add(L(CLIPS.back), rest * fwd / tot, GAIT.backRef);
       // +X IS HIS LEFT. Heading grows from +Z toward +X and his right is (-fz, fx), so a
       // POSITIVE sine is a strafe to the LEFT. Written down because that argument comes out
@@ -3878,12 +4156,21 @@ function bodyProto(g, K) {
 function bodySpawn(P, K, x, z) {
   const model = skeletonClone(P.proto);
   model.scale.setScalar(P.scale);
+  // **HIS MATERIALS ARE HIS OWN.** `skeletonClone` SHARES them across every copy of a kind, so
+  // flashing one man would flash all three. The clone is a second uniform set and the SAME
+  // shader, so nothing recompiles and the draw calls are unchanged.
+  const mats = [];
+  model.traverse(o => {
+    if (!o.isMesh && !o.isSkinnedMesh) return;
+    if (Array.isArray(o.material)) o.material = o.material.map(m => { const c = m.clone(); mats.push(c); return c; });
+    else if (o.material) { o.material = o.material.clone(); mats.push(o.material); }
+  });
   const root = new THREE.Group();
   root.add(model);
   root.position.set(x, groundAt(x, z, 0, MOVE.step), z);
   scene.add(root);
   const mixer = new THREE.AnimationMixer(model);
-  const d = { K, root, model, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff,
+  const d = { K, root, model, mats, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff, flash: 0,
     st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
@@ -4536,6 +4823,7 @@ function stepDummies(dt) {
     skinWeights(d, t, dt, .06, K.clips.idle);
     d.mixer.update(dt);
     d.root.rotation.y = d.h + d.faceOff;
+    stepFlash(d, dt);
     if (d.bar) foeBarStep(d, dt);
   }
 }
@@ -4631,6 +4919,8 @@ function frame() {
   // matrix it would trail the shot by a frame every time the lens moved, which is exactly the
   // thing a mark on a target must not do.
   stepBolts(dt);
+  stepSparks(dt);
+  stepFlashes(dt);
   paintRetic();
   sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
   sun.target.position.copy(player.pos);
