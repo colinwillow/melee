@@ -1019,6 +1019,55 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A BODY MAKES THREE SOUNDS AND `HITSND` HAD NOTHING TO SAY ABOUT ANY OF THEM (m62, `BODYSND`,
+  `K.voice`, `bodyWhoosh`).** *"I added a sound effects folder for alien orc grunts, so when he
+  gets hit or shot he plays these also. Also, when you launch them in the air it needs to play
+  that swipe noise the character plays when he melees -- any time a body part moves fast we need
+  to play one of those. And then I need a sound effect for when they hit the ground too."*
+  **"ALSO" IS THE WORD THAT DECIDES THE SHAPE.** `HITSND` is the sound of the CONTACT, keyed on
+  what the man is made of; a grunt is the sound of the MAN. Two sources, one event, so the voice
+  sits BESIDE the impact rather than replacing it -- which is not the m27 duplicate, because
+  that one was two voices describing the same physical thing.
+      grunt    `K.voice` on the kind, the way `K.snd` is. Louder and lower the harder he was hit
+      whoosh   the strikes' OWN swoosh, keyed on the body's SPEED and nothing else
+      drop     the arrival, where `bodyFly` actually sets him down
+  **THE VOICE GOES IN `dummyBlow`, WHICH IS THE ONE PLACE EVERY BLOW ON A BODY REACHES** -- fist,
+  mace, bolt and blast alike -- and `dummyHit` has already refused anyone inside `K.cool`, so it
+  is exactly one grunt per blow with nothing new to gate. **Above the down-punt return on
+  purpose**: kicking a man who is already on the floor is still hitting him.
+  **THE RATE IS JITTERED.** Seven files heard a hundred times become recognisable, and a grunt
+  that is always the same grunt reads as a sample rather than as a man -- which is this file's
+  own "it always does the same thing" lesson, for the third time and on the audio side.
+  **AND IT IS THE ORC'S.** The files are named for him and only `FOE` names the voice; the two
+  drunks and the officer stay silent until there are recordings for them, which is **one word
+  each** on their tables. `mel.snd('grunt')` plays one from the console.
+  **THE WHOOSH IS KEYED ON SPEED, NOT ON WHICH BRANCH LAUNCHED HIM**, which is his sentence read
+  literally and is also the only version with one threshold in it: `bodyWhoosh(d)` reads
+  `hypot(vx, vy, vz)` and is called at each of the three places a launch velocity is set. A
+  full-power KNOCK is 4.2 m/s and the smallest real launch is over 7, so `at` 5 keeps an ordinary
+  jab silent and catches every punt and every fling with nothing typed per case. **And the pitch
+  comes DOWN as the speed goes up** -- a big body moving fast is a lower sound than a fist, which
+  is the metal clangs' own rule, where three car tiers are told apart by pitch and not by three
+  recordings.
+  **THE LANDING IS FIRED WHERE THE FLIGHT IS ACTUALLY ENDED**, in `bodyFly`, not on the state
+  clock -- the GROUND is what stops a body and a timer drops him through whatever he was thrown
+  onto (m35's own reason for making the flight ballistic in the first place). **The impact speed
+  has to be read before `d.vy` is zeroed**, and `at` 3 is what stops a man being scrubbed ALONG
+  the floor thumping on every frame that branch runs, because `d.vy <= 0` is true the whole time
+  he is down.
+  **`drop` IS A STAND-IN AND THE THIRD KEY POINTED AT `box_break_01`.** There is nothing on disk
+  that is a body landing, any more than there was one for a body being hit -- so it is the dull
+  break dropped an octave, cut to an instant and given `cut`/`dec`'s percussive envelope. **Its
+  own key** so it can be re-pointed alone and cannot gate `thud` or `soft` through `SFX.last`;
+  the bytes come off the HTTP cache and only the decode is paid again.
+  **AND `audio/alien_orc_grunt_sounds` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is
+  not recursive, so a new asset folder is a new entry there or every file in it goes stale
+  silently. **Fifth time**, after `models/buildings` (m25), `audio/plasma_sounds` (m58),
+  `models/towers` (m60) and Shredworld's own.
+  **WHAT IS UNVERIFIED**: whether a grunt over `soft`'s box break is muddy on the drunks is moot
+  (they have no voice yet), and whether a grunt over `clang` is right on the warrior is a device
+  question -- `mel.SFX` is live and `HITSND.clang.g` is the dial if the ring is now in the way.
+
 - **A RINGING BLOW IS A FACT ABOUT THE MAN, NOT ABOUT THE WEAPON (m57, `HITSND`, `K.snd`).**
   *"When you hit regular characters that are like NPCs, I think it needs to be more of a [moan].
   It shouldn't make the clang or the clink, cause that's for people with armour. I know that I
