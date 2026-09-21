@@ -160,6 +160,37 @@ same picture from a phone.
   before "fixing" it, because the cure there was worse than the disease.
   **Measured gait** (planted foot, `npm run gait`'s own method): walk 0.898, run 2.478 m/s at
   her ×1.751.
+- **`models/characters/alien_warrior.glb`** (m35) — 59-joint Mixamo rig, **authored height
+  0.7749 m**, soles at exactly y = 0, one skinned mesh, draco + `EXT_texture_webp`. Toes read
+  (0.0000, 1.0000): he faces **+Z** like everyone else here. **`weapon_root` on
+  `mixamorig_RightHand`, tip local (0, 0, 36.1845)** — and `models/weapons/spikey_mace.glb` is
+  built around the same pair to **8.6e-6**, so it parents with IDENTITY and nothing about where
+  the mace sits is typed in the game. *"I placed the bones on his rig, so you can just drop the
+  mace onto the same orientation."* He had already done the hard part; `npm run rig` said so
+  before a line was written.
+  **54 clips at 24 fps, and TWO of them are exporter residue** — `CINEMA_4D_Main` and
+  `alien_warrior_rigged_mixamo`, one frame each with 0 bones moving. `FOE.drop` takes both.
+  **A FULL COMBAT SET**: idle x3, block + block react, walk/run forward/back/left/right, turns,
+  five melee attacks, three combos, two kicks, a run-jump attack, two taunts, four hit
+  reactions plus a big one, a fall, a get-up, two disarms and two equips. *"We can probably
+  strip out a ton of them"* — what is used is in `FOE.clips`, and the ones nothing names are
+  `crouch_*`, the `unarmed_*` family (a whole second locomotion set for when he has no mace),
+  `standing_disarm_*`, `standing_melee_attack_kick_*`, the three combos and
+  `standing_melee_run_jump_attack`. **None of them cost anything until they are named** — the
+  mixer only builds an action per clip — so there is no hurry to cut them.
+  **AND HIS GAIT MEASUREMENT ARGUED WITH ITSELF.** `npm run gait` flagged FEET DISAGREE 100% on
+  three of the seven locomotion clips: its stance test is "the foot moving BACKWARDS in the body
+  frame", and this rig's hips carry a yaw the antenna alien's does not, so one foot never
+  qualified. The direction-free reading is the SLOWER foot each frame -- which is the planted
+  one by definition -- at its plateau:
+      standing_walk_forward  0.359 authored  x2.386 -> 0.86 m/s    (walkRef)
+      standing_run_forward   0.749           x2.386 -> 1.79 m/s    (runRef)
+  Both are slow for a man his size and they are what the clips are doing; `FOE.run` is above the
+  reference on purpose and `tsHi` caps how far past. **The honest fix for a slow clip is a
+  faster clip**, not a bigger number.
+  **`npm run gait` NOW FALLS BACK TO `mixamorig_Hips`** when a rig has no `root` bone. It
+  reported "rig is missing root or toe bones" on a rig that is perfectly fine, which is a tool
+  refusing to measure the asset rather than a fact about the asset.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
   height; hammer 0.614 m = 68%. "As authored" means proportional to the wearer, so they keep
   those percentages at any `RIG.height` and **no scale is applied to either**.
@@ -658,6 +689,66 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A NEW ENEMY IS A TABLE AND A BRAIN, NOT A SECOND EVERYTHING (m35, `FOE`, `d.K`, `foeAI`).**
+  *"Make him walk around, make it so I can shoot him, make him fight back."* The warrior goes
+  into the SAME `DUMMIES` list the officer is in, because the bolt, the swept limb, the aim
+  lock and the player's own resolver already reach everything in that list. Every body carries
+  `d.K` -- its kind -- and `dummyBlow` and `stepDummies` read that instead of a global, so the
+  officer is untouched and there is no second damage path, no second collider path and no
+  second thing to keep in step. `bodyProto`/`bodySpawn` are shared; two builders used to hold
+  twenty lines of the scale measurement by copy, which is two places for it to drift.
+  **`bodyLoops` DERIVES WHICH CLIPS LOOP FROM THE TABLE** rather than listing them twice, so
+  adding a swing cannot accidentally make it repeat.
+  **THE BLOW LANDS PART-WAY THROUGH HIS SWING, NOT ON THE FRAME HE DECIDED TO SWING.** That is
+  m20's rule pointed the other way: a swing and its consequence arriving as two events is what
+  "you can't actually hit things" looks like, and it is just as true when the thing being hit
+  is you. `swingAt` is where in the beat the mace arrives.
+  **AND IT IS A CONE, NOT A CIRCLE** -- `dummyHit`'s own m20 fault, which was a range check with
+  no direction test at all, so a punch thrown forwards hit a man standing behind. Pinned: a
+  swing thrown the wrong way costs you nothing.
+  **A GUARD IS WORTH SOMETHING OR IT IS AN ANIMATION.** Blocking does not stop a blow, it takes
+  `blockCut` out of it -- and it plays its own react clip, so "he blocked that" and "he ate
+  that" are two different pictures rather than a number nobody can see.
+  **DAMAGE IS PER WEAPON (`FOE.dmg`).** *"Different weapons will do different effects to him."*
+  A fist is the cheapest, the hammer costs more, the charged finisher most, and a bolt carries
+  its own. **The officer has no `dmg` table and spends one hit point per blow exactly as he
+  always has** -- a kind without the field keeps the old rule rather than inheriting a new one.
+  **AND `hard` IS UNREACHABLE ON HIM ON PURPOSE.** For the officer a full-power blow is an
+  instant knock-down; for the warrior DAMAGE is what puts him down, which is the entire point of
+  having six hit points and a bar. Setting `hard: 1.01` says that in the table rather than in a
+  branch.
+  **A HEALTH BAR IS WHAT MAKES "A FEW HITS" LEGIBLE.** Without one a man who has taken five
+  blows and a man who is ignoring you are the same picture. It faces the camera, it is HIDDEN
+  while he is untouched and not hunting (an idle street is not a row of floating gauges), and it
+  grows from the LEFT edge -- a bar scaled about its middle at 50% reads as a different bar
+  rather than as half of this one.
+  **EVERY STATE ENDS ON ITS OWN CLOCK.** An enemy you can wedge into a state he cannot leave is
+  worse than one who gives up too early, and `lose > notice` so the edge of his attention cannot
+  flicker.
+  **AND HE WALKS ON THE PLAYER'S OWN RESOLVER**, plus `pushBodies` against the other bodies with
+  himself skipped -- one description of a body taking up room, not two.
+  **THE PLAYER HAS HEALTH NOW, AND NO DEATH.** *"Make him fight back"* has no consequence
+  without it. There is no hit-reaction clip in the antenna alien's export, so a blow IS a
+  knockback, a moment of no steering (`MOVE`'s own `wantSp = 0`) and a flash at the edge of the
+  screen -- and the stun is short on purpose, because being unable to move is the least fun
+  state in any game and the knockback is doing most of the work. **A dodge roll is still the one
+  thing that saves you**, which is what `p.roll`'s i-frames were always for.
+  **`npm run sim` DRIVES THE BRAIN, AND HIS BODY IS FABRICATED -- A STATED GAP.** The warrior GLB
+  is draco and no harness here can build a skin, so what is under test is what the brain reads:
+  `root.position`, `st`, `hp` and a clip table. The clip NAMES and DURATIONS come straight out of
+  the file, so the beats and the scaling are the real arithmetic, and one case asserts every name
+  in `FOE.clips` is in the file -- a name that is not there leaves a bone at zero total weight,
+  which is the T-pose exactly. The mount, the bar and the poses are device questions.
+- **AND `npm run sim`'s CHARGED-SWING CASE HAD BEEN MEASURING A RULE THE GAME NO LONGER HAD
+  (m35).** It asserted the release drives him forward at over 9 m/s -- true of the fixed leap
+  **m21 deliberately replaced**, whose whole point is that a constant launch can only do one
+  distance. With nobody in front of him the correct answer is nearly straight up, so the case
+  failed for builds while the code was right, and a suite with a permanent red row is a suite
+  nobody reads. It measures the arc now: free he goes UP and reaches the apex he solved for, a
+  man seven metres off turns it into a leap that LANDS ON HIM, and a half charge jumps lower.
+  **Its replacement's own first pass mark was invented too** (`melV > vFree + 3`, failing a
+  correct 5.26) -- **derive the pass mark from the rule, never from a number that looked right**,
+  which is now the third time in this file.
 - **A BOUNDING BOX IS NOT A BUILDING (m26, `solidColumns`).** *"I'm just running into invisible
   walls."* Right, and it is structural: a single AABB is solid everywhere the SHAPE is not -- a
   doorway, a setback, a tapered wall, the air over a canopy. So the collider is rasterised out
@@ -858,7 +949,15 @@ means anything you can carry from one situation to the next.
 
 ## Still open
 
-- No enemies, no hit detection, no damage — the melee chain plays and connects with nothing.
+- **No death.** The player's health runs to zero and regenerates; nothing happens at the bottom.
+  That is a decision to be made rather than an oversight.
+- **The warrior does not chase you far and cannot catch you.** `FOE.run` 2.6 m/s against a
+  player who sprints at 7.2 -- deliberate for now, and limited by what `standing_run_forward` is
+  actually walking at. A faster approach than the clip can sell is a scramble.
+- **No stun weapons, no rocket launcher, no arrest.** `FOE.dmg` is the hook: a weapon is an entry
+  in it, and a different EFFECT (a stun, a launch) is a field beside the number.
+- **Nothing uses `crouch_*`, the whole `unarmed_*` locomotion family, the disarms, the kicks, the
+  three combos or `standing_melee_run_jump_attack`.** They cost nothing until they are named.
 - **No sprint control**: walk/run/sprint is a pure speed blend off the left stick's magnitude,
   which is what the four clips support. A dedicated sprint gesture is a slot, not a clip.
 - `weapon_root_left` is unused. Dual wield is a weapon file exported onto it and one roster line.

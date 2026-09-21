@@ -301,24 +301,150 @@ killedAt = tt;
 ok('the stick cannot run him out before landFree', killedAt >= MOVE.landHard * MOVE.landFree - DT * 2,
    `broke out at ${killedAt.toFixed(2)} s, floor is ${(MOVE.landHard * MOVE.landFree).toFixed(2)}`);
 
-console.log('\n-- 13. THE CHARGED SWING THROWS HIM FORWARD AND UP --');
+console.log('\n-- 13. THE CHARGED SWING IS A SOLVED ARC, NOT A FIXED LEAP --');
+// **THIS CASE USED TO MEASURE A RULE THE GAME NO LONGER HAS.** It asserted the release drives
+// him forward at over 9 m/s, which was true of the fixed leap m21 replaced -- and m21's whole
+// point is that a constant launch can only do one distance, so with NOBODY in front of him the
+// correct answer is nearly straight up. It failed for three builds while the code was right.
+// The rule now: close goes UP, far goes OUT, and the gap decides.
 reset(0, 0); cam.az = 0; p.slot = 2;            // hammer
 p.charge = 1; p.chargeT = M.MELEE.charge;       // fully wound
 M.chargeRelease();
 ok('the release leaves the ground', p.vel.y > 2 && !p.grounded, `vy ${p.vel.y.toFixed(2)} m/s`);
-const vh = Math.hypot(p.vel.x, p.vel.z);
-ok('and drives him forward hard', vh > 9, `${vh.toFixed(2)} m/s along his facing (was a flat 3.0)`);
-const z0 = p.pos.z;
-run(1.6);
-ok('it carries a real distance and lands', p.pos.z - z0 > 5 && p.grounded,
-   `${(p.pos.z - z0).toFixed(2)} m, back on the ground ${p.grounded}`);
+const hiFree = p.goHi, vFree = p.melV;
+ok('with nobody in front of him it goes UP', hiFree > 1.5 && vFree < 5,
+   `apex ${hiFree.toFixed(2)} m, ${vFree.toFixed(2)} m/s forward`);
+const yGo = p.pos.y;
+let goApex = 0;
+run(1.6, () => { goApex = Math.max(goApex, p.pos.y - yGo); });
+ok('and it reaches the apex it solved for', Math.abs(goApex - hiFree) < .35 && p.grounded,
+   `${goApex.toFixed(2)} m against ${hiFree.toFixed(2)}, back down ${p.grounded}`);
+// AND A MAN IN FRONT OF HIM TURNS IT INTO A LEAP. The distance is what changes, not the power.
+{
+  const K = M.FOE;
+  M.DUMMIES.length = 0;
+  const far = { K, root: { position: { x: 0, y: 0, z: 7 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
+                hpMax: K.hp, cool: 0, h: 0, actions: {}, clips: {}, cw: {}, bar: null };
+  M.DUMMIES.push(far);
+  reset(0, 0); cam.az = 0; p.slot = 2;
+  p.charge = 1; p.chargeT = M.MELEE.charge;
+  M.chargeRelease();
+  // THE PASS MARK IS THE RULE, NOT A NUMBER THAT LOOKED RIGHT. `vFree + 3` was invented and
+  // failed a correct answer at 5.26; what m21 actually promises is that the GAP is what he
+  // solves for, so it is a real gap and it is faster than the standing one.
+  ok('a man seven metres off turns it into a leap', p.melV > vFree && p.goGap > 4,
+     `${p.melV.toFixed(2)} m/s over a ${p.goGap.toFixed(2)} m gap, against ${vFree.toFixed(2)} free`);
+  ok('and it goes LOWER than the standing one', p.goHi < hiFree,
+     `apex ${p.goHi.toFixed(2)} m against ${hiFree.toFixed(2)}`);
+  const zGo = p.pos.z;
+  run(1.6);
+  const landed = p.pos.z - zGo;
+  ok('it lands him ON him rather than through him',
+     Math.abs(landed - p.goGap) < 1.2 && p.grounded, `travelled ${landed.toFixed(2)} m for a ${p.goGap.toFixed(2)} m gap`);
+  M.DUMMIES.length = 0;
+}
 // a half charge must still move him, but less
 reset(0, 0); cam.az = 0; p.slot = 2;
 p.charge = 1; p.chargeT = M.MELEE.charge * .5;
 M.chargeRelease();
-const vhHalf = Math.hypot(p.vel.x, p.vel.z);
-ok('a half charge goes less far than a full one', vhHalf > 4 && vhHalf < vh,
-   `${vhHalf.toFixed(2)} m/s vs ${vh.toFixed(2)} at full`);
+ok('a half charge jumps lower than a full one', p.goHi < hiFree && p.goHi > .5,
+   `apex ${p.goHi.toFixed(2)} m against ${hiFree.toFixed(2)} at full`);
+
+console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
+// **HIS BODY IS FABRICATED AND THAT IS A STATED GAP.** The warrior GLB is draco and no harness
+// here can build a skin, so what is under test is the BRAIN -- which reads `root.position`,
+// `st`, `hp` and a clip table and nothing else. The clip names are the real ones out of the
+// file and the durations are real, so the beats and the scaling are the real arithmetic. The
+// mount, the bar and the poses are device questions.
+{
+  const { openGLB } = await import(pathToFileURL(process.cwd() + '/tools/glb.mjs').href);
+  const { json: wg, read: wread } = openGLB('models/characters/alien_warrior.glb');
+  const K = M.FOE;
+  K.loops = new Set([K.clips.idle, K.clips.walk, K.clips.run, K.clips.block]);
+  const mkFoe = (x, z) => {
+    const root = { position: { x, y: 0, z }, rotation: { y: 0 } };
+    const d = { K, root, model: null, mixer: { update() {} }, actions: {}, clips: {}, cw: {},
+                faceOff: 0, st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, back: 0,
+                vx: 0, vy: 0, vz: 0, cur: '', aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
+                h: 0 };
+    for (const a of wg.animations || []) {
+      let t0 = Infinity, t1 = 0;
+      for (const ch of a.channels) { const t = wread(a.samplers[ch.sampler].input); t0 = Math.min(t0, t[0]); t1 = Math.max(t1, t[t.length - 1]); }
+      d.clips[a.name] = { name: a.name, duration: t1 - t0 };
+      d.actions[a.name] = { _w: 0, _r: false,
+        reset() { this._r = true; return this; }, play() { this._r = true; return this; }, stop() { this._r = false; return this; },
+        setEffectiveTimeScale() { return this; }, setEffectiveWeight(w) { this._w = w; return this; },
+        getEffectiveWeight() { return this._w; }, isRunning() { return this._r; } };
+    }
+    M.DUMMIES.push(d);
+    return d;
+  };
+  const clear = () => { M.DUMMIES.length = 0; };
+
+  // EVERY NAME IN THE TABLE IS IN THE FILE. One that is not leaves a bone at zero total weight,
+  // and the mixer blends a zero-weight bone back to the BIND pose -- the T-pose exactly.
+  {
+    const want = [];
+    for (const k in K.clips) { const v = K.clips[k]; Array.isArray(v) ? want.push(...v) : want.push(v); }
+    const have = new Set((wg.animations || []).map(a => a.name));
+    const gone = want.filter(n => !have.has(n));
+    ok('every clip the table names is in the file', gone.length === 0, gone.join(', '));
+  }
+
+  // --- he ignores you from far away, and notices when you are near
+  clear(); reset(0, 0);
+  let d = mkFoe(0, 60);
+  M.stepDummies(DT);
+  ok('he ignores you from 60 m', !d.aggro, `notice is ${K.notice} m`);
+  d.root.position.z = K.notice - 2;
+  M.stepDummies(DT);
+  ok('and notices you inside `notice`', !!d.aggro, `at ${(K.notice - 2)} m`);
+
+  // --- he closes the distance
+  clear(); reset(0, 0);
+  d = mkFoe(0, 16);
+  for (let i = 0; i < 60 * 12; i++) M.stepDummies(DT);
+  const gap = Math.hypot(d.root.position.x - p.pos.x, d.root.position.z - p.pos.z);
+  ok('he closes to his reach', gap < K.hold + .6, `${gap.toFixed(2)} m, hold is ${K.hold}`);
+  ok('and he faces you when he gets there', Math.abs(((d.h - Math.PI + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) < .3,
+     `${(d.h * 180 / Math.PI).toFixed(0)} deg, you are at 180`);
+
+  // --- and he hits you
+  clear(); reset(0, 0); p.hp = M.HEALTH.max;
+  d = mkFoe(0, 2.2); d.aggro = 1; d.h = Math.PI;
+  let swings = 0, was = p.st;
+  for (let i = 0; i < 60 * 8; i++) { const s0 = d.st; M.stepDummies(DT); if (d.st === 'swing' && s0 !== 'swing') swings++; }
+  ok('he swings at you, more than once', swings >= 2, `${swings} swings in 8 s`);
+  ok('and it costs you health', p.hp < M.HEALTH.max, `HP ${p.hp.toFixed(0)} of ${M.HEALTH.max}`);
+
+  // --- a swing thrown forwards does not hit a man standing behind him
+  clear(); reset(0, 0); p.hp = M.HEALTH.max;
+  d = mkFoe(0, 2.2); d.aggro = 1; d.h = 0;            // facing AWAY from the player
+  d.st = 'swing'; d.t = 0; d.swung = 0; d.cur = K.clips.swings[0];
+  for (let i = 0; i < 60 * 2; i++) M.stepDummies(DT);
+  ok('a swing the wrong way misses', p.hp === M.HEALTH.max, `HP ${p.hp.toFixed(0)}`);
+
+  // --- damage is per weapon, and he goes down at zero
+  clear(); reset(0, 0);
+  d = mkFoe(0, 3); d.hp = K.hp;
+  M.dummyBlow(d, 0, 1, K.dmg.fist);  const afterFist = d.hp;
+  d.cool = 0; d.st = 'idle';
+  M.dummyBlow(d, 0, 1, K.dmg.bolt);  const afterBolt = d.hp;
+  ok('a bolt costs more than a fist', (K.hp - afterFist) < (afterFist - afterBolt),
+     `fist ${(K.hp - afterFist).toFixed(2)}, bolt ${(afterFist - afterBolt).toFixed(2)}`);
+  let blows = 2;
+  while (d.st !== 'down' && blows < 40) { d.cool = 0; if (d.st !== 'down') d.st = 'idle'; M.dummyBlow(d, 0, 1, K.dmg.fist); blows++; }
+  ok('enough blows put him down', d.st === 'down', `${blows} at full power`);
+  ok('and it took more than one', blows > 3, `${blows}`);
+
+  // --- and he gets back up on his own clock
+  const t0 = performance.now();
+  let upAt = -1;
+  for (let i = 0; i < 60 * 14; i++) { M.stepDummies(DT); if (upAt < 0 && d.st === 'idle') upAt = i * DT; }
+  ok('he gets back up by himself', upAt > 0, `standing again after ${upAt.toFixed(1)} s`);
+  ok('at full health', d.hp === d.hpMax, `${d.hp} of ${d.hpMax}`);
+  clear();
+}
 
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);

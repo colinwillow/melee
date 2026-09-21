@@ -28,14 +28,21 @@ const FILE = process.argv[2] || 'models/characters/alien_antenna_game.glb';
 const { json: g, read } = openGLB(FILE);
 
 // The clips whose reference speed the game needs, and what each is called in index.html.
-const WANT = [
+// Clips named on the command line win; otherwise the player's own table.
+const ARGS = process.argv.slice(3);
+let WANT = [
   ['walk_fwd', 'GAIT.walkRef'], ['run_fwd', 'GAIT.runRef'], ['run_fwd_fast', 'GAIT.sprintRef'],
   ['run_bwd', 'GAIT.backRef'], ['strafe_left', 'GAIT.strafeRef'], ['strafe_right', 'GAIT.strafeRef'],
   ['rifle_run', 'GAIT.aimRunRef'], ['rifle_run_shoot', 'GAIT.aimRunRef'],
   ['idle_01', '(control: must read ~0)'], ['idle_rifle', '(control: must read ~0)'],
 ];
+if (ARGS.length) { WANT.length = 0; for (const a of ARGS) WANT.push([a, '(asked for)']); }
 
-const rootI = nodeIndex(g, 'root');
+
+// THE BODY FRAME IS WHATEVER THIS RIG CALLS ITS ROOT. The antenna alien has a `root` bone above
+// the hips; a plain Mixamo export has not, and asking for one by name reported "rig is missing
+// root or toe bones" on a rig that is perfectly fine.
+const rootI = nodeIndex(g, 'root') >= 0 ? nodeIndex(g, 'root') : nodeIndex(g, 'mixamorig_Hips');
 const feet = [
   { toe: nodeIndex(g, 'mixamorig_LeftToeBase'), name: 'L' },
   { toe: nodeIndex(g, 'mixamorig_RightToeBase'), name: 'R' },
