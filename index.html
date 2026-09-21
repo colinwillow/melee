@@ -301,10 +301,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m45</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m46</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m45</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m46</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -344,7 +344,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm45';
+const BUILD = 'm46';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -3295,11 +3295,25 @@ PADS.R = bindStick(padR, stick.R,
 
 // THE HOLD IS READ PER FRAME RATHER THAN ON AN EDGE, because what it means depends on what is
 // in his hand and that can change under a thumb that is already down.
+// **ONE ANSWER TO "IS THE THUMB PUSHED UP" (m46, `padUp`).** The blaster's trigger and the
+// hammer's wind-up are the same gesture on the same pad and they must not disagree about what
+// counts as one. `on` is whether that thing is ALREADY held, which is the whole of the
+// hysteresis: it takes `fireAt` to arm and only `keepAt` to keep, so a thumb rolling inward as
+// it lifts cannot cancel the shot or the swing you meant -- and without the gap a full pull
+// only ever fires from exactly full stretch.
+// `arc` is what lets this share a pad that is already carrying the camera and the jump: a
+// sideways drag is still a drag, and pushing straight up barely orbits because its X is near
+// zero. It is the same reasoning `WEAP.blockArc` uses pointing the other way.
+function padUp(on) {
+  const R = stick.R, up = -R.y;
+  if (!R.down || up <= 0) return false;
+  if (Math.abs(Math.atan2(R.x, up)) >= WEAP.arc) return false;
+  return Math.hypot(R.x, R.y) > (on ? WEAP.keepAt : WEAP.fireAt);
+}
+
 function stepKit(dt) {
   const p = player, s = slotNow(), R = stick.R;
-  const held = PADS.R ? PADS.R.hold() : 0;
   const up = -R.y, mag = Math.hypot(R.x, R.y);
-  const holding = R.down && held > MOVE.tapT;
 
   // ---- DOWN ON THE RIGHT PAD IS A GUARD (m37). *"I want to make it so that down on the right
   //      stick is block. I know I don't have a block animation yet, but I'll put one in."*
@@ -3343,10 +3357,9 @@ function stepKit(dt) {
   //      It does NOT wait for `tapT` the way a hold does: a push to `fireAt` is already far
   //      past the tap's own `far < .42`, so the jump and the trigger cannot collide.
   if (s.aim) {
-    const upish = R.down && up > 0 && Math.abs(Math.atan2(R.x, up)) < WEAP.arc;
-    const arming = upish && mag > WEAP.fireAt;
-    const keeping = p.aim && upish && mag > WEAP.keepAt;
-    if (arming || keeping) {
+    // THE SAME GATE THE HAMMER USES -- see `padUp`. Two copies of this is two places for
+    // the trigger and the wind-up to start disagreeing about what a push up is.
+    if (padUp(p.aim)) {
       p.armT += dt;
       if (p.armT >= WEAP.armT && !p.aim) {
           // **ONE SOUND FOR ONE EVENT.** `chargeStart` already spins up the synth hum -- the
@@ -3412,17 +3425,41 @@ function stepKit(dt) {
   }
   GUNU.k.value = damp(GUNU.k.value, p.chg * WEAP.glow, .06, dt);
 
-  // ---- the hammer: hold to wind up, let go to swing ----
-  if (s.charge && holding && p.grounded && !p.melee && !p.roll && !p.chargeGo) {
+  // ---- the hammer: PUSH UP and hold to wind up, let go to swing ----
+  // **UP, NOT "ANY DIRECTION" (m46).** *"The melee charge should only initiate when you hold up
+  // on the right pad, not any direction."* It was `R.down && hold() > tapT` with **no direction
+  // test at all**, so a camera DRAG held for a third of a second wound the hammer up and
+  // letting go swung it -- which on this pad is the single most common thing a thumb does.
+  // **IT IS THE TRIGGER'S OWN FOUR GATES, SHARED RATHER THAN RE-DERIVED** (`padUp`): `arc` is
+  // what keeps a sideways drag a drag, `fireAt` is a push a nudge cannot reach, `keepAt` is the
+  // hysteresis that stops a thumb rolling inward as it lifts from cancelling the swing you
+  // meant. The pad already knows how to tell a deliberate push from a look, and a second answer
+  // to that question is a second thing to keep in step -- which is exactly what m37 said when
+  // the guard went on the same pad pointing the other way.
+  // **AND IT DOES NOT WAIT FOR `tapT` ANY MORE.** That was the old gate's whole substance and
+  // it is redundant here for the trigger's own reason: a push past `fireAt` .78 is already far
+  // beyond the tap's `far < .42`, so the jump and the wind-up cannot collide, and the wind-up
+  // can now be entered as fast as the thumb moves.
+  if (s.charge && padUp(p.charge) && p.grounded && !p.melee && !p.roll && !p.chargeGo) {
     // REWOUND ON THE RISING EDGE. `weapon_melee_charge` is a ONCE clip so it holds its last
     // frame -- a man straining rather than winding up over and over -- and a clip that holds
     // has to be rewound BY THE STATE that starts it or the second charge never winds up.
     // BOTH HALVES ARE STARTED. Which one is DRAWN depends on whether he happens to be moving,
     // and that can change mid-clip -- so the one that is not being drawn still has to be at the
     // right place in its own timeline for the moment it is.
-    if (!p.charge) { playPair(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat); snd('swoosh', { g: .55, r: .5 }); }
-    p.charge = 1; p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
-  } else if (!holding && p.charge) chargeRelease();
+    // **AND THE POSE WAITS `armT`, THE WAY THE TRIGGER DOES.** The charge itself starts at once
+    // -- a hold must not be shortened by its own gate -- but a stab at the top of the pad that
+    // comes straight back is not a wind-up, and without this it swooshes every time. A stab
+    // could never SWING (`chargeRelease` wants half a charge), so this is only the sound and
+    // the clip, which are the parts a stab would make a liar of.
+    p.charge = 1;
+    const was = p.chargeT;
+    p.chargeT = Math.min(MELEE.charge, p.chargeT + dt);
+    if (was < WEAP.armT && p.chargeT >= WEAP.armT) {
+      playPair(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
+      snd('swoosh', { g: .55, r: .5 });
+    }
+  } else if (p.charge) chargeRelease();
 
   if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / (WEAP.shootBeat + WEAP.shootHold));
   padR.classList.toggle('arm', !!(p.aim || (p.charge && p.chargeT > MELEE.charge * .5)));

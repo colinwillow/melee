@@ -889,5 +889,52 @@ console.log('\n-- 19. DOES THE DASH ACTUALLY LAND, AND HOW HARD --');
   stick.R.down = 0; stick.R.x = stick.R.y = 0;
 }
 
+
+console.log('\n-- 20. THE WIND-UP IS A PUSH UP, NOT ANY DIRECTION --');
+{
+  const P = M.player, MEL = M.MELEE;
+  // The gate used to be `R.down && PADS.R.hold() > tapT` with no direction in it, so a CAMERA
+  // DRAG held for a third of a second wound the hammer and letting go swung it. This case is
+  // mostly NEGATIVE rows, because what was broken is something that must not happen.
+  let heldT = 0;
+  const realHold = M.PADS.R.hold;
+  M.PADS.R.hold = () => heldT;
+  const push = (x, y, secs) => {
+    M.DUMMIES.length = 0;
+    reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0;
+    stick.R.down = 1; stick.R.x = x; stick.R.y = y;
+    for (let i = 0; i < Math.round(secs / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
+    const wound = P.chargeT;
+    stick.R.down = 0; stick.R.x = stick.R.y = 0; heldT = 0;
+    M.stepKit(DT);
+    return { wound, went: !!P.chargeGo };
+  };
+  // -y is UP the pad
+  const up = push(0, -1, 1.4);
+  ok('straight up winds it and swings', up.wound > MEL.charge * .9 && up.went,
+     `${up.wound.toFixed(2)} s, chargeGo ${up.went}`);
+  for (const [nm, x, y] of [['right', 1, 0], ['left', -1, 0], ['down', 0, 1],
+                            ['a diagonal drag', .8, -.35]]) {
+    const r = push(x, y, 1.4);
+    ok(`a drag ${nm} does NOT`, r.wound === 0 && !r.went, `wound ${r.wound.toFixed(2)} s, chargeGo ${r.went}`);
+  }
+  // and the hysteresis: a thumb that rolls inward as it lifts must not lose the swing
+  {
+    M.DUMMIES.length = 0; reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0;
+    stick.R.down = 1; stick.R.x = 0; stick.R.y = -1;
+    for (let i = 0; i < Math.round(1.4 / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
+    // rolled back to between `keepAt` and `fireAt` -- still held, by design
+    stick.R.y = -(M.WEAP.keepAt + M.WEAP.fireAt) / 2;
+    for (let i = 0; i < 6; i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
+    ok('a thumb rolling inward keeps the charge', P.chargeT > MEL.charge * .9,
+       `${P.chargeT.toFixed(2)} s at mag ${((M.WEAP.keepAt + M.WEAP.fireAt) / 2).toFixed(2)}, keepAt ${M.WEAP.keepAt}`);
+    stick.R.down = 0; stick.R.x = stick.R.y = 0; M.stepKit(DT);
+    ok('and letting go still swings', !!P.chargeGo, `chargeGo ${P.chargeGo}`);
+  }
+  M.PADS.R.hold = realHold;
+  M.DUMMIES.length = 0;
+  stick.R.down = 0; stick.R.x = stick.R.y = 0;
+}
+
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);

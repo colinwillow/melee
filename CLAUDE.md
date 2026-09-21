@@ -799,6 +799,31 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **THE WIND-UP HAD NO DIRECTION TEST AT ALL (m46, `padUp`).** *"The melee charge should only
+  initiate when you hold up on the right pad, not any direction."* The gate was
+  `R.down && PADS.R.hold() > MOVE.tapT` — **a third of a second of the thumb being anywhere on
+  the pad** — so a CAMERA DRAG wound the hammer up and letting go swung it, which on this pad is
+  the single most common thing a thumb does.
+  **IT IS THE TRIGGER'S OWN FOUR GATES, SHARED RATHER THAN RE-DERIVED.** `padUp(on)` is now the
+  one answer to "is the thumb pushed up" and both the blaster and the hammer call it: `arc` is
+  what keeps a sideways drag a drag, `fireAt` is a push a nudge cannot reach, and `keepAt` is the
+  hysteresis — it takes `fireAt` to arm and only `keepAt` to keep, so a thumb rolling inward as
+  it lifts cannot cancel the swing you meant. **Two copies of that is two places for the trigger
+  and the wind-up to start disagreeing about what a push up is**, which is what m37 said when the
+  guard went on the same pad pointing the other way.
+  **AND `tapT` IS GONE FROM IT**, which was the old gate's entire substance. It is redundant for
+  the trigger's own reason: a push past `fireAt` .78 is already far beyond the tap's `far < .42`,
+  so the jump and the wind-up cannot collide — and the wind-up can now be entered as fast as the
+  thumb moves rather than a third of a second later.
+  **THE POSE WAITS `armT` AND THE CHARGE DOES NOT.** A hold must not be shortened by its own
+  gate, so `chargeT` starts at once; but a stab at the top that comes straight back is not a
+  wind-up, and without the wait it swooshes and plays the strain every time. A stab could never
+  SWING anyway (`chargeRelease` wants half a charge), so the delay is only on the sound and the
+  clip — the two things a stab would make a liar of.
+  **THE CASE FOR IT IS MOSTLY NEGATIVE ROWS**, because what was broken is something that must not
+  happen: left, right, down and a diagonal all read `wound 0.00 s, chargeGo false`, straight up
+  winds fully and swings, and a thumb rolled back to between `keepAt` and `fireAt` keeps its
+  charge and still swings on the lift.
 - **A MAN THREE METRES AHEAD WAS PASSED THROUGH AND TOOK NOTHING (m45, `STRIKE.dashFrom`).**
   *"Now the charge melee is working and now it's wayyyy too far. However I want the charge hit to
   send them flyingggfff and they don't really."* Two things, and the second one is a bug that
@@ -1403,6 +1428,10 @@ means anything you can carry from one situation to the next.
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
 
+- **THE HAMMER'S WIND-UP IS THE SAME GESTURE AS THE TRIGGER, AND THE SAME CODE (`padUp`).**
+  Both are "the thumb pushed UP past `fireAt`, kept past `keepAt`, inside `arc`". Until m46 the
+  wind-up had no direction test at all and armed on any hold, so a camera drag swung the hammer.
+  If either ever needs its own threshold, give it its own constant — do not fork the predicate.
 - **The trigger does NOT wait for `MOVE.tapT` the way an ordinary hold does.** A push to
   `fireAt` (.78) is already far past the tap's own `far < .42`, so the jump and the trigger
   cannot collide and the firing position can be entered as fast as the thumb moves.
