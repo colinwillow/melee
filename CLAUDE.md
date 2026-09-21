@@ -168,6 +168,34 @@ same picture from a phone.
   change that IS justified: `BLEND` is the exporter default whenever a texture carries an alpha
   channel at all, and a transparent skin sorts against itself, so the flag comes off. Nothing
   else is touched. `SHE.alphaTest` exists and is 0.
+- **A MODEL SWAPPED IN PLACE REACHES THE SERVER BY ITSELF AND REACHES HIS PHONE ONLY VIA THE HASH
+  (m61).** *"I'm used to things where when you just swap the model out of the repository it just
+  automatically updates, but I feel like you're running something we have to explicitly tell
+  you."* Two halves, and only one of them is automatic:
+      the REPO     Pages serves `main` and `TOWER.file` already names that path. A same-path
+                   re-export needs NO code change and no reference anywhere. That half is free.
+      his PHONE    every runtime asset URL goes through `A(path)`, and `bump.mjs` bakes a sha1 of
+                   each file's CONTENTS into the `ASSETS` block. **Until a bump moves that hash
+                   the URL is unchanged and the browser serves the bytes it already has** -- which
+                   is indistinguishable from the re-export not having happened. m25 paid for this
+                   once already on the 4K-to-2048 building.
+  So a swap costs `npm run bump && git push`, by whoever notices -- it is not something only this
+  side can do. The tell that one is outstanding is the hash in `index.html` disagreeing with the
+  file on disk.
+  **AND A RE-EXPORT CAN MOVE A MEASURED PROPERTY SILENTLY**, which is the other reason to say so:
+  every number this builder uses is read off the geometry, so a shape change moves the scale and
+  the footprint with nothing in the file to say it did. Old against new, through the same parse:
+      structure   1 mesh / 1 material / 1 image, draco + webp, doubleSided, node +90 about +X,
+                  same node translation   -- IDENTICAL, so no code change and no builder concern
+      geometry    world height span 0.9995 -> 0.9741 (-2.5%), plan 0.6089 x 0.6099 unchanged
+      therefore   scale x32.02 -> **x32.85**, footprint 19.5 -> **20.0 x 20.0 m**
+  **CHECKED AS RECTANGLES AGAIN RATHER THAN ASSUMED TO STILL FIT.** Half a metre of footprint is
+  not nothing when the m60 placement was chosen by clearance: at (-28, 30) the tower now spans
+  x -38..-18, z 20..40, which clears the nearest box (-16, 12) by 5.5 m in z, the building's own
+  plan by 17.5 m in x, and every one of the thirteen bodies -- the nearest, the hick at (-17, 11),
+  by 1.0 m in x and 9 m in z. A building overlapping a box is the m24 lesson: nothing on screen
+  disagrees with anything and the player simply cannot walk there.
+
 - **`models/characters/alien_female_purple.glb`** — 10,966 tris, one material, one 2K WebP
   (406 KB on the wire, ~22 MB resident), draco + `EXT_texture_webp` + `KHR_materials_specular`.
   **Authored height 0.9995 m**, toes read **+1.2 deg** so she faces +Z like the alien. **No
