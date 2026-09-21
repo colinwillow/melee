@@ -352,10 +352,16 @@ ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2
   reset(40, 0); cam.az = 0; p.slot = 3;
   p.charge = 1; p.chargeT = M.MELEE.charge;
   M.chargeRelease();
-  ok('a man in the way shortens it', p.goGap < farFull, `${p.goGap.toFixed(2)} m for a man at 5, free is ${farFull.toFixed(2)}`);
+  // **THIS CASE USED TO ASSERT THE OPPOSITE, AND IT WAS PINNING THE BUG (m43).** m21 solved the
+  // launch to land ON the man, which is right for a LEAP and is what made the hold meaningless
+  // in a populated street -- the nearest body decided the distance and the charge did not. The
+  // dash goes through him now and `hitAll` catches him on the way past.
+  ok('a man in the way does NOT shorten it', Math.abs(p.goGap - farFull) < .01,
+     `${p.goGap.toFixed(2)} m for a man at 5, free is ${farFull.toFixed(2)}`);
+  ok('but he still turns to face him', Math.abs(p.faceH) < .05, `${(p.faceH * 180 / Math.PI).toFixed(1)} deg`);
   const z1 = p.pos.z;
   run(1.2);
-  ok('and it lands him ON him', Math.abs((p.pos.z - z1) - p.goGap) < 1.0,
+  ok('and he carries past him', (p.pos.z - z1) > 5 && Math.abs((p.pos.z - z1) - p.goGap) < 1.5,
      `travelled ${(p.pos.z - z1).toFixed(2)} m for a ${p.goGap.toFixed(2)} m solve`);
   M.DUMMIES.length = 0;
 }
@@ -786,6 +792,54 @@ console.log('\n-- 17. THE CIGARETTE JOINT --');
   const par = {}; N.forEach((n, i) => (n.children || []).forEach(c => (par[c] = i)));
   const up = ix >= 0 && par[ix] !== undefined ? (N[par[ix]].name || '') : '';
   ok('and it hangs off the head, so it rides every clip', /Head/.test(up), up || '(no parent)');
+}
+
+
+console.log('\n-- 18. THE CHARGE THROUGH THE REAL PAD --');
+{
+  const P = M.player, MEL = M.MELEE;
+  // **THE GATE IS `PADS.R.hold()`, AND NO HARNESS HAS EVER REACHED IT.** `holding` is
+  // `R.down && PADS.R.hold() > MOVE.tapT`, and `hold()` returns 0 unless a real pointer is
+  // down -- so every case that set `stick.R` directly and called `stepKit` measured a game in
+  // which the hammer charge CANNOT ARM. Case 13 sidestepped it by calling `chargeRelease()`,
+  // which is the one thing a player never does.
+  let heldT = 0;
+  M.PADS.R = M.PADS.R || {};
+  const realHold = M.PADS.R.hold;
+  M.PADS.R.hold = () => heldT;
+
+  const wind = (secs, bodies) => {
+    M.DUMMIES.length = 0;
+    if (bodies) for (const [x, z] of bodies) {
+      M.DUMMIES.push({ K: M.FOE, root: { position: { x, y: 0, z }, rotation: { y: 0 } }, st: 'idle',
+                       hp: M.FOE.hp, hpMax: M.FOE.hp, cool: 0, h: 0, actions: {}, clips: {}, cw: {}, bar: null });
+    }
+    reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0;
+    stick.R.down = 1; stick.R.x = 0; stick.R.y = -1;
+    for (let i = 0; i < Math.round(secs / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
+    const wound = P.chargeT;
+    stick.R.down = 0; stick.R.x = stick.R.y = 0; heldT = 0;
+    M.stepKit(DT);
+    return { wound, gap: P.goGap, v: P.melV, going: P.chargeGo };
+  };
+
+  const a = wind(1.4, null);
+  ok('a real hold winds it fully', Math.abs(a.wound - MEL.charge) < .05, `${a.wound.toFixed(2)} s of ${MEL.charge}`);
+  ok('and the release dashes', !!a.going, `chargeGo ${a.going}`);
+  ok('a full hold with nobody in front covers flatFar', a.gap > MEL.flatFar * .9,
+     `${a.gap.toFixed(2)} m of a ${MEL.flatFar} m ask`);
+
+  // THE CASE HE IS ACTUALLY PLAYING: a street with people in it.
+  const b = wind(1.4, [[40, 6]]);
+  ok('and a man six metres ahead does NOT shorten it', b.gap > MEL.flatFar * .9,
+     `${b.gap.toFixed(2)} m with a man at 6; free is ${a.gap.toFixed(2)}`);
+  const c = wind(1.4, [[40, 4], [46, 20], [34, 15]]);
+  ok('nor does a street full of them', c.gap > MEL.flatFar * .9,
+     `${c.gap.toFixed(2)} m with three of them about`);
+
+  M.PADS.R.hold = realHold;
+  M.DUMMIES.length = 0;
+  stick.R.down = 0; stick.R.x = stick.R.y = 0;
 }
 
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');

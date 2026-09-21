@@ -769,6 +769,41 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **THREE BUILDS OF TUNING COULD NOT POSSIBLY HAVE SHOWN, BECAUSE THE DISTANCE WAS NEVER THE
+  HOLD'S TO SET (m43, `MELEE.dashFree`).** *"The charge melee STILL isn't really going very far.
+  I have a feeling you've been implementing something and it's somehow not working, because
+  nothing has changed and I've told you three times."* He was right three times, and every number
+  I moved was real and irrelevant:
+      const far = p.melTgt ? Math.min(gap, wantD) : wantD;
+  `gap` is the distance to whoever `meleeLock` found in front of him. m21 solved the launch to
+  land ON that man, on the argument that a leap which overshoots goes THROUGH people — correct
+  for a LEAP, and it means the nearest body decides the travel and **the charge does not**.
+  m37 flattened it to a dash, m40 raised `flatFar` to 24, m42 left it alone; none of them could
+  reach a number that `min` was discarding. Measured through the real pad:
+      nobody in front           24.00 m
+      one man six metres ahead   4.95 m
+      three of them about        2.95 m
+  And the street has eighteen bodies in it now, so **the second row is what he was playing every
+  single time**. `MELEE.aimCone` is 24 degrees and `finishRange` 26 m, so somebody is nearly
+  always in it.
+  **THE LOCK KEEPS THE FACING AND LOSES THE DISTANCE.** Aiming him at the man is the half that
+  helps; clamping the travel to the gap is the half that ate the feature. And going through him
+  stopped being a bug at m36: `hitAll` means a mace does not stop at the first man, so the swept
+  weapon catches everyone the dash passes and the launch sends them. The hop and the arc keep
+  m21, because those genuinely would sail over him. `mel.MELEE.dashFree = 0` restores it exactly.
+- **AND NO HARNESS HAD EVER REACHED THE HAMMER'S OWN GATE (m43, `PADS` exported).** The charge
+  arms on `holding = R.down && PADS.R.hold() > MOVE.tapT`, and `hold()` returns **0 unless a real
+  pointer is down** — so every case that set `stick.R` directly and called `stepKit` was
+  measuring a game in which the hammer charge CANNOT ARM. Case 13 sidestepped it by calling
+  `chargeRelease()`, **which is the one thing a player never does**, and in doing so it skipped
+  the target acquisition, the wind-up and the release edge in one go.
+  **THIS IS THE REPO'S OLDEST MISTAKE AND THE TENTH TIME**, and it is the expensive shape of it:
+  not a harness that measures the wrong rule, but one that enters a function past the branch the
+  bug lives in. **The case that found it drives the pad**: it stubs `PADS.R.hold` to a rising
+  clock, holds the pad up for 1.4 s, releases, and reads `p.goGap` — with bodies in the world,
+  because an empty street is not the thing he is playing.
+  **WHEN HE SAYS NOTHING CHANGED AND THE MEASUREMENT SAYS IT DID, THE HARNESS IS ENTERING
+  SOMEWHERE HE CANNOT.** That is the thing to check first, before the numbers.
 - **THE DASH NEEDED ITS OWN SPEED CAP, BECAUSE `maxV` IS ALSO AN ACQUIRE RADIUS (m40, `dashV`).**
   *"The charge on the weapon still is not far enough. He needs to LAUNCH forward -- launch, launch.
   I want it to be a very exaggerated forward, fast motion."* Four times in one breath, so both ends

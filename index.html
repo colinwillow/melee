@@ -287,10 +287,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m42</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m43</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m42</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m43</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -330,7 +330,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm42';
+const BUILD = 'm43';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -560,6 +560,21 @@ const MELEE = {
   // numbers below it are kept so `mel.MELEE.dash = 0` walks back to the m36 hop and
   // `flatHi = 3` from there to the m21 arc. Three behaviours, two switches, nothing deleted.
   dash: 1,
+  // **AND A MAN IN FRONT NO LONGER SHORTENS IT (m43, `dashFree`).** *"The charge melee STILL
+  // isn't really going very far. I have a feeling you've been implementing something and it's
+  // somehow not working, because nothing has changed and I've told you three times."* He was
+  // right three times and the tuning was never the problem. m21 solved the launch to land ON
+  // the man, on the argument that a leap that overshoots goes THROUGH people -- correct for a
+  // leap, and it means the distance is set by whoever happens to be in front rather than by the
+  // hold. With eighteen bodies in the street now, a man six metres ahead cut a 24 m dash to
+  // **4.95 m**, and three of them about cut it to **2.95** -- so m37, m40 and m42 could not
+  // possibly have shown, whatever the numbers were.
+  // **THE LOCK KEEPS THE FACING AND LOSES THE DISTANCE.** Aiming him at the man is the half
+  // that helps; clamping the travel to the gap is the half that ate the feature. And going
+  // through him is not a bug any more -- `hitAll` has meant "a mace does not stop at the first
+  // man" since m36, so the swept weapon catches everyone the dash passes and the launch sends
+  // them. `mel.MELEE.dashFree = 0` restores m21 exactly.
+  dashFree: 1,
   // **AND IT HAS ITS OWN SPEED CAP (m40).** *"The charge on the weapon still is not far enough
   // -- he needs to LAUNCH forward, launch, launch. I want it to be a very exaggerated forward,
   // fast motion."* `maxV` could not carry that: it is also the ceiling on an ordinary lunge AND
@@ -3093,7 +3108,12 @@ function chargeRelease() {
   // how far the HOLD wants to carry him, and a man in front only ever shortens it -- a lunge
   // solved to land ON him is what stops the charge going through people
   const wantD = lerp(MELEE.flatNear, MELEE.flatFar, p.chargeGoH);
-  const far = dash || flat ? (p.melTgt ? Math.min(gap, wantD) : wantD) : gap;
+  // **A LOCKED DASH COVERS WHAT THE HOLD ASKED FOR (m43).** `min(gap, wantD)` is what made the
+  // hold meaningless in a populated street: the nearest man decided the distance and the charge
+  // did not. The hop and the arc keep m21 -- they genuinely would sail over him -- but a GROUND
+  // dash that goes through him is what `hitAll` already expects.
+  const clampToMan = p.melTgt && !(dash && MELEE.dashFree);
+  const far = dash || flat ? (clampToMan ? Math.min(gap, wantD) : wantD) : gap;
   // **AND IT IS SOLVED AGAINST THE WHOLE STATE, NOT THE TRAVEL TIME.** `goDur` carries
   // `finishTail` on the end, and the carry bleed runs across the WHOLE of it -- so solving
   // against `T` alone overshot by exactly the tail's share, 5.80 m for a 3.95 m solve. A launch
@@ -5355,7 +5375,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, STRIKE, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd,
+  DUMMY, DUMMIES, LOCK, STRIKE, PADS, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
   BLD, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
