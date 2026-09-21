@@ -287,10 +287,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m40</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m41</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m40</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m41</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -330,9 +330,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm40';
+const BUILD = 'm41';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1091,6 +1091,12 @@ const HICK = {
   file: 'models/characters/hick_skinny.glb',
   h: 1.78, r: .40, hp: 3,
   at: [[8, 21], [-17, 11], [21, 24], [-9, -13]],
+  // **HIS CIGARETTE (m41).** *"I added a joint in the hick for the tip of his cigarette, so we
+  // can make some fun smoke."* `cigarette_tip` is a child of `mixamorig_Head`, so it rides every
+  // clip for free -- he can look about, stumble and be knocked over and the smoke still leaves
+  // the end of the cigarette. Nothing about where it is is typed here; the export decided it,
+  // which is the same property the weapon mounts have.
+  smoke: 'cigarette_tip',
   drop: /^CINEMA_4D/,
   ai: 1, pacifist: 1,
   clips: {
@@ -1125,6 +1131,86 @@ const HICK = {
   knock: 4.6, knockUp: .6, knockDrag: 5.5,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
   fling: .55,        // but he is a skinny man: it takes far less to launch him
+  fly0: .45,
+  dmg: { bolt: 1.6, fist: .9, weap: 1.4, finish: 3.0 },
+  cool: .16,
+  sep: .85,
+  bar: { w: .8, h: .09, up: 1.20, fade: 4.0 },
+};
+
+// ============================================================================================
+// THE HOBO -- THE HICK'S BRAIN WITH THE POSES THE HICK IS STILL MISSING (m41)
+//
+// *"He's got all the same animations as the hick, so he's just an NPC and walks around -- but I
+// gave him more. I gave him the ability to be hit: three hit animations, and then you can knock
+// him down, so hit-to-fall, and he has a get-up animation. And I did give him an in-air pose, so
+// you can launch him -- you can melee him hard, you can blast him and send him flying, he'll go
+// through the air and land on the ground and get up. And he's got the drunk animations and all
+// that, stumble around."*
+//
+// **HE COST A TABLE AND NOTHING ELSE, WHICH IS WHAT m35's `d.K` WAS FOR.** The bolt, the swept
+// limb, `bodyFly`, `bodySep`, the player's own resolver and `foeWander` all reach him already,
+// so there is no builder worth the name and no second brain: `pacifist` is the one line that
+// says he does not fight, and he shares it with the hick.
+//
+// **AND HE IS WHERE THE HICK'S EMPTY HOOKS FINALLY POINT AT SOMETHING.** m38 wrote `downF`,
+// `downB`, `upF`, `upB` as `''` on the hick because the poses were not drawn yet, and the STATES
+// ran regardless -- he flew, landed, got up and ran away with no clip to show for it. This
+// export has all four, so those same states now have something to play with no branch added
+// anywhere. That is what the separation between a state machine and an animation buys, and this
+// is the build that collects on it.
+//
+// MEASURED, NEVER EYEBALLED (`npm run rig`, `npm run clips`, `npm run gait`):
+//     authored height 0.8784 m, soles at exactly 0   -> x1.981 to stand 1.74 m
+//     toes (0.0000, 1.0000), shoulders cross-check 1.0000   -> +Z, like everyone else here
+//     65 joints, 1 skinned mesh, 30 clips at 24 fps, draco + EXT_texture_webp
+//     NO weapon mounts, which is right -- an NPC, not a wearer
+//     `CINEMA_4D_Main` is one frame with 0 bones moving, and `idle` moves TWO bones by 2 deg
+//       -> `drunk_idle` is his idle, the hick's own finding one export over: a man standing
+//          perfectly still reads as a statue beside three that are moving
+//     drunk_walk 0.285 authored x1.981 -> 0.56 m/s   (walkRef; feet disagree 47%, which is what
+//                                                     a drunk walk IS -- the hick reads 43%)
+//     drunk_run_forward 0.921        -> 1.82         (runRef)
+//     running 1.350                  -> 2.67         (fleeRef -- he sobers up to run away)
+//
+// NOTHING USES `walking`, `left/right_strafe*`, the four turn clips, `backward_walking_turn`,
+// `run_backward_arc_right`, `drunk_run_backward`, `drunk_walking_turn` or `jump`. They cost
+// nothing until they are named -- the mixer only builds an action per clip.
+const HOBO = {
+  file: 'models/characters/hobo_01.glb',
+  h: 1.74, r: .40, hp: 4,
+  at: [[-22, -6], [14, -19], [-4, 27]],
+  drop: /^CINEMA_4D/,
+  ai: 1, pacifist: 1,
+  clips: {
+    idle: 'drunk_idle',
+    look: ['drunk_idle_variation', 'drunk_turn'],
+    walk: 'drunk_walk', run: 'drunk_run_forward',
+    flee: 'running',
+    air: 'in_air',                   // *"I did give him an in-air pose, so you can launch him."*
+    // THREE OF THEM, AND THE BIG ONE IS ITS OWN. *"He has three hit animations."*
+    hits: ['Head_Hit', 'Hit_To_Body'],
+    big: ['Big_Hit_To_Head'],
+    // ONE FALL AND ONE GET-UP, SO THE PAIR CANNOT DISAGREE. Two clips per direction is two
+    // chances for the fall to end face-down while the get-up starts face-up, which is the
+    // `COP.flip` bug one repo over; with one of each there is nothing to mismatch.
+    downF: 'hit_and_fall', downB: 'hit_and_fall', upF: 'get_up', upB: 'get_up',
+  },
+  walkRef: .56, runRef: 1.82, fleeRef: 2.67, tsHi: 1.5, tsLo: .7,
+  walk: .55, run: 1.8, flee: 2.8,
+  turn: 3.0,
+  vary: { pace: [.8, 1.25], nerve: [1, 1], react: [.3, 1.2], guard: [0, 0] },
+  roam: 9, roamWait: [2.5, 7.0], roamAt: .9,
+  flee0: 5.5, fleeAdd: 2.5, fleeMax: 12,
+  // THE CLIPS ARE PLAYED NEAR THEIR OWN LENGTH. m37: a reaction too fast to read is the same
+  // reaction every time, and these run 1.17 to 3.00 s -- `hit_and_fall` at 2x is a man being
+  // deleted rather than knocked over.
+  hitBeat: 1.2, bigBeat: 1.5, downBeat: 1.6, upBeat: 1.8,
+  out: 2.0,          // how long he lies there. He is drunk; he is in no hurry.
+  flyV: 15.0, flyUp: 6.4, flyG: 20, flyDrag: 1.4,
+  knock: 4.2, knockUp: .6, knockDrag: 5.5,
+  hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
+  fling: .55,
   fly0: .45,
   dmg: { bolt: 1.6, fist: .9, weap: 1.4, finish: 3.0 },
   cool: .16,
@@ -1970,19 +2056,22 @@ const SPK = {
 };
 const spark = { i: 0, live: 0, pts: null, pos: null, col: null, siz: null, alp: null,
                 v: [], life: [], age: [], follow: [], off: [], spin: [], rad: [] };
-{
-  const n = SPK.n, geo = new THREE.BufferGeometry();
-  spark.pos = new Float32Array(n * 3);
-  spark.col = new Float32Array(n * 3);
-  spark.siz = new Float32Array(n);
-  spark.alp = new Float32Array(n);
-  geo.setAttribute('position', new THREE.BufferAttribute(spark.pos, 3));
-  geo.setAttribute('aCol', new THREE.BufferAttribute(spark.col, 3));
-  geo.setAttribute('aSize', new THREE.BufferAttribute(spark.siz, 1));
-  geo.setAttribute('aAlpha', new THREE.BufferAttribute(spark.alp, 1));
-  for (let i = 0; i < n; i++) { spark.v.push(new THREE.Vector3()); spark.off.push(new THREE.Vector3());
-    spark.life.push(0); spark.age.push(0); spark.follow.push(null); spark.spin.push(0); spark.rad.push(0); }
-  const mat = new THREE.ShaderMaterial({
+// **THE PLUMBING IS A FACTORY, BECAUSE THERE IS MORE THAN ONE KIND OF PARTICLE (m41).** What
+// every pool here shares is a `Points` whose points are sized in WORLD METRES -- which is the
+// one part worth having exactly once, since `gl_PointSize` derived wrongly is a size that
+// changes whenever the fov does. What they do NOT share is physics or blending, and those are
+// where sparks and smoke disagree in every line: debris FALLS and is additive, vapour RISES,
+// GROWS and is alpha-blended. A material is a draw call either way, so a second pool costs one
+// call and buys a whole vocabulary.
+function puffPool(n, blending) {
+  const geo = new THREE.BufferGeometry();
+  const P = { pos: new Float32Array(n * 3), col: new Float32Array(n * 3),
+              siz: new Float32Array(n), alp: new Float32Array(n), i: 0, live: 0 };
+  geo.setAttribute('position', new THREE.BufferAttribute(P.pos, 3));
+  geo.setAttribute('aCol', new THREE.BufferAttribute(P.col, 3));
+  geo.setAttribute('aSize', new THREE.BufferAttribute(P.siz, 1));
+  geo.setAttribute('aAlpha', new THREE.BufferAttribute(P.alp, 1));
+  P.mat = new THREE.ShaderMaterial({
     uniforms: { uMap: { value: DOT }, uPx: { value: 300 } },
     vertexShader: `
       attribute vec3 aCol; attribute float aSize; attribute float aAlpha;
@@ -2000,15 +2089,37 @@ const spark = { i: 0, live: 0, pts: null, pos: null, col: null, siz: null, alp: 
         vec4 t = texture2D(uMap, gl_PointCoord);
         gl_FragColor = vec4(vCol * t.a * vA, t.a * vA);
       }`,
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+    transparent: true, depthWrite: false, blending, toneMapped: false,
   });
-  spark.pts = new THREE.Points(geo, mat);
+  P.pts = new THREE.Points(geo, P.mat);
   // THE BUFFER HOLDS WORLD POSITIONS, so its own origin means nothing and its bounds say
   // nothing about where anything is -- the same reason every effect in this file opts out.
-  spark.pts.frustumCulled = false;
-  spark.pts.renderOrder = 3;
-  spark.mat = mat;
-  scene.add(spark.pts);
+  P.pts.frustumCulled = false;
+  P.pts.renderOrder = 3;
+  P.geo = geo;
+  scene.add(P.pts);
+  return P;
+}
+// AND THE UPLOAD IS THE SAME FOR BOTH, including `uPx` -- half the framebuffer height over
+// tan(fov/2), so `aSize` is metres at any lens. A tuned constant would change size whenever
+// the fov does, and this game's fov moves.
+function puffFlush(P, live) {
+  P.live = live;
+  P.pts.visible = live > 0;
+  if (!live) return;
+  P.geo.attributes.position.needsUpdate = true;
+  P.geo.attributes.aAlpha.needsUpdate = true;
+  P.geo.attributes.aCol.needsUpdate = true;
+  P.geo.attributes.aSize.needsUpdate = true;
+  P.mat.uniforms.uPx.value =
+    renderer.domElement.height * .5 / Math.tan(camera.fov * Math.PI / 360);
+}
+{
+  const n = SPK.n, P = puffPool(n, THREE.AdditiveBlending);
+  spark.pos = P.pos; spark.col = P.col; spark.siz = P.siz; spark.alp = P.alp;
+  spark.pts = P.pts; spark.mat = P.mat; spark.P = P;
+  for (let i = 0; i < n; i++) { spark.v.push(new THREE.Vector3()); spark.off.push(new THREE.Vector3());
+    spark.life.push(0); spark.age.push(0); spark.follow.push(null); spark.spin.push(0); spark.rad.push(0); }
 }
 const _sk = new THREE.Vector3();
 // ONE spark. Everything else is a loop over this.
@@ -2086,16 +2197,92 @@ function stepSparks(dt) {
     // BRIGHT THEN GONE, not a linear fade -- a spark that dims evenly reads as a fog
     A[i] = (1 - u) * (1 - u);
   }
+  puffFlush(spark.P, live);
   spark.live = live;
-  spark.pts.visible = live > 0;
-  if (!live) return;
-  spark.pts.geometry.attributes.position.needsUpdate = true;
-  spark.pts.geometry.attributes.aAlpha.needsUpdate = true;
-  spark.pts.geometry.attributes.aCol.needsUpdate = true;
-  spark.pts.geometry.attributes.aSize.needsUpdate = true;
-  // half the framebuffer height over tan(fov/2): `aSize` is then metres, at any lens
-  spark.mat.uniforms.uPx.value =
-    renderer.domElement.height * .5 / Math.tan(camera.fov * Math.PI / 360);
+}
+
+// ============================================================================================
+// SMOKE OFF A CIGARETTE (m41, `SMOKE`, `smokeAt`, `stepSmoke`)
+//
+// *"I added a joint in the hick for the tip of his cigarette, so we can make some fun smoke."*
+// So the placement is his and nothing about it is typed here: `cigarette_tip` is a child of
+// `mixamorig_Head`, so it rides every clip for free -- he can look about, stumble and be
+// knocked over and the smoke still comes off the end of the cigarette.
+//
+// **IT IS NOT THE SPARK POOL, AND THAT IS THE WHOLE DESIGN.** A spark is additive, falls and
+// holds its size; smoke is alpha-blended, RISES and GROWS, and grey additive over a white floor
+// is a glow rather than a wisp. All three differ, so what the two share is the plumbing above
+// and not a line of the step.
+//
+// **AND A PUFF LEAVES THE MAN.** It is emitted AT the tip's world position and then lives in the
+// world -- smoke that follows him is a man with a cloud stuck to his face. The spark swarm's
+// `follow` is the opposite case and is right for what it does.
+const SMOKE = {
+  on: 1, n: 80,
+  every: [.30, .75],   // seconds between puffs, rolled per puff so the column is not a metronome
+  rise: .30,           // m/s up, and it does not slow -- vapour has no gravity worth modelling
+  drift: .085,         // sideways, so the column leans and breaks up instead of stacking
+  swirl: .55,          // rad/s the drift turns, which is what makes it curl rather than lean
+  life: [2.0, 3.6],
+  size0: .035,         // it GROWS, which is most of what reads as vapour rather than as dust
+  size1: .34,
+  peak: .30,           // the most opaque a puff ever gets
+  fadeIn: .12,         // of its life -- a puff that starts at full opacity pops
+  col: [.80, .79, .76],
+};
+const smoke = { i: 0, live: 0, P: null, v: [], life: [], age: [], s0: [], s1: [] };
+{
+  smoke.P = puffPool(SMOKE.n, THREE.NormalBlending);
+  for (let i = 0; i < SMOKE.n; i++) {
+    smoke.v.push(new THREE.Vector3()); smoke.life.push(0); smoke.age.push(0);
+    smoke.s0.push(0); smoke.s1.push(0);
+  }
+}
+function smokeAt(x, y, z) {
+  if (!SMOKE.on) return;
+  const i = smoke.i; smoke.i = (smoke.i + 1) % SMOKE.n;
+  const P = smoke.P, a = Math.random() * Math.PI * 2, d = SMOKE.drift * (.4 + Math.random());
+  P.pos[i * 3] = x; P.pos[i * 3 + 1] = y; P.pos[i * 3 + 2] = z;
+  smoke.v[i].set(Math.sin(a) * d, SMOKE.rise * (.7 + Math.random() * .6), Math.cos(a) * d);
+  smoke.life[i] = rnd(SMOKE.life); smoke.age[i] = 0;
+  smoke.s0[i] = SMOKE.size0 * (.7 + Math.random() * .6);
+  smoke.s1[i] = SMOKE.size1 * (.7 + Math.random() * .6);
+  P.col[i * 3] = SMOKE.col[0]; P.col[i * 3 + 1] = SMOKE.col[1]; P.col[i * 3 + 2] = SMOKE.col[2];
+  P.siz[i] = smoke.s0[i]; P.alp[i] = 0;
+}
+const _sm = new THREE.Vector3();
+function stepSmoke(dt) {
+  // EMISSION. Any body whose kind names a smoke joint gets one, and the joint is looked up ONCE
+  // at spawn -- `getObjectByName` walks the whole model, which is not a per-frame thing to do.
+  for (const d of DUMMIES) {
+    if (!d.smokeAt) continue;
+    d.smokeT -= dt;
+    if (d.smokeT > 0) continue;
+    d.smokeT = rnd(SMOKE.every);
+    d.smokeAt.getWorldPosition(_sm);
+    smokeAt(_sm.x, _sm.y, _sm.z);
+  }
+  const P = smoke.P;
+  let live = 0;
+  for (let i = 0; i < SMOKE.n; i++) {
+    if (smoke.life[i] <= 0) { P.alp[i] = 0; continue; }
+    smoke.age[i] += dt;
+    const u = smoke.age[i] / smoke.life[i];
+    if (u >= 1) { smoke.life[i] = 0; P.alp[i] = 0; continue; }
+    live++;
+    const v = smoke.v[i], th = SMOKE.swirl * dt, c = Math.cos(th), sn = Math.sin(th);
+    // THE DRIFT TURNS RATHER THAN HOLDING ITS BEARING, which is what curls a column instead of
+    // leaning it. The RISE is untouched -- it is the one part that is not random.
+    const nx = v.x * c - v.z * sn, nz = v.x * sn + v.z * c;
+    v.x = nx; v.z = nz;
+    P.pos[i * 3] += v.x * dt; P.pos[i * 3 + 1] += v.y * dt; P.pos[i * 3 + 2] += v.z * dt;
+    P.siz[i] = smoke.s0[i] + (smoke.s1[i] - smoke.s0[i]) * u;
+    // IN QUICKLY, OUT SLOWLY. A puff at full opacity on its first frame pops; one that fades
+    // linearly all the way out reads as a hard edge leaving.
+    P.alp[i] = SMOKE.peak * Math.min(1, u / SMOKE.fadeIn) * (1 - u) * (1 - u);
+  }
+  puffFlush(P, live);
+  smoke.live = live;
 }
 
 // **AND THE BODY ITSELF FLASHES.** *"Maybe their mesh kind of flashes."* The cheapest thing on
@@ -4249,6 +4436,15 @@ function bodySpawn(P, K, x, z) {
   // reporting it would be the chip crying wolf about a deliberate gap.
   const gone = want.filter(n => n && !d.actions[n]);
   if (gone.length) note('NO CLIP ' + gone.join(','));
+  // **A SMOKE JOINT IS FOUND BY NAME AND FOUND ONCE.** `getObjectByName` walks the whole model,
+  // which is not a per-frame thing to do, and the node never moves in the hierarchy. A kind that
+  // names one it has not got says so rather than going quiet, because "there is no smoke" and
+  // "the export dropped the joint" are the same picture from a phone.
+  if (K.smoke) {
+    d.smokeAt = model.getObjectByName(K.smoke) || null;
+    d.smokeT = Math.random() * 1.5;          // so three of them are not one metronome
+    if (!d.smokeAt && !K._noSmoke) { K._noSmoke = 1; note('NO ' + K.smoke); }
+  }
   DUMMIES.push(d);
   return d;
 }
@@ -4287,6 +4483,14 @@ function buildHicks(g) {
   const P = bodyProto(g, HICK);
   HICK.up = 0;
   for (const [x, z] of HICK.at) { const d = bodySpawn(P, HICK, x, z); foeBar(d); HICK.up++; }
+}
+
+// THE HOBO. Same pair, same brain, a different table -- which is the whole claim m35 made.
+function buildHobos(g) {
+  HOBO.loops = bodyLoops(HOBO);
+  const P = bodyProto(g, HOBO);
+  HOBO.up = 0;
+  for (const [x, z] of HOBO.at) { const d = bodySpawn(P, HOBO, x, z); foeBar(d); HOBO.up++; }
 }
 
 function buildFoes(g) {
@@ -4967,6 +5171,7 @@ function frame() {
   // thing a mark on a target must not do.
   stepBolts(dt);
   stepSparks(dt);
+  stepSmoke(dt);
   stepFlashes(dt);
   paintRetic();
   sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
@@ -5126,6 +5331,7 @@ async function init() {
   await side(FOE.weapon, 'loading the mace', { name: 'MACE', build: buildMace });
   await side(FOE.file, 'loading the warrior', { name: 'WARRIOR', build: buildFoes });
   await side(HICK.file, 'loading the locals', { name: 'HICK', build: buildHicks });
+  await side(HOBO.file, 'loading the locals', { name: 'HOBO', build: buildHobos });
 
   paintKit();
 
@@ -5147,7 +5353,8 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
   BLD, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
   // flash and the bar can be looked at without standing in front of a mace.
-  FOE, HICK, BLOCK, HEALTH, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
+  FOE, HICK, HOBO, SMOKE, BLOCK, HEALTH, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
+  smoke: (x, y, z) => { smokeAt(x, y, z); return 'puff'; },
   hurt: d => playerHurt(d || 12, player.faceH + Math.PI, FOE.push, FOE.pushUp, FOE.stun),
   heal: () => { player.hp = HEALTH.max; return 'full'; },
   // HER, LIVE. `mel.she.spin = 2` turns her on the spot, which is the best look at what the

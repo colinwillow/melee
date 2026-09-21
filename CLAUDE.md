@@ -212,6 +212,65 @@ same picture from a phone.
   drunk turns rather than anything borrowed.
   **NOTHING USES** `left/right_strafe*`, the four turn clips, `backward_walking_turn`,
   `run_backward_arc_right`, `drunk_walk_backwards` (beyond the hit pool) or `drunk_run_backward`.
+- **`models/characters/hobo_01.glb`** (m41) — 65-joint Mixamo rig, **authored height 0.8784 m**,
+  soles at exactly y = 0, one skinned mesh, draco + `EXT_texture_webp` + `KHR_materials_specular`.
+  Toes read (0.0000, 1.0000): **+Z** like everyone else here. **No weapon mounts**, which is right.
+  **30 clips at 24 fps, and TWO of them are static**: `CINEMA_4D_Main` residue, and — exactly as
+  on the hick — **`idle` itself moves only two bones by 2 degrees**, so `drunk_idle` is his idle.
+  A man standing perfectly still reads as a statue beside three that are moving.
+  **HE IS THE HICK PLUS THE FOUR POSES THE HICK NEVER HAD**: `Head_Hit`, `Hit_To_Body`,
+  `Big_Hit_To_Head`, `hit_and_fall`, `get_up`, and `in_air`.
+      drunk_walk         0.285 authored  x1.981 -> 0.56 m/s  (`walkRef`; feet disagree 47%,
+                                                              which is what a drunk walk IS)
+      drunk_run_forward  0.921                  -> 1.82      (`runRef`)
+      running            1.350                  -> 2.67      (`fleeRef` -- he sobers up to run)
+  **NOTHING USES** `walking`, `left/right_strafe*`, the four turn clips, `backward_walking_turn`,
+  `run_backward_arc_right`, `drunk_run_backward`, `drunk_walking_turn` or `jump`.
+- **A NEW NPC COST A TABLE AND A LOAD LINE, AND THAT IS m35 COLLECTING (m41, `HOBO`).** *"He's got
+  all the same animations as the hick, so he's just an NPC and walks around -- but I gave him
+  more. Three hit animations, you can knock him down, he has a get-up, and I gave him an in-air
+  pose so you can launch him."* Every one of those already had a state waiting for it: the bolt,
+  the swept limb, `bodyFly`, `bodySep`, the player's own resolver and `foeWander` all reach
+  anything in `DUMMIES`, and `d.K` is what lets a third table mean a third character rather than a
+  third code path. **No builder worth the name, no second brain, one line in `init()`.**
+  **AND HE IS WHERE THE HICK'S EMPTY HOOKS FINALLY POINT AT SOMETHING.** m38 wrote `downF`,
+  `downB`, `upF`, `upB` as `''` because the poses were not drawn, and the STATES ran regardless --
+  the hick flew, landed, got up and ran away with nothing to show for it. Those same states now
+  play real clips with **no branch added anywhere**, which is the whole return on keeping a state
+  machine and an animation separate.
+  **THE BEATS ARE NEAR THE CLIPS' OWN LENGTHS, NOT THE HICK'S.** m37's lesson: a reaction too fast
+  to read is the same reaction every time, and `hit_and_fall` is 3.0 s -- at 2x it is a man being
+  deleted rather than knocked over. `downBeat` 1.6, `upBeat` 1.8.
+  **ONE FALL AND ONE GET-UP, SO THE PAIR CANNOT DISAGREE.** Two clips per direction is two chances
+  for the fall to end face-down while the get-up starts face-up, which is the `COP.flip` bug one
+  repo over; with one of each there is nothing to mismatch and nothing to measure.
+- **SMOKE IS NOT THE SPARK POOL, AND ALL THREE OF ITS DIFFERENCES MATTER (m41, `SMOKE`,
+  `puffPool`).** *"I added a joint in the hick for the tip of his cigarette, so we can make some
+  fun smoke."* A spark is **additive**, **falls**, and **holds its size**; a puff of smoke is
+  **alpha-blended**, **rises** and **grows** -- and grey additive over a white floor is a glow
+  rather than a wisp. Nothing in the step is shared, so nothing in the step is shared.
+  **WHAT *IS* WORTH HAVING EXACTLY ONCE IS THE PLUMBING**, and it is the part that is easy to get
+  wrong: `gl_PointSize = aSize * uPx / -mv.z` with `uPx` derived per frame from the framebuffer
+  height over tan(fov/2), so a point is N world METRES at any lens. A tuned constant changes size
+  whenever the fov does, and this game's fov moves. `puffPool` builds that and `puffFlush` uploads
+  it; the two pools share both and share nothing else. **A material is a draw call either way, so
+  a second pool costs one call and buys a whole vocabulary.**
+  **AND A PUFF LEAVES THE MAN.** It is emitted AT the joint's world position and then lives in the
+  world. The spark swarm's `follow` does the opposite on purpose (m39: sparks that stay ON a body
+  being knocked across the street is the difference between "particles happened near him" and
+  "something is happening TO him"), and applying it here would be a man with a cloud stuck to his
+  face.
+  **THE PLACEMENT IS HIS AND NOTHING ABOUT IT IS TYPED.** `cigarette_tip` is a child of
+  `mixamorig_Head`, so it rides every clip for free -- he can look about, stumble and be knocked
+  over and the smoke still leaves the end of the cigarette. Same property the weapon mounts have,
+  and `npm run sim` pins both halves: the node is in the file, and its parent is the head.
+  **THE JOINT IS LOOKED UP ONCE, AT SPAWN.** `getObjectByName` walks the whole model, which is not
+  a per-frame thing to do, and the node never moves in the hierarchy.
+  **AND THE INTERVAL IS ROLLED PER PUFF, NOT FIXED.** A fixed one is a metronome, which is exactly
+  what smoke is not; and each body's first puff is offset, so three of them are not one clock.
+  **WHAT NO HARNESS HERE CAN SEE IS WHETHER IT LOOKS LIKE SMOKE** -- the GLB is draco and nothing
+  in this container can build a skin, so the joint's world position at runtime is a device
+  question. `mel.smoke(x, y, z)` fires one anywhere, and `mel.SMOKE` is live.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
   height; hammer 0.614 m = 68%. "As authored" means proportional to the wearer, so they keep
   those percentages at any `RIG.height` and **no scale is applied to either**.

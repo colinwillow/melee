@@ -686,5 +686,107 @@ console.log('\n-- 15. THE HICK DOES NOT FIGHT, HE RUNS --');
   M.DUMMIES.length = 0;
 }
 
+
+console.log('\n-- 16. THE HOBO IS THE HICK WITH THE POSES FILLED IN --');
+// Same fabricated-body gap: the GLB is draco, so what is under test is the TABLE against the
+// file and the states the table now has clips for. **This is the case the hick could not have**
+// -- m38 wrote his knock-down and get-up as empty hooks and the states ran with nothing to
+// play, so "he gets up" was true and unwatchable. Here every one of the four is a real name.
+{
+  const { openGLB } = await import(pathToFileURL(process.cwd() + '/tools/glb.mjs').href);
+  const { json: og, read: oread } = openGLB('models/characters/hobo_01.glb');
+  const K = M.HOBO;
+  K.loops = new Set([K.clips.idle, K.clips.walk, K.clips.run, K.clips.flee]);
+  const mkHobo = (x, z) => {
+    const root = { position: { x, y: 0, z }, rotation: { y: 0 } };
+    const d = { K, root, model: null, mixer: { update() {} }, actions: {}, clips: {}, cw: {},
+                faceOff: 0, st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, back: 0,
+                vx: 0, vy: 0, vz: 0, cur: '', aggro: 0, think: 0, gap: 0, bar: null, barT: 0,
+                hx: x, hz: z, rx: x, rz: z, roamT: 0, fleeT: 0, h: 0 };
+    for (const a of og.animations || []) {
+      let t0 = Infinity, t1 = 0;
+      for (const ch of a.channels) { const t = oread(a.samplers[ch.sampler].input); t0 = Math.min(t0, t[0]); t1 = Math.max(t1, t[t.length - 1]); }
+      d.clips[a.name] = { name: a.name, duration: t1 - t0 };
+      d.actions[a.name] = { _w: 0, _r: false,
+        reset() { this._r = true; return this; }, play() { this._r = true; return this; }, stop() { this._r = false; return this; },
+        setEffectiveTimeScale() { return this; }, setEffectiveWeight(w) { this._w = w; return this; },
+        getEffectiveWeight() { return this._w; }, isRunning() { return this._r; } };
+    }
+    M.DUMMIES.push(d);
+    return d;
+  };
+
+  // A NAME THAT IS NOT IN THE FILE LEAVES A BONE AT ZERO TOTAL WEIGHT, which the mixer blends
+  // back to the BIND pose -- the T-pose exactly. One typo in a table is a T-posing man.
+  {
+    const have = new Set((og.animations || []).map(a => a.name));
+    const flat = [];
+    for (const k in K.clips) { const v = K.clips[k]; Array.isArray(v) ? flat.push(...v) : flat.push(v); }
+    const gone = flat.filter(n => n && !have.has(n));
+    ok('every clip the table names is in the file', gone.length === 0, gone.join(', '));
+    const four = ['downF', 'downB', 'upF', 'upB', 'air'].filter(k => K.clips[k]);
+    ok('and the four the hick never had are NAMED', four.length === 5, four.join(', '));
+  }
+
+  // --- he wanders, and he does not fight
+  M.DUMMIES.length = 0; reset(0, 0); p.hp = M.HEALTH.max;
+  let o = mkHobo(0, 2.0); o.aggro = 1;
+  const st = {};
+  for (let i = 0; i < 60 * 30; i++) { M.stepDummies(DT); st[o.st] = (st[o.st] || 0) + 1; }
+  ok('he never swings or blocks', !st.swing && !st.block, JSON.stringify(st));
+  ok('and standing on him costs you nothing', p.hp === M.HEALTH.max, `HP ${p.hp.toFixed(0)}`);
+
+  // --- a light blow staggers, and it does NOT always look the same
+  M.DUMMIES.length = 0; reset(0, 0);
+  o = mkHobo(0, 3);
+  const seen = {};
+  for (let k = 0; k < 24; k++) {
+    o.st = 'idle'; o.cool = 0; o.hp = K.hp;
+    M.dummyBlow(o, 0, .5, 0);
+    if (o.st === 'hit') seen[o.cur] = (seen[o.cur] || 0) + 1;
+  }
+  ok('a stagger does not look the same every time', Object.keys(seen).length >= 2,
+     `${Object.keys(seen).length} of ${K.clips.hits.length}: ${JSON.stringify(seen)}`);
+
+  // --- and the whole arc: launched, off the ground, DOWN on a real clip, up on a real clip
+  M.DUMMIES.length = 0; reset(0, 0);
+  o = mkHobo(0, 6);
+  M.dummyBlow(o, 0, 1.0, K.dmg.finish);
+  ok('a full charge launches him', o.st === 'down' && o.vy > 1,
+     `up ${o.vy.toFixed(1)}, out ${Math.hypot(o.vx, o.vz).toFixed(1)} m/s`);
+  ok('and the knock-down plays a real clip', o.cur === K.clips.downF || o.cur === K.clips.downB,
+     `${o.cur || '(none)'}`);
+  let air = 0;
+  for (let i = 0; i < 60 * 2; i++) { M.stepDummies(DT); if (o.root.position.y > .25) air++; }
+  ok('he is genuinely off the ground for a while', air > 12, `${(air / 60).toFixed(2)} s in the air`);
+  const z1 = o.root.position.z;
+  let sawUp = '';
+  for (let i = 0; i < 60 * 14; i++) {
+    M.stepDummies(DT);
+    if (o.st === 'up' && !sawUp) sawUp = o.cur;
+  }
+  ok('and the get-up plays a real clip', sawUp === K.clips.upF || sawUp === K.clips.upB,
+     `${sawUp || '(never got up)'}`);
+  ok('he is back on his feet', o.st !== 'down' && o.st !== 'up', `state ${o.st}`);
+  ok('and runs AWAY', o.root.position.z - z1 > 3,
+     `${(o.root.position.z - z1).toFixed(1)} m further off; you are at z 0`);
+  M.DUMMIES.length = 0;
+}
+
+// ---- THE CIGARETTE. The joint is the hick's and the placement is his export's, so what is
+// worth checking here is the one thing a typo breaks: that the node is actually in the file and
+// hangs off the HEAD, which is what makes it ride every clip for free.
+console.log('\n-- 17. THE CIGARETTE JOINT --');
+{
+  const { openGLB } = await import(pathToFileURL(process.cwd() + '/tools/glb.mjs').href);
+  const { json: hg } = openGLB('models/characters/hick_skinny.glb');
+  const N = hg.nodes || [];
+  const ix = N.findIndex(n => n.name === M.HICK.smoke);
+  ok('the hick carries the joint the table names', ix >= 0, M.HICK.smoke);
+  const par = {}; N.forEach((n, i) => (n.children || []).forEach(c => (par[c] = i)));
+  const up = ix >= 0 && par[ix] !== undefined ? (N[par[ix]].name || '') : '';
+  ok('and it hangs off the head, so it rides every clip', /Head/.test(up), up || '(no parent)');
+}
+
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);
