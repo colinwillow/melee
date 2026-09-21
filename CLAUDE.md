@@ -822,6 +822,44 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A BLAST RADIUS USED AS A COLLISION RADIUS IS AN EIGHT-METRE CORRIDOR (m56).** *"The radius
+  of the collider of the Warrior aliens versus the charged blaster shot -- when they're almost off
+  screen to my left, I still hit them. You need a little bit more specificity."* Exactly that, and
+  the arithmetic is flat:
+      full charge   ball  1.90 m ACROSS, so a visible radius of 0.95
+                    test  size*.5 + blast + warrior r  =  .95 + 2.60 + .46  =  **4.01 m**
+      fumble        test  .225 + .55 + .46 = 1.24, against a ball 0.45 across
+  **AND IT RAN EVERY HALF-STEP OF THE FLIGHT**, not at a landing -- so it was not a sphere at an
+  impact, it was a **four-metre-radius cylinder swept down the whole sixty-metre shot**, and the
+  first man within four metres of the path anywhere along it WAS the impact. His sentence describes
+  the shape precisely: off to the left, never aimed at, still hit.
+  **m36 WAS NOT WRONG; IT WAS ONE NUMBER DOING TWO JOBS.** *"If I shoot a ball and it hits in the
+  general area of a few of them, that should hit more than one at a time."* That is a blast, and
+  `blast0`/`blast1` were sized for it -- the field's own comment said **"how far from the impact a
+  body is caught"** and there was no impact to measure from, because the blast radius was what
+  decided where the impact happened. **A comment describing an intent the code cannot express is
+  the tell.** So the two are separate now and each does its own job:
+      in flight   `size * .5` -- the ball, which is what he can SEE. 1.41 m at a full charge with
+                  his own radius, and 0.68 at a fumble. You have to land it.
+      on death    `size * .5 + blast` at the point it lands -- unchanged, so a crowd still goes
+                  over together and m36 survives whole.
+  **NOBODY IS BLOWN TWICE AND THAT NEEDED NO CASE.** `dummyBlow` sets `d.cool` and `dummyHit`
+  skips anyone on it, so the man the ball hit directly is already out by the time the blast pass
+  runs. The direct hit runs first by construction, because it is what killed the bolt.
+  **THE BLAST IS SPENT WHEREVER IT DIES**, including on a wall, on the ground and at `boltLife` --
+  which is right: a near miss that hits the wall behind him still catches him, and that is the
+  whole of what an area weapon is for.
+  **AND THE TEST IS STILL PURELY HORIZONTAL, WHICH IS A STATED GAP.** `dummyHit` has no y term at
+  all, and the bolt is aimed at `aimTarget()` -- a point on the ground or a wall -- so it DESCENDS
+  across its flight from a muzzle at chest height. A shot aimed at open ground sixty metres out
+  passes well over a man at thirty and still reads as horizontally on top of him. Same class of
+  complaint, not fixed here, deliberately: this build moves 4.01 m to 1.41 and **each toggle has to
+  move one variable** or neither can be judged.
+  **NO COLLIDER VIEW EXISTS IN THIS REPO.** Shredworld has one (`BOXES`, badge tap 12) and it is
+  what settled the identical fault there -- *"the bolt tested a CIRCLE on the car's long axis"*,
+  c161 -- so it is worth building the first time a hit radius has to be argued about rather than
+  computed.
+
 - **A BLOW ON A BODY RINGS, AND IT WAS LITERALLY A BOX BREAKING (m55).** *"The sound effect
   for when he melees and hits the warriors is like a box break, and I want it to be more like
   the clang noise."* Exactly that: `SFX.files.thud` is `box_break_01.mp3`, a crate coming apart,

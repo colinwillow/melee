@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m55</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m56</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m55</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m56</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm55';
+const BUILD = 'm56';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -968,7 +968,8 @@ const WEAP = {
   // should be a fairly hefty ball and the effect greater."* One number drives all three: the
   // picture, the thing it collides with, and how wide the blast reaches. They cannot drift.
   ball0: .45, ball1: 1.90,          // metres across, fumble to full. *"Still isn't big enough."*
-  blast0: .55, blast1: 2.60,        // how far from the impact a body is caught
+  blast0: .55, blast1: 2.60,        // how far from the IMPACT POINT a body is caught. Spent
+                                    // where the ball lands, never swept down the flight -- see m56
   // **AND A FULL CHARGE SENDS THEM FLYING WHATEVER THEIR HEALTH SAYS.** `FOE.hard` is
   // unreachable on purpose so DAMAGE is what puts a warrior down -- which is right for a fist
   // and wrong for the biggest shot in the game. `fling` is the power at which a blow launches
@@ -3078,14 +3079,18 @@ function stepBolts(dt) {
       // lightest real shot already put a man on his back and there was nothing left for the
       // hold to buy. `pow0`/`pow1` put the crossing at half, and `DUMMY.fly0`'s squared ramp
       // does the rest: half is a shove, three-quarters carries him, full sends him flying.
-      // **AND THE BLAST CATCHES EVERYONE IN IT (m36).** *"If I shoot a ball and it hits in the
-      // general area of a few of them, that explosive effect should hit more than just one at a
-      // time."* `dummyHit` never did break on the first body -- it was the RADIUS, a bolt's own
-      // .17 plus .45, which is one man wide. The blast is the charge's now, so a full one is
-      // over two and a half metres across and a crowd goes over together.
+      // **IN FLIGHT THE BOLT IS THE BALL, AND NOTHING WIDER (m56).** *"When they're almost off
+      // screen to my left, I still hit them -- you need a little bit more specificity."* The
+      // flight test used to be `size * .5 + blast`, and `blast` is what m36 sized as how far
+      // from an IMPACT a crowd is caught -- so at a full charge it was 3.55 m plus his own
+      // .46, swept down the whole sixty-metre shot. **A blast radius used as a collision
+      // radius is not a blast, it is an eight-metre corridor**, and there is no impact to
+      // measure from because the first thing within four metres of the path IS the impact.
+      // Here it is the visible ball: 1.41 m at a full charge against a picture 1.90 m across,
+      // and 0.68 at a fumble. The blast still happens -- at the point it lands, below.
       if (!dead && dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                             WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
-                            b.size * .5 + b.blast, FOE.dmg.bolt)) dead = true;
+                            b.size * .5, FOE.dmg.bolt)) dead = true;
       if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
     }
     b.g.position.copy(b.pos);
@@ -3121,6 +3126,15 @@ function stepBolts(dt) {
       // and unused so `mel.snd('boom')` is still the A/B.
       snd('splat', { g: .30 + b.chg * .40, r: 1.55 - b.chg * .45,
                      dur: .12 + b.chg * .10 });
+      // **AND THE BLAST IS SPENT WHERE IT LANDS, WHICH IS WHAT m36 ALWAYS MEANT.** *"If I
+      // shoot a ball and it hits in the general area of a few of them, that should hit more
+      // than one at a time."* Still true and still whole -- a full charge reaches 3.55 m from
+      // the impact and a crowd goes over together. What changed is that you have to LAND it
+      // first. The man the ball hit directly is already on `K.cool`, which `dummyHit` skips,
+      // so nobody is blown twice and that needed no case of its own.
+      dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
+               WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
+               b.size * .5 + b.blast, FOE.dmg.bolt);
       boltHit(b);
       b.g.traverse(o => { if (o.material) o.material.dispose(); });
       scene.remove(b.g); BOLTS.splice(i, 1);
