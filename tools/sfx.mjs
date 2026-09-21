@@ -22,8 +22,11 @@ if (!src.startsWith('function sfxEdge')) { console.error('EDGE markers not found
 // the constants the lifted text reads, out of the file rather than retyped
 const hit = +(/^\s*hit:\s*([\d.]+)/m.exec(html) || [])[1];
 const pre = +(/^\s*pre:\s*([\d.]+)/m.exec(html) || [])[1];
-if (!(hit > 0) || !(pre >= 0)) { console.error('could not read SFX.hit / SFX.pre'); process.exit(1); }
-globalThis.SFX = { hit, pre };
+const punch = +(/^\s*punch:\s*([\d.]+)/m.exec(html) || [])[1];
+if (!(hit > 0) || !(pre >= 0) || !(punch > 0)) {
+  console.error('could not read SFX.hit / SFX.pre / SFX.punch'); process.exit(1);
+}
+globalThis.SFX = { hit, pre, punch };
 const sfxEdge = (0, eval)(src + '\nsfxEdge');
 
 let Dec;
@@ -78,9 +81,22 @@ for (const rel of files) {
   // of its length reads heavier than one with a spike and a tail, at the same peak.
   let loud = 0;
   for (let i = a; i < b; i++) if (Math.abs(d[i]) > peak * .25) loud++;
-  rows.push({ rel, sr: sampleRate, full: d.length / sampleRate, a: e.a, b: e.b,
+  // **PUNCH IS ENERGY IN THE FIRST FEW MILLISECONDS, WHICH IS A DIFFERENT NUMBER FROM ALL OF
+  // THE ABOVE.** `p0` is what arrives in the first 25 ms played from the ONSET and `p1` is the
+  // same window played from `snd`'s `cut` -- so the ratio is exactly what throwing the run-up
+  // away buys, per file, and it is the answer to *"how could we change the waveform to make it
+  // punchier"*. `skip` is how much swell sits in front of the transient.
+  const head = ms => {
+    const s0 = Math.max(0, Math.round(ms[0] * sampleRate));
+    const s1 = Math.min(d.length, Math.round((ms[0] + .025) * sampleRate));
+    let t = 0, c = 0;
+    for (let i = s0; i < s1; i++) { t += d[i] * d[i]; c++; }
+    return c ? Math.sqrt(t / c) : 0;
+  };
+  const p0 = head([e.a]), p1 = head([e.p]);
+  rows.push({ rel, sr: sampleRate, full: d.length / sampleRate, a: e.a, b: e.b, p: e.p,
               win: e.b - e.a, tag: skip, peak, rms, atk: (pk - a) / sampleRate,
-              body: n ? loud / n : 0 });
+              body: n ? loud / n : 0, p0, p1, gain: p1 / Math.max(1e-6, p0) });
 }
 // **INTENSITY IS NOT PEAK.** Every one of these is normalised or close to it, so peak alone
 // ranks them all equal. What separates a light shot from a heavy one is how much ENERGY is in
@@ -91,15 +107,22 @@ const score = r => r.rms * Math.pow(Math.min(r.win, 2.5), .5) * (.5 + r.body);
 const w = Math.max(...rows.map(r => r.rel.length));
 console.log(`\n${'file'.padEnd(w)}  ${'full'.padStart(6)} ${'window'.padStart(13)} ` +
             `${'peak'.padStart(5)} ${'rms'.padStart(6)} ${'atk ms'.padStart(6)} ` +
-            `${'body'.padStart(5)} ${'score'.padStart(6)}`);
+            `${'body'.padStart(5)} ${'score'.padStart(6)}  |  ${'skip'.padStart(5)} ` +
+            `${'raw25'.padStart(6)} ${'cut25'.padStart(6)} ${'punch'.padStart(6)}`);
 for (const r of rows)
   console.log(`${r.rel.padEnd(w)}  ${r.full.toFixed(3).padStart(6)} ` +
               `${(r.a.toFixed(3) + '..' + r.b.toFixed(3)).padStart(13)} ` +
               `${r.peak.toFixed(3).padStart(5)} ${r.rms.toFixed(4).padStart(6)} ` +
               `${(r.atk * 1000).toFixed(0).padStart(6)} ${r.body.toFixed(2).padStart(5)} ` +
-              `${score(r).toFixed(4).padStart(6)}`);
+              `${score(r).toFixed(4).padStart(6)}  |  ` +
+              `${((r.p - r.a) * 1000).toFixed(0).padStart(4)}ms ` +
+              `${r.p0.toFixed(4).padStart(6)} ${r.p1.toFixed(4).padStart(6)} ` +
+              `${('x' + r.gain.toFixed(0)).padStart(6)}`);
+console.log(`\nskip/raw25/cut25/punch: how much SWELL sits in front of the transient, and what` +
+            `\nthe first 25 ms carries played from the onset vs from \`snd\`'s \`cut\`. That ratio` +
+            `\nIS punch, and it is bought by starting later -- no sample is touched.`);
 
-const bank = rows.filter(r => /plasma_\d/.test(r.rel)).sort((x, y) => score(x) - score(y));
+const bank = rows.filter(r => /plasma_sounds/.test(r.rel)).sort((x, y) => score(x) - score(y));
 if (bank.length) {
   console.log('\nplasma bank, LIGHTEST first -- this is the order `SFX.files.plasma` wants:');
   console.log('  ' + bank.map(r => path.basename(r.rel, '.mp3')).join('  ->  '));

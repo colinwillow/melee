@@ -823,6 +823,58 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **PUNCH IS ENERGY IN THE FIRST FEW MILLISECONDS, AND IT IS THE FRONT OF THE FILE THAT IS IN
+  THE WAY (m59, `SFX.punch`, `snd`'s `cut`/`att`/`dec`, `PUNCH`).** *"The explosion noise we were
+  using was way too punchy and these ones are way too soft, so I don't really know how we could
+  maybe change the waveform somehow to make it punchier."* **The waveform is fine.** Every
+  recording in the bank climbs for 34 to 111 ms before it reaches its own peak, and `SFX.edge`
+  opens at a QUARTER of that peak with 30 ms of run-up kept -- which is exactly right for a
+  swoosh and is the wrong end of the file for an impact. **A sound that takes a tenth of a second
+  to arrive is a swell, not a hit.** Measured over the first 25 ms of what is actually played:
+      played from the ONSET        rms .0006 to .034     <- "way too soft", and that IS nothing
+      played from the 90% POINT    rms .148 to .282      <- x5 to x259, per file
+      explosion_small, for scale   rms .527              <- "way too punchy"
+  So the target sits squarely BETWEEN the two he named, it is reached rather than guessed, and
+  **no sample is touched**: `cut` is a different start offset and nothing else. `e.p` is stored
+  on every edge record at load, so the scan is paid once per file per session.
+  **AND `dec` IS THE OTHER HALF.** An impact is a transient and a short tail; held flat, a file
+  with a long loud body reads as a TONE however hard it starts -- which is what `explosion_small`
+  got wrong from the far side (it hits at .527 and then keeps going for 1.2 s). `att` is
+  milliseconds up and **never zero, because a gain that steps is a click**, then
+  `setTargetAtTime` down with a time constant of `dec/3`, so it is ~95% gone by `dec` and ~99%
+  by the stop at `dec * 1.6`. `dur`'s linear tail stands down when `dec` is set: two envelopes
+  on one gain is two writers on one number.
+  **AND `npm run sfx` MEASURES THE RATIO NOW**, per file, as `skip / raw25 / cut25 / punch` --
+  so "how punchy is this recording" has an answer before it is ever heard on a phone, and the
+  next bank he cuts can be judged the same way. It reads `SFX.punch` out of `index.html` with
+  the other two constants and exits 1 rather than guessing.
+  **WHAT THIS SAYS ABOUT THE NEXT RECORDING** is the part worth keeping: a punchy impact starts
+  AT its peak. If the export has a fade-in on it, the game can throw that away for free -- but
+  nothing can add an attack that was never recorded, and `cut` is the whole of what is available
+  from this side.
+- **THE SHOT WENT BACK AND THE BANK MOVED TO THE IMPACT (m59).** *"I actually liked the noise we
+  were using for the plasma shot before, it was punchier -- I kind of wanna revert it to that.
+  Maybe we use those plasma noises for the hit sounds, and they're random or something."*
+  Both halves in one build, and m58's line is restored byte for byte: `blaster_sound_01/02` on
+  an ordinary release and rapid-fire round, `plasma_canon` past a .82 charge.
+  **THE SOFTNESS THAT MADE THEM WRONG FOR A SHOT IS ANSWERABLE AT AN IMPACT**, which is the
+  whole reason this is not simply a revert: a shot LEAVES and an impact ARRIVES, and `cut`/`dec`
+  only mean anything for the second. The same files he rejected in one slot are the right files
+  in the other once the run-up comes off the front.
+  **`plasma_hit` IS IN THE BANK RATHER THAN BESIDE IT.** It is one more impact recording; a
+  second key for one file is a second thing to keep in step, and `splat` is gone. Ranked by the
+  same measurement it lands sixth of seven (score .0801), and **`npm run sfx`'s own ranking was
+  widened to include it** -- it keyed on `plasma_\d`, so the tool would have gone on printing a
+  six-file order that disagreed with the shipped seven-file list, which is precisely the drift
+  this repo keeps paying for.
+  **THE CHARGE STILL PICKS THE WINDOW**, so a full charge lands with a heavier recording and it
+  is still random inside it -- which is what *"random or something"* asks for and keeps m58's
+  measurement doing work. At `PLASMA.span` 3 of 7:
+      chg 0.00   06:33% 04:34% 03:33%                         chg 0.50   03:33% 05:33% 02:34%
+      chg 1.00                            02:33% hit:34% 01:33%
+  `mel.PLASMA.span = 7` makes it flat; `mel.PUNCH.dec = 0` plays a file whole, which is the A/B
+  back to what he heard.
+
 - **HIS PLASMA BANK, AND THE FILES WERE ASKED RATHER THAN RANKED BY EAR (m58, `npm run sfx`,
   `plasmaPick`).** *"There's five or six plasma shot sounds and then one plasma hit... maybe run
   a little test and gauge the intensity of each of the waveforms, and then you could map that for

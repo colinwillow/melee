@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m58</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m59</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m58</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m59</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm58';
+const BUILD = 'm59';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c"};
 /* ASSETS:END */
@@ -1726,6 +1726,13 @@ const SFX = {
   voices: 0, max: 14,
   hit: .25,         // the onset is the first sample over this much of the file's own peak
   pre: .03,         // with this much run-up kept, so the attack survives
+  // **PUNCH IS ENERGY IN THE FIRST FEW MILLISECONDS, AND IT IS THE FRONT OF THE FILE THAT IS IN
+  // THE WAY (m59).** `snd`'s `cut` starts a sound at the point it first reaches this much of its
+  // own peak instead of at its onset, which throws the run-up away. Measured over the first
+  // 25 ms of what is actually played, on his own bank:
+  //     from the onset   rms .001 to .034      from the 90% point   rms .125 to .296
+  // -- between **5x and 242x** more energy arriving at once, without touching a single sample.
+  punch: .90,
   files: {
     swoosh: ['audio/swoosh_01.mp3', 'audio/swoosh_02.mp3', 'audio/swoosh_03.mp3', 'audio/swoosh_04.mp3'],
     clang: ['audio/metal_clang_01.mp3', 'audio/metal_clang_02.mp3', 'audio/metal_clang_03.mp3'],
@@ -1739,26 +1746,28 @@ const SFX = {
     // It is its OWN KEY rather than sharing `zap`, so the two cannot gate each other through
     // `SFX.last` and either can be re-pointed without touching the other. The bytes come off
     // the HTTP cache the second time; only the decode is paid twice, on a short file.
-    // **HIS OWN PLASMA, AND THE BANK IS IN MEASURED ORDER (m58).** *"There's five or six plasma
-    // shot sounds... maybe run a little test and gauge the intensity of each of the waveforms,
-    // and then you could map that for the charge so that when it charges more it plays a more
-    // intense one."* So `npm run sfx` was written and the files were ASKED rather than ranked by
-    // ear. **LIGHTEST FIRST, and `plasmaPick` depends on that order** -- energy in the window the
-    // game will actually play, times how long it runs, times how much of it is loud:
+    // **HIS OWN PLASMA -- THE IMPACT BANK AS OF m59, AND IN MEASURED ORDER.** *"Maybe we use
+    // those plasma noises that I put in for the hit sounds of it, and they're random or
+    // something."* They were the SHOT at m58 and he took that back a build later; the softness
+    // that made them wrong for a shot is answerable at an impact, where `cut` and `dec` exist.
+    // `plasma_hit` is in the bank rather than beside it: it is one more impact recording, and
+    // a second key for one file is a second thing to keep in step. **LIGHTEST FIRST, and
+    // `plasmaPick` depends on that order** -- energy in the window the game will actually play,
+    // times how long it runs, times how much of it is loud:
     //     plasma_06  0.47s  rms .099  score .0494   <- the lightest, and the shortest
     //     plasma_04  0.65   rms .121        .0562
     //     plasma_03  0.89   rms .113        .0597
     //     plasma_05  0.60   rms .138        .0636
     //     plasma_02  0.86   rms .117        .0729   (a 100 ms lead-in and a slow swell)
+    //     plasma_hit 0.89   rms .130        .0801
     //     plasma_01  0.84   rms .188        .1363   <- the heaviest, x2.76 over the lightest
     // **PEAK IS NOT INTENSITY**: every one of these is near normalised, so peak alone ranks the
     // whole bank equal. Re-run the tool after any re-export and re-order this list.
     plasma: ['audio/plasma_sounds/plasma_06.mp3', 'audio/plasma_sounds/plasma_04.mp3',
              'audio/plasma_sounds/plasma_03.mp3', 'audio/plasma_sounds/plasma_05.mp3',
-             'audio/plasma_sounds/plasma_02.mp3', 'audio/plasma_sounds/plasma_01.mp3'],
-    // THE BOLT LANDING, and his file rather than a stand-in as of m58. The beam cut to an
-    // instant was doing this job since m55 and is still loaded as `zap`.
-    splat: ['audio/plasma_sounds/plasma_hit.mp3'],
+             'audio/plasma_sounds/plasma_02.mp3', 'audio/plasma_sounds/plasma_hit.mp3',
+             'audio/plasma_sounds/plasma_01.mp3'],
+    // `splat` IS GONE AS A KEY -- the whole `plasma` bank above is the impact now, m59.
     // **A BLOW ON AN UNARMOURED MAN (m57). ALSO A STAND-IN, AND A WORSE ONE.** *"When you hit
     // regular characters that are like NPCs it needs to be more of a [moan]. It shouldn't make
     // the clang or the clink, cause that's for people with armour. Let me go make some custom
@@ -1834,7 +1843,17 @@ function sfxEdge(b) {
   let z = n - 1;
   const tail = peak * .012;
   for (let i = n - 1; i > a; i--) if (Math.abs(d[i]) > tail) { z = i; break; }
-  return { a: Math.max(0, a / sr - SFX.pre), b: Math.min(b.duration, z / sr + .04) };
+  // **AND WHERE THE TRANSIENT ACTUALLY IS, WHICH IS A DIFFERENT QUESTION (m59).** `a` above is
+  // the file's own ONSET -- the first sample over a quarter of its peak, with 30 ms of run-up
+  // kept so the attack survives. That is right for a swoosh and it is the wrong end of an
+  // IMPACT: every recording in here takes 34 to 111 ms to climb from that point to its own
+  // peak, and **a sound that takes a tenth of a second to arrive is a swell, not a hit**.
+  // `p` is where it first reaches `SFX.punch` of its peak -- start there and it begins AT full.
+  let q = a;
+  const hi = peak * SFX.punch;
+  for (let i = a; i < n; i++) if (Math.abs(d[i]) > hi) { q = i; break; }
+  return { a: Math.max(0, a / sr - SFX.pre), b: Math.min(b.duration, z / sr + .04),
+           p: Math.min(b.duration, q / sr) };
 }
 // EDGE:END
 // ============================================================================================
@@ -1910,6 +1929,18 @@ function chargeStop() {
 // right**: `autoChg` is .16, so a windowed pick would pin every round to the light end for ever,
 // and what eight shots a second need is variety rather than weight.
 const PLASMA = { span: 3 };
+// **HOW HARD THE BOLT LANDS, AND EVERY ONE OF THESE IS A LOOK-AT-IT DECISION.** Live on
+// `mel.PUNCH`, because *"way too punchy"* and *"way too soft"* are judgements a phone makes and
+// a container cannot. `dec: 0` plays the recording whole and `cut` off the call site plays it
+// from its onset, so the thing this replaced is one edit away.
+const PUNCH = {
+  att: .004,        // seconds to full. NEVER zero -- a gain that steps is a click
+  dec: .17,         // and the fall. `setTargetAtTime` at dec/3, so ~95% gone by here
+  man: .78,         // landing on a BODY
+  floor: .46,       // landing on tarmac -- the same event, and not the same event
+  chg: .30,         // how much louder a full charge lands
+  rate: -.20,       // and how much LOWER, which is what reads as heavier
+};
 function plasmaPick(chg, auto) {
   const n = (SFX.buf.plasma || SFX.files.plasma || []).length;
   if (n < 2) return 0;
@@ -1935,15 +1966,34 @@ function snd(key, o) {
   src.connect(g); g.connect(SFX.bus);
   SFX.voices++;
   src.onended = () => { SFX.voices--; };
-  const full = Math.max(.02, e.b - e.a);
-  src.start(0, e.a, full);
+  // **`cut` IS HALF OF PUNCH AND IT COSTS NOTHING (m59).** *"These ones are way too soft -- I
+  // don't really know how we could maybe change the waveform somehow to make it punchier."*
+  // The waveform is fine; what is in the way is the RUN-UP in front of it. Starting at `e.p`
+  // rather than `e.a` throws away the swell and the sound begins at its own peak -- see
+  // `SFX.punch`. Nothing is resampled and no sample is touched; it is a different start offset.
+  const from = (o && o.cut && e.p != null) ? Math.max(e.a, e.p) : e.a;
+  const full = Math.max(.02, e.b - from);
+  src.start(0, from, full);
+  // **AND `dec` IS THE OTHER HALF: A PERCUSSIVE ENVELOPE.** An impact is a transient and a
+  // short tail. Held flat, a file with a long loud body reads as a TONE however hard it starts
+  // -- which is what `explosion_small` was doing wrong from the other end (it hit with an rms
+  // of .527 in its first 25 ms, twice the loudest plasma file, and then kept going). Up in
+  // `att` -- milliseconds, and never zero, because a gain that steps is a click -- then
+  // `setTargetAtTime` down, whose time constant is a THIRD of `dec` so it is ~95% gone by then.
+  if (o && o.dec) {
+    const at = Math.max(.002, o.att || .004);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(gv, t + at);
+    g.gain.setTargetAtTime(0, t + at, Math.max(.01, o.dec) / 3);
+    src.stop(t + at + o.dec * 1.6);
+  }
   // **`dur` CUTS A LONG FILE SHORT, AND THE RAMP IS NOT OPTIONAL.** `SFX.edge` trims the
   // SILENCE off a recording; it has nothing to say about a sound that is simply longer than the
   // event it is standing for -- *"a residual electric noise that just keeps playing for the full
   // gambit of the noise"*. Stopping a buffer mid-waveform is a step discontinuity, which is a
   // CLICK, so it fades over the last fraction instead.
   const want = (o && o.dur) ? Math.min(full, o.dur) : full;
-  if (want < full - .01) {
+  if (!(o && o.dec) && want < full - .01) {
     const t0 = t + want, rel = Math.min(.09, want * .4);
     g.gain.setValueAtTime(gv, t0 - rel);
     g.gain.linearRampToValueAtTime(.0001, t0);
@@ -3190,11 +3240,19 @@ function stepBolts(dt) {
       // electrical beam, cut to the length of an impact. Rate DOWN and gain UP with the
       // charge, the way every other charged thing in this file reads heavier.
       // He recorded it at m58, so that stand-in is gone and this is his own file.
-      // **HIS `plasma_hit`, AND THE `dur` CAP HAD TO GO WITH THE STAND-IN (m58).** *"The
-      // plasma hit is the sound that'll play when it actually hits a character."* That cap
-      // existed because the stand-in was a SEVEN-SECOND beam cut to an instant; his file is
-      // 0.89 s with a 92 ms attack and IS an impact, so capping it would chop the recording.
-      // `SFX.edge` still trims the silence, which is all the trimming a real one wants.
+      // **THE WHOLE PLASMA BANK LANDS HERE NOW, PUNCHED (m59).** *"Maybe we use those plasma
+      // noises for the hit sounds, and they're random or something -- and maybe we make them a
+      // little punchier, because the explosion noise we were using was way too punchy and these
+      // ones are way too soft. I don't really know how we could maybe change the waveform."*
+      // **The waveform is fine; the RUN-UP in front of it is the problem** -- every file in the
+      // bank climbs for 34 to 111 ms before reaching its own peak, and a sound that takes a
+      // tenth of a second to arrive is a swell. `cut` starts it AT the peak (`SFX.punch`) and
+      // `dec` gives it a percussive fall, which between them is the two halves of punch:
+      //     played from the onset       first 25 ms carries rms .001 to .034
+      //     played from the 90% point                       rms .125 to .296   -- 5x to 242x
+      //     explosion_small, for scale                      rms .527  <- "way too punchy"
+      // So the target is squarely between the two he named, and it is REACHED rather than
+      // guessed: `mel.PUNCH` is live, and `PUNCH.dec` 0 plays the file whole for the A/B.
       // **AND A MAN IS NOT TARMAC.** The blast lands wherever the bolt dies -- a near miss into
       // the wall behind him is the whole point of an area weapon and must not be silent -- but
       // landing ON somebody is a different event, so it comes in fuller and lower. `b.onMan` is
@@ -3209,8 +3267,9 @@ function stepBolts(dt) {
                                  WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
                                  b.size * .5 + b.blast, FOE.dmg.bolt);
       const onMan = b.onMan || hitBodies;
-      snd('splat', { g: (onMan ? .62 : .38) + b.chg * .34,
-                     r: (onMan ? 1.00 : 1.18) - b.chg * .22 });
+      snd('plasma', { i: plasmaPick(b.chg, 0), cut: 1, att: PUNCH.att, dec: PUNCH.dec,
+                      g: (onMan ? PUNCH.man : PUNCH.floor) + b.chg * PUNCH.chg,
+                      r: (onMan ? 1.00 : 1.14) + b.chg * PUNCH.rate });
       boltHit(b);
       b.g.traverse(o => { if (o.material) o.material.dispose(); });
       scene.remove(b.g); BOLTS.splice(i, 1);
@@ -3970,10 +4029,11 @@ function stepKit(dt) {
         if (!autoNow() && p.chg >= WEAP.minChg) {
           fireBolt(p.chg);
           p.fireT = 1;
-          // HIS BANK, picked by the charge and then driven harder on top of it -- see
-          // `plasmaPick`. `big`/`shot` are still loaded, so `mel.snd('big')` is the A/B.
-          snd('plasma', { i: plasmaPick(p.chg, 0), g: .52 + p.chg * .34,
-                          r: 1.10 - p.chg * .26 });
+          // **REVERTED TO THE OLD SHOT (m59).** *"I actually liked the noise we were using
+          // for the plasma shot before -- it was punchier. I kind of wanna revert it to that."*
+          // Byte for byte m57's line. The bank he recorded moved to the IMPACT instead, which
+          // is where the softness was never going to matter and the punch can be made.
+          snd(p.chg > .82 ? 'big' : 'shot', { g: .42 + p.chg * .3, r: 1.12 - p.chg * .3 });
           // and it shoves him back along the shot -- the same bearing the bolt left on, so the
           // recoil cannot disagree with where the shot went
           const kh = p.lock ? lockH(p.lock) : cam.az;
@@ -3998,10 +4058,7 @@ function stepKit(dt) {
           p.autoT = WEAP.autoRate;
           fireBolt(WEAP.autoChg);
           p.fireT = 1;
-          // *"For the rapid fire you randomly select one for every shot."* Flat across the
-          // whole bank -- `SFX.gap` is .045 against an `autoRate` of .11, so every round is
-          // heard rather than every other one being refused.
-          snd('plasma', { i: plasmaPick(0, 1), g: .34, r: 1.26 + Math.random() * .12 });
+          snd('shot', { g: .3, r: 1.28 + Math.random() * .1 });
           const kv = WEAP.kick * .35;
           p.vel.x -= Math.sin(cam.az) * kv; p.vel.z -= Math.cos(cam.az) * kv;
           playPair(CLIPS.shoot, clipLen(CLIPS.shoot) / WEAP.shootBeat);
@@ -6314,7 +6371,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, M
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, STRIKE, PADS, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd,
+  DUMMY, DUMMIES, LOCK, STRIKE, PADS, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
   BLD, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
