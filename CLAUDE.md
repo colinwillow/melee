@@ -57,6 +57,7 @@ npm run clips      # what is actually in each animation
 npm run gait       # the measured reference speed of every locomotion clip
 npm run rig        # height, facing, and whether the weapon mounts still agree
 npm run icons      # rebuild the home-screen icon set from one square artwork
+npm run sfx        # what is in each sound file, and how hard it hits (needs mpg123-decoder)
 ```
 
 **These exist because of what they FOUND, and that is what they are for now — a record, not a
@@ -822,6 +823,71 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **HIS PLASMA BANK, AND THE FILES WERE ASKED RATHER THAN RANKED BY EAR (m58, `npm run sfx`,
+  `plasmaPick`).** *"There's five or six plasma shot sounds and then one plasma hit... maybe run
+  a little test and gauge the intensity of each of the waveforms, and then you could map that for
+  the charge so that when it charges more it plays a more intense one -- or you could just
+  randomly select one and make whatever one you select stronger for that specific charge."*
+  **BOTH, AND THEY ARE NOT ALTERNATIVES: the FILE gives the character and the GAIN gives the
+  charge.** Each alone has a failure the other does not:
+      ranked only   a full charge is the SAME recording every time, which is exactly the "it
+                    always does the same thing" this file has already paid for twice
+      random only   a fumble can draw the heaviest file and the charge stops reading in the
+                    sound at all -- the one thing he asked the ranking for
+  So the charge picks a WINDOW in the ranked bank and rolls inside it (`PLASMA.span` 3 of 6),
+  and the gain and rate ride on top. Measured over the shipped arithmetic:
+      chg 0.00   06:33%  04:33%  03:33%   --   --   --
+      chg 0.50    --     04:17%  03:34%  05:33%  02:17%   --
+      chg 1.00    --      --      --     05:33%  02:34%  01:33%
+      auto       every file 17%, flat
+  **RAPID FIRE IS A FLAT ROLL, which is his instruction and is also right.** `autoChg` is .16, so
+  a windowed pick would pin every round to the light end for ever; eight shots a second need
+  variety rather than weight. And `SFX.gap` .045 is under `autoRate` .11, so every round is heard
+  rather than every other one being refused.
+  **`npm run sfx` MEASURES THE WINDOW THE GAME WILL ACTUALLY PLAY**, by lifting the shipped
+  `sfxEdge` between the new `EDGE:` markers -- a tool with its own copy of the rule is this
+  repo's oldest mistake. Its own constants (`SFX.hit`, `SFX.pre`) are parsed out of `index.html`
+  too, and it exits 1 rather than guessing if it cannot find them.
+      plasma_06  0.47s  rms .099  body .30  score .0494   <- lightest, and the shortest
+      plasma_04  0.65   rms .121  body .09        .0562
+      plasma_03  0.89   rms .113  body .08        .0597
+      plasma_05  0.60   rms .138  body .12        .0636
+      plasma_02  0.86   rms .117  body .21        .0729   (a 100 ms lead-in and a slow swell)
+      plasma_01  0.84   rms .188  body .30        .1363   <- heaviest, x2.76 over the lightest
+  **PEAK IS NOT INTENSITY AND THAT IS THE WHOLE REASON THE TOOL EXISTS.** Every one of these is
+  at or near normalised (0.46 to 0.91), so ranking on peak puts the entire bank in a dead heat.
+  What separates them is ENERGY in the played window, how long it runs, and how much of it is
+  loud. Peak is still printed, because a file that is NOT normalised would otherwise hide.
+  **RE-RUN IT AFTER ANY RE-EXPORT AND RE-ORDER `SFX.files.plasma`** -- `plasmaPick` depends on
+  that list being lightest-first and has no way to know if it is not.
+  **AN ID3v2 TAG IS NOT AUDIO, AND IT COST THE FIRST TWO RUNS.** Every file here carries one and
+  his plasma exports carry **10 KB of it on a 30 KB file** -- a third of the bytes. Fed from byte
+  zero, mpg123's streaming decode returns `MPG123_ERR` on every frame and allocates until node
+  dies of an OOM, which reads exactly like a corrupt recording and is nothing of the sort. **The
+  browser's `decodeAudioData` handles the tag perfectly well**, so this is a harness concern and
+  there is nothing to fix in the asset. The syncsafe length is at bytes 6-9. And a FRESH decoder
+  per file: `reset()` is async and leaves `ready` already settled, so reusing one across a bank
+  is the other half of that OOM.
+  **`audio/plasma_sounds` HAD TO GO INTO `bump.mjs`'s `DIRS`.** `readdirSync` is not recursive,
+  so a new asset folder is a new entry there or every file in it goes stale silently -- the
+  standing tax, and the third time it has been paid across these repos.
+- **THE BOLT'S IMPACT IS HIS FILE NOW, AND THE `dur` CAP WENT WITH THE STAND-IN (m58).** *"The
+  plasma hit, I think, is the sound that'll play when it actually hits a character."*
+  **THE CAP EXISTED FOR THE STAND-IN AND WOULD HAVE CHOPPED THE RECORDING.** m55 pointed `splat`
+  at `electricity_beam_01.mp3` -- a SEVEN-SECOND beam -- and `dur: .12 + chg * .10` is what made
+  that an instant. `plasma_hit` is 0.89 s with a 92 ms attack and IS an impact, so the same cap
+  would now be cutting his own file off a tenth of a second in. `SFX.edge` still trims the
+  silence, which is all the trimming a real recording wants. **A number that exists to rescue a
+  stand-in has to go when the stand-in does**, or the fix for one file becomes a bug in the next.
+  **AND A MAN IS NOT TARMAC.** The blast lands wherever the bolt dies and a near miss into the
+  wall behind him must not be silent -- that is what an area weapon IS (m56) -- but landing ON
+  somebody is a different event, so it comes in fuller and lower. **`b.onMan` is set where the
+  flight test actually caught a body**, not inferred afterwards from the blast.
+  **AND THE FIRST VERSION READ `hitBodies` IN ITS TEMPORAL DEAD ZONE.** The sound went above the
+  blast call it reads from -- a `ReferenceError` on **every bolt death**, and invisible to both
+  gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
+  repos, caught by reading rather than by running, which is not a method to rely on.
+
 - **A RINGING BLOW IS A FACT ABOUT THE MAN, NOT ABOUT THE WEAPON (m57, `HITSND`, `K.snd`).**
   *"When you hit regular characters that are like NPCs, I think it needs to be more of a [moan].
   It shouldn't make the clang or the clink, cause that's for people with armour. I know that I
