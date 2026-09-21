@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m59</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m60</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m59</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m60</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,9 +428,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm59';
+const BUILD = 'm60';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"b48e0784","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1052,6 +1052,7 @@ const WEAP = {
 // arbitrary yaw would have to be tested in its own frame, and the AABB of a rotated one is
 // forty per cent too big along both axes, which is the phantom hit.
 const BLD = {
+  tag: 'BUILDING',      // what the chip calls it when something about it goes wrong
   file: 'models/buildings/alien_base_01.glb',
   height: 16,           // metres to the roof -- the ONE number. `mel.bld(h)` re-sizes live.
   at: [
@@ -1070,6 +1071,43 @@ const BLD = {
   tol: .45,           // how much two neighbouring columns may disagree and still merge
   full: .92,          // a mesh whose columns nearly all span its whole height IS its bounding
                       // box -- that is what a plain block is -- and collapses back to one
+};
+
+// **A TOWER IS A TALLER BUILDING, AND THAT IS ALL IT IS (m60).** *"Towers are just like much way
+// taller buildings, so probably double if not triple the size of the building -- maybe just
+// double for now."* So it is a second TABLE through the same builder rather than a second
+// anything: `buildBuildings(g, TOWER)`, `bldCols` reads `b.K`, and the chip's `BX<n>`, the
+// bounding-box fallback and `resolveBoxes` all reach it with nothing written.
+// **DOUBLE IS THE HEIGHT, AND THE FOOTPRINT FALLS OUT OF THE ART.** `height` is the ONE number
+// and the scale is measured off the geometry, so 32 m gives x32.03 and a 19.5 x 19.5 m plan --
+// slightly NARROWER than the building's 20.9 at half the height, which is what makes it read as
+// a tower rather than as a bigger block. `mel.tower(48)` is the triple he floated.
+// **AND ITS NODE IS NOT AT IDENTITY, WHICH IS THE FIRST EXPORT HERE THAT IS NOT.** The mesh node
+// carries a 90-degree rotation about +X (its art is authored Z-up), so its LOCAL span is
+// 0.609 x 0.610 x 0.999 and its WORLD span is 0.609 x **0.999** x 0.610. `buildBuildings`
+// already unions `geometry.boundingBox.applyMatrix4(o.matrixWorld)` rather than trusting the
+// raw accessor bounds -- **that habit was written down as insurance and this is the file that
+// collects on it.** Read the accessor min/max alone and the tower comes out 32 m WIDE and 19.5
+// tall, lying on its side.
+const TOWER = {
+  tag: 'TOWER',
+  file: 'models/towers/alien_tower_01.glb',
+  height: 32,           // DOUBLE the building. `mel.tower(h)` re-sizes live.
+  at: [
+    // x, z, quarter turns. CHECKED as rectangles rather than placed by eye: a 19.5 m footprint
+    // here clears every one of the ten boxes, the building's own plan and all thirteen bodies,
+    // with its nearest corner 27 m from the spawn. It sits opposite the building, so the two
+    // read as a skyline from the middle of the test site rather than as one lump.
+    [-28, 30, 0],
+  ],
+  // the rasteriser's own numbers, and they are NOT the building's: twice the height on the same
+  // `cell` is roughly twice the columns, so the budget has to be its own or the cell silently
+  // GROWS to fit and the collider gets coarser exactly where the building is biggest.
+  cols: 1,
+  cell: 1.0,
+  maxCells: 8192,
+  tol: .45,
+  full: .92,
 };
 
 // ============================================================================================
@@ -5126,7 +5164,13 @@ function solidColumns(mesh, cfg, out) {
 // COLS:END
 
 const BUILDINGS = [];
-function buildBuildings(g) {
+// **ONE BUILDER, A TABLE PER KIND (m60).** *"I added a towers folder. Towers are just like much
+// way taller buildings."* Which is exactly the shape `d.K` already has for bodies: the tower is
+// not a second builder, a second collider path or a second thing to keep in step -- it is a
+// second TABLE handed to this function, and every number that was `BLD.something` is now the
+// table's. `K` rides on each placed object so `bldCols` and `mel.bld`/`mel.tower` read the one
+// its own building was built from.
+function buildBuildings(g, K) {
   const proto = g.scene;
   // MEASURED off the geometry, in the file's own space. Every node here is at identity, but
   // asking the geometry rather than `Box3.setFromObject` is the habit that survives an export
@@ -5138,8 +5182,8 @@ function buildBuildings(g) {
     o.geometry.computeBoundingBox();
     bb.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld));
   });
-  if (!isFinite(bb.min.y) || bb.max.y - bb.min.y < 1e-4) { note('BAD BUILDING GLB'); return; }
-  const k = BLD.height / (bb.max.y - bb.min.y);
+  if (!isFinite(bb.min.y) || bb.max.y - bb.min.y < 1e-4) { note('BAD ' + K.tag + ' GLB'); return; }
+  const k = K.height / (bb.max.y - bb.min.y);
   const w = (bb.max.x - bb.min.x) * k, d = (bb.max.z - bb.min.z) * k;
 
   proto.traverse(o => {
@@ -5163,7 +5207,7 @@ function buildBuildings(g) {
   // building rather than reasoned about, or a quarter turn slides it off its own footprint.
   const mid = new THREE.Vector3((bb.min.x + bb.max.x) * .5 * k, 0, (bb.min.z + bb.max.z) * .5 * k);
   const UPY = new THREE.Vector3(0, 1, 0), c = new THREE.Vector3();
-  for (const [x, z, q] of BLD.at) {
+  for (const [x, z, q] of K.at) {
     const o = proto.clone(true);
     o.scale.setScalar(k);
     o.rotation.y = (q || 0) * Math.PI / 2;
@@ -5180,20 +5224,21 @@ function buildBuildings(g) {
     // a quarter turn swaps the footprint; anything else would need an ORIENTED box, and the
     // AABB of a rotated one is forty per cent too big along both axes -- the phantom hit
     const ww = (q % 2) ? d : w, dd = (q % 2) ? w : d;
-    const bx = { minx: x - ww / 2, maxx: x + ww / 2, miny: 0, maxy: BLD.height,
+    const bx = { minx: x - ww / 2, maxx: x + ww / 2, miny: 0, maxy: K.height,
                  minz: z - dd / 2, maxz: z + dd / 2 };
     // everything `mel.bld()` needs to re-size this WITHOUT re-reading the file, kept on the
     // object so the picture and the boxes it pushed can never be re-sized apart
-    const b0 = { o, bx, x, z, q, unit: k / BLD.height, w: w / BLD.height, d: d / BLD.height,
-                 loY: bb.min.y, mid: mid.clone().divideScalar(BLD.height), cols: null };
+    const b0 = { o, bx, x, z, q, unit: k / K.height, w: w / K.height, d: d / K.height,
+                 loY: bb.min.y, mid: mid.clone().divideScalar(K.height), cols: null, K };
     // THE REAL SHAPE, NOT ITS BOUNDING BOX -- and the world matrix has to be current, because
     // the rasteriser reads WORLD triangle positions and the clone was placed a line ago.
     bldCols(b0);
     BUILDINGS.push(b0);
   }
-  console.log('[melee] building x' + k.toFixed(3) + ' -> ' + w.toFixed(1) + ' x ' +
-              BLD.height.toFixed(1) + ' x ' + d.toFixed(1) + ' m, ' + BLD.at.length + ' placed, ' +
-              BUILDINGS.reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) + ' collider boxes');
+  console.log('[melee] ' + K.tag.toLowerCase() + ' x' + k.toFixed(3) + ' -> ' + w.toFixed(1) +
+              ' x ' + K.height.toFixed(1) + ' x ' + d.toFixed(1) + ' m, ' + K.at.length +
+              ' placed, ' + BUILDINGS.filter(b => b.K === K)
+                .reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) + ' collider boxes');
 }
 // WHAT THIS BUILDING CONTRIBUTES TO THE COLLIDER -- columns if they are any good, its bounding
 // box if they are not. ONE function, called at build time AND after a re-size, because the
@@ -5201,25 +5246,56 @@ function buildBuildings(g) {
 // building you walk into at its previous size, and two copies of the decision is two places for
 // the fallback below to be missing from.
 function bldCols(b) {
+  // **ITS OWN TABLE, NEVER THE GLOBAL (m60).** A tower is twice as tall on the same `cell`, so
+  // it rasterises to roughly twice the columns -- reading `BLD` here would have given every
+  // tower the building's `maxCells` budget and its `tol`, which is two silently wrong answers
+  // for one missing letter.
+  const K = b.K || BLD;
   // take out whatever it contributes now, whichever of the two that is
   const drop = c => { const i = BOXES.indexOf(c); if (i >= 0) BOXES.splice(i, 1); };
   if (b.cols) b.cols.forEach(drop); else drop(b.bx);
   b.cols = null;
   let got = [];
-  if (BLD.cols) {
+  if (K.cols) {
     b.o.updateMatrixWorld(true);
-    b.o.traverse(t => { if (t.isMesh) solidColumns(t, BLD, got); });
+    b.o.traverse(t => { if (t.isMesh) solidColumns(t, K, got); });
     // **A COLLIDER NOTHING CAN REACH IS NOT A COLLIDER, AND THAT IS WHAT SHIPPED (m34).** Every
     // column came out floating at roof height, the rasteriser therefore reported success, the
     // bounding-box fallback never fired, and `resolveBoxes` skipped every one of them on
     // `p.y + hh < b.miny` -- *"there is no collider on the building whatsoever"*, exactly. The
     // rasteriser is fixed above and this is the net under it: walking through a building is
     // strictly worse than a boxy collider, so the two must not be one silent coin toss.
-    if (!got.some(c => c.miny <= MOVE.step && c.maxy > MOVE.step)) { got = []; note('BLD FLAT'); }
+    if (!got.some(c => c.miny <= MOVE.step && c.maxy > MOVE.step)) { got = []; note(K.tag + ' FLAT'); }
   }
   if (got.length) { got.forEach(c => BOXES.push(c)); b.cols = got; }
   else BOXES.push(b.bx);
   return b.cols ? b.cols.length : 1;
+}
+
+// HOW BIG A BUILDING SHOULD BE IS A LOOK-AT-IT DECISION, so it moves on the phone rather than in
+// a commit. It re-scales what is already in the scene AND rewrites the collider boxes, or the
+// picture and the thing you walk into would stop agreeing.
+// **IT TAKES THE TABLE (m60)**, and touches only the buildings built from it -- `mel.tower(48)`
+// must not re-scale the building, and `mel.bld()` must not squash the tower.
+function bldSize(K, h) {
+  if (h) K.height = h;
+  const H = K.height, up = new THREE.Vector3(0, 1, 0), c = new THREE.Vector3();
+  const mine = BUILDINGS.filter(b => (b.K || BLD) === K);
+  for (const b of mine) {
+    const k = b.unit * H, ww = (b.q % 2) ? b.d * H : b.w * H, dd = (b.q % 2) ? b.w * H : b.d * H;
+    c.copy(b.mid).multiplyScalar(H).applyAxisAngle(up, b.o.rotation.y);
+    b.o.scale.setScalar(k);
+    b.o.position.set(b.x - c.x, -b.loY * k, b.z - c.z);
+    // AND THE COLLIDER MOVES WITH IT. A picture and the thing you walk into that are re-sized
+    // separately is a building you can stand inside, which is the worst kind of bug: nothing on
+    // screen disagrees with anything.
+    b.bx.minx = b.x - ww / 2; b.bx.maxx = b.x + ww / 2;
+    b.bx.minz = b.z - dd / 2; b.bx.maxz = b.z + dd / 2; b.bx.maxy = H;
+    bldCols(b);
+  }
+  return K.tag + ' height = ' + H.toFixed(1) + ' m, footprint ' +
+         (mine[0] ? (mine[0].w * H).toFixed(1) + ' x ' + (mine[0].d * H).toFixed(1) : '-') +
+         ', ' + mine.length + ' placed, ' + BOXES.length + ' collider boxes in the world';
 }
 
 // ONE DESCRIPTION OF A BODY, whatever kind it is. Two builders used to share twenty lines of
@@ -6348,7 +6424,10 @@ async function init() {
     g => { try { tag.build(g); } catch (e) { console.error('[melee] ' + tag.name + ' build failed', e); note(tag.name + ' FAILED'); } },
     e => { PROG.done++; console.warn('[melee] ' + tag.name + ' did not load', e); note('NO ' + tag.name + ' GLB'); });
   await side(DUMMY.file, 'loading a body to hit', { name: 'DUMMY', build: buildDummies });
-  await side(BLD.file, 'loading a building', { name: 'BUILDING', build: buildBuildings });
+  await side(BLD.file, 'loading a building', { name: 'BUILDING',
+             build: g => buildBuildings(g, BLD) });
+  await side(TOWER.file, 'loading a tower', { name: 'TOWER',
+             build: g => buildBuildings(g, TOWER) });
   await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
   // THE MACE FIRST, because the warrior mounts it as he is built -- and it is only a weapon he
   // is missing if it does not arrive, not a warrior.
@@ -6374,7 +6453,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, M
   DUMMY, DUMMIES, LOCK, STRIKE, PADS, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
-  BLD, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
+  BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
   // flash and the bar can be looked at without standing in front of a mace.
   FOE, HICK, HOBO, SMOKE, BLOCK, HEALTH, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
@@ -6386,27 +6465,10 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, M
   // authored rest pose can be compared against it.
   get she() { return she; },
   // HOW BIG A BUILDING SHOULD BE IS A LOOK-AT-IT DECISION, so it moves on the phone rather than
-  // in a commit. It re-scales what is already in the scene AND rewrites the collider boxes, or
-  // the picture and the thing you walk into would stop agreeing.
-  bld: h => {
-    if (h) BLD.height = h;
-    const H = BLD.height, up = new THREE.Vector3(0, 1, 0), c = new THREE.Vector3();
-    for (const b of BUILDINGS) {
-      const k = b.unit * H, ww = (b.q % 2) ? b.d * H : b.w * H, dd = (b.q % 2) ? b.w * H : b.d * H;
-      c.copy(b.mid).multiplyScalar(H).applyAxisAngle(up, b.o.rotation.y);
-      b.o.scale.setScalar(k);
-      b.o.position.set(b.x - c.x, -b.loY * k, b.z - c.z);
-      // AND THE COLLIDER MOVES WITH IT. A picture and the thing you walk into that are re-sized
-      // separately is a building you can stand inside, which is the worst kind of bug: nothing
-      // on screen disagrees with anything.
-      b.bx.minx = b.x - ww / 2; b.bx.maxx = b.x + ww / 2;
-      b.bx.minz = b.z - dd / 2; b.bx.maxz = b.z + dd / 2; b.bx.maxy = H;
-      bldCols(b);
-    }
-    return 'BLD.height = ' + H.toFixed(1) + ' m, footprint ' +
-           (BUILDINGS[0] ? (BUILDINGS[0].w * H).toFixed(1) + ' x ' + (BUILDINGS[0].d * H).toFixed(1) : '-') +
-           ', ' + BOXES.length + ' collider boxes';
-  },
+  // HOW BIG EACH IS, LIVE -- see `bldSize`. Two handles, one function, and each touches only
+  // the buildings built from its own table: `mel.tower(48)` is the triple he floated.
+  bld: h => bldSize(BLD, h),
+  tower: h => bldSize(TOWER, h),
   kit: () => cycleKit(),
   clips: () => Object.keys(rig.clips).map(n => n + ' ' + rig.clips[n].duration.toFixed(3) + 's').join('\n'),
   where: () => `${player.pos.x.toFixed(1)}, ${player.pos.y.toFixed(2)}, ${player.pos.z.toFixed(1)}`,

@@ -30,7 +30,7 @@ s = s.replace(/const BUILD = '[^']*';/, `const BUILD = '${next}';`);
 s = s.replace(/<b id="buildN">[^<]*<\/b>/, `<b id="buildN">${next}</b>`);
 s = s.replace(/<span id="bootBuild">[^<]*<\/span>/, `<span id="bootBuild">${next}</span>`);
 
-const DIRS = ['models', 'models/characters', 'models/weapons', 'models/buildings', 'images', 'audio', 'audio/plasma_sounds'];
+const DIRS = ['models', 'models/characters', 'models/weapons', 'models/buildings', 'models/towers', 'images', 'audio', 'audio/plasma_sounds'];
 const EXT = /\.(glb|png|jpe?g|webp|mp3|ogg|wav)$/i;
 const map = {};
 for (const d of DIRS) {

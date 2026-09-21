@@ -134,6 +134,27 @@ same picture from a phone.
   He replaced this one IN PLACE, 4K down to 2048, same path, new bytes: without the hash a phone
   that already had the URL keeps the 4K for ever, and from where he is standing that is
   indistinguishable from the resize not having happened.
+- **`models/towers/alien_tower_01.glb`** (m60) — Tripo output like the building and the same good
+  shape for a phone: **1 mesh, 1 material, 1 texture, 8,202 triangles in a single draw call**,
+  draco + `EXT_texture_webp`, a 2048 map at 622 KB on the wire and **~21 MB resident**.
+  **ITS NODE IS NOT AT IDENTITY, AND IT IS THE FIRST EXPORT HERE THAT IS NOT.** The mesh node
+  carries a **90-degree rotation about +X** (the art is authored Z-up), so the two bounds are
+  different questions and only one of them is the answer:
+      POSITION accessor (LOCAL)   0.609 x 0.610 x 0.999   <- its long axis is Z
+      after the node (WORLD)      0.609 x **0.999** x 0.610
+  **`buildBuildings` unions `geometry.boundingBox.applyMatrix4(o.matrixWorld)` rather than
+  trusting the accessor**, which was written as a habit for "an export that is not [at identity]"
+  and had never once mattered. This is the file that collects on it: read the raw bounds and the
+  tower comes out **32 m wide and 19.5 m tall, lying on its side**. `Box3.setFromObject` is still
+  the wrong tool for a SKINNED mesh and the right union is still this one.
+  **AND `doubleSided: true`, like every Tripo asset** -- forced to `FrontSide` by the builder,
+  which is pure wasted fill on a closed shell otherwise. Check it on every generated asset.
+  **At `height` 32 the scale is x32.03 and the plan is 19.5 x 19.5 m** -- slightly NARROWER than
+  the building's 20.9 at half the height, which is what makes it read as a tower rather than as
+  a bigger block. Both footprints fall out of the art, because `height` is the one typed number.
+  **AND `models/towers` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive,
+  so a new asset folder is a new entry there or every file in it goes stale silently. **Fourth
+  time**, after `models/buildings` (m25), `audio/plasma_sounds` (m58) and Shredworld's own.
 - **HER MATERIAL WAS NEVER BROKEN AND THE `alphaTest` WAS MINE (m30).** *"Normals are still
   messed up... I can re-export the file, I don't know what I did to the materials."* He did
   nothing. Read straight out of the file: metallic 0, roughness 0.9, one base colour texture,
@@ -823,6 +844,36 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A TOWER IS A TALLER BUILDING, SO IT IS A TABLE AND NOT A SECOND BUILDER (m60, `TOWER`,
+  `buildBuildings(g, K)`, `bldSize`).** *"I added a towers folder. Towers are just like much way
+  taller buildings, so probably double if not triple the size of the building -- maybe just
+  double for now."* Which is `d.K`'s own shape one asset over: the bolt, `resolveBoxes`,
+  `groundAt`, the camera boom and the chip's `BX<n>` already reach anything in `BOXES`, so a
+  tower needs **no second builder, no second collider path and no second thing to keep in step**
+  -- it is a second table handed to the same function.
+  **THE BUILDER READ `BLD` IN EIGHT PLACES AND `bldCols` IN TWO.** Every one takes `K` now, and
+  `b.K` rides on each placed object so the re-size and the rasteriser read the table their own
+  building was built from. **That last part is not cosmetic**: a tower is twice as tall on the
+  same `cell`, so it rasterises to roughly twice the columns, and reading the global would have
+  handed it the building's `maxCells` -- where the cell silently GROWS to fit rather than the
+  mesh being skipped, so the collider would have come out coarser exactly where the building is
+  biggest, with nothing on screen to say so. `TOWER.maxCells` is 8192.
+  **AND `mel.bld` / `mel.tower` ARE ONE FUNCTION WITH TWO HANDLES.** `bldSize(K, h)` filters
+  `BUILDINGS` by table, because `mel.tower(48)` must not re-scale the building and `mel.bld()`
+  must not squash the tower -- which is what the old global-reading version would have done to
+  both. `mel.tower(48)` is the triple he floated.
+  **THE PLACEMENT IS CHECKED AS RECTANGLES, NOT PICKED BY EYE.** A 19.5 m footprint at
+  (-28, 30) clears all ten boxes, the building's own plan and every one of the thirteen bodies,
+  with its nearest corner 27 m from the spawn. Two of the six candidates I tried did NOT --
+  (-28, 18) sits on the box at (-16, 12) -- and a building overlapping a box is the m24 lesson
+  exactly: nothing on screen disagrees with anything and the player simply cannot walk there.
+  **WHAT IS UNVERIFIED AND WHY.** The tower is draco, so `check:boot` never enters the builder
+  (headless every `loadGLB` rejects) and `npm run bld` cannot decode it -- it runs `solidColumns`
+  over shells it builds itself. So **whether it stands upright and what its collider comes out
+  as are device questions**, and the chip is what answers the second one: `BX<n>` is the total,
+  and `TOWER FLAT` is the bounding-box fallback firing. The arithmetic that CAN be checked here
+  -- the world span, the scale, the footprint and the clearance -- is above and was.
+
 - **PUNCH IS ENERGY IN THE FIRST FEW MILLISECONDS, AND IT IS THE FRONT OF THE FILE THAT IS IN
   THE WAY (m59, `SFX.punch`, `snd`'s `cut`/`att`/`dec`, `PUNCH`).** *"The explosion noise we were
   using was way too punchy and these ones are way too soft, so I don't really know how we could
