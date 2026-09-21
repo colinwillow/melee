@@ -710,6 +710,54 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **THE DASH NEEDED ITS OWN SPEED CAP, BECAUSE `maxV` IS ALSO AN ACQUIRE RADIUS (m40, `dashV`).**
+  *"The charge on the weapon still is not far enough. He needs to LAUNCH forward -- launch, launch.
+  I want it to be a very exaggerated forward, fast motion."* Four times in one breath, so both ends
+  moved: `flatNear` 3.2 -> 5.5, `flatFar` 12.2 -> **24**, `dashDur` .38 -> .30, and the launch
+  speed off `dashV` **66 m/s**. Measured through the shipped `chargeRelease`: **23.47 m covered
+  for a 24.00 m solve**, on the floor the whole way, and a full charge flings a warrior at 15 m/s.
+  **AND IT COULD NOT SIMPLY RAISE `maxV`**, which is the obvious move and is wrong twice over:
+  that number is the ceiling on an ORDINARY lunge, and it is also `reachMax` -- the radius
+  `meleeGo` is allowed to ACQUIRE a target inside. At 66 every jab would lock onto a man twenty
+  metres off and rocket at him. **A number meant for one thing must not be shared with another**,
+  which is `chargeGoH`'s own lesson at m27, one constant over.
+  **`finishReach` AND `finishRange` HAD TO MOVE WITH IT.** `finishReach` caps the GAP a LOCKED
+  dash is solved for, so left at 11 a man twenty metres away would be acquired and then arrived at
+  less than half way -- a lock the move cannot deliver, which is the m20 complaint exactly.
+- **AND A COLLIDER SAMPLED AT A POINT ONLY KNOWS WHERE IT WAS ASKED (m40, `MOVE.sub`).** At 66 m/s
+  a 60 Hz frame is over a metre and a 30 Hz one is two, which is wide enough to pass clean through
+  a box -- so `integrate` splits its step by **DISTANCE, never by time**. That is what makes a slow
+  phone play the same game as a fast one, and at walking pace it is one step and costs nothing.
+  Rollergirl paid for this one already: at 60 Hz sub-stepping contributes almost nothing and at
+  20 Hz it is the whole difference, so **a collider test at 60 Hz is a flattering test.**
+- **HOW BIG AN IMPACT IS AND WHAT IT IS MADE OF ARE TWO DIFFERENT NUMBERS (m40, `WEAP.hitK`).**
+  *"The particles on the plasma cannon are cool, I like them -- but the overall size, at least
+  half. Not the particle size themselves, the full effect is just so big."* Exactly the right
+  distinction and it is why this is not a smaller `size`: a spark's own size is how CHUNKY the
+  debris reads, and the spread, the throw radius and the flash's three radii are how much SCREEN
+  the event covers. `hitK` (.45) scales only the second kind, so the particles he likes are
+  byte-for-byte the particles he had.
+  **THE FLASH'S GROWTH IS A FOOTPRINT TERM TOO**, and it was the biggest one: `1 + u * 1.9` ends
+  at 2.9x its own base, so most of what is on screen at the end of a flash is the growth and not
+  the radius it started from. 1.15. **Scaling only the radii would have halved the beginning of
+  the effect and left the end where it was.**
+  **AND THE CLINGING SWARM IS LEFT ALONE**, because it is already sized off the BODY's own height
+  and radius -- shrinking it would take it off the man it is clinging to, which is the one thing it
+  exists to do. Only its rise goes through `hitK`.
+- **A RANDOMLY RED ROW IS WORSE THAN A PERMANENTLY RED ONE, AND `npm run sim` HAD ONE (m40).**
+  `foeRoll` gives every body its pace, nerve, react and guard out of `Math.random` -- right in the
+  game, and it made the suite report a different answer every run: two rows failed one run and one
+  the next, **on code that had not changed**. A result you cannot reproduce is not a measurement.
+  One fixed stream now, so a red row is a fact about the code and can be chased; the variety cases
+  still roll MANY bodies out of that stream, so what they measure is the spread across a roster
+  rather than one lucky draw.
+  **AND SEEDING IT IMMEDIATELY EXPOSED TWO INVENTED PASS MARKS IN THE SAME CASE.** "He closes to
+  his reach" read the gap on ONE arbitrary frame, and at that frame he may be mid-BACK-OFF (3.5 m
+  out, by design) or the run may simply have ended before he arrived; "he faces you" read the same
+  frame, where he may be mid-CIRCLE and pointed along his circle, also by design. **A state machine
+  is not measured on one frame** -- both are minima over the last stretch now, and the window is
+  long enough that a wary `pace` is not what decides whether the suite is green. How slowly he
+  closes is a stated open item, not what that case is about.
 - **ONE DRAW CALL FOR EVERY PARTICLE IN THE GAME (m39, `SPK`, `spk`, `spkBurst`, `spkCling`).**
   *"It's so primitive -- when you shoot it just looks like a flash, and when it hits them
   there's barely anything. I want it to feel like it really hits them."* A sprite carries its

@@ -287,10 +287,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m39</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m40</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m39</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m40</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -330,7 +330,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm39';
+const BUILD = 'm40';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -405,6 +405,9 @@ const MOVE = {
   landSoft: .62,     // landing_soft is 1.083 s -> x1.75, snappy
   landHard: 1.15,    // landing_hard is 1.500 s -> x1.30, so the roll actually reads
   landFree: .70,     // and only past this much of it can the stick run him out of the tail
+  // how far he may travel between two collider samples, and the ceiling on how many that buys.
+  // By DISTANCE, so the sub-stepping appears exactly when the speed asks for it and never else.
+  sub: .34, subMax: 6,
   hardLand: 8.0,      // impact speed (m/s) above which the landing is the HARD one
   tapT: .30,          // longer than this on a pad is a HOLD, and a hold is not a tap
 };
@@ -501,7 +504,8 @@ const MELEE = {
   // does not reach him now simply misses -- see `STRIKE`.
   lockAt: .58,
   carryAvg: .725,      // the `carry` profile's average speed: carry + (1 - carry) / 2
-  finishRange: 19,     // the charged swing reaches about double what a strike does
+  finishRange: 26,     // how far the charged swing may ACQUIRE. A little past `finishReach` on
+                       // purpose, and no further: a lock it cannot deliver is worse than none.
   // and what each one is worth. The finisher and the charged swing put him down outright.
   power: [.45, .52, 1.0],
   hitAll: 1,         // a swing catches EVERY body it sweeps through, not the first one
@@ -533,7 +537,9 @@ const MELEE = {
   // and the CLIP is compressed to T, because a state whose length disagrees with the clip it
   // is playing can only ever cut that clip off. Everything scales with `chargeGoK`, so a half
   // charge is a smaller hop that reaches less far.
-  finishReach: 11,     // the farthest the leap will carry at a full charge
+  finishReach: 24,     // the farthest the leap will carry at a full charge. It caps the GAP a
+                       // LOCKED dash is solved for, so it has to move with `flatFar` or a man
+                       // twenty metres off is acquired and then arrived at less than half way.
   // **AND THE APEX RIDES THE HOLD, WHICH IS WHAT MAKES THE CHARGE WORTH HOLDING.** *"If you
   // just pull it back, lock on and let go, he does a ground slam -- but if you charge it to the
   // full end of the lock he jumps pretty high, maybe double, and slams down."* These were 2.4 /
@@ -554,17 +560,27 @@ const MELEE = {
   // numbers below it are kept so `mel.MELEE.dash = 0` walks back to the m36 hop and
   // `flatHi = 3` from there to the m21 arc. Three behaviours, two switches, nothing deleted.
   dash: 1,
-  dashDur: .38,        // the beat, and what the clip is compressed to. Shorter is FASTER for
+  // **AND IT HAS ITS OWN SPEED CAP (m40).** *"The charge on the weapon still is not far enough
+  // -- he needs to LAUNCH forward, launch, launch. I want it to be a very exaggerated forward,
+  // fast motion."* `maxV` could not carry that: it is also the ceiling on an ordinary lunge AND
+  // the radius `meleeGo` is allowed to ACQUIRE inside, so raising it to dash speed would have
+  // every jab locking onto a man twenty metres away and rocketing at him. A number meant for one
+  // thing must not be shared with another -- `chargeGoH` learnt that at m27, one constant over.
+  dashV: 66,           // m/s, the charged dash alone. 24 m across .52 s of state is an AVERAGE
+                       // of 46, so this is the launch speed before `carry` bleeds it off.
+  dashDur: .30,        // the beat, and what the clip is compressed to. Shorter is FASTER for
                        // the same distance, which is most of what "it has power to it" means.
   flatHi: .55,         // metres. `mel.MELEE.dash = 0` uses this instead.
   // **AND THE CEILING IS THE HOP, NOT THIS NUMBER.** A .55 m apex is 0.47 s of flight, so at
   // `maxV` 21 the furthest it can possibly carry is about 9.9 m -- `flatFar` 14 was clamped
   // there and a half hold arrived at the same place as a full one, which is the hold buying
   // nothing all over again. Both ends sit inside what the hop can actually deliver.
-  flatNear: 3.2,       // how far a bare half-charge release carries
-  flatFar: 12.2,       // and a full one. On the ground there is no hop capping it -- what caps
-                       // it is `maxV` over `dashDur + finishTail`, which is 10.3 m, so this is
-                       // a real distance rather than something the clamp quietly eats.
+  flatNear: 5.5,       // how far a bare half-charge release carries
+  flatFar: 24,         // and a full one. On the ground there is no hop capping it -- what caps
+                       // it is `dashV` over `(dashDur + finishTail) * carryAvg`, which is
+                       // 24.9 m, so this is a real distance rather than something the clamp
+                       // quietly eats. It was 12.2 and he asked four times in one breath for
+                       // more, so both ends moved rather than only the top.
   finishHiNear: 4.6,   // KEPT AS A NOTE -- the solved-arc apexes, unread while `flatHi` is set
   finishHiFar: 2.0,
   finishHiK0: .30,
@@ -672,6 +688,13 @@ const WEAP = {
   trailEvery: .012,  // seconds between the sparks the ball leaves behind it
   trailLife: .22,
   flashLife: .26,    // how long the impact flash lives before it is gone
+  // **HOW BIG THE WHOLE IMPACT IS, AND IT IS ONE DIAL (m40).** *"The particles on the plasma
+  // cannon are cool, I like them -- but the overall size, at least half. Not the particle size
+  // themselves, the full effect is just so big."* Two different numbers, which is why this is
+  // not simply a smaller `size`: a spark's own size is how CHUNKY the debris reads, and the
+  // spread, the radius and the flash's radii are how much SCREEN the event covers. Only the
+  // second kind is scaled here, so the particles he likes are exactly the particles he had.
+  hitK: .45,
   autoRate: .11,     // seconds between rounds in `rapid`
   autoChg: .16,      // and what each one is worth -- a fumble's power, fired eight times a second
   // A SHOT THAT CURVES, RATHER THAN A MARK THAT PROMISES. *"No aim assist like with the
@@ -1009,7 +1032,10 @@ const FOE = {
   out: 2.0,          // how long he lies there
   // *"I still wanna launch them forward and have it have some power to it."* A launch you
   // can see the end of is worth more than one that is technically happening.
-  flyV: 11.0, flyUp: 5.6, flyG: 20, flyDrag: 1.4,
+  // **AND A CHARGED DASH SENDS HIM (m40).** *"If you hit them it really sends them flying."*
+  // These are the FULL-power launch and everything under `fling` is graded up to them, so the
+  // ordinary jab is untouched and only the top of the range moved.
+  flyV: 15.0, flyUp: 6.4, flyG: 20, flyDrag: 1.4,
   // **A HEALTH BAR IS WHAT MAKES "A FEW HITS" LEGIBLE.** Without it a man who takes six blows
   // and a man who is ignoring you are the same picture. `hard` is no longer a one-shot
   // knock-down for him: damage is what puts him down, which is the whole point of the bar.
@@ -1095,7 +1121,7 @@ const HICK = {
   fleeMax: 12,
   hitBeat: 1.1, bigBeat: 1.4, downBeat: 1.2, upBeat: 1.2,
   out: 1.6,
-  flyV: 12.0, flyUp: 6.0, flyG: 20, flyDrag: 1.35,
+  flyV: 16.5, flyUp: 6.8, flyG: 20, flyDrag: 1.35,
   knock: 4.6, knockUp: .6, knockDrag: 5.5,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
   fling: .55,        // but he is a skinny man: it takes far less to launch him
@@ -2408,28 +2434,35 @@ const BOLT_COL = [.35, .85, 1], BOLT_HOT = [1, .96, .85], BOLT_VIO = [.62, .38, 
 // come from, so a fumble is a spit and a full charge is an event.
 function boltHit(b) {
   const c = b.chg, big = .35 + c * .65;
+  // **`hitK` SCALES THE FOOTPRINT AND NOTHING ELSE.** Every term below that decides how much
+  // SPACE the impact takes -- the flash radii, the throw of each burst and the radius it is
+  // thrown from -- goes through it; every term that decides how the debris LOOKS (the count,
+  // the per-spark size, the lives, the colours) does not. That split is the whole request.
+  const K = WEAP.hitK;
   // the flash: a stack of three at the impact, which is the charge ball's own trick -- one
   // sprite going out is a dot and the stack is what reads as a detonation
   const fx = new THREE.Group();
-  fx.add(glowSprite(0xffffff, b.size * 2.6));
-  fx.add(glowSprite(0x2ec8ff, b.size * 4.2));
-  fx.add(glowSprite(0x7a3cff, b.size * 6.4));
+  fx.add(glowSprite(0xffffff, b.size * 2.6 * K));
+  fx.add(glowSprite(0x2ec8ff, b.size * 4.2 * K));
+  fx.add(glowSprite(0x7a3cff, b.size * 6.4 * K));
   fx.position.copy(b.pos);
   scene.add(fx);
-  FLASH.push({ g: fx, t: 0, life: WEAP.flashLife * (.7 + c * .6), base: b.size });
+  FLASH.push({ g: fx, t: 0, life: WEAP.flashLife * (.7 + c * .6), base: b.size * K });
   spkBurst(b.pos.x, b.pos.y, b.pos.z, Math.round(10 + 34 * big),
-           { col: BOLT_HOT, spread: 5 + 9 * big, up: 2 + 3 * big, r: b.size * .5,
+           { col: BOLT_HOT, spread: (5 + 9 * big) * K, up: (2 + 3 * big) * K, r: b.size * .5 * K,
              size: .13 + .12 * c, life: .45 + .35 * c });
   spkBurst(b.pos.x, b.pos.y, b.pos.z, Math.round(6 + 18 * big),
-           { col: BOLT_VIO, spread: 2.5 + 5 * big, up: 1.2, r: b.size * .8,
+           { col: BOLT_VIO, spread: (2.5 + 5 * big) * K, up: 1.2 * K, r: b.size * .8 * K,
              size: .2 + .2 * c, life: .7 + .5 * c });
   // and everybody the blast reached wears it
   const R = b.size * .5 + b.blast;
   for (const d of DUMMIES) {
     const dx = d.root.position.x - b.pos.x, dz = d.root.position.z - b.pos.z;
     if (dx * dx + dz * dz > R * R) continue;
+    // the swarm is already sized off HIS own height and radius, so the only footprint term in
+    // it is how far it drifts up -- shrinking the rest would take it off the body it clings to
     spkCling(d, Math.round(8 + 20 * big), { col: BOLT_COL, size: .11 + .08 * c,
-                                            life: .55 + .6 * c, rise: .9 + c });
+                                            life: .55 + .6 * c, rise: (.9 + c) * K });
     bodyFlash(d, .6 + .4 * c);
   }
 }
@@ -2442,7 +2475,9 @@ function stepFlashes(dt) {
     if (u >= 1) { f.g.traverse(o => { if (o.material) o.material.dispose(); }); scene.remove(f.g); FLASH.splice(i, 1); continue; }
     // IT GROWS AND GOES. A flash that only fades reads as a light being turned down; one that
     // expands as it fades reads as something arriving.
-    const k = 1 + u * 1.9, a = (1 - u) * (1 - u);
+    // AND THE GROWTH IS A FOOTPRINT TERM. It ends at 2.9x its own base, so most of what is on
+    // screen at the end of a flash is this and not the radius it started at.
+    const k = 1 + u * 1.15, a = (1 - u) * (1 - u);
     f.g.children.forEach((sp, j) => {
       sp.scale.setScalar(f.base * [2.6, 4.2, 6.4][j] * k);
       sp.material.opacity = a;
@@ -2870,7 +2905,10 @@ function chargeRelease() {
   // solved against a different clock than the one that spends it lands somewhere else.
   const goDur = T + MELEE.finishTail;
   const spend = dash ? goDur * MELEE.carryAvg : T;
-  const vx = clamp(far / spend, 0, MELEE.maxV);
+  // THE DASH HAS ITS OWN CEILING. `maxV` is the ordinary lunge's, and it is also the radius a
+  // strike may acquire inside -- so the dash cannot borrow it without turning every jab into a
+  // rocket at a man across the street.
+  const vx = clamp(far / spend, 0, dash ? MELEE.dashV : MELEE.maxV);
   // the chip reports what it will ACTUALLY cover, not what was asked for -- `maxV` clamps and
   // a number that ignores its own clamp is a number that lies on exactly the interesting frame
   p.melV = vx; p.goGap = vx * spend; p.goHi = hi;
@@ -3188,9 +3226,18 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
 
   p.vel.y -= MOVE.g * dt;
   const px = p.pos.x, pz = p.pos.z;
-  p.pos.x += p.vel.x * dt; p.pos.z += p.vel.z * dt; p.pos.y += p.vel.y * dt;
-
-  const solid = resolveBoxes(p.pos, p.r, p.hh) | pushBodies(p.pos, p.r);
+  // A COLLIDER SAMPLED AT A POINT ONLY KNOWS WHERE IT WAS ASKED, so how far he moves between
+  // samples is how far he can get INTO something before anything notices. At the charged dash's
+  // 66 m/s a 60 Hz frame is over a metre and a 30 Hz one is two, which is wide enough to pass
+  // clean through a box. **Split by DISTANCE, never by time** -- that is what makes a slow phone
+  // play the same game as a fast one, and at walking pace it is one step and costs nothing.
+  const move = Math.hypot(p.vel.x, p.vel.y, p.vel.z) * dt;
+  const sub = Math.min(MOVE.subMax, Math.max(1, Math.ceil(move / MOVE.sub)));
+  let solid = 0;
+  for (let k = 0, h = dt / sub; k < sub; k++) {
+    p.pos.x += p.vel.x * h; p.pos.z += p.vel.z * h; p.pos.y += p.vel.y * h;
+    solid |= resolveBoxes(p.pos, p.r, p.hh) | pushBodies(p.pos, p.r);
+  }
   if (solid) {
     // only the component going INTO the surface is removed, so a slide along a wall keeps its
     // speed by itself and needs no extra scrub
