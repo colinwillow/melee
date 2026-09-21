@@ -221,25 +221,41 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 #padR.arm::after { opacity: 1; }
 #padR.ready::after { opacity: .38; }
-/* THE MODE BUTTONS. They sit on the right pad's own edges -- `right` is the pad's inset and
-   `bottom` clears its 132 px plus a gap -- so they cannot drift off it on a notched phone the
-   way two independently written positions eventually would. Same ink-free treatment as the
-   pads themselves (m50): a saturated hue on a crisp rim, nothing translucent or blurred, and
-   the SELECTED one is a filled chip rather than a brighter outline, because "which of these
-   two am I in" has to be a different shape and not a comparison. */
+/* THE MODE BUTTONS ARE ARC SEGMENTS ROUND THE RIGHT STICK (m53).
+   *"Take two rings, one smaller, one larger, and cut pizza slices out of that -- those buttons
+    would be like those segments."* So they are annular sectors, not a row of chips: the pad is
+   a circle and the controls that belong to it now share its centre, which is what makes them
+   read as part of the same object rather than as a HUD element that happens to sit nearby.
+   **THE SVG IS CENTRED ON THE PAD'S OWN CENTRE**, derived from the pad's inset plus its radius
+   rather than written a second time -- so the annulus can never drift off the pad on a notched
+   phone. It is a square of side 2 x `r1` hung off that point, and it deliberately overhangs the
+   screen edge: `pointer-events: none` on the root means only the PATHS take touches, so what
+   hangs off costs nothing.
+   The geometry itself is computed in `MODES` -- see there for the radii and the arc. */
 #modeRow {
-  position: fixed; z-index: 6; display: none; gap: 8px;
-  right: calc(20px + env(safe-area-inset-right));
-  bottom: calc(172px + env(safe-area-inset-bottom));
+  position: fixed; z-index: 6; display: none;
+  --mr: 106px;                                /* `MODES.r1`; JS sets the real one at load, and
+                                                 a default here means an unset var can never
+                                                 collapse the whole element to nothing */
+  pointer-events: none;                       /* only the segments are targets */
+  right: calc(20px + 66px - var(--mr) + env(safe-area-inset-right));
+  bottom: calc(26px + 66px - var(--mr) + env(safe-area-inset-bottom));
+  width: calc(var(--mr) * 2); height: calc(var(--mr) * 2);
 }
-#modeRow.on { display: flex; }
-#modeRow button {
-  font-family: var(--ui); font-size: 11px; font-weight: 600; letter-spacing: .10em;
-  text-transform: uppercase; padding: 7px 11px; border-radius: 8px; cursor: pointer;
-  color: var(--sky); background: none; border: 2px solid var(--sky);
-  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+#modeRow.on { display: block; }
+/* `pointer-events: all` is what gives an UNFILLED path a hit area -- the alternative is a
+   translucent fill, and m50's whole finding is that nothing on these pads should be a tint. */
+#modeRow path {
+  fill: none; stroke: var(--sky); stroke-width: 2;
+  pointer-events: all; cursor: pointer;
 }
-#modeRow button.sel { color: var(--ink); background: var(--sky); }
+#modeRow path.sel { fill: var(--sky); }
+#modeRow text {
+  font-family: var(--ui); font-size: 10px; font-weight: 600; letter-spacing: .10em;
+  fill: var(--sky); text-anchor: middle; dominant-baseline: central;
+  pointer-events: none; user-select: none;
+}
+#modeRow text.sel { fill: var(--ink); }
 /* ---- the reticle: a geometric portal ----
    IT WAS BIG AND THICK AND THE COLOURS WERE A GUESS. Size, stroke weight and both hues are
    custom properties now, so `mel.retic({...})` moves all of it live on the phone -- how a mark
@@ -363,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m52</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m53</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m52</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m53</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -412,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm52';
+const BUILD = 'm53';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -542,6 +558,26 @@ const GAIT = {
   // at the scale they were taken at and a smaller hero whose refs did not follow would have
   // every clip playing 21% too slow under him. It is applied ONCE, where the scale is measured.
   refScale: 1.926,
+  // **AND WHETHER HIS SPEED GOES WITH THEM IS A DESIGN DECISION, NOT ARITHMETIC (m53).**
+  // *"I thought making him smaller would make the locomotion seem a little quicker despite him
+  //  technically moving at the same rate -- because he has these big giant chunky feet, and when
+  //  he runs his stride is just so funny. He's moving these giant big feet but they're not going
+  //  that far."*
+  // m52 scaled `MOVE.max` and the bands along with the refs, which is the PROPORTIONAL answer:
+  // the stride stays identical relative to his body and he covers 17% fewer metres, so from the
+  // camera the locomotion is exactly what it was, only smaller. **That is precisely the thing he
+  // was trying to get away from** -- the whole complaint is that the stride is short for the
+  // feet, and keeping everything in proportion preserves it perfectly.
+  //     scaleSpeed 1   proportional. Same picture, smaller. Feet never slide.
+  //     scaleSpeed 0   he keeps his world speed at four fifths the size, so every locomotion
+  //                    clip plays **1.21x faster** for the same metres and the stride covers
+  //                    more ground per step. That IS "quicker", and it is what he asked for.
+  // **THE COST IS AT THE VERY TOP AND NOWHERE ELSE.** `MOVE.max` 7.2 against a scaled
+  // `sprintRef` of 3.77 asks the sprint clip for **1.91x against a `tsHi` of 1.6**, so it clamps
+  // and the feet slide about 16% at full deflection. Every band below it is inside the cap and
+  // simply reads faster. `mel.GAIT.tsHi` is the dial, and **the honest fix is a faster sprint
+  // clip** -- which this file already has written down as an open item.
+  scaleSpeed: 0,
   walkRef: .84, runRef: 3.09, sprintRef: 4.55,
   backRef: 2.23, strafeRef: 2.00, aimRunRef: 3.36,
   // **THE BANDS ARE READ AGAINST THE STICK, NOT AGAINST THE SPEED RANGE (m27).** *"I was trying
@@ -3287,8 +3323,10 @@ function paintKit() {
   // HUD element sitting in the play area saying nothing, which is the `actB` lesson one game
   // over: a prompt that is always on screen is a prompt nobody reads.
   modeRow.classList.toggle('on', !!m);
-  for (let i = 0; i < modeRow.children.length; i++)
-    modeRow.children[i].classList.toggle('sel', i === WEAP.mode);
+  // one path and one label per mode, in order, so the index IS the mode
+  const kids = modeRow.firstChild ? modeRow.firstChild.childNodes : [];
+  for (let i = 0; i < kids.length; i++)
+    kids[i].classList.toggle('sel', (i >> 1) === WEAP.mode);
   // EXACTLY ONE SLOT IS VISIBLE, decided in one place, so the label, the ring and the thing in
   // his hand cannot disagree about what he is carrying.
   for (const key in WEAP.worn) {
@@ -3297,21 +3335,62 @@ function paintKit() {
   }
   padR.classList.toggle('ready', !!(s.aim || s.charge));
 }
-// THE ROW IS BUILT FROM THE TABLE, ONCE, so a third mode is a row in `WEAP.modes` and nothing
-// here. The buttons carry their own index rather than being found by position.
+// THE MODE BUTTONS: ANNULAR SECTORS ROUND THE RIGHT STICK (m53).
+// *"Take two rings, one smaller, one larger, and cut pizza slices out of that."*
+// **ALL OF IT IS DERIVED FROM `MODES` AND THE TABLE**, so a third mode is a row in
+// `WEAP.modes` and the arc simply divides three ways instead of two -- nothing here changes and
+// nothing in the DOM is written twice.
+const MODES = {
+  r0: 74, r1: 106,   // the two rings. The pad is 66 + a 3 px rim, so r0 leaves a 5 px gap.
+  mid: 115,          // degrees, the bearing the SET is centred on -- up and a little inward,
+                     // because straight up puts the outer segment off the right edge of a phone
+  span: 104,         // how much of the circle the whole set occupies
+  gap: 4,            // degrees of air between two segments, so they read as two and not as a ring
+};
 const modeRow = document.getElementById('modeRow');
-WEAP.modes.forEach((m, i) => {
-  const b = document.createElement('button');
-  b.textContent = m.label;
-  // **`pointerdown`, NOT `click`.** A click is a synthesised event that arrives after the
-  // touch has ended, and the one thing that must never happen on this row is a tap that also
-  // reaches the pad behind it. `stopPropagation` plus `preventDefault` is what keeps it here.
-  b.addEventListener('pointerdown', e => {
-    e.preventDefault(); e.stopPropagation();
-    setMode(i);
+const SVGNS = 'http://www.w3.org/2000/svg';
+{
+  modeRow.style.setProperty('--mr', MODES.r1 + 'px');
+  const svg = document.createElementNS(SVGNS, 'svg');
+  const D = MODES.r1 * 2;
+  svg.setAttribute('viewBox', '0 0 ' + D + ' ' + D);
+  svg.setAttribute('width', D); svg.setAttribute('height', D);
+  const c = MODES.r1;
+  // SCREEN Y POINTS DOWN, so a maths angle maps with its sine NEGATED -- get that wrong and the
+  // whole set mirrors below the pad, which is the one place it must not be.
+  const px = (r, a) => (c + r * Math.cos(a * Math.PI / 180)).toFixed(2);
+  const py = (r, a) => (c - r * Math.sin(a * Math.PI / 180)).toFixed(2);
+  const n = WEAP.modes.length;
+  const each = MODES.span / n;
+  WEAP.modes.forEach((m, i) => {
+    // LEFT TO RIGHT ON SCREEN IS DESCENDING ANGLE, so the table reads the way it is drawn.
+    const hi = MODES.mid + MODES.span / 2 - i * each - MODES.gap / 2;
+    const lo = hi - each + MODES.gap;
+    const big = (hi - lo) > 180 ? 1 : 0;
+    // out along the far ring from `lo` to `hi` (counter-clockwise on screen, sweep 0), across,
+    // back along the near ring, close
+    const d = 'M' + px(MODES.r1, lo) + ' ' + py(MODES.r1, lo) +
+              'A' + MODES.r1 + ' ' + MODES.r1 + ' 0 ' + big + ' 0 ' + px(MODES.r1, hi) + ' ' + py(MODES.r1, hi) +
+              'L' + px(MODES.r0, hi) + ' ' + py(MODES.r0, hi) +
+              'A' + MODES.r0 + ' ' + MODES.r0 + ' 0 ' + big + ' 1 ' + px(MODES.r0, lo) + ' ' + py(MODES.r0, lo) +
+              'Z';
+    const path = document.createElementNS(SVGNS, 'path');
+    path.setAttribute('d', d);
+    // **`pointerdown`, NOT `click`.** A click is synthesised after the touch has ended, and the
+    // one thing that must never happen here is a tap that also reaches the pad behind it.
+    path.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); setMode(i); });
+    svg.appendChild(path);
+    // THE LABEL IS HORIZONTAL, not set on the arc. At a 32 px band and ten-pixel type, text
+    // bent round a curve is decoration that costs legibility -- and legibility is the whole
+    // job of a control that says which of two states you are in.
+    const t = document.createElementNS(SVGNS, 'text');
+    const mida = (lo + hi) / 2, midr = (MODES.r0 + MODES.r1) / 2;
+    t.setAttribute('x', px(midr, mida)); t.setAttribute('y', py(midr, mida));
+    t.textContent = m.label;
+    svg.appendChild(t);
   });
-  modeRow.appendChild(b);
-});
+  modeRow.appendChild(svg);
+}
 // ONE PLACE SETS IT, so the lit button, the hint and what the trigger actually does cannot
 // disagree -- and switching mid-hold STANDS THE TRIGGER DOWN rather than handing a wound-up
 // charge to a weapon that does not bank one. A press on the mode you are already in is a
@@ -5916,13 +5995,23 @@ async function init() {
   // is foot slide at the top, and `tsHi` is what caps how much.
   {
     const k = rig.scale / (GAIT.refScale || rig.scale);
-    for (const n of ['walkRef', 'runRef', 'sprintRef', 'backRef', 'strafeRef', 'aimRunRef',
-                     'idleAt', 'walkAt', 'runAt', 'sprintAt']) GAIT[n] *= k;
-    MOVE.max *= k;
-    console.log('[melee] size x' + k.toFixed(3) + ' -> max ' + MOVE.max.toFixed(2) +
+    // THE REFS ALWAYS SCALE -- that half is a FACT about the model, not a choice.
+    for (const n of ['walkRef', 'runRef', 'sprintRef', 'backRef', 'strafeRef', 'aimRunRef'])
+      GAIT[n] *= k;
+    // HIS SPEED IS THE CHOICE. See `GAIT.scaleSpeed`. The BANDS go with `MOVE.max` and never
+    // apart from it: they are speeds, and where each one lands on the PAD is `band / MOVE.max`
+    // -- so moving one without the other is the m27 finding undone, and moving both together
+    // leaves every crossfade exactly where it was either way.
+    if (GAIT.scaleSpeed) {
+      for (const n of ['idleAt', 'walkAt', 'runAt', 'sprintAt']) GAIT[n] *= k;
+      MOVE.max *= k;
+    }
+    console.log('[melee] size x' + k.toFixed(3) + (GAIT.scaleSpeed ? ' (speed scaled)' : ' (speed KEPT)') +
+                ' -> max ' + MOVE.max.toFixed(2) +
                 '  walk ' + GAIT.walkRef.toFixed(2) + ' run ' + GAIT.runRef.toFixed(2) +
                 ' sprint ' + GAIT.sprintRef.toFixed(2) +
-                '  sprint clip x' + (MOVE.max / GAIT.sprintRef).toFixed(2));
+                '  sprint clip x' + (MOVE.max / GAIT.sprintRef).toFixed(2) +
+                ' (tsHi ' + GAIT.tsHi + ')');
   }
   if (authored <= .01) note('RIG HEIGHT UNMEASURABLE');
 

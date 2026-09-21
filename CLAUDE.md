@@ -822,6 +822,57 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **I MADE THE SPEED PROPORTIONAL AND THAT WAS THE OPPOSITE OF THE ASK (m53,
+  `GAIT.scaleSpeed`).** *"I thought making him smaller would make the locomotion seem a little
+  quicker despite him technically moving at the same rate -- because he has these big giant
+  chunky feet, and when he runs his stride is just so funny. He's moving these giant big feet
+  but they're not going that far. Did you keep his stride and speed proportional to his new
+  smaller size, or did you keep it the same?"*
+  **I SCALED IT, AND PROPORTIONAL IS EXACTLY WHAT HE WAS TRYING TO GET AWAY FROM.** m52 moved
+  `MOVE.max` and the bands along with the refs, which preserves the stride PERFECTLY relative to
+  his body -- so he covers 17% fewer metres and from the camera the locomotion is the identical
+  picture, only smaller. The whole complaint is that the stride is short for the feet, and the
+  proportional answer keeps that intact by construction. **My reason was the "feet never slide
+  at the top" invariant**, which is a real invariant and was the wrong thing to protect here.
+      scaleSpeed 1   proportional. Same picture, smaller. Nothing slides.
+      scaleSpeed 0   he keeps his world speed at four fifths the size, so every locomotion clip
+                     plays **1.21x faster** for the same metres -- the stride covers more ground
+                     per step, which is the "quicker" he described. **Default.**
+  **THE REFS ALWAYS SCALE EITHER WAY.** That half is a FACT about the model scale, not a choice,
+  and it is what m52 got right.
+  **AND THE BANDS GO WITH `MOVE.max`, NEVER APART FROM IT.** Where a band lands on the PAD is
+  `band / MOVE.max`, so moving one without the other is the m27 finding undone -- and moving
+  both together leaves every crossfade where it was under either setting.
+  **THE COST IS AT THE VERY TOP AND NOWHERE ELSE.** `MOVE.max` 7.2 against a scaled `sprintRef`
+  of 3.77 asks the sprint clip for **1.91x against a `tsHi` of 1.6**, so it clamps and the feet
+  slide about 16% at full deflection. Every band below is inside the cap and simply reads
+  faster. `mel.GAIT.tsHi` is the dial and **a faster sprint clip is the honest fix** -- already
+  a stated open item.
+  **AND THE LESSON IS THE ANSWER TO "DID YOU".** He had to ask, which means the build note said
+  what I did and not what it would FEEL like. A change with two defensible readings needs the
+  reading stated in the reply, not only the mechanism.
+- **THE MODE BUTTONS ARE ANNULAR SECTORS ROUND THE RIGHT STICK (m53, `MODES`).** *"Take two
+  rings, one smaller, one larger, and cut pizza slices out of that -- those buttons would be
+  like those segments."* The pad is a circle, so the controls that belong to it share its
+  CENTRE: that is what makes them read as part of the same object rather than as a HUD element
+  that happens to sit nearby, and it is the same argument the kit ring is built on one repo over.
+  **THE SVG IS HUNG OFF THE PAD'S OWN INSET PLUS ITS RADIUS**, never written a second time, so
+  the annulus cannot drift off the pad on a notched phone. It deliberately OVERHANGS the screen
+  edge and that costs nothing, because `pointer-events: none` on the root means only the paths
+  are targets.
+  **`pointer-events: all` IS WHAT GIVES AN UNFILLED PATH A HIT AREA.** The alternative is a
+  translucent fill, and m50's whole finding is that nothing on these pads should be a tint.
+  **SCREEN Y POINTS DOWN, so a maths angle maps with its sine NEGATED** -- get that wrong and
+  the set mirrors BELOW the pad, which is the one place it must not be. Checked as rectangles on
+  a 390 x 844 phone: both sectors land at x 202-349, y 646-733, entirely on screen, clear of the
+  left pad, and by construction outside the pad's circle (their inner ring is r0 74 against its
+  radius 69).
+  **AND ALL OF IT IS DERIVED FROM `MODES` AND `WEAP.modes`**: a third mode is a row in that
+  table and the arc simply divides three ways. `mid` is 115 degrees rather than straight up,
+  because straight up puts the outer segment off the right edge of a phone.
+  **THE LABEL IS HORIZONTAL, NOT SET ON THE ARC.** At a 32 px band and ten-pixel type, text bent
+  round a curve is decoration bought with legibility -- and legibility is the entire job of a
+  control whose only purpose is to say which of two states you are in.
 - **HE IS A LITTLE GUY AND HE WAS NOT DRAWN LIKE ONE (m52, `RIG.height` 1.75 -> 1.45, `SZ`).**
   *"He's kind of big compared to the guys that are supposed to be big bad warrior alien orcs --
   he's almost bigger than them even though his character is a little guy. I'm wondering if
