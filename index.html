@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m54</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m55</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m54</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m55</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm54';
+const BUILD = 'm55';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -1724,8 +1724,17 @@ const SFX = {
   files: {
     swoosh: ['audio/swoosh_01.mp3', 'audio/swoosh_02.mp3', 'audio/swoosh_03.mp3', 'audio/swoosh_04.mp3'],
     clang: ['audio/metal_clang_01.mp3', 'audio/metal_clang_02.mp3', 'audio/metal_clang_03.mp3'],
+    // THE PLAYER TAKING A BLOW, and nothing else since m55 -- a box coming apart is the wrong
+    // sound for a man being hit, which is what it was doing on the melee.
     thud: ['audio/box_break_01.mp3'],
     zap: ['audio/electricity_beam_01.mp3'],
+    // THE BOLT'S IMPACT. **A STAND-IN**: it is the beam file cut to an instant (see `stepBolts`)
+    // because a plasma ball landing is electrical and not explosive, and the beam is the closest
+    // vocabulary on disk. **Replace this path with a recording and nothing else moves.**
+    // It is its OWN KEY rather than sharing `zap`, so the two cannot gate each other through
+    // `SFX.last` and either can be re-pointed without touching the other. The bytes come off
+    // the HTTP cache the second time; only the decode is paid twice, on a short file.
+    splat: ['audio/electricity_beam_01.mp3'],
     shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
     big: ['audio/plasma_canon.mp3'],
     boom: ['audio/explosion_small.mp3'],
@@ -3096,7 +3105,22 @@ function stepBolts(dt) {
           0, 0, 0, b.size * (.28 + Math.random() * .3), WEAP.trailLife, BOLT_COL);
     }
     if (dead) {
-      snd('boom', { g: .28 + b.chg * .35, r: 1.25 - b.chg * .35 });
+      // **A PLASMA BOLT LANDING IS NOT A DETONATION (m55).** *"I don't love the noise when the
+      // plasma cannon hits them -- it's kind of an explosion noise, whereas I want it to be
+      // more of, I'm not sure, something else. I'll probably go make a better one."*
+      // `explosion_small.mp3` is exactly what it says and it is the wrong VOCABULARY: what
+      // arrives is a ball of charged gas, so the nearest thing already on disk is the
+      // electrical beam, cut to the length of an impact. Rate DOWN and gain UP with the
+      // charge, the way every other charged thing in this file reads heavier.
+      // **AND THE LENGTH IS THE POINT, WHICH IS WHY `dur` IS HERE.** That file is a BEAM --
+      // seconds of it -- and an impact is an instant; m26 paid for exactly this once already
+      // when the arming zap "kept playing for the full gambit of the noise". A bigger hit
+      // rings a little longer, which is the only part of the shape the charge should change.
+      // **THIS IS A STAND-IN AND IT IS MARKED AS ONE.** He is going to record it: drop the
+      // file in, point `SFX.files.splat` at it, and nothing else changes. `boom` stays loaded
+      // and unused so `mel.snd('boom')` is still the A/B.
+      snd('splat', { g: .30 + b.chg * .40, r: 1.55 - b.chg * .45,
+                     dur: .12 + b.chg * .10 });
       boltHit(b);
       b.g.traverse(o => { if (o.material) o.material.dispose(); });
       scene.remove(b.g); BOLTS.splice(i, 1);
@@ -4108,8 +4132,19 @@ function stepPlayer(dt) {
       if (strikeSweep(dt, pw, !p.melFired && u >= at * from && u <= STRIKE.to, dm)) {
         p.melFired = 1;
         // a hammer rings and a fist thuds -- the weapon decides, not the strike
-        if (slotNow().charge) snd('clang', { g: .85, r: .9 + Math.random() * .2 });
-        else snd('thud', { g: .8, r: 1.05 + Math.random() * .15 });
+        // **A BLOW ON A BODY RINGS (m55).** *"The sound effect for when he melees and hits
+        // the warriors is like a box break, and I want it to be more like the clang noise."*
+        // It was literally that -- `thud` is `box_break_01.mp3`, which is a crate coming apart
+        // and not a man being hit. The hammer already rang; the FIST got the box.
+        // **THE TWO ARE STILL TOLD APART, by weight rather than by file.** A hammer is heavier
+        // and lower, a fist is lighter and higher -- which is the same distinction the metal
+        // clangs one repo over are drawn with, three files standing in for three tiers by
+        // PITCH rather than by three recordings.
+        // **WHAT IT HITS IS ARGUABLY THE BETTER KEY** -- a warrior is armoured and a drunk is
+        // not -- but `strikeSweep` reports a connect rather than a body, and `hitAll` means a
+        // swing can land on several at once. A `snd` on the KIND table is where that would go.
+        if (slotNow().charge) snd('clang', { g: .9, r: .80 + Math.random() * .12 });
+        else snd('clang', { g: .62, r: 1.22 + Math.random() * .16 });
       }
     }
     const h = p.roll ? p.rollH : p.faceH;

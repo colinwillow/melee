@@ -822,6 +822,37 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A BLOW ON A BODY RINGS, AND IT WAS LITERALLY A BOX BREAKING (m55).** *"The sound effect
+  for when he melees and hits the warriors is like a box break, and I want it to be more like
+  the clang noise."* Exactly that: `SFX.files.thud` is `box_break_01.mp3`, a crate coming apart,
+  and the FIST played it while only the hammer rang. **He was describing the file, not a
+  resemblance.**
+  **THE TWO ARE STILL TOLD APART, BY WEIGHT RATHER THAN BY FILE.** A hammer is heavier and lower
+  (g .9, rate .80), a fist lighter and higher (g .62, rate 1.22) -- which is the metal clangs'
+  own rule one repo over, where three car tiers are told apart by PITCH and not by three
+  recordings.
+  **WHAT IT HITS IS ARGUABLY THE BETTER KEY AND IT IS A STATED GAP** -- a warrior is armoured
+  and a drunk is not -- but `strikeSweep` reports a CONNECT rather than a body, and `hitAll`
+  means one swing can land on several at once. A `snd` field on the KIND table is where that
+  goes, beside `dmg`.
+  **`thud` IS NOW ONLY THE PLAYER TAKING A BLOW**, which is the one place a dull break is right.
+- **A PLASMA BOLT LANDING IS NOT A DETONATION (m55, `SFX.files.splat`).** *"I don't love the
+  noise when the plasma cannon hits them -- it's kind of an explosion noise, whereas I want it
+  to be more of, I'm not sure, something else. I'll probably go make a better one."*
+  `explosion_small.mp3` is exactly what it says on the tin, and it is the wrong VOCABULARY
+  rather than the wrong mix: what arrives is a ball of charged gas. The nearest thing on disk is
+  the electrical beam, **cut to the length of an impact**.
+  **AND THE LENGTH IS THE WHOLE TRICK, WHICH IS WHY `dur` IS HERE.** That file is a BEAM --
+  seconds of it -- and an impact is an instant. m26 paid for exactly this once, when the arming
+  zap *"kept playing for the full gambit of the noise"*, and `dur`'s ramp is what stops a
+  mid-waveform cut being a click. A bigger hit rings a little longer; the rate goes DOWN and the
+  gain UP with the charge, the way every other charged thing in this file reads heavier.
+  **IT IS A STAND-IN AND IT IS MARKED AS ONE.** He is going to record it: drop the file in,
+  point `SFX.files.splat` at it, nothing else moves. `boom` stays loaded and unused so
+  `mel.snd('boom')` is still the A/B.
+  **IT IS ITS OWN KEY RATHER THAN SHARING `zap`**, so the two cannot gate each other through
+  `SFX.last`'s per-key `gap` and either can be re-pointed without touching the other. The bytes
+  come off the HTTP cache the second time; only the decode is paid twice, on a short file.
 - **WHERE HE ENDS UP IS WHERE HE IS (m54).** *"When I press up on the right stick to send him
   about the camera it works, it's good. But then when you release, he goes back to his original
   position, which is not ideal -- that should just be his new position."* Exactly what it did,
