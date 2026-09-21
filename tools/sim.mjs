@@ -301,33 +301,29 @@ killedAt = tt;
 ok('the stick cannot run him out before landFree', killedAt >= MOVE.landHard * MOVE.landFree - DT * 2,
    `broke out at ${killedAt.toFixed(2)} s, floor is ${(MOVE.landHard * MOVE.landFree).toFixed(2)}`);
 
-console.log('\n-- 13. THE CHARGED SWING IS FLAT, AND THE HOLD DECIDES HOW FAR --');
-// **THIS CASE HAS NOW MEASURED A RULE THE GAME NO LONGER HAD, TWICE.** m21 replaced a fixed
-// leap with an arc solved from the GAP, and m36 replaced the arc with a flat launch solved from
-// the HOLD: *"it doesn't go high up in the air any more -- it's a straightforward launch, and
-// how far you go depends on how long you hold the charge."* Both times the case went red while
-// the code was right, which is a suite nobody reads. **When a rule changes, the case moves with
-// it in the same commit.**
+console.log('\n-- 13. THE CHARGED SWING IS A GROUND DASH, AND THE HOLD DECIDES HOW FAR --');
+// **THIS CASE HAS NOW TRACKED THE RULE THROUGH THREE SHAPES**: m21's arc solved from the gap,
+// m36's flat hop solved from the hold, and m37's ground dash that never leaves the floor at all.
+// Each time it went red while the code was right until it was moved, which is a suite nobody
+// reads. **When a rule changes, its case changes in the same commit.**
 reset(0, 0); cam.az = 0; p.slot = 3;            // hammer
 p.charge = 1; p.chargeT = M.MELEE.charge;       // fully wound
 M.chargeRelease();
-ok('the release leaves the ground', p.vel.y > 1 && !p.grounded, `vy ${p.vel.y.toFixed(2)} m/s`);
-const hiFull = p.goHi, farFull = p.goGap;
-ok('it is a HOP, not a leap', hiFull <= M.MELEE.flatHi + .01 && hiFull < 1.2,
-   `apex ${hiFull.toFixed(2)} m -- flatHi is ${M.MELEE.flatHi}`);
+ok('it never leaves the ground', p.vel.y === 0 && p.grounded, `vy ${p.vel.y.toFixed(2)}, grounded ${p.grounded}`);
+const farFull = p.goGap;
 const yGo = p.pos.y;
 let goApex = 0, zGo = p.pos.z;
-run(1.6, () => { goApex = Math.max(goApex, p.pos.y - yGo); });
-ok('and it never gets far off the ground', goApex < 1.0 && p.grounded,
-   `${goApex.toFixed(2)} m up, back down ${p.grounded}`);
-ok('a full hold carries a long way', p.pos.z - zGo > 6, `${(p.pos.z - zGo).toFixed(2)} m`);
-// a half charge goes less far, and it is the DISTANCE that changes now, not the height
+run(1.2, () => { goApex = Math.max(goApex, p.pos.y - yGo); });
+ok('and stays on the floor the whole way', goApex < .05, `${goApex.toFixed(3)} m up`);
+ok('a full hold covers what it solved for', Math.abs((p.pos.z - zGo) - farFull) < 1.0,
+   `travelled ${(p.pos.z - zGo).toFixed(2)} m for a ${farFull.toFixed(2)} m solve`);
+ok('and that is a real distance', farFull > 7, `${farFull.toFixed(2)} m`);
+// a half charge goes less far -- and that is the ONLY thing the hold changes now
 reset(0, 0); cam.az = 0; p.slot = 3;
 p.charge = 1; p.chargeT = M.MELEE.charge * .5;
 M.chargeRelease();
-ok('a half hold carries less far', p.goGap < farFull * .8, `${p.goGap.toFixed(2)} m against ${farFull.toFixed(2)}`);
-ok('and to the same height', Math.abs(p.goHi - hiFull) < .01, `apex ${p.goHi.toFixed(2)} against ${hiFull.toFixed(2)}`);
-// and a man in front of him still shortens it, so it lands ON him rather than through him
+ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2)} m against ${farFull.toFixed(2)}`);
+// and a man in front still shortens it, so it lands ON him rather than through him
 {
   const K = M.FOE;
   M.DUMMIES.length = 0;
@@ -338,9 +334,30 @@ ok('and to the same height', Math.abs(p.goHi - hiFull) < .01, `apex ${p.goHi.toF
   M.chargeRelease();
   ok('a man in the way shortens it', p.goGap < farFull, `${p.goGap.toFixed(2)} m for a man at 5, free is ${farFull.toFixed(2)}`);
   const z1 = p.pos.z;
-  run(1.6);
-  ok('and it lands him ON him', Math.abs((p.pos.z - z1) - p.goGap) < 1.2 && p.grounded,
+  run(1.2);
+  ok('and it lands him ON him', Math.abs((p.pos.z - z1) - p.goGap) < 1.0,
      `travelled ${(p.pos.z - z1).toFixed(2)} m for a ${p.goGap.toFixed(2)} m solve`);
+  M.DUMMIES.length = 0;
+}
+// AND A CHARGED HIT FLINGS HIM, WITH THE DISTANCE GRADED BY THE CHARGE
+{
+  const K = M.FOE;
+  const mk = () => { M.DUMMIES.length = 0;
+    const f = { K, root: { position: { x: 0, y: 0, z: 3 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
+                hpMax: K.hp, cool: 0, h: 0, vx: 0, vy: 0, vz: 0, actions: {}, clips: {}, cw: {}, bar: null };
+    M.DUMMIES.push(f); return f; };
+  reset(0, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge;
+  M.chargeRelease();
+  const powFull = 1.0 * p.chargeGoK;
+  reset(0, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge * .5;
+  M.chargeRelease();
+  const powHalf = 1.0 * p.chargeGoK;
+  let f = mk(); M.dummyBlow(f, 0, powFull, K.dmg.weap);
+  const flungFull = Math.hypot(f.vx, f.vz), downFull = f.st === 'down';
+  f = mk(); M.dummyBlow(f, 0, powHalf, K.dmg.weap);
+  const flungHalf = Math.hypot(f.vx, f.vz);
+  ok('a full charge flings him', downFull && flungFull > 3, `${flungFull.toFixed(1)} m/s, up ${f.vy.toFixed(1)}, power ${powFull.toFixed(2)} vs fling ${K.fling}`);
+  ok('and a half charge flings him LESS', flungHalf < flungFull, `${flungHalf.toFixed(1)} against ${flungFull.toFixed(1)} m/s`);
   M.DUMMIES.length = 0;
 }
 
@@ -423,6 +440,30 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
      Object.keys(seenSwing).length + ' of ' + K.clips.swings.length + ': ' + Object.keys(seenSwing).join(', '));
   ok('and more than one state -- he blocks and circles too', Object.keys(seenSt).length >= 3,
      JSON.stringify(seenSt));
+
+  // --- every blow shoves him, not just the one that puts him down
+  clear(); reset(0, 0);
+  d = mkFoe(0, 3); d.hp = K.hp;
+  const z0k = d.root.position.z;
+  M.dummyBlow(d, 0, M.MELEE.power[0], K.dmg.fist);   // straight down +Z, away from the player
+  ok('a landed punch shoves him', Math.hypot(d.vx, d.vz) > 1,
+     `${Math.hypot(d.vx, d.vz).toFixed(2)} m/s, state ${d.st}`);
+  for (let i = 0; i < 60; i++) M.stepDummies(DT);
+  const moved = d.root.position.z - z0k;
+  ok('and he actually travels', moved > .2 && moved < 3, `${moved.toFixed(2)} m in a second`);
+  ok('and it stops', Math.hypot(d.vx, d.vz) < .1, `${Math.hypot(d.vx, d.vz).toFixed(3)} m/s left`);
+
+  // --- and being hit does not look the same every time
+  clear(); reset(0, 0);
+  d = mkFoe(0, 3);
+  const seenHit = {};
+  for (let i = 0; i < 24; i++) {
+    d.cool = 0; d.st = 'idle'; d.hp = K.hp;
+    M.dummyBlow(d, 0, M.MELEE.power[i % 2], K.dmg.fist);
+    if (d.st === 'hit') seenHit[d.cur] = (seenHit[d.cur] || 0) + 1;
+  }
+  ok('a hit does not look the same every time', Object.keys(seenHit).length >= 3,
+     Object.keys(seenHit).length + ' of ' + K.clips.hits.length + ': ' + JSON.stringify(seenHit));
 
   // --- three of them do not stand inside each other
   clear(); reset(0, 0);

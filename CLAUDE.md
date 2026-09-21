@@ -689,6 +689,65 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **THE REACTION WAS NEVER THE SAME CLIP -- IT WAS THE SAME SPEED (m37).** *"There should be
+  multiple animations when I hit them. The problem is they always play the same one, it's really
+  redundant -- I think I put three or four in there."* `npm run sim` settled it before anything
+  was changed: **24 blows used all five clips, three to eight times each.** The PICK was never
+  the problem. The clips run 1.0 to 1.8 s and `hitBeat` .62 played them at 1.6x to 2.9x, which
+  turns a stagger, a gut shot and a head snap into the identical quick twitch. `hitBeat` 1.0 and
+  `bigBeat` 1.5 let them play near their own length.
+  **THIS IS THE THIRD TIME IN THIS FILE THAT "IT ALWAYS DOES THE SAME THING" MEANT "IT IS TOO
+  FAST TO TELL APART".** A measurement that says the choice is varied does not say the RESULT is
+  legible, and when a report and a measurement disagree the thing in between is usually the
+  rate.
+- **EVERY BLOW SHOVES HIM, AND THE INTEGRATOR MOVED OUT OF THE KNOCK-DOWN (m37, `bodyFly`).**
+  *"Every melee should have kickback -- knock them back a little bit, same with the gun."*
+  Nothing moved a body at all unless it went down, so a landed punch was a clip and a number and
+  no contact whatever. The ballistic integration lived INSIDE the `down` branch, so adding a
+  shove to the hit state would have meant a second integrator to keep in step with the first --
+  it is `bodyFly` now, called for every body every frame, and a blow simply sets a velocity.
+  **THE DRAG IS PER STATE**: in the air it is ballistic, on his feet it is scrubbing against the
+  ground, which is a much shorter half-life. And the shove goes through `resolveBoxes`, or a
+  punch puts a man inside a wall.
+  **AND THE GUN GETS IT FOR FREE**, because a bolt has always landed through `dummyBlow`. One
+  description of what a blow does, and the weapon only decides how hard.
+- **THE CHARGED SWING IS A GROUND DASH NOW -- THE THIRD SHAPE THIS MOVE HAS HAD (m37,
+  `MELEE.dash`).** *"When you're holding the melee weapon, that charge -- you don't jump in the
+  air any more. It's a straight-ahead attack and the distance you go depends on how far you
+  charge it."* m21 solved an arc from the gap, m36 flattened it to a hop, m37 takes the vertical
+  out entirely. **Nothing is deleted**: `mel.MELEE.dash = 0` walks back to the hop and
+  `flatHi = 3` from there to the arc, so three behaviours sit behind two switches.
+  **THE DURATION STOPS FALLING OUT OF THE ARC AND HAS TO BE TYPED**, which is the one thing a
+  solved arc gave for free -- and a state whose length disagrees with the clip it plays can only
+  cut that clip off, so `dashDur` IS what the clip is compressed to.
+  **AND IT IS SOLVED AGAINST `goDur`, NOT `T`.** On the ground `MELEE.carry` bleeds him from full
+  speed to zero across the WHOLE state, and `goDur` carries `finishTail` on the end -- so solving
+  against the travel time alone overshot by exactly the tail's share: **5.80 m for a 3.95 m
+  solve**, caught by the sim on the first run. **A launch solved against a different clock than
+  the one that spends it lands somewhere else.**
+  **AND `flatFar` IS BOUNDED BY `maxV` OVER THAT CLOCK**, which is 10.3 m -- the same trap m36
+  hit from the other side, where 14 m was silently clamped and a half hold landed where a full
+  one did. `p.goGap` reports what it will actually cover.
+- **`FOE.fling` CAME DOWN TO .70, BECAUSE A HAMMER COULD NEVER REACH .90 (m37).** *"If you charge
+  it and hit them, they go flying, and the distance depends on how far you charged."* A finisher
+  is `1.0 * chargeGoK`, which floors at `finishMin` .45 -- so at .90 only a near-full BOLT could
+  ever launch anybody and the hammer had no range to be graded across. .70 puts the crossing at
+  about a 60% charge on either weapon and leaves .70..1.0 for the launch itself. Measured: a full
+  charge flings at 7.0 m/s, a half charge at 3.2.
+- **DOWN ON THE RIGHT PAD IS A GUARD (m37, `BLOCK`, `WEAP.blockArc`).** *"I want to make it so
+  that down on the right stick is block. I know I don't have a block animation yet, but I'll put
+  one in."* The same four gates as the trigger, mirrored -- the pad already knows how to tell a
+  deliberate push from a drag, and re-deriving that would be a second answer to one question.
+  **THE ARC IS TIGHTER THAN THE TRIGGER'S** (.70 against 1.05), because a downward drag is a real
+  camera gesture: anything with sideways travel in it is still the camera. Straight up barely
+  orbits because its X is near zero, and the same is true straight down.
+  **IT CANNOT BE HELD WHILE A STRIKE IS RUNNING**, which is what stops a guard cancelling the
+  recovery -- the one thing this file says must not happen.
+  **AND A BLOW FROM BEHIND IS NOT BLOCKED**, whatever the thumb is doing.
+  **`CLIPS.block` IS EMPTY AND THAT IS THE HOOK.** Name it and `rigAnim` blends it at full weight;
+  an empty name falls straight through to the gait with no branch to add, which is how
+  `GAIT.sprint` and `HANG.clip` are written one repo over. Until then **the chip says `BLOCK`**,
+  because a defensive state you cannot see is one nobody uses twice.
 - **THE ASSIST MOVED FROM THE AIM TO THE BOLT (m36, `WEAP.home`, `LOCK.on = 0`).** *"We're
   gonna get rid of the aim assist on the blaster... instead if you shoot in the general
   direction of a player the ball ever so slightly curves to hit them. The reticle aimer thing is

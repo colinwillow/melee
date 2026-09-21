@@ -286,10 +286,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m36</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m37</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m36</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m37</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -329,7 +329,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm36';
+const BUILD = 'm37';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -544,13 +544,21 @@ const MELEE = {
   // **`flatHi` IS A HOP, NOT AN ARC.** Low enough to read as a lunge rather than a leap, and
   // high enough that the ground does not eat the travel: the flight time still falls out of it
   // (`T = 2 vy / g`), and the clip is still compressed to T.
-  flatHi: .55,         // metres. `mel.MELEE.flatHi = 3` is the old flying version.
+  // **AND IT DOES NOT LEAVE THE GROUND AT ALL NOW (m37).** *"You don't jump in the air any
+  // more -- it's a straight-ahead attack."* `dash` is the switch; `flatHi` and the solved-arc
+  // numbers below it are kept so `mel.MELEE.dash = 0` walks back to the m36 hop and
+  // `flatHi = 3` from there to the m21 arc. Three behaviours, two switches, nothing deleted.
+  dash: 1,
+  dashDur: .46,        // the beat, and what the clip is compressed to
+  flatHi: .55,         // metres. `mel.MELEE.dash = 0` uses this instead.
   // **AND THE CEILING IS THE HOP, NOT THIS NUMBER.** A .55 m apex is 0.47 s of flight, so at
   // `maxV` 21 the furthest it can possibly carry is about 9.9 m -- `flatFar` 14 was clamped
   // there and a half hold arrived at the same place as a full one, which is the hold buying
   // nothing all over again. Both ends sit inside what the hop can actually deliver.
   flatNear: 2.6,       // how far a bare half-charge release carries
-  flatFar: 9.0,        // and a full one
+  flatFar: 10.0,       // and a full one. On the ground there is no hop capping it -- what caps
+                       // it is `maxV` over `dashDur + finishTail`, which is 10.3 m, so this is
+                       // a real distance rather than something the clamp quietly eats.
   finishHiNear: 4.6,   // KEPT AS A NOTE -- the solved-arc apexes, unread while `flatHi` is set
   finishHiFar: 2.0,
   finishHiK0: .30,
@@ -614,6 +622,12 @@ const WEAP = {
   // lifts does not cancel the shot you meant -- `armT` how long it has to be up there, and
   // `arc` how far off straight up it may be and still be a trigger rather than a look.
   fireAt: .78, keepAt: .48, armT: .09, arc: 1.05,
+  // **AND DOWN ON THE SAME PAD IS A BLOCK (m37).** *"I want to make it so that down on the
+  // right stick is block."* Same four gates mirrored, because the pad already knows how to tell
+  // a deliberate push from a drag -- and a TIGHTER arc than the trigger's, because a downward
+  // drag is a real camera gesture and must not be eaten: `blockArc` .70 is 40 degrees either
+  // side of straight down, so anything with real sideways travel in it is still the camera.
+  blockAt: .70, blockKeep: .42, blockArc: .70, blockT: .07,
   // IT IS A CHARGE SHOT, NOT A FIRING LOOP. Holding up puts him in the firing position and
   // winds a ball up at the muzzle; the RELEASE is the shot. A repeating auto-fire was the
   // first version and it is a different weapon: nothing about it rewards the hold, so the
@@ -643,7 +657,7 @@ const WEAP = {
   // ball a little bigger, and the size should depend on how long you charge it -- a full charge
   // should be a fairly hefty ball and the effect greater."* One number drives all three: the
   // picture, the thing it collides with, and how wide the blast reaches. They cannot drift.
-  ball0: .30, ball1: 1.15,          // metres across, fumble to full
+  ball0: .45, ball1: 1.90,          // metres across, fumble to full. *"Still isn't big enough."*
   blast0: .55, blast1: 2.60,        // how far from the impact a body is caught
   // **AND A FULL CHARGE SENDS THEM FLYING WHATEVER THEIR HEALTH SAYS.** `FOE.hard` is
   // unreachable on purpose so DAMAGE is what puts a warrior down -- which is right for a fist
@@ -851,6 +865,8 @@ const DUMMY = {
     downF: 'knock_down_front', downB: 'knock_down_back',
     upF: 'get_up_front', upB: 'get_up_back',
   },
+  // THE OFFICER GETS THE KICKBACK TOO -- it is a property of being hit, not of being a warrior
+  knock: 3.2, knockUp: .4, knockDrag: 5.5,
   hitBeat: .5,        // the reactions run 1.0-1.5 s at 1x, which is a long time to watch
   downBeat: 1.25,     // and the knock-downs 2.2-2.8
   upBeat: 1.5,
@@ -968,7 +984,19 @@ const FOE = {
   blockDur: 1.1,
   blockCut: .35,     // what a blow costs him through a raised guard
   taunt: .25,        // how often a knock-down is answered with a battlecry on the way back in
-  hitBeat: .62, bigBeat: .9, downBeat: 1.5, upBeat: 1.6,
+  // **A REACTION YOU CANNOT READ IS THE SAME REACTION EVERY TIME (m37).** *"There should be
+  // multiple animations when I hit them -- they always play the same one, it's really
+  // redundant."* `npm run sim` says the PICK is fine: 24 blows used all five clips, 3 to 8 times
+  // each. So it is not the choice, it is the SPEED -- these clips run 1.0 to 1.8 s and `hitBeat`
+  // .62 played them at 1.6x to 2.9x, which turns a stagger, a gut shot and a head snap into the
+  // identical quick twitch. **Exactly the complaint he made about the player's own strikes**,
+  // one body over, and the same answer: let them play near their own length.
+  hitBeat: 1.0, bigBeat: 1.5, downBeat: 1.5, upBeat: 1.6,
+  // **AND EVERY BLOW SHOVES HIM (m37).** *"Every melee should have kickback -- knock them back a
+  // little bit, same with the gun."* Nothing moved him at all unless he went down, so a landed
+  // punch was a clip and a number and no contact. Scaled by the blow's power, integrated by the
+  // same `bodyFly` the knock-down uses, so there is one place a body carries momentum.
+  knock: 4.2, knockUp: .55, knockDrag: 5.5,
   out: 2.0,          // how long he lies there
   flyV: 7.0, flyUp: 4.6, flyG: 20, flyDrag: 1.7,
   // **A HEALTH BAR IS WHAT MAKES "A FEW HITS" LEGIBLE.** Without it a man who takes six blows
@@ -980,7 +1008,12 @@ const FOE = {
   // WHAT HE DOES TO YOU. *"Make him fight back."*
   // A BLOW AT OR OVER THIS POWER LAUNCHES HIM WHATEVER HIS HEALTH SAYS -- which is what a
   // near-full charge buys, and the one place `hard`'s unreachability had to be answered.
-  fling: .90,
+  // **AND THE FLING IS REACHABLE BY A REAL CHARGE (m37).** At .90 only a near-full bolt and
+  // nothing else could ever launch him -- a hammer finisher is `1.0 * chargeGoK`, which floors
+  // at .45, so *"if you charge it and hit them they go flying, and the distance depends on how
+  // far you charged"* had no range to work in. .70 puts the crossing at about a 60% charge on
+  // either weapon and leaves .70..1.0 for the launch to be graded across.
+  fling: .70,
   sep: 1.0,          // and how much room two of them take up between themselves
   hitR: 2.6,         // how far his mace reaches
   hitArc: 1.15,      // and how far off his nose you may be and still be in it
@@ -994,6 +1027,12 @@ const FOE = {
 // no consequence. There is no death yet and no hit-reaction clip in the antenna alien's export
 // -- a blow is a knockback, a stun and a flash, which is honest and is the part that reads.
 const HEALTH = { max: 100, regen: 4.0, wait: 5.0 };
+// HIS GUARD. *"I know I don't have a block animation yet, but I'll put one in."* -- so `CLIPS`
+// carries the hook and `rigAnim` blends it the moment a name is there; until then he holds the
+// idle and the only thing that says he is blocking is that the blow costs him a quarter of what
+// it would have. **That is a stated gap, not a silent one**: the chip says `BLOCK` while it is
+// up, because a defensive state you cannot see is one nobody uses twice.
+const BLOCK = { cut: .25, push: .35, stun: .3, arc: 1.25 };
 
 // LOCKING ON. Once the trigger is held or the hammer is wound, he is committed to a target --
 // he faces it, the lens comes round to it, and the left stick stops meaning "a direction in the
@@ -1046,6 +1085,11 @@ const CLIPS = {
   fist: ['melee_01', 'melee_03', 'Standing_Melee_Attack_360_High'],
   weap: ['weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03'],
   chargeUp: 'weapon_melee_charge', chargeGo: 'weapon_melee_finish',
+  // **EMPTY, AND THAT IS THE HOOK.** *"I know I don't have a block animation yet, but I'll put
+  // one in."* Name it here and `rigAnim` blends it in at full weight while the guard is up; an
+  // empty name falls through to the gait with no branch to add, which is how `GAIT.sprint` and
+  // `HANG.clip` are written one repo over.
+  block: '',
 };
 // STRAFING WITH THE GUN UP IS AN OVERRIDE, NOT A BLEND -- and that distinction is the whole
 // thing. `strafe_left` is a full-body clip with his arms swinging; laying a rifle pose ON TOP
@@ -2247,7 +2291,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
-  aim: 0, armT: 0, chg: 0, fireT: 0, autoT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
+  aim: 0, armT: 0, chg: 0, fireT: 0, autoT: 0, block: 0, blockT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
   comp: 0, compHold: 0, bias: null,   // the aim-pose correction, and the pose offset it is undoing
   slot: 0,
   // HIS OWN HEALTH, which until m35 did not exist -- *"make him fight back"* has no consequence
@@ -2474,26 +2518,44 @@ function chargeRelease() {
   // **A man in front of him still shortens it**, because a leap solved to land ON him is the
   // one thing m21 got right and the one thing that stops the charge going through people.
   // `mel.MELEE.flatHi = 3` restores the old arc for an A/B.
-  const flat = MELEE.flatHi > 0;
-  const hi = flat ? MELEE.flatHi : lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * p.chargeGoH;
-  const vy = Math.sqrt(2 * MOVE.g * hi);
-  const T = 2 * vy / MOVE.g;                 // the flight time IS the arc, never a typed beat
-  // how far the HOLD wants to carry him, and the gap only ever shortens it
+  // **IT IS A GROUND DASH NOW, NOT A LEAP AT ALL (m37).** *"When you're holding the melee
+  // weapon, that charge -- you don't jump in the air any more. It's a straight-ahead attack and
+  // the distance you go depends on how far you charge it."* So there is no arc left to solve:
+  // the beat is a beat, the vertical is zero, and the hold alone picks the distance.
+  // **THE DURATION STOPS FALLING OUT OF THE ARC AND HAS TO BE TYPED**, which is the one thing a
+  // solved arc gave for free -- and a state whose length disagrees with the clip it plays can
+  // only cut that clip off, so `dashDur` IS what the clip is compressed to.
+  // **AND THE SPEED IS DIVIDED BY `carryAvg`, NOT BY T.** On the ground `MELEE.carry` bleeds him
+  // from full speed to zero across the move, so the average is .725 of the launch -- dividing by
+  // T alone lands him a quarter short of everything it was solved for.
+  const dash = MELEE.dash;
+  const flat = !dash && MELEE.flatHi > 0;
+  const hi = dash ? 0 : flat ? MELEE.flatHi : lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * p.chargeGoH;
+  const vy = hi > 0 ? Math.sqrt(2 * MOVE.g * hi) : 0;
+  const T = dash ? MELEE.dashDur : 2 * vy / MOVE.g;
+  // how far the HOLD wants to carry him, and a man in front only ever shortens it -- a lunge
+  // solved to land ON him is what stops the charge going through people
   const wantD = lerp(MELEE.flatNear, MELEE.flatFar, p.chargeGoH);
-  const far = flat ? (p.melTgt ? Math.min(gap, wantD) : wantD) : gap;
-  const vx = clamp(far / T, 0, MELEE.maxV);
+  const far = dash || flat ? (p.melTgt ? Math.min(gap, wantD) : wantD) : gap;
+  // **AND IT IS SOLVED AGAINST THE WHOLE STATE, NOT THE TRAVEL TIME.** `goDur` carries
+  // `finishTail` on the end, and the carry bleed runs across the WHOLE of it -- so solving
+  // against `T` alone overshot by exactly the tail's share, 5.80 m for a 3.95 m solve. A launch
+  // solved against a different clock than the one that spends it lands somewhere else.
+  const goDur = T + MELEE.finishTail;
+  const spend = dash ? goDur * MELEE.carryAvg : T;
+  const vx = clamp(far / spend, 0, MELEE.maxV);
   // the chip reports what it will ACTUALLY cover, not what was asked for -- `maxV` clamps and
   // a number that ignores its own clamp is a number that lies on exactly the interesting frame
-  p.melV = vx; p.goGap = vx * T; p.goHi = hi;
+  p.melV = vx; p.goGap = vx * spend; p.goHi = hi;
   // THE CLIP IS COMPRESSED TO THE FLIGHT. A state whose length disagrees with the clip it is
   // playing can only ever cut that clip off -- which this file has already paid for once.
-  p.goDur = T + MELEE.finishTail;
+  p.goDur = goDur;
   playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / p.goDur);
   p.vel.x = Math.sin(p.faceH) * vx; p.vel.z = Math.cos(p.faceH) * vx;
-  // AND IT LEAVES THE GROUND. `integrate` runs gravity and the ground collider on this state
-  // like any other, so the hop is ballistic and lands itself with nothing new to write.
-  p.vel.y = vy;
-  p.grounded = false; p.airT = 0;
+  // A DASH STAYS ON ITS FEET. Leaving the ground is what made this a leap, and `integrate` runs
+  // gravity and the ground collider on this state like any other -- so not writing `vel.y` is
+  // the whole of "it does not jump any more". The hop version still lifts off.
+  if (!dash) { p.vel.y = vy; p.grounded = false; p.airT = 0; }
 }
 
 // ============================================================================================
@@ -2627,6 +2689,26 @@ function stepKit(dt) {
   const held = PADS.R ? PADS.R.hold() : 0;
   const up = -R.y, mag = Math.hypot(R.x, R.y);
   const holding = R.down && held > MOVE.tapT;
+
+  // ---- DOWN ON THE RIGHT PAD IS A GUARD (m37). *"I want to make it so that down on the right
+  //      stick is block. I know I don't have a block animation yet, but I'll put one in."*
+  //      The same four gates as the trigger, mirrored -- the pad already knows how to tell a
+  //      deliberate push from a drag, and re-deriving that would be a second answer to one
+  //      question. The ARC is tighter (.70 against the trigger's 1.05) because a downward drag
+  //      is a real camera gesture and must not be eaten: anything with sideways travel in it is
+  //      still the camera.
+  //      **IT CANNOT BE HELD WHILE A STRIKE IS RUNNING**, which is what stops a guard cancelling
+  //      the recovery -- the one thing this file says must not happen.
+  {
+    const downish = R.down && up < 0 && Math.abs(Math.atan2(R.x, -up)) < WEAP.blockArc;
+    const arming = downish && mag > WEAP.blockAt;
+    const keeping = p.block && downish && mag > WEAP.blockKeep;
+    const busy = p.melee || p.roll || p.chargeGo || p.aim || p.charge || !p.grounded;
+    if ((arming || keeping) && !busy) {
+      p.blockT += dt;
+      if (p.blockT >= WEAP.blockT) p.block = 1;
+    } else { p.block = 0; p.blockT = 0; }
+  }
 
   // ---- the blaster: PRESS AND HOLD UP to take the firing position and wind a shot up,
   //      RELEASE to fire it. Four gates on the arming, and each rules out a different way of
@@ -2951,6 +3033,9 @@ function rigAnim(dt) {
   if (p.roll) { t[CLIPS.roll] = 1; setWeights(t, dt); return; }
   if (p.melee) { t[p.meleeName] = 1; setWeights(t, dt); return; }
   if (p.chargeGo) { t[CLIPS.chargeGo] = 1; setWeights(t, dt); return; }
+  // THE GUARD, WHEN THERE IS A CLIP FOR IT. An empty name falls straight through to the gait,
+  // so this line costs nothing until the clip lands and needs no second branch when it does.
+  if (p.block && CLIPS.block && rig.actions[CLIPS.block]) { t[CLIPS.block] = 1; setWeights(t, dt); return; }
   if (!p.grounded) {
     // `in_air` is 2.83 s of a subtle float and loops, so it reads at any airtime; a jump here
     // is about 0.84 s, so what is seen is its opening third.
@@ -3961,7 +4046,11 @@ function dummyBlow(d, dirH, power, dmg) {
   // the warrior so DAMAGE is what puts him down -- right for a fist, wrong for the biggest shot
   // in the game. *"If you do a full charge it'll actually send them flying."*
   const down = d.hp <= 0 || power >= K.hard || (K.fling !== undefined && power >= K.fling);
+  // **EVERY BLOW SHOVES HIM, DOWN OR NOT.** A landed punch that moves nothing is a clip and a
+  // number; the shove is the contact. `bodyFly` integrates it wherever he is.
   if (!down) {
+    const kk = (K.knock || 0) * Math.max(.35, power) * (guard ? K.blockCut : 1);
+    if (kk) { d.vx = Math.sin(dirH) * kk; d.vz = Math.cos(dirH) * kk; d.vy = Math.max(d.vy, (K.knockUp || 0) * Math.max(.35, power)); }
     if (guard) {
       d.st = 'block'; d.t = 0; d.blockT = K.blockDur;
       d.cur = K.clips.blockHit;
@@ -4215,6 +4304,12 @@ function foeStrike(d) {
 // reads, and the part `MOVE.landHard` already has the shape of.
 function playerHurt(dmg, dirH, push, up, stun) {
   const p = player;
+  // **A GUARD IS WORTH SOMETHING OR IT IS AN ANIMATION** -- the same sentence the warrior's own
+  // block is written under, pointed at the player. It costs him most of the damage and most of
+  // the shove, and it does NOT make him untouchable: a dodge roll is the thing that does that.
+  // Facing matters: a blow from behind is not blocked, whatever the thumb is doing.
+  const guard = p.block && Math.abs(wrapAngle(dirH - Math.PI - p.faceH)) < BLOCK.arc;
+  if (guard) { dmg *= BLOCK.cut; push *= BLOCK.push; stun *= BLOCK.stun; up = 0; }
   p.hp = Math.max(0, p.hp - dmg);
   p.hurtT = stun; p.hurtWait = HEALTH.wait;
   p.vel.x += Math.sin(dirH) * push;
@@ -4223,10 +4318,34 @@ function playerHurt(dmg, dirH, push, up, stun) {
   hurtEl.classList.remove('on'); void hurtEl.offsetWidth; hurtEl.classList.add('on');
   snd('thud', { g: .95, r: .8 });
 }
+// **WHERE A BODY CARRIES MOMENTUM, WHATEVER STATE IT IS IN (m37).** This used to live inside
+// the `down` branch, so a knock-down flew and a landed punch did nothing at all -- and adding a
+// shove to the hit state would have meant a second integrator to keep in step with the first.
+// A blow sets a velocity; this is the one place that spends it.
+// **THE DRAG IS PER STATE**: a body in the air is ballistic and one being shoved on its feet is
+// scrubbing against the ground, which is a much shorter half-life.
+function bodyFly(d, dt) {
+  const K = d.K, P = d.root.position;
+  if (!d.vx && !d.vz && !d.vy) return;
+  const gy = groundAt(P.x, P.z, P.y, .5);
+  const air = P.y > gy + .02 || d.vy > 0;
+  if (air) d.vy -= K.flyG * dt;
+  const k = Math.exp(-(air ? K.flyDrag : (K.knockDrag || K.flyDrag)) * dt);
+  d.vx *= k; d.vz *= k;
+  _fp.set(P.x + d.vx * dt, P.y, P.z + d.vz * dt);
+  // he is shoved THROUGH the same collider he walks on, or a punch puts him inside a wall
+  resolveBoxes(_fp, K.r, K.h * .9);
+  P.x = _fp.x; P.z = _fp.z; P.y += d.vy * dt;
+  const g2 = groundAt(P.x, P.z, P.y, .5);
+  if (d.vy <= 0 && P.y <= g2 + .04) { P.y = g2; d.vy = 0; }
+  if (!air && Math.hypot(d.vx, d.vz) < .05) { d.vx = 0; d.vz = 0; }
+}
+
 function stepDummies(dt) {
   bodySep(dt);
   for (const d of DUMMIES) {
     const K = d.K;
+    bodyFly(d, dt);
     // HIS OWN WORLD VELOCITY, measured rather than derived from whatever state he is in --
     // `boltHome` leads him with it and a state machine is the wrong place to ask.
     if (d.lx !== undefined && dt > 1e-5) { d.wvx = (d.root.position.x - d.lx) / dt; d.wvz = (d.root.position.z - d.lz) / dt; }
@@ -4238,17 +4357,6 @@ function stepDummies(dt) {
       t[d.cur] = 1;
       if (d.t >= (d.beat || K.hitBeat)) { d.st = 'idle'; d.t = 0; }
     } else if (d.st === 'down') {
-      // integrate while there is anything left to integrate
-      const P = d.root.position;
-      const gy = groundAt(P.x, P.z, P.y, .5);
-      if (P.y > gy + .02 || d.vy > 0) {
-        d.vy -= K.flyG * dt;
-        const k = Math.exp(-K.flyDrag * dt);
-        d.vx *= k; d.vz *= k;
-        P.x += d.vx * dt; P.z += d.vz * dt; P.y += d.vy * dt;
-        const g2 = groundAt(P.x, P.z, P.y, .5);
-        if (d.vy <= 0 && P.y <= g2 + .04) { P.y = g2; d.vy = 0; d.vx = 0; d.vz = 0; }
-      }
       t[d.cur] = 1;
       if (d.t >= K.downBeat + K.out) {
         // ONE OF THE FOUR COMBINATIONS CAN BE AUTHORED THE OTHER WAY ROUND, AND IT WAS MEASURED
@@ -4408,11 +4516,14 @@ function frame() {
     // through this building"* with nothing on screen able to tell a builder that threw from a
     // rasteriser that produced boxes nobody can reach -- and there is no console on a phone.
     // `BX0` is the fault, any number at all is not. `gun<n>CM`'s rule, one system over.
+    // A DEFENSIVE STATE YOU CANNOT SEE IS ONE NOBODY USES TWICE -- and there is no clip for it
+    // yet, so this line IS the guard as far as the screen is concerned.
+    const bk = p.block ? ' · BLOCK' : '';
     const bx = BUILDINGS.length
       ? ' · BX' + BUILDINGS.reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx +
-      ' · HP' + p.hp.toFixed(0) + (FOE.up ? '/' + FOE.up + ' FOE' : '') +
+      bk + ' · HP' + p.hp.toFixed(0) + (FOE.up ? '/' + FOE.up + ' FOE' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
 }
