@@ -17,9 +17,9 @@
      carries a query string ENTIRELY, and the home screen falls back to a screenshot of the
      page. `npm run icons` writes the number into the name; raise `V` there and repoint these.
      `icons/` is therefore deliberately NOT in `bump.mjs`'s `DIRS`, which hashes into a query. -->
-<link rel="apple-touch-icon" href="icons/apple-touch-icon-v1.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v1.png">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32-v1.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-v2.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v2.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32-v2.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-title" content="Melee">
 
@@ -301,10 +301,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m46</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m47</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m46</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m47</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -344,7 +344,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm46';
+const BUILD = 'm47';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */

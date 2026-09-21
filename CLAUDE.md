@@ -272,6 +272,27 @@ same picture from a phone.
   **WHAT NO HARNESS HERE CAN SEE IS WHETHER IT LOOKS LIKE SMOKE** -- the GLB is draco and nothing
   in this container can build a skin, so the joint's world position at runtime is a device
   question. `mel.smoke(x, y, z)` fires one anywhere, and `mel.SMOKE` is live.
+- **THE SECOND ICON WENT IN AT `icons/` AND THE TOOL ONLY LOOKED AT THE ROOT (m47).** *"I added a
+  new icon, can you make the necessary transitions."* It did: four v2 files, all reading back
+  clean, **every one byte-identical to v1** — because the new art was one directory over from
+  where the picker was looking and it fell through to the old `icons/src.png`. A new version
+  number carrying the old picture is the single worst outcome this tool has, because it is
+  **indistinguishable from the icon not updating at all**, and the round-trip check cannot see it:
+  those files are perfectly valid PNGs of the wrong thing.
+  **HE DROPS IT WHEREVER IT LANDS OFF THE PHONE** — the root the first time, `icons/` the second,
+  with a name like `CAB27B3D-....png`. So both are searched, newest wins, **and the generated
+  names are excluded**: they are PNGs in `icons/` too, and picking `icon-512-v1.png` as the source
+  would rebuild the whole set out of a 512 px downsample of itself.
+  **AND IT SAYS WHAT IT READ.** The path, the size and a sha of the source, plus every other
+  candidate it passed over. "It used the wrong file" is silent otherwise, which is how this cost a
+  round in the first place.
+  **THE GUARD IS AGAINST THE VERSION BELOW.** If every file of a new `V` is byte-for-byte the
+  previous one's, the source was wrong — so it says so and **exits 1**. Verified by pointing it at
+  the old art on purpose: `EVERY v2 FILE IS BYTE-IDENTICAL TO v1`, exit 1; at the new art, exit 0.
+  **Check the thing you are testing is really broken before believing the test that says it is
+  caught**, which is the one discipline that makes a guard worth having.
+  **v1 IS DELETED AND HIS FILE IS NOW `icons/src.png`.** One known path for the source, and
+  nothing left in the folder that the page does not reference.
 - **THE HOME-SCREEN ICON, AND THE VERSION GOES IN THE FILENAME (m44, `npm run icons`).** One
   square artwork in, the whole set out: 512 and 192 for the manifest, **180 for the
   `apple-touch-icon`** (which is the one iOS actually uses — it reads the manifest but will not

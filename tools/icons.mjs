@@ -27,8 +27,9 @@
 import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
+import crypto from 'crypto';
 
-const V = 1;                                   // RAISE THIS WITH THE ART
+const V = 2;                                   // RAISE THIS WITH THE ART
 const OUT = 'icons';
 // 512 and 192 are the manifest's, 180 is the apple-touch-icon, 32 is the favicon. **NO 1024**:
 // nothing on a phone asks for one and a lossless 1024 of photographic art is two megabytes.
@@ -187,18 +188,41 @@ function resize(sw, sh, src, n) {
 }
 
 // ---- run -------------------------------------------------------------------------------------
-// DROP A PNG IN THE REPO ROOT AND RUN IT -- which is what he actually does, straight off a
-// phone with a name like `9B305A72-....png`. Newest wins, and `icons/src.png` is the fallback
-// so re-running with no argument after a tidy-up still measures the art that is in the repo.
+// WHERE THE ART IS. **HE DROPS IT WHEREVER IT LANDS OFF THE PHONE**, with a name like
+// `CAB27B3D-....png` -- the repo root the first time, `icons/` the second. So both are
+// searched, newest first, and **the generated names are excluded**: they are PNGs in `icons/`
+// too, and picking `icon-512-v1.png` as the source would rebuild the whole set out of a 512 px
+// downsample of itself.
+// **THIS IS WHY THE TOOL PRINTS THE PATH AND THE HASH.** m47's first run built v2 from the OLD
+// `icons/src.png` and reported four files written and reading back clean, because the new art
+// was one directory over from where it was looking -- **a new version number carrying the old
+// picture, which from a phone is indistinguishable from the icon not updating at all.**
+const MINE = /^(icon-\d+|apple-touch-icon)-v\d+\.png$/i;
+function candidates() {
+  const out = [];
+  for (const d of ['.', OUT]) {
+    if (!fs.existsSync(d)) continue;
+    for (const f of fs.readdirSync(d)) {
+      if (!/\.png$/i.test(f) || MINE.test(f)) continue;
+      const rel = d === '.' ? f : path.join(d, f);
+      if (fs.statSync(rel).isFile()) out.push(rel);
+    }
+  }
+  return out.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+}
 let src = process.argv[2];
 if (!src) {
-  const here = fs.readdirSync('.').filter(f => /\.png$/i.test(f) && fs.statSync(f).isFile());
-  src = here.length ? here.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs)[0]
-      : (fs.existsSync(path.join(OUT, 'src.png')) ? path.join(OUT, 'src.png') : null);
-  if (!src) { console.error('no PNG in the repo root and no ' + OUT + '/src.png -- npm run icons <file.png>'); process.exit(1); }
+  const here = candidates();
+  if (!here.length) { console.error('no PNG in . or ' + OUT + ' -- npm run icons <file.png>'); process.exit(1); }
+  src = here[0];
+  // AND IT SAYS WHAT ELSE IT COULD HAVE PICKED. "It used the wrong one" is silent otherwise.
+  if (here.length > 1) console.log('candidates: ' + here.join(', ') + '   -- newest wins');
 }
-const im = decode(fs.readFileSync(src));
-console.log(src + '  ' + im.w + ' x ' + im.h + '  colour type ' + im.ct + (im.ct === 6 || im.ct === 4 ? '  (has alpha -- flattened)' : ''));
+const raw = fs.readFileSync(src);
+const sha = crypto.createHash('sha1').update(raw).digest('hex').slice(0, 8);
+const im = decode(raw);
+console.log(src + '  ' + im.w + ' x ' + im.h + '  sha ' + sha + '  ' +
+            (raw.length / 1024).toFixed(0) + ' KB  colour type ' + im.ct + (im.ct === 6 || im.ct === 4 ? '  (has alpha -- flattened)' : ''));
 if (im.w !== im.h) console.log('  NOT SQUARE -- it will be centre-cropped to the shorter side');
 
 // the fill is the corner pixel's own colour, so the flatten cannot show
@@ -237,6 +261,27 @@ for (const n of SIZES) {
   if (bad) { console.error('  ' + name + ' DOES NOT READ BACK (' + bad + ')'); process.exitCode = 1; }
   console.log('  ' + OUT + '/' + name + '  ' + (buf.length / 1024).toFixed(0) + ' KB  reads back clean');
 }
+// **AND A NEW V THAT IS BYTE-FOR-BYTE THE OLD ONE IS THE WRONG SOURCE, NOT A NEW ICON.**
+// That is exactly what m47's first run produced: four files written, all reading back clean,
+// every one of them the PREVIOUS version's picture under a new name. It is the one outcome the
+// round-trip check cannot catch, because those files are perfectly valid PNGs -- so it is
+// checked against the version BELOW, which is the thing a new one is supposed to differ from.
+if (V > 1) {
+  let same = 0;
+  for (const n of SIZES) {
+    const nm = n === 180 ? 'apple-touch-icon' : 'icon-' + n;
+    const now = path.join(OUT, nm + '-v' + V + '.png'), was = path.join(OUT, nm + '-v' + (V - 1) + '.png');
+    if (fs.existsSync(was) && fs.readFileSync(was).equals(fs.readFileSync(now))) same++;
+  }
+  if (same === SIZES.length) {
+    console.error('\nEVERY v' + V + ' FILE IS BYTE-IDENTICAL TO v' + (V - 1) + '.');
+    console.error('That is a new version number carrying the OLD picture, which from a phone is');
+    console.error('indistinguishable from the icon not updating. It read ' + src + ' -- is the new');
+    console.error('art somewhere this did not look? `npm run icons <file.png>` names it outright.');
+    process.exitCode = 1;
+  }
+}
+
 console.log('\nV is ' + V + '. Raise it in this file when the art changes, re-run, and repoint');
 console.log('index.html and manifest.webmanifest -- the version is in the FILENAME because iOS');
 console.log('drops an apple-touch-icon link whose href carries a query string.');
