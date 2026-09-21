@@ -539,5 +539,80 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
   clear();
 }
 
+console.log('\n-- 15. THE HICK DOES NOT FIGHT, HE RUNS --');
+// Same fabricated-body gap as the warrior: the GLB is draco, so what is under test is the brain
+// and the table. His clip names and durations come straight out of the file.
+{
+  const { openGLB } = await import(pathToFileURL(process.cwd() + '/tools/glb.mjs').href);
+  const { json: hg, read: hread } = openGLB('models/characters/hick_skinny.glb');
+  const K = M.HICK;
+  K.loops = new Set([K.clips.idle, K.clips.walk, K.clips.run, K.clips.flee]);
+  const mkHick = (x, z) => {
+    const root = { position: { x, y: 0, z }, rotation: { y: 0 } };
+    const d = { K, root, model: null, mixer: { update() {} }, actions: {}, clips: {}, cw: {},
+                faceOff: 0, st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, back: 0,
+                vx: 0, vy: 0, vz: 0, cur: '', aggro: 0, think: 0, gap: 0, bar: null, barT: 0,
+                hx: x, hz: z, rx: x, rz: z, roamT: 0, fleeT: 0, h: 0 };
+    for (const a of hg.animations || []) {
+      let t0 = Infinity, t1 = 0;
+      for (const ch of a.channels) { const t = hread(a.samplers[ch.sampler].input); t0 = Math.min(t0, t[0]); t1 = Math.max(t1, t[t.length - 1]); }
+      d.clips[a.name] = { name: a.name, duration: t1 - t0 };
+      d.actions[a.name] = { _w: 0, _r: false,
+        reset() { this._r = true; return this; }, play() { this._r = true; return this; }, stop() { this._r = false; return this; },
+        setEffectiveTimeScale() { return this; }, setEffectiveWeight(w) { this._w = w; return this; },
+        getEffectiveWeight() { return this._w; }, isRunning() { return this._r; } };
+    }
+    M.DUMMIES.push(d);
+    return d;
+  };
+
+  // EVERY NAME THE TABLE CARRIES IS IN THE FILE -- except the ones deliberately left empty,
+  // which are the hook for clips he has not drawn. Those must NOT be reported as missing.
+  {
+    const want = [], blank = [];
+    for (const k in K.clips) { const v = K.clips[k];
+      (Array.isArray(v) ? v : [v]).forEach(n => (n ? want : blank).push(k)); }
+    const have = new Set((hg.animations || []).map(a => a.name));
+    const flat = [];
+    for (const k in K.clips) { const v = K.clips[k]; Array.isArray(v) ? flat.push(...v) : flat.push(v); }
+    const gone = flat.filter(n => n && !have.has(n));
+    ok('every clip the table names is in the file', gone.length === 0, gone.join(', '));
+    ok('and the unfinished poses are named and empty', blank.length >= 4, blank.join(', ') + ' -- the hook');
+  }
+
+  // --- he wanders near where he was put, and does not walk off
+  M.DUMMIES.length = 0; reset(0, 0);
+  let h = mkHick(20, 20);
+  for (let i = 0; i < 60 * 60; i++) M.stepDummies(DT);
+  const drift = Math.hypot(h.root.position.x - 20, h.root.position.z - 20);
+  ok('he ambles and stays near home', drift < K.roam * 1.4 && drift > .2,
+     `${drift.toFixed(1)} m from his spawn after a minute, roam is ${K.roam}`);
+
+  // --- he does not fight, ever, whatever you do near him
+  M.DUMMIES.length = 0; reset(0, 0); p.hp = M.HEALTH.max;
+  h = mkHick(0, 2.0); h.aggro = 1;
+  const st = {};
+  for (let i = 0; i < 60 * 30; i++) { M.stepDummies(DT); st[h.st] = (st[h.st] || 0) + 1; }
+  ok('he never swings or blocks', !st.swing && !st.block, JSON.stringify(st));
+  ok('and standing on him costs you nothing', p.hp === M.HEALTH.max, `HP ${p.hp.toFixed(0)}`);
+
+  // --- shoot him and he flies, lands, and runs AWAY
+  M.DUMMIES.length = 0; reset(0, 0);
+  h = mkHick(0, 6);
+  M.dummyBlow(h, 0, 1.0, K.dmg.bolt);
+  ok('a full charge launches him', h.st === 'down' && h.vy > 1,
+     `up ${h.vy.toFixed(1)}, out ${Math.hypot(h.vx, h.vz).toFixed(1)} m/s`);
+  let air = 0;
+  for (let i = 0; i < 60 * 2; i++) { M.stepDummies(DT); if (h.root.position.y > .25) air++; }
+  ok('and he is genuinely off the ground for a while', air > 12, `${(air / 60).toFixed(2)} s in the air`);
+  const z1 = h.root.position.z;
+  for (let i = 0; i < 60 * 12; i++) M.stepDummies(DT);
+  ok('he gets back up', h.st !== 'down', `state ${h.st}`);
+  ok('and runs AWAY', h.root.position.z - z1 > 3,
+     `${(h.root.position.z - z1).toFixed(1)} m further off; you are at z 0`);
+  ok('and eventually calms down', h.fleeT <= 0 || h.fleeT < K.fleeMax, `fleeT ${h.fleeT.toFixed(1)}`);
+  M.DUMMIES.length = 0;
+}
+
 console.log('\n' + (fails ? fails + ' FAILED' : 'all ok') + '\n');
 process.exit(fails ? 1 : 0);

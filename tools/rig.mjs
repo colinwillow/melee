@@ -63,6 +63,8 @@ if (lt && lf && rt && rf) {
 // it shows, and it shows as a number rather than as a weapon in the wrong place on a phone.
 const mounts = g.nodes.filter(n => /^weapon_root/.test(n.name || '')).map(n => n.name);
 console.log('\nMOUNTS ON THE CHARACTER');
+const NOMOUNT = !g.nodes.some(n => /^weapon_root/.test(n.name || ''));
+if (NOMOUNT) console.log('  none -- this rig carries no weapon_root, which is right for an NPC');
 for (const mn of mounts) {
   const i = nodeIndex(g, mn);
   const kids = (g.nodes[i].children || []).map(c => g.nodes[c].name);
@@ -101,7 +103,12 @@ for (const f of weps) {
       console.log('    vs rig     ' + (d < 1e-3 ? 'MATCH (' + d.toExponential(1) + ') -- parents with IDENTITY'
         : 'DIFFERS by ' + d.toFixed(4) + ' armature units  <-- the weapon will sit wrong'));
     }
-  } else if (ci < 0) console.log('    vs rig     THE CHARACTER HAS NO "' + cn + '"  <-- it will not mount at all');
+  // **"NO MOUNTS AT ALL" AND "THE WRONG MOUNT" ARE DIFFERENT FACTS.** An NPC who was never
+  // meant to carry anything reported as a mismatch reads as a broken export, and the tool
+  // crying wolf on a file that is fine is a tool nobody runs twice.
+  } else if (ci < 0) console.log('    vs rig     ' + (NOMOUNT
+    ? 'this character carries NO weapon mounts -- an NPC, not a wearer'
+    : 'THE CHARACTER HAS NO "' + cn + '"  <-- it will not mount at all'));
   if (size) console.log('    size       ' + size.map(v => (v * 0.01).toFixed(3)).join(' x ') + ' m as authored' +
     '   (' + (Math.max(...size) * 0.01 / H * 100).toFixed(0) + '% of his height, and it stays that % at any RIG.height)');
   // A WEAPON MESH THAT IS SKINNED IS A DIFFERENT PROBLEM. A `skins` block beside the mesh is

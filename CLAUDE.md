@@ -191,6 +191,27 @@ same picture from a phone.
   **`npm run gait` NOW FALLS BACK TO `mixamorig_Hips`** when a rig has no `root` bone. It
   reported "rig is missing root or toe bones" on a rig that is perfectly fine, which is a tool
   refusing to measure the asset rather than a fact about the asset.
+- **`models/characters/hick_skinny.glb`** (m38) — 65-joint Mixamo rig, **authored height
+  0.8638 m**, soles at exactly y = 0, one skinned mesh, draco + `EXT_texture_webp` +
+  `KHR_materials_specular`. Toes read (0.0000, 1.0000): **+Z** like everyone else.
+  **NO WEAPON MOUNTS AT ALL**, which is right — he is an NPC, not a wearer. (`npm run rig` used
+  to report that as a mismatch, which reads as a broken export; it says "carries no weapon
+  mounts" now. **"No mounts at all" and "the wrong mount" are different facts.**)
+  **24 clips, and TWO of them are static**: `CINEMA_4D_Main` residue, and **`idle` itself moves
+  ZERO bones past two degrees** — so `drunk_idle` is his idle and `idle` is not used. A man
+  standing perfectly still reads as a statue beside three that are moving.
+  **HIS GAIT MEASURES CLEAN, WHICH THE WARRIOR'S DID NOT** — the two feet AGREE on `walking` and
+  `running`, and `idle` reads 0.002 m/s, the control that says the measurement can be trusted:
+      walking            0.619 authored  x2.026 -> 1.25 m/s
+      running            1.508           x2.026 -> 3.06    (`fleeRef`)
+      drunk_walk         0.292           x2.026 -> 0.59    (`walkRef`; feet disagree 43%, which
+                                                            is what a drunk walk IS)
+      drunk_run_forward  0.989           x2.026 -> 2.00    (`runRef`)
+  **THE DRUNK SET IS THE STUMBLE SET.** *"He does have drunk versions of everything, so
+  theoretically you could shoot him and he could stumble around."* His hit reactions are his own
+  drunk turns rather than anything borrowed.
+  **NOTHING USES** `left/right_strafe*`, the four turn clips, `backward_walking_turn`,
+  `run_backward_arc_right`, `drunk_walk_backwards` (beyond the hit pool) or `drunk_run_backward`.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
   height; hammer 0.614 m = 68%. "As authored" means proportional to the wearer, so they keep
   those percentages at any `RIG.height` and **no scale is applied to either**.
@@ -689,6 +710,36 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A BODY THAT DOES NOT FIGHT IS ONE BRANCH, NOT A SECOND BRAIN (m38, `HICK`, `pacifist`,
+  `foeWander`).** *"He's basically just an NPC, so he doesn't have attacks. He doesn't attack
+  you -- if anything he'll run away. You shoot him, he flies through the air, lands on the
+  ground, gets up and runs away."* A third kind in the same `DUMMIES` list: the bolt, the swept
+  limb, `bodyFly`, `bodySep` and the player's resolver all reach him with nothing new written,
+  and `foeAI` gains one line above everything that decides how to FIGHT. **`d.K` is what makes a
+  third kind cost a table**, which is what m35 was for.
+  **HE AMBLES ROUND WHERE HE WAS PUT**, not along a path and not at random: the ring is centred
+  on his spawn, so a street left alone for ten minutes still looks like a street rather than
+  four random walks that have drifted apart.
+  **AND BEING HIT IS WHAT MAKES HIM LEAVE**, not proximity -- `flee0` seconds of running
+  directly away, `fleeAdd` for each further blow, capped, so standing over him and punching is
+  not a man who runs for a minute.
+- **AN EMPTY CLIP NAME IS A HOOK, AND THE STATE STILL RUNS (m38).** *"I don't have the falling
+  over or on-the-ground or getting-up animations yet, but I'll put them in."* So `downF`,
+  `downB`, `upF` and `upB` are `''` in his table. `skinPlay` returns without doing anything and
+  `skinWeights` takes its fallback to the idle, so **he still flies, still lands, still gets up,
+  still runs away** -- and naming the clip later is one string with no branch to add. **The
+  state machine and the animation are separate things, and this is what that separation buys.**
+  **AND THE TABLE CHECK HAD TO LEARN THE DIFFERENCE.** `bodySpawn` reports any name that is not
+  in the file, which is the T-pose guard -- an empty name is a DELIBERATE gap and reporting it
+  is the chip crying wolf. `n && !d.actions[n]`.
+- **THE IN-AIR POSE IS A FIELD, NOT A BRANCH ABOUT WHO IS FLYING (m38, `K.clips.air`).** *"I need
+  to add for every character an in-air pose so that you could send him flying."* A body more than
+  a quarter of a metre off the ground holds `clips.air` and takes its fall clip back the moment
+  it lands. The hick names `jump`; a kind that names nothing keeps the behaviour it had. **This
+  is the field to fill in on the warrior and the officer when he draws theirs.**
+- **AND THE HEALTH BAR IS THE KIND'S (m38).** It read `FOE.bar` in four places while being built
+  for three kinds, so a smaller man would have worn the warrior's gauge at the warrior's height.
+  A kind with no `bar` block simply has none.
 - **THE REACTION WAS NEVER THE SAME CLIP -- IT WAS THE SAME SPEED (m37).** *"There should be
   multiple animations when I hit them. The problem is they always play the same one, it's really
   redundant -- I think I put three or four in there."* `npm run sim` settled it before anything
