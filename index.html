@@ -221,6 +221,25 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 #padR.arm::after { opacity: 1; }
 #padR.ready::after { opacity: .38; }
+/* THE MODE BUTTONS. They sit on the right pad's own edges -- `right` is the pad's inset and
+   `bottom` clears its 132 px plus a gap -- so they cannot drift off it on a notched phone the
+   way two independently written positions eventually would. Same ink-free treatment as the
+   pads themselves (m50): a saturated hue on a crisp rim, nothing translucent or blurred, and
+   the SELECTED one is a filled chip rather than a brighter outline, because "which of these
+   two am I in" has to be a different shape and not a comparison. */
+#modeRow {
+  position: fixed; z-index: 6; display: none; gap: 8px;
+  right: calc(20px + env(safe-area-inset-right));
+  bottom: calc(172px + env(safe-area-inset-bottom));
+}
+#modeRow.on { display: flex; }
+#modeRow button {
+  font-family: var(--ui); font-size: 11px; font-weight: 600; letter-spacing: .10em;
+  text-transform: uppercase; padding: 7px 11px; border-radius: 8px; cursor: pointer;
+  color: var(--sky); background: none; border: 2px solid var(--sky);
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+#modeRow button.sel { color: var(--ink); background: var(--sky); }
 /* ---- the reticle: a geometric portal ----
    IT WAS BIG AND THICK AND THE COLOURS WERE A GUESS. Size, stroke weight and both hues are
    custom properties now, so `mel.retic({...})` moves all of it live on the phone -- how a mark
@@ -344,14 +363,20 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m51</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m52</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m51</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m52</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
 <div class="pad" id="padR"><div class="knob"></div><div class="hint">look &middot; tap = jump</div></div>
+
+<!-- THE BLASTER'S TWO MODES (m52). Above the right pad, because that is the thumb they are
+     about -- and only while the blaster is out, so they are never a HUD element in the play
+     area for a weapon that has no modes. Built from `WEAP.modes` rather than written twice:
+     a third mode is a row in that table and nothing here. -->
+<div id="modeRow" aria-hidden="true"></div>
 
 <!-- THE RETICLE -- CONCENTRIC BROKEN RINGS, NOT ARCS IN ONE SVG.
      The first version put every layer in one <svg> and spun each <g> with
@@ -387,7 +412,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm51';
+const BUILD = 'm52';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -405,7 +430,22 @@ const A = p => (ASSETS[p] ? p + '?v=' + ASSETS[p] : p);
 const RIG = {
   // METRES. The SCALE is measured off the geometry at load and never typed, so a re-export at
   // any size lands right with no edit here. 1.75 m against an authored 0.9087 m is x1.926.
-  height: 1.75,
+  // **HE IS A LITTLE GUY AND HE WAS NOT DRAWN LIKE ONE (m52).** *"He's kind of big compared to
+  // the guys that are supposed to be big bad warrior alien orcs -- he's almost bigger than them
+  // even though his character is a little guy. I'm wondering if making him smaller would make
+  // the movements feel more grand."* Measured rather than eyeballed: the hero was **1.75** and
+  // the warrior **1.85**, which is six per cent -- not a size difference, a rounding error.
+  // At 1.45 the warrior is **28% taller** and the hick and the hobo are a head over him, which
+  // is a fact you can see rather than one you have to be told.
+  // **AND SMALLER IN A WORLD THAT DID NOT SHRINK IS THE WHOLE OF "GRAND".** He keeps every
+  // speed he had -- see `SZ` below for what scales and what deliberately does not -- so he
+  // crosses the same floor at the same pace at four fifths the size, the boxes stand taller
+  // over him and the building is bigger. Nothing about the CAMERA changed; what changed is how
+  // much of the frame he occupies.
+  height: 1.45,
+  // the height every typed body number below was chosen at, so `SZ` is the ratio and a change
+  // to `height` moves all of them together rather than one at a time
+  base: 1.75,
   file: 'models/characters/alien_antenna_game.glb',
   // WHICH WAY THE EXPORT FACES IS MEASURED, NOT ASSUMED (see `measureFacing`). This rig reads
   // +Z -- toes and shoulders agree to 1.0000 -- but that is a fact about today's file.
@@ -419,6 +459,24 @@ const RIG = {
   hue: .52, hueW: .10, hueGlow: .55,
   showHue: 1,       // put the measured hues on the chip -- there is no console on a phone
 };
+
+// **WHAT SCALES WITH HIM AND WHAT DOES NOT (m52, `SZ`).** A number in this file is either a
+// property of HIS BODY or a property of the WORLD, and shrinking him must only move the first
+// kind. `SZ` is the ratio to the height everything below was chosen at, so one edit to
+// `RIG.height` moves the whole set and there is nothing to remember.
+//     SCALES    his collider, where the lens looks at him, arm's length, the fist's radius --
+//               every one of those is a measurement OF him and means nothing without his size
+//     DOES NOT  every SPEED, the jump, gravity, the camera boom, the boxes. Keeping his pace
+//               at four fifths the size is exactly what "more grand" IS: the world did not
+//               shrink with him, so he covers more of himself per second and everything in
+//               the street stands taller over him.
+// **AND THE GAIT REFERENCES ARE NEITHER -- THEY ARE A FACT ABOUT THE MODEL SCALE.** A clip's
+// real-world travel is its authored travel TIMES the scale the model is drawn at, so they are
+// scaled off `rig.scale` at load rather than off this: a re-export at a different authored
+// height changes the scale without changing `RIG.height`, and the refs have to follow the one
+// that actually moved. See `GAIT.refScale`.
+const SZ = RIG.height / RIG.base;
+
 
 const MOVE = {
   // TOP SPEED IS THE FASTEST CLIP'S OWN SPEED, so `run_fwd_fast` plays at 1.0x at full tilt
@@ -452,7 +510,11 @@ const MOVE = {
   // it sits under `GAIT.runAt`, so the strafe clips play near their own reference.
   blockSp: 2.4,
   // apex = jump^2 / 2g: 10.6 gives 2.81 m and 1.06 s of air, against 1.76 m before.
-  jump: 10.6, g: 20, dead: .12, curve: 1.4, step: .5, coyote: .12,
+  // `step` IS HIS LEG AND SCALES WITH HIM (m52) -- a 1.45 m man stepping up half a metre is
+  // stepping onto his own hip. `jump` and `g` are SPEEDS and deliberately do not: keeping the
+  // same hop at four fifths the size is the whole of "more grand", and it is also what makes
+  // the boxes stand taller over him than they did.
+  jump: 10.6, g: 20, dead: .12, curve: 1.4, step: .5 * SZ, coyote: .12,
   // ONE NUMBER PER LANDING, AND THE CLIP IS COMPRESSED TO EXACTLY IT. The state used to last
   // `land` seconds while the clip was scaled to play over `land * 1.9` -- so the hard landing's
   // state ended at 0.62 s with 1.18 s of clip still to run, and the gait took over halfway
@@ -475,6 +537,11 @@ const MOVE = {
 // the PLANTED FOOT slides backwards at in the body frame, which is exactly the speed the clip
 // is walking at, and they are already multiplied by RIG's scale.
 const GAIT = {
+  // MEASURED AT `refScale`, and multiplied by the real one at load -- see `buildRig`. A clip
+  // walks at its authored speed times however big the model is drawn, so these are only true
+  // at the scale they were taken at and a smaller hero whose refs did not follow would have
+  // every clip playing 21% too slow under him. It is applied ONCE, where the scale is measured.
+  refScale: 1.926,
   walkRef: .84, runRef: 3.09, sprintRef: 4.55,
   backRef: 2.23, strafeRef: 2.00, aimRunRef: 3.36,
   // **THE BANDS ARE READ AGAINST THE STICK, NOT AGAINST THE SPEED RANGE (m27).** *"I was trying
@@ -504,7 +571,10 @@ const GAIT = {
 };
 
 const CAM = {
-  dist: 5.0, distV: .10, el: .22, look: 1.05, yawRate: 2.6, half: .07,
+  // `look` is a point ON HIM and scales with him; `dist` is the BOOM and deliberately does
+  // not -- keeping the lens where it was is what makes a smaller hero read as a bigger world
+  // rather than as the same picture at a different zoom.
+  dist: 5.0, distV: .10, el: .22, look: 1.05 * SZ, yawRate: 2.6, half: .07,
   // how far off centre the right thumb has to be before it turns the camera. `deadAim` is
   // the one that matters: a thumb held UP to aim is never vertical, and the aim and the
   // camera are the same bearing, so its residual x wanders the reticle. Both SUBTRACT
@@ -578,7 +648,8 @@ const MELEE = {
                        // the cone: swinging at two men, the NEAR one is what you meant.
   maxV: 28,            // the fastest a lunge may be solved to. *"When you charge it full he
                        // really launches -- he launches pretty far and pretty fast."*
-  arrive: 1.05,        // the gap he is solved to leave -- arm's length, not his centre. It has
+  arrive: 1.05 * SZ,   // the gap he is solved to leave -- ARM'S LENGTH, so it is his and it
+                       // scales with him. Not his centre. It has
                        // to be inside what the swept fist can REACH now that the sweep decides:
                        // the hand is about .75 m off his centre at full extension and carries
                        // `STRIKE.r`, against a body surface at `arrive - DUMMY.r`.
@@ -747,7 +818,8 @@ const MELEE = {
 const STRIKE = {
   // both hands, both feet. The weapon's own far end is added when one is out.
   bones: ['mixamorig_RightHand', 'mixamorig_LeftHand', 'mixamorig_RightFoot', 'mixamorig_LeftFoot'],
-  r: .26,            // the fist/boot, as a sphere swept along its own path
+  r: .26 * SZ,       // the fist/boot, as a sphere swept along its own path -- HIS fist, so it
+                     // scales with him
   from: .55,         // the window opens at this fraction of the clip's authored contact frame
   // **AND A DASH OPENS AT ONCE (m45, `MELEE.dashFrom`).** `from` is right for a STANDING swing,
   // where the arm has to get moving before it can hit anything -- and it is exactly wrong for a
@@ -790,13 +862,19 @@ const WEAP = {
   slots: [
     { key: 'none',    label: 'UNARMED', file: null,                                        melee: 'fist' },
     { key: 'blaster', label: 'BLASTER', file: 'models/weapons/alien_antenna_blaster_game.glb', melee: 'fist', aim: true },
-    // **THE RAPID FIRE IS A MODE, NOT A MODEL (m36).** *"I wanna make a version of the gun
-    // that's more like a machine gun. I'll probably make a different model but we can use this
-    // for now -- when you hold forward it just shoots automatically."* Same file, same mount,
-    // same trigger gates: `auto` is the whole difference, and swapping in its own GLB later is
-    // one `file:` here. It is a separate SLOT rather than a toggle because the kit is already a
-    // tap-to-cycle list and a hidden mode is a state you can be in without knowing it.
-    { key: 'rapid',   label: 'RAPID',   file: 'models/weapons/alien_antenna_blaster_game.glb', melee: 'fist', aim: true, auto: true },
+    // **AND THE RAPID FIRE STOPPED BEING A SLOT (m52).** *"When your blaster is equipped you
+    // have a button -- for now, until I build different guns that do different stuff, we'll
+    // just have this one do two modes. Above the right stick two buttons pop up and you click
+    // one for the sort of ball charge and the other one is the automatic, where you just press
+    // and hold up and that does rapid fire."*
+    // m36 made it a separate SLOT on the argument that **a hidden mode is a state you can be
+    // in without knowing it**, which was right and is now answered better: the two buttons ARE
+    // the state -- on screen, lit, and only while the gun that has them is out. That is the
+    // same trade the guard made at m37: a control that says what it is by being visible beats
+    // one you have to remember. It also takes the kit cycle from four taps to three, and the
+    // two slots were identical to look at anyway because they share the model.
+    // `WEAP.mode` is the whole difference, and giving one its own `file:` later is what would
+    // make it a different GUN rather than a different trigger.
     { key: 'hammer',  label: 'HAMMER',  file: 'models/weapons/alien_antenna_hammer_game.glb',  melee: 'weap', charge: true },
   ],
   // THE TRIGGER IS A FULL PULL, HELD. Four gates, and each rules out a different way of firing
@@ -804,6 +882,13 @@ const WEAP = {
   // far back down it stands down -- the GAP is hysteresis, so a thumb rolling inward as it
   // lifts does not cancel the shot you meant -- `armT` how long it has to be up there, and
   // `arc` how far off straight up it may be and still be a trigger rather than a look.
+  // THE BLASTER'S TWO MODES. `auto` is the only field either one carries, so a third is a row
+  // here and nothing else.
+  modes: [
+    { key: 'charge', label: 'CHARGE', hint: 'hold up \u00b7 release fires' },
+    { key: 'auto',   label: 'AUTO',   hint: 'hold up \u00b7 rapid fire', auto: true },
+  ],
+  mode: 0,
   fireAt: .78, keepAt: .48, armT: .09, arc: 1.05,
   // **AND DOWN ON THE SAME PAD IS A BLOCK (m37).** *"I want to make it so that down on the
   // right stick is block."* Same four gates mirrored, because the pad already knows how to tell
@@ -3088,7 +3173,9 @@ const player = {
   // HIS OWN HEALTH, which until m35 did not exist -- *"make him fight back"* has no consequence
   // without it. No death yet; that is a decision, not an omission.
   hp: HEALTH.max, hurtT: 0, hurtWait: 0,
-  r: .34, hh: 1.6,
+  // HIS BODY, so both scale with `RIG.height` -- a 1.45 m man inside a 1.6 m collider is a
+  // man you cannot walk between two boxes with.
+  r: .34 * SZ, hh: 1.6 * SZ,
 };
 const stick = { L: { x: 0, y: 0, down: 0, far: 0 }, R: { x: 0, y: 0, down: 0, far: 0 } };
 const keys = {};
@@ -3121,6 +3208,12 @@ function flickH(dx, dy) {
 // ---- the kit ----------------------------------------------------------------------------
 const wepName = document.getElementById('wepName'), wepHint = document.getElementById('wepHint');
 function slotNow() { return WEAP.slots[player.slot]; }
+// THE MODE BELONGS TO THE BLASTER AND TO NOBODY ELSE, so this returns null for the hammer and
+// for bare hands rather than every caller testing `aim` first. `autoNow()` is the ONE answer to
+// "is this trigger a rapid fire" -- which is what the roster flag used to be when rapid fire
+// was its own slot, and one answer is the whole reason it reads better as a mode.
+function modeNow() { return slotNow().aim ? WEAP.modes[WEAP.mode] : null; }
+function autoNow() { const m = modeNow(); return !!(m && m.auto); }
 // THE ARMED GAIT IS THE WHOLE TIME HE IS CARRYING IT, NOT ONLY WHILE HE IS AIMING. `p.aim` is
 // live from the moment the trigger arms, which is a fraction of a second either side of a shot
 // -- and a man walking around with a blaster does not put it away for the rest of the time.
@@ -3183,9 +3276,19 @@ function stickLocked(L) {
 }
 WEAP.worn = {};
 function paintKit() {
-  const s = slotNow();
+  const s = slotNow(), m = modeNow();
+  // THE NAME STAYS THE SLOT'S. "BLASTER \u00b7 CHARGE" in the display face is wide enough to
+  // meet the build chip on a 390 px phone, and the mode is already on screen as a lit button
+  // -- which is the whole point of the row. The hint says which, because that is the line
+  // with room in it.
   wepName.textContent = s.label;
-  wepHint.textContent = s.aim ? 'hold right = aim' : s.charge ? 'hold right = charge' : 'tap left pad';
+  wepHint.textContent = m ? m.hint : s.charge ? 'hold right = charge' : 'tap left pad';
+  // THE ROW EXISTS ONLY WHERE IT MEANS SOMETHING. A mode row for a weapon with no modes is a
+  // HUD element sitting in the play area saying nothing, which is the `actB` lesson one game
+  // over: a prompt that is always on screen is a prompt nobody reads.
+  modeRow.classList.toggle('on', !!m);
+  for (let i = 0; i < modeRow.children.length; i++)
+    modeRow.children[i].classList.toggle('sel', i === WEAP.mode);
   // EXACTLY ONE SLOT IS VISIBLE, decided in one place, so the label, the ring and the thing in
   // his hand cannot disagree about what he is carrying.
   for (const key in WEAP.worn) {
@@ -3193,6 +3296,32 @@ function paintKit() {
     if (w && w.group) w.group.visible = (key === s.key);
   }
   padR.classList.toggle('ready', !!(s.aim || s.charge));
+}
+// THE ROW IS BUILT FROM THE TABLE, ONCE, so a third mode is a row in `WEAP.modes` and nothing
+// here. The buttons carry their own index rather than being found by position.
+const modeRow = document.getElementById('modeRow');
+WEAP.modes.forEach((m, i) => {
+  const b = document.createElement('button');
+  b.textContent = m.label;
+  // **`pointerdown`, NOT `click`.** A click is a synthesised event that arrives after the
+  // touch has ended, and the one thing that must never happen on this row is a tap that also
+  // reaches the pad behind it. `stopPropagation` plus `preventDefault` is what keeps it here.
+  b.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation();
+    setMode(i);
+  });
+  modeRow.appendChild(b);
+});
+// ONE PLACE SETS IT, so the lit button, the hint and what the trigger actually does cannot
+// disagree -- and switching mid-hold STANDS THE TRIGGER DOWN rather than handing a wound-up
+// charge to a weapon that does not bank one. A press on the mode you are already in is a
+// no-op, not a re-arm.
+function setMode(i) {
+  if (i === WEAP.mode) return;
+  WEAP.mode = i;
+  const p = player;
+  if (p.aim || p.chg) { p.aim = 0; p.armT = 0; p.chg = 0; p.autoT = 0; chargeStop(); }
+  paintKit();
 }
 function cycleKit() {
   player.slot = (player.slot + 1) % WEAP.slots.length;
@@ -3628,7 +3757,7 @@ function stepKit(dt) {
       // the edge. Everything that ends the hold -- letting go, rolling the thumb back down,
       // sweeping off the arc, backgrounding the app -- comes through here as one release.
       if (p.aim) {
-        if (!s.auto && p.chg >= WEAP.minChg) {
+        if (!autoNow() && p.chg >= WEAP.minChg) {
           fireBolt(p.chg);
           p.fireT = 1;
           snd(p.chg > .82 ? 'big' : 'shot', { g: .42 + p.chg * .3, r: 1.12 - p.chg * .3 });
@@ -3648,7 +3777,7 @@ function stepKit(dt) {
     // simply spends the hold as rounds instead of banking it as a charge, and `p.chg` is pinned
     // at `autoChg` so the ball, the blast, the power and the recoil all still come off the one
     // number they always did. The release fires nothing, because everything was already fired.
-    if (s.auto) {
+    if (autoNow()) {
       p.chg = p.aim ? WEAP.autoChg : 0;
       if (p.aim) {
         p.autoT = (p.autoT || 0) - dt;
@@ -5763,6 +5892,38 @@ async function init() {
   model.scale.setScalar(rig.scale);
   console.log('[melee] authored height ' + authored.toFixed(4) + ' m -> x' + rig.scale.toFixed(3) +
               ' for RIG.height ' + RIG.height);
+  // **AND THE GAIT REFERENCES FOLLOW THE SCALE (m52).** A reference speed is how fast the
+  // PLANTED FOOT slides backwards, which is authored travel times the scale the model is drawn
+  // at -- so these are only true at `refScale` and every one of them has to be multiplied by
+  // however far the real scale is from it. Without this a smaller hero plays every locomotion
+  // clip about 21% too slow for the speed he is actually moving at, which is a slide at every
+  // point of the range rather than only at the top. Applied ONCE, here, where the scale is
+  // known; `mel.GAIT` therefore prints the SCALED numbers, which is the honest thing for it
+  // to print. Setting `RIG.height` from the console after load does not re-run it.
+  // **AND `MOVE.max` AND THE BANDS GO WITH THEM, WHICH IS THE PART THAT IS EASY TO MISS.**
+  // `MOVE.max` IS the sprint clip's own speed -- that is what makes the fastest clip play at
+  // 1.0x at full deflection and the feet never slide at the top of the range. Scaling the refs
+  // alone leaves it 21% above the sprint it is meant to BE: measured, the clip is then asked
+  // for **1.91x against a `tsHi` of 1.6**, so it clamps and he slides for the whole top of the
+  // stick. And the BANDS are speeds too, so leaving them would move every crossfade to a
+  // different place on the pad -- which is precisely the m27 finding, undone by a height edit.
+  // One factor over the whole table keeps every one of those relationships exactly as it was:
+  // each clip owns the same stretch of pad and plays at the same rate. A smaller man at the
+  // same proportions, in a world that did not shrink.
+  // **AND "GRAND" IS THE WORLD, NOT HIS PACE.** The boxes, the building and every other body
+  // are unchanged, so he is four fifths the size against all of them and the camera is lower.
+  // `mel.MOVE.max` is the dial if he should also be FAST for his size; the cost of raising it
+  // is foot slide at the top, and `tsHi` is what caps how much.
+  {
+    const k = rig.scale / (GAIT.refScale || rig.scale);
+    for (const n of ['walkRef', 'runRef', 'sprintRef', 'backRef', 'strafeRef', 'aimRunRef',
+                     'idleAt', 'walkAt', 'runAt', 'sprintAt']) GAIT[n] *= k;
+    MOVE.max *= k;
+    console.log('[melee] size x' + k.toFixed(3) + ' -> max ' + MOVE.max.toFixed(2) +
+                '  walk ' + GAIT.walkRef.toFixed(2) + ' run ' + GAIT.runRef.toFixed(2) +
+                ' sprint ' + GAIT.sprintRef.toFixed(2) +
+                '  sprint clip x' + (MOVE.max / GAIT.sprintRef).toFixed(2));
+  }
   if (authored <= .01) note('RIG HEIGHT UNMEASURABLE');
 
   // HIS OWN MAP, FED BACK AS EMISSION. `emissiveMap` is the base texture and `emissive` is

@@ -822,6 +822,72 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **HE IS A LITTLE GUY AND HE WAS NOT DRAWN LIKE ONE (m52, `RIG.height` 1.75 -> 1.45, `SZ`).**
+  *"He's kind of big compared to the guys that are supposed to be big bad warrior alien orcs --
+  he's almost bigger than them even though his character is a little guy. I'm wondering if
+  making him smaller would make the movements feel more grand."* Measured rather than eyeballed:
+  hero **1.75**, warrior **1.85**. Six per cent is not a size difference, it is a rounding
+  error. At 1.45 the warrior is **28% taller** and the hick and the hobo are a head over him.
+  **A NUMBER HERE IS EITHER A PROPERTY OF HIS BODY OR A PROPERTY OF THE WORLD**, and shrinking
+  him must move only the first kind. `SZ` is the ratio to `RIG.base`, so one edit moves the
+  whole set and there is nothing to remember:
+      SCALES    the collider (`r`, `hh`), `CAM.look`, `MOVE.step` (his LEG -- half a metre is
+                his own hip at this size), `MELEE.arrive` (arm's length), `STRIKE.r` (his fist)
+      DOES NOT  `CAM.dist`, `MOVE.jump`, `g`, the boxes, the building, the other bodies
+  **AND `SZ` HAS TO BE DECLARED ABOVE EVERY TABLE THAT READS IT.** It went in beside `GAIT` and
+  `MOVE` is declared FIRST, so `step: .5 * SZ` was a temporal dead zone -- **a blank page, and
+  `npm run check:boot` caught it on the first run.** Eighth time across these repos, and the one
+  the gate exists for. It sits immediately after `RIG` now.
+- **AND A CLIP'S REFERENCE SPEED IS A FACT ABOUT THE MODEL SCALE (m52, `GAIT.refScale`).** This
+  is the half that makes a height edit survivable at all. A reference is how fast the PLANTED
+  FOOT slides backwards, which is authored travel TIMES the scale the model is drawn at -- so
+  every number in `GAIT` was only ever true at **x1.926**, and a smaller hero whose refs did not
+  follow plays every locomotion clip about **21% too slow** for the speed he is moving at. Not a
+  slide at the top of the range: a slide at every point of it.
+  They are scaled ONCE at load off `rig.scale`, not off `RIG.height` -- a re-export at a
+  different authored height moves the scale without moving `RIG.height`, and the refs have to
+  follow the one that actually changed. `mel.GAIT` therefore prints the SCALED numbers, which is
+  the honest thing for it to print.
+  **AND `MOVE.max` AND THE BANDS GO WITH THEM, WHICH IS THE PART THAT IS EASY TO MISS.**
+  `MOVE.max` **IS** the sprint clip's own speed -- that is what makes the fastest clip play at
+  1.0x at full deflection and the feet never slide at the top. Scaling the refs ALONE leaves it
+  21% above the sprint it is meant to be: measured, the clip is then asked for **1.91x against
+  a `tsHi` of 1.6**, so it clamps and he slides for the whole top of the stick. And the BANDS
+  are speeds too, so leaving those would move every crossfade to a different place on the pad
+  -- **which is exactly the m27 finding, undone by a height edit.** One factor over the whole
+  table keeps every relationship: verified, all four bands land on the **identical percentage of
+  the pad** (0.241 / 0.379 / 0.545 / 0.759) and the sprint clip plays at **1.58x, unchanged**.
+  **AND "GRAND" IS THE WORLD, NOT HIS PACE.** Nothing else shrank, so he is four fifths the size
+  against every box, the building and every other body, and the camera sits lower. `mel.MOVE.max`
+  is the dial if he should also be FAST for his size; the cost of raising it is foot slide, and
+  `tsHi` caps how much.
+- **THE RAPID FIRE STOPPED BEING A SLOT AND BECAME A MODE WITH A BUTTON (m52, `WEAP.modes`,
+  `modeNow`, `autoNow`, `#modeRow`).** *"When your blaster is equipped you have a button -- for
+  now, until I build different guns that do different stuff, we'll just have this one do two
+  modes. Above the right stick two buttons pop up and you click one for the sort of ball charge
+  and the other one is the automatic, where you just press and hold up and that does rapid
+  fire."*
+  **m36 MADE IT A SLOT ON AN ARGUMENT THAT IS NOW ANSWERED BETTER.** *"A hidden mode is a state
+  you can be in without knowing it"* -- right, and the fix for a hidden mode is to SHOW it, not
+  to spend a kit slot on it. The two buttons ARE the state: on screen, lit, and only while the
+  gun that has them is out. Same trade the guard made at m37. It also takes the kit cycle from
+  four taps to three, and the two slots were identical to look at anyway because they share the
+  model.
+  **THE ROW IS BUILT FROM `WEAP.modes`**, so a third mode is a row in that table and nothing in
+  the DOM -- and giving one its own `file:` is what would make it a different GUN rather than a
+  different trigger.
+  **AND IT EXISTS ONLY WHERE IT MEANS SOMETHING.** A mode row for a weapon with no modes is a
+  HUD element sitting in the play area saying nothing, which is the `actB` lesson one game over.
+  It is positioned off the right pad's OWN insets, so the two cannot drift apart on a notched
+  phone the way two independently written positions eventually would.
+  **`pointerdown`, NOT `click`**, and both `preventDefault` and `stopPropagation`: a click is
+  synthesised after the touch has ended, and the one thing that must never happen on this row is
+  a tap that also reaches the pad behind it.
+  **AND SWITCHING MID-HOLD STANDS THE TRIGGER DOWN**, because a wound-up charge handed to a
+  weapon that does not bank one has nowhere to go. `setMode` is the one place, so the lit button,
+  the hint and what the trigger actually does cannot disagree.
+  **The name stays the slot's**: "BLASTER - CHARGE" in the display face is wide enough to meet
+  the build chip on a 390 px phone, and the mode is already on screen as a lit button.
 - **THE CHARGE SETS THE REACH; THE TARGET SETS THE DISTANCE (m51, `MELEE.dashFree = 0`,
   `chargeAim`, `MELEE.dashLand`).** *"The way I think it will work is you still always launch to
   the character's position... the distance he travels always ends right at them, so that the full
