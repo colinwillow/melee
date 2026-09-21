@@ -13,7 +13,8 @@
     "rig": "node tools/rig.mjs",
     "sim": "node tools/sim.mjs",
     "glsl": "node tools/glsl.mjs",
-    "bld": "node tools/bld.mjs"
+    "bld": "node tools/bld.mjs",
+    "icons": "node tools/icons.mjs"
   },
   "type": "module"
 }

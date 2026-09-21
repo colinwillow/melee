@@ -56,6 +56,7 @@ npm run glsl       # does the shader splice still land
 npm run clips      # what is actually in each animation
 npm run gait       # the measured reference speed of every locomotion clip
 npm run rig        # height, facing, and whether the weapon mounts still agree
+npm run icons      # rebuild the home-screen icon set from one square artwork
 ```
 
 **These exist because of what they FOUND, and that is what they are for now — a record, not a
@@ -271,6 +272,35 @@ same picture from a phone.
   **WHAT NO HARNESS HERE CAN SEE IS WHETHER IT LOOKS LIKE SMOKE** -- the GLB is draco and nothing
   in this container can build a skin, so the joint's world position at runtime is a device
   question. `mel.smoke(x, y, z)` fires one anywhere, and `mel.SMOKE` is live.
+- **THE HOME-SCREEN ICON, AND THE VERSION GOES IN THE FILENAME (m44, `npm run icons`).** One
+  square artwork in, the whole set out: 512 and 192 for the manifest, **180 for the
+  `apple-touch-icon`** (which is the one iOS actually uses — it reads the manifest but will not
+  take an icon from it) and 32 for the tab.
+  **`?v=2` IS THE ONE CACHE-BUSTER THAT CANNOT WORK HERE.** A phone that has seen
+  `icons/apple-touch-icon.png` keeps what it has for ever and a home-screen shortcut keeps it
+  harder, so a new icon has to arrive under a NEW URL — and **iOS drops an `apple-touch-icon`
+  link whose href carries a query string ENTIRELY**, so the thing meant to make the new icon
+  appear is what makes NO icon appear and the home screen falls back to a screenshot of the
+  page. `V` at the top of `tools/icons.mjs` writes the number into the NAME. Raise it with the
+  art, re-run, repoint `index.html` and `manifest.webmanifest`.
+  **WHICH IS ALSO WHY `icons/` IS DELIBERATELY NOT IN `bump.mjs`'s `DIRS`.** Every other asset
+  here is cache-busted with a content hash in a query string, and this is the one folder where
+  that is fatal. It is the only exception and it has to stay one.
+  **AND IT IS NOT A PLAIN RESIZE.** Two things, and both are things generated icon art does:
+  it **CROPS THE MARGIN** (app-icon art usually arrives with the rounded corners already DRAWN
+  and flat space outside them, and iOS masks the icon itself — ship that and you get a rounded
+  icon inset in a square with a second rounded shape inside it), and it **FLATTENS** onto the
+  artwork's own corner colour, because **iOS composites a transparent PNG onto BLACK**, not onto
+  the home screen. His first icon needed neither — 1254 px, no alpha, art to all four edges,
+  corner `rgb(246,200,141)` — and the tool says so rather than staying quiet.
+  **IT READS BACK WHAT IT WROTE.** The encoder is hand-rolled on node's own zlib, so "it
+  produced files" is not "it produced icons": a wrong filter byte or a bad CRC writes a file of
+  exactly the right size that no decoder will open, and **the first thing that would notice is
+  his phone showing a screenshot instead of an icon.** One decode and one comparison per size.
+  **AND THE FIRST ENCODER WROTE A 1024 ICON AT 2.9 MB** — the source file's size, which is the
+  tell that nothing was compressing: it left every scanline on filter 0, which on photographic
+  art gives deflate nothing to find. Per-scanline adaptive filtering is what PNG is for. 1024 is
+  gone as well: nothing on a phone asks for one.
 - **Sizes are proportional and must stay that way.** Blaster 0.499 m authored = 55% of his
   height; hammer 0.614 m = 68%. "As authored" means proportional to the wearer, so they keep
   those percentages at any `RIG.height` and **no scale is applied to either**.
