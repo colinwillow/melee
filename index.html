@@ -166,11 +166,16 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
    *"They're almost impossible to see on the white."* Everything here was #ffffff at 5 to 30
    per cent -- a treatment that only exists against a dark background, and this world is a
    white floor.
-   THE RULE IS THE DRAWN EFFECT WORDS' OWN, ONE REPO OVER: a FAT DARK RIM UNDER A SATURATED
-   FILL survives ANY background, because the ink carries the shape and the colour carries the
-   identity. A translucent tint survives only the one it was picked against. So every ring
-   here is sandwiched -- dark outside, colour, dark inside -- and the knob is SOLID rather
-   than a wash.
+   m49 SANDWICHED EVERY RING IN INK AND THAT WAS TOO MUCH (m50). *"You gave the sticks a
+   slight drop shadow, I think we should remove that -- and the slight dim. I think the
+   colours are enough."* He is right, and the ink was answering the wrong half of the
+   question: what a white ring lacked was CHROMA, not weight. A saturated hue against a white
+   floor is already high contrast, and the dark fill, the outer glow and the knob's drop
+   shadow were all paying a second time for something the colour had already bought -- while
+   greying the floor under the thumb and filling the label's counters.
+   WHAT STAYS IS THE COLOUR AND ONE CRISP LINE. The rim went 2px to 3px to carry the shape on
+   its own, the knob is a SOLID disc with a single dark edge so it reads against both the pad
+   and the floor, and nothing here is translucent, blurred or tinted.
    AND THE TWO PADS ARE DIFFERENT HUES, which is not decoration: they are different controls
    (the body and the verb) and on a small phone the thumb that lands on the wrong one has
    nothing to tell it so. `--pc` is the only thing that differs, so a pad cannot end up half
@@ -179,14 +184,13 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   position: fixed; z-index: 5; width: 132px; height: 132px; border-radius: 50%;
   touch-action: none; bottom: calc(26px + env(safe-area-inset-bottom));
   --pc: var(--sky);
-  background: #0b0d1230;
-  border: 2px solid var(--pc);
-  box-shadow: 0 0 0 2px #0b0d12a6, inset 0 0 0 2px #0b0d1259;
-  transition: background .12s ease;
+  background: none;
+  border: 3px solid var(--pc);
+  transition: border-color .12s ease;
 }
 #padL { left: calc(20px + env(safe-area-inset-left)); --pc: var(--hot); }
 #padR { right: calc(20px + env(safe-area-inset-right)); --pc: var(--sky); }
-.pad.act { background: #0b0d1259; }
+.pad.act { border-color: #fff; }
 /* EIGHT TICKS ROUND THE RIM -- the whole of the styling, and deliberately static.
    *"A cool stylized thing kind of similar to how we did the radical, but not as complex."*
    The reticle is five spinning layers because it is a MARK you read; a pad is a place you put
@@ -202,7 +206,6 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .knob {
   position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px;
   border-radius: 50%; background: var(--pc); border: 2px solid var(--ink);
-  box-shadow: 0 0 0 1px #ffffff4d, 0 3px 9px #0b0d1273;
   will-change: transform;
 }
 .knob::after {
@@ -214,8 +217,7 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
    has to be a different hue from whatever `--pc` is, or "armed" is only "slightly brighter". */
 #padR::after {
   content: ''; position: absolute; inset: -10px; border-radius: 50%;
-  border: 3px solid var(--sun); box-shadow: 0 0 0 2px #0b0d1273, inset 0 0 0 2px #0b0d1273;
-  opacity: 0; transition: opacity .16s ease;
+  border: 3px solid var(--sun); opacity: 0; transition: opacity .16s ease;
 }
 #padR.arm::after { opacity: 1; }
 #padR.ready::after { opacity: .38; }
@@ -319,13 +321,14 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 
 /* AND THE LABEL WAS WHITE AT .42 OPACITY, which on a white floor is nothing at all. It takes
-   the pad's own hue with ink behind it, so it reads on either background and says which pad
-   it belongs to at the same time. */
+   the pad's own hue, and NOTHING ELSE (m50): *"the colours are enough -- it makes it hard to
+   read the little writing."* A dark halo behind ten-pixel text at .12em of tracking fills the
+   counters and muddies exactly the letters it was meant to lift. A saturated hue on white is
+   already high contrast; the halo was solving a problem the colour had already solved. */
 .pad .hint {
   position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%);
   font-size: 10px; letter-spacing: .12em; white-space: nowrap; text-transform: uppercase;
   color: var(--pc); font-weight: 600;
-  text-shadow: 0 1px 2px #0b0d12, 0 0 4px #0b0d12cc;
 }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -341,10 +344,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m49</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m50</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m49</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m50</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -384,7 +387,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm49';
+const BUILD = 'm50';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -506,7 +509,14 @@ const CAM = {
   // the one that matters: a thumb held UP to aim is never vertical, and the aim and the
   // camera are the same bearing, so its residual x wanders the reticle. Both SUBTRACT
   // rather than gate -- see `stepCam`.
-  dead: .06, deadAim: .34,
+  // **.34 WAS TOO MUCH (m50).** *"The dead zone now is like too strong, it's kinda hard to aim
+  // left and right."* A third of the pad spent on nothing is not a dead zone, it is a
+  // deliberate lean that does nothing -- and m48's own table said so and I did not read it
+  // that way: it reported **0.0 deg/s at 32% off centre** as a clean pass, when 32% of a pad
+  // is plainly a turn being asked for. A dead zone is sized to the WOBBLE a held thumb
+  // carries (.1 to .3) and not to the whole range it has: .20 kills the bottom of that and
+  // leaves the top of it turning, which is where the line actually is.
+  dead: .06, deadAim: .20,
   fov: 58, fovRush: 7, rush0: 2.6, rushSpan: 3.2,
   // IT COMES IN WHEN SOMETHING IS IN THE WAY RATHER THAN CLIMBING OVER IT. Shortening the boom
   // keeps the SHOT -- a level three-quarter view -- while lifting the lens changes it into a
@@ -1078,7 +1088,13 @@ const FOE = {
   //     nerve   how near he will get, and how willing he is to swing rather than circle
   //     react   how long he takes to notice, and the beat between his decisions
   //     guard   how often he answers with a block instead
-  vary: { pace: [.78, 1.22], nerve: [.8, 1.25], react: [.15, .75], guard: [.10, .48] },
+  vary: { pace: [.78, 1.22], nerve: [.8, 1.25], react: [.15, .75], guard: [.10, .48], dash: [.25, .80] },
+  // HOW HE CLOSES, rather than how fast. See `foeGait`: `lane` is the bearing he drifts off
+  // dead-on (32 degrees at the widest, tapered to nothing as he arrives), `surge` how much his
+  // pace breathes either side of his own, and `stop` how often a re-roll is a hesitation
+  // instead of a new lane. The periods are deliberately incommensurate with each other -- a
+  // lane and a surge that changed together would be one decision wearing two names.
+  gait: { lane: .55, laneT: [1.1, 2.9], surge: .34, stop: .16, stopT: [.30, .95] },
   // **AND HE CIRCLES.** `standing_walk_left` and `standing_walk_right` were sitting in the file
   // unused, and a man who only ever walks straight at you is the whole complaint. Circling is
   // what makes three of them read as a group rather than as a queue.
@@ -1216,6 +1232,9 @@ const HICK = {
   walk: .55, run: 1.9, flee: 3.2,
   turn: 3.0,
   vary: { pace: [.8, 1.25], nerve: [1, 1], react: [.3, 1.2], guard: [0, 0] },
+  // A DRUNK AMBLE BREATHES HARDER AND STOPS MORE, which is what a drunk amble IS -- and it
+  // costs one line because `foeGait` is the same function the warrior's approach calls.
+  gait: { lane: 0, laneT: [1.0, 2.6], surge: .42, stop: .26, stopT: [.6, 2.1] },
   // HE WANDERS. A body that stands on its mark for ever is scenery; one that ambles a few
   // metres and stops to look about is a person. The ring is round where he SPAWNED, so the
   // street keeps its shape however long you leave them alone.
@@ -1299,6 +1318,9 @@ const HOBO = {
   walk: .55, run: 1.8, flee: 2.8,
   turn: 3.0,
   vary: { pace: [.8, 1.25], nerve: [1, 1], react: [.3, 1.2], guard: [0, 0] },
+  // A DRUNK AMBLE BREATHES HARDER AND STOPS MORE, which is what a drunk amble IS -- and it
+  // costs one line because `foeGait` is the same function the warrior's approach calls.
+  gait: { lane: 0, laneT: [1.0, 2.6], surge: .42, stop: .26, stopT: [.6, 2.1] },
   roam: 9, roamWait: [2.5, 7.0], roamAt: .9,
   flee0: 5.5, fleeAdd: 2.5, fleeMax: 12,
   // THE CLIPS ARE PLAYED NEAR THEIR OWN LENGTH. m37: a reaction too fast to read is the same
@@ -2939,7 +2961,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
-  aim: 0, armT: 0, chg: 0, fireT: 0, autoT: 0, block: 0, blockT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
+  aim: 0, armT: 0, chg: 0, fireT: 0, autoT: 0, block: 0, blockT: 0, center: 0, centerT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
   comp: 0, compHold: 0, bias: null,   // the aim-pose correction, and the pose offset it is undoing
   slot: 0,
   // HIS OWN HEALTH, which until m35 did not exist -- *"make him fight back"* has no consequence
@@ -3386,8 +3408,38 @@ function stepKit(dt) {
       if (p.blockT >= WEAP.blockT) {
         p.block = 1;
         if (p.aim || p.charge) { p.aim = 0; p.armT = 0; p.chg = 0; p.charge = 0; p.chargeT = 0; chargeStop(); }
+        p.center = 0; p.centerT = 0;
       }
     } else { p.block = 0; p.blockT = 0; }
+  }
+
+  // ---- HOLD UP BARE-HANDED AND HE SQUARES UP TO THE CAMERA (m50, `p.center`) ----
+  // *"When you're disarmed, if you press up on the right stick he should centre to the view --
+  //  so now if you hold down on the left stick he runs backwards, if you hold left he strafes
+  //  to the side, until you release the right stick."*
+  // **THE FREE GESTURE WAS ALREADY THE RIGHT-SHAPED HOLE.** Up on this pad is the trigger with
+  // a gun and the wind-up with the hammer; UNARMED it did nothing at all, and it is the one
+  // slot where "up" has no other meaning to collide with. So it is gated on the SLOT (`!s.aim
+  // && !s.charge`) rather than on a new mode -- there is nothing to turn on and nothing to be
+  // in without knowing it.
+  // **AND IT IS NOT A NEW BEHAVIOUR, IT IS THE `aiming` BRANCH WITH NOTHING IN HIS HANDS.**
+  // That branch already means exactly this: face where the lens looks, let `plant` go to zero
+  // so the legs carry him wherever the thumb says instead of dragging his body round to point
+  // that way, and let `rigAnim` pick the back/strafe clip off the SIGN of his travel. The guard
+  // borrowed it at m39 for the same reason and with the same `bare` handling, so this is a
+  // third caller rather than a second copy.
+  // **THE SAME FOUR GATES**, through `padUp`, because a third answer to "is the thumb pushed
+  // up" is a third thing to keep in step with the trigger and the wind-up.
+  {
+    const free = !s.aim && !s.charge;
+    const busy = p.melee || p.roll || p.chargeGo || p.block || !p.grounded;
+    if (free && !busy && padUp(p.center)) {
+      // IT WAITS `armT` LIKE THE OTHER TWO. A stab at the top of the pad that comes straight
+      // back is a jump that overshot, and squaring him up for one frame on every tap is a
+      // twitch rather than a stance.
+      p.centerT += dt;
+      if (p.centerT >= WEAP.armT) p.center = 1;
+    } else { p.center = 0; p.centerT = 0; }
   }
 
   // ---- the blaster: PRESS AND HOLD UP to take the firing position and wind a shot up,
@@ -3507,7 +3559,10 @@ function stepKit(dt) {
   } else if (p.charge) chargeRelease();
 
   if (p.fireT > 0) p.fireT = Math.max(0, p.fireT - dt / (WEAP.shootBeat + WEAP.shootHold));
-  padR.classList.toggle('arm', !!(p.aim || (p.charge && p.chargeT > MELEE.charge * .5)));
+  // THE RING IS "THIS PAD IS IN A MODE", whichever mode it is. Squaring up has no weapon and
+  // no charge to show, so without it the one thing that says the hold TOOK is the character
+  // turning -- which is also what he looks like when the camera happens to swing.
+  padR.classList.toggle('arm', !!(p.aim || p.center || (p.charge && p.chargeT > MELEE.charge * .5)));
 }
 
 // ============================================================================================
@@ -3686,7 +3741,7 @@ function stepPlayer(dt) {
   // is why `plant` has to go to zero here. `plant` swings the velocity onto his facing as he
   // speeds up, which is right for running and exactly wrong while aiming, since it would drag
   // every step round to point down the barrel.
-  const aiming = committed() || p.block || !!p.lock;
+  const aiming = committed() || p.block || p.center || !!p.lock;
   let wantSp = MOVE.max * s.mag;
   if (aiming) wantSp = Math.min(wantSp, GAIT.aimRunRef);
   if (p.land) wantSp *= .35;
@@ -3782,13 +3837,16 @@ function rigAnim(dt) {
 
   // ---- COMMITTED: the legs strafe, the arms hold the weapon, and neither knows about the
   //      other. Every bone is claimed exactly once, so they compose rather than average.
-  if (committed() || p.block) {
+  if (committed() || p.block || p.center) {
     // **THE GUARD BORROWS THE COMMITTED BRANCH, WHICH IS WHAT IT ALREADY IS**: a body facing
     // forward with its legs answering the thumb sideways. The only difference is which pose the
     // top half holds -- and with no block clip drawn yet there is no upper pose at all, so the
     // WHOLE strafe clips play rather than their `__legs` halves. Name `CLIPS.block` and it
     // becomes an override like every other.
-    const bare = p.block && !(CLIPS.block && rig.actions[CLIPS.block]);
+    // BARE MEANS THERE IS NO UPPER POSE TO PUT ON, so the WHOLE strafe clips play rather than
+    // their `__legs` halves. Empty-handed there is nothing to hold up by construction; with the
+    // guard it is because `CLIPS.block` has not been drawn yet.
+    const bare = (p.center && !committed()) || (p.block && !(CLIPS.block && rig.actions[CLIPS.block]));
     const up = p.block ? CLIPS.block
              : p.fireT > 0 ? CLIPS.shoot : p.charge ? CLIPS.chargeUp : CLIPS.aimPose;
     const moving = sp > .25;
@@ -4603,9 +4661,52 @@ const rnd = a => a[0] + Math.random() * (a[1] - a[0]);
 function foeRoll(K) {
   return K.vary
     ? { pace: rnd(K.vary.pace), nerve: rnd(K.vary.nerve),
-        react: rnd(K.vary.react), guard: (K.block || 0) * rnd([.4, 1.5]) }
-    : { pace: 1, nerve: 1, react: .3, guard: 0 };
+        react: rnd(K.vary.react), guard: (K.block || 0) * rnd([.4, 1.5]),
+        // WHERE HE STOPS RUNNING AND STARTS WALKING, as a fraction of `notice`. Shared, it is
+        // the one moment three men all change gait together; rolled, one of them jogs nearly
+        // the whole way in and another is walking from twenty metres out.
+        dash: rnd(K.vary.dash || [.28, .78]) }
+    : { pace: 1, nerve: 1, react: .3, guard: 0, dash: .45 };
 }
+// **THREE MEN MARCHING AT ONE SPEED DOWN ONE LINE IS ONE MAN DRAWN THREE TIMES (m50, `foeGait`).**
+// *"They just all kind of walk at the exact same speed towards me... I'm wondering if we can
+//  change either their gait or their speed. Maybe they don't always go in a straight line
+//  towards you -- a little more intelligent path as well as speed. Sometimes it's a little
+//  faster, sometimes they stop, sometimes they turn, sometimes it's a little bit slower."*
+// m36 already rolled a `pace` per body, and it is not enough for a reason worth writing down:
+// a CONSTANT multiplier spreads three men out along one line and they still all move at ONE
+// speed each, in a straight line, for ever. What reads as a person is the speed CHANGING and
+// the line BENDING, so what varies has to vary over TIME and not once at spawn.
+// Three things off one clock, and each one is a different word of his sentence:
+//     lane    a bearing he drifts off dead-on -- "they don't go in a straight line", "turns"
+//     surge   a multiplier on his own pace    -- "a little faster... a little slower"
+//     hold    a hesitation instead of a lane  -- "sometimes they stop"
+// **EACH BODY HAS HIS OWN CLOCK AND HIS OWN PHASE**, so three of them can never re-sync -- the
+// same reason each smoke plume rolls its own interval rather than sharing a metronome.
+// **A RE-ROLL IS A LANE *OR* A HESITATION, NEVER BOTH**, or a man stops and changes direction
+// on the same frame, which reads as a glitch rather than as a decision.
+// It returns the pace multiplier for this frame, and 0 means he is standing still.
+function foeGait(d, K, dt) {
+  const G = K.gait;
+  if (!G) return 1;
+  if (d.holdT > 0) { d.holdT -= dt; if (d.holdT > 0) return 0; }
+  d.gaitT = (d.gaitT || 0) - dt;
+  if (d.gaitT <= 0) {
+    d.surge = 1 + (Math.random() * 2 - 1) * G.surge;
+    if (Math.random() < G.stop) { d.holdT = rnd(G.stopT); d.gaitT = d.holdT + rnd(G.laneT); return 0; }
+    d.lane = (Math.random() * 2 - 1) * G.lane;
+    d.gaitT = rnd(G.laneT);
+  }
+  return d.surge || 1;
+}
+// AND THE LANE TAPERS OUT AS HE ARRIVES. Sidling in from thirty degrees off is a man closing
+// on you; doing it at arm's length is a man who cannot find you. Far out it is the whole lane,
+// inside `hold` it is nothing, and the smoothstep between is what makes the path read as a
+// curve rather than as two straight lines with a corner in them.
+function foeLane(d, K, dd) {
+  return (d.lane || 0) * smooth(K.hold, Math.max(K.hold + 2, K.notice * .5), dd);
+}
+
 function bodyLoops(K) {
   const L = new Set([K.clips.idle]);
   for (const k of ['walk', 'run', 'block', 'flee']) if (K.clips[k]) L.add(K.clips[k]);
@@ -4859,6 +4960,18 @@ function dummyBlow(d, dirH, power, dmg) {
   d.vy = K.flyUp * k;
   d.cur = d.back ? K.clips.downB : K.clips.downF;
   skinPlay(d, d.cur, skinLen(d, d.cur) / K.downBeat);
+  // **NOBODY GETS UP ON THE SAME FRAME (m50).** *"If I shoot them all three down at the same
+  // time they all get up at the exact same time. I think we should stagger it by a different
+  // small amount so that it feels more random."* `K.out` was a CONSTANT, so three men knocked
+  // down together stood up together, in step, for ever -- which reads as one animation played
+  // three times rather than three men.
+  // **ROLLED HERE, NOT AT SPAWN**, so the same three do not stagger in the same order every
+  // fight. And it is TWO numbers, because lying there longer and standing up slower are
+  // different things and he asked for the RATE as well: `d.lie` is how long he stays down,
+  // `d.upB` is how long the get-up takes, and the state reads both off the BODY rather than
+  // off the kind.
+  d.lie = K.out * rnd(K.outVary || [.62, 1.55]);
+  d.upB = K.upBeat * rnd(K.upVary || [.88, 1.18]);
 }
 
 // ============================================================================================
@@ -4935,7 +5048,15 @@ function foeAI(d, dt, t) {
     return;
   }
 
-  faceTo(d, toP, dt);
+  // **HE AIMS OFF, AND WALKS WHERE HE IS POINTED (m50).** `foeMove` drives him along `d.h`,
+  // which `faceTo` eases toward whatever it is given -- so biasing the FACE target by the lane
+  // bends the path for free, with an ease already on it, and there is no second bearing for the
+  // body and the travel to disagree about. The ease is also what turns a re-rolled lane into a
+  // visible TURN rather than a jump sideways.
+  // **AND IT ONLY REACHES THE TRAVEL IN THE APPROACH**, because giving ground and circling both
+  // move along a bearing they compute themselves. Taper plus that is why nothing had to be
+  // excluded by hand.
+  faceTo(d, toP + foeLane(d, K, dd), dt);
 
   // GIVING GROUND IS A STATE OF ITS OWN, and it is what a fight has instead of a queue.
   if (d.backT > 0) {
@@ -4971,10 +5092,15 @@ function foeAI(d, dt, t) {
   const reach = Math.min(K.reach * V.nerve, hold - .2);
   if (dd > (d.closed ? hold : reach)) {
     d.closed = 0;
-    // **SPEED VARIATION IS TWO THINGS**: which clip, and his own pace. A far foe runs; a near
-    // one closes at a walk, which is what stops three of them arriving as a wall.
-    const fast = dd > K.notice * .45;
-    const sp = (fast ? K.run : K.walk) * V.pace;
+    // **SPEED VARIATION IS THREE THINGS**: which clip, his own pace, and the SURGE on top.
+    // **AND WHERE HE DROPS TO A WALK IS HIS OWN (`V.dash`)**, which is the half that was most
+    // visibly shared: a flat `notice * .45` meant every one of them broke into a run at the
+    // identical distance and dropped out of it at the identical distance, in step, so the one
+    // moment that could have told them apart was the one moment they all agreed on.
+    const fast = dd > K.notice * (V.dash || .45);
+    const surge = foeGait(d, K, dt);
+    if (surge <= 0) { t[K.clips.idle] = 1; return; }   // a hesitation, and he is looking at you
+    const sp = (fast ? K.run : K.walk) * V.pace * surge;
     const nm = fast ? K.clips.run : K.clips.walk;
     const ref = fast ? K.runRef : K.walkRef;
     foeMove(d, d.h, sp, dt);
@@ -5027,7 +5153,13 @@ function foeWander(d, dt, t, dd, toP) {
     return;
   }
   faceTo(d, Math.atan2(gx, gz), dt);
-  const sp = K.walk * V.pace;
+  // THE SAME BREATHING, AND NOT THE LANE. His path is already his own -- the ring gives every
+  // body a different point to walk to -- so what a lane would add here is a man failing to
+  // arrive at a place nobody can see. What the amble was missing is the SPEED changing and the
+  // occasional stop, which is the other two thirds of `foeGait`.
+  const surge = foeGait(d, K, dt);
+  if (surge <= 0) { t[d.look && d.t < skinLen(d, d.look) ? d.look : K.clips.idle] = 1; return; }
+  const sp = K.walk * V.pace * surge;
   foeMove(d, d.h, sp, dt);
   t[K.clips.walk] = 1;
   setSkinScale(d, K.clips.walk, clamp(sp / K.walkRef, K.tsLo, K.tsHi));
@@ -5187,7 +5319,7 @@ function stepDummies(dt) {
       // a branch about who is flying.
       const air = K.clips.air && d.root.position.y > groundAt(d.root.position.x, d.root.position.z, d.root.position.y, .5) + .25;
       t[air ? K.clips.air : d.cur] = 1;
-      if (d.t >= K.downBeat + K.out) {
+      if (d.t >= K.downBeat + (d.lie != null ? d.lie : K.out)) {
         // ONE OF THE FOUR COMBINATIONS CAN BE AUTHORED THE OTHER WAY ROUND, AND IT WAS MEASURED
         // rather than guessed: on the officer's export `knock_down_front` ENDS 174 degrees from
         // where `get_up_front` starts, while the back pair agrees to 14. So the front pair needs
@@ -5198,11 +5330,13 @@ function stepDummies(dt) {
         if (!d.back && K.flip !== 0) d.h += Math.PI;
         d.st = 'up'; d.t = 0;
         d.cur = d.back ? K.clips.upB : K.clips.upF;
-        skinPlay(d, d.cur, skinLen(d, d.cur) / K.upBeat);
+        skinPlay(d, d.cur, skinLen(d, d.cur) / (d.upB || K.upBeat));
       }
     } else if (d.st === 'up') {
       t[d.cur] = 1;
-      if (d.t >= K.upBeat) {
+      // THE STATE'S LENGTH IS THE CLIP'S OWN BEAT, or it cuts the get-up off part-way -- which
+      // is the m8 landmine, and the whole reason `d.upB` has to be read in both places.
+      if (d.t >= (d.upB || K.upBeat)) {
         d.st = 'idle'; d.t = 0; d.hp = d.hpMax;
         // HE GETS UP ANGRY. A battlecry on the way back in is the one place a taunt clip
         // belongs, and it also puts a beat between standing up and swinging again.
@@ -5272,7 +5406,7 @@ function stepCam(dt) {
   // 'the aimer jumps a little' half of the complaint. `padUp` is true from the first frame the
   // thumb is up there, and its hysteresis argument keeps it true once something IS armed, so a
   // thumb rolling inward mid-aim does not suddenly get the twitchy zone back.
-  const dz = padUp(p.aim || p.charge) ? CAM.deadAim : CAM.dead;
+  const dz = padUp(p.aim || p.charge || p.center) ? CAM.deadAim : CAM.dead;
   const ax = Math.abs(rx);
   if (ax > dz) cam.az -= Math.sign(rx) * ((ax - dz) / (1 - dz)) * CAM.yawRate * dt;
 
@@ -5373,7 +5507,7 @@ function frame() {
     // `BX0` is the fault, any number at all is not. `gun<n>CM`'s rule, one system over.
     // A DEFENSIVE STATE YOU CANNOT SEE IS ONE NOBODY USES TWICE -- and there is no clip for it
     // yet, so this line IS the guard as far as the screen is concerned.
-    const bk = p.block ? ' · BLOCK' : '';
+    const bk = p.block ? ' · BLOCK' : p.center ? ' · SQUARE' : '';
     const bx = BUILDINGS.length
       ? ' · BX' + BUILDINGS.reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +

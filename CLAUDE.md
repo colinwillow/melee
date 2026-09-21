@@ -822,6 +822,91 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **THE INK WAS PAYING TWICE FOR WHAT THE COLOUR HAD ALREADY BOUGHT (m50).** *"You gave the
+  sticks a slight drop shadow, I think we should remove that -- and the slight dim. I think the
+  colours are enough. It makes it hard to read the little writing."* m49's rule was right about
+  the problem and wrong about the remedy: what a white ring lacked was **CHROMA**, not WEIGHT.
+  A saturated hue on a white floor is already high contrast, so the dark fill, the outer glow,
+  the knob's drop shadow and the label's halo were a second solution to a solved problem -- and
+  each one cost something: the fill greys the floor under the thumb, and **a dark halo behind
+  ten-pixel text at .12em of tracking fills the counters and muddies the letters it was meant
+  to lift.** The rim went 2px to 3px so the shape carries on one crisp line, the knob is a solid
+  disc with one dark edge, and nothing on either pad is translucent, blurred or tinted.
+  **THE `.act` FEEDBACK MOVED FROM THE FILL TO THE RIM** for the same reason: a tint that says
+  "you are touching this" is a tint over the play area the rest of the time.
+- **A DEAD ZONE IS SIZED TO THE WOBBLE, NOT TO THE RANGE (m50, `CAM.deadAim` .34 -> .20).**
+  *"The dead zone now is like too strong, it's kinda hard to aim left and right."* A third of
+  the pad spent on nothing is not a dead zone, it is a deliberate lean that does nothing.
+  **AND m48'S OWN TABLE SAID SO -- I READ IT AS A PASS.** It reported **0.0 deg/s at 32% off
+  centre** and I wrote that up as the fix working, when 32% of a pad is plainly a turn being
+  asked for. The number to size against is the residual x a HELD thumb carries (.1 to .3), so
+  .20 kills the bottom of that band and leaves the top of it turning. **A measurement that
+  reports zero everywhere is as suspicious as one that reports zero nowhere** -- ask which of
+  the rows were meant to be non-zero before calling it green.
+- **HOLD UP BARE-HANDED AND HE SQUARES UP TO THE CAMERA (m50, `p.center`).** *"When you're
+  disarmed, if you press up on the right stick he should centre to the view -- so now if you
+  hold down on the left stick he runs backwards, if you hold left he strafes to the side, until
+  you release the right stick."*
+  **IT COST ALMOST NOTHING BECAUSE IT IS THE `aiming` BRANCH WITH EMPTY HANDS.** That branch
+  already means exactly what he described: face where the lens looks, let `plant` go to zero so
+  the legs carry him wherever the thumb says instead of dragging his body round to point that
+  way, and let `rigAnim` pick the back/strafe clip off the SIGN of his travel. The guard
+  borrowed it at m39 with the same `bare` handling; this is a THIRD caller, not a second copy.
+  **UP WAS THE FREE GESTURE AND ONLY ON THIS SLOT.** It is the trigger with a gun and the
+  wind-up with the hammer, and unarmed it did nothing at all -- so it is gated on the SLOT
+  (`!s.aim && !s.charge`) rather than on a mode, and there is nothing to be in without knowing
+  it. Same four gates through `padUp`: a third answer to "is the thumb pushed up" is a third
+  thing to keep in step with the other two.
+  **AND THE RING LIGHTS.** There is no weapon and no charge to show, so without it the only
+  thing saying the hold took is the character turning -- which is also what he looks like when
+  the camera happens to swing. The chip says `SQUARE`.
+- **NOBODY GETS UP ON THE SAME FRAME (m50, `d.lie`, `d.upB`).** *"If I shoot them all three down
+  at the same time they all get up at the exact same time -- we should stagger it by a different
+  small amount so it feels more random."* `K.out` and `K.upBeat` were CONSTANTS, so three men
+  knocked down together stood up in step, for ever, which reads as one animation played three
+  times rather than as three men.
+  **TWO NUMBERS, BECAUSE HE ASKED FOR THE RATE AS WELL**: how long he lies there and how long
+  the get-up takes are different things. **ROLLED AT THE KNOCK-DOWN, NOT AT SPAWN**, so the same
+  three do not stagger in the same order every fight.
+  **AND THE STATE'S LENGTH HAS TO READ THE SAME `d.upB` THE CLIP WAS SCALED BY**, or it cuts the
+  get-up off part-way -- the m8 landmine, which is exactly what a per-body beat would walk into.
+- **THREE MEN MARCHING AT ONE SPEED DOWN ONE LINE IS ONE MAN DRAWN THREE TIMES (m50, `foeGait`,
+  `foeLane`).** *"They just all kind of walk at the exact same speed towards me... maybe they
+  don't always go in a straight line towards you, a little more intelligent path as well as
+  speed. Sometimes it's a little faster, sometimes they stop, sometimes they turn, sometimes a
+  little bit slower."*
+  **m36 ALREADY ROLLED A `pace` PER BODY AND IT WAS NOT ENOUGH, WHICH IS THE POINT.** A CONSTANT
+  multiplier spreads three men along one line and every one of them still moves at ONE speed, in
+  a STRAIGHT line, for ever. **What reads as a person is the speed CHANGING and the line
+  BENDING**, so what varies has to vary over TIME and not once at spawn. Three things off one
+  clock, one per word of his sentence:
+      lane    a bearing he drifts off dead-on   -- "not a straight line", "sometimes they turn"
+      surge   a multiplier on his own pace      -- "a little faster... a little slower"
+      hold    a hesitation instead of a lane    -- "sometimes they stop"
+  **HE AIMS OFF AND WALKS WHERE HE IS POINTED.** `foeMove` drives him along `d.h`, which
+  `faceTo` eases toward whatever it is given -- so biasing the FACE target bends the path for
+  free, with an ease already on it, and there is no second bearing for the body and the travel
+  to disagree about. The ease is also what turns a re-rolled lane into a visible TURN rather
+  than a jump sideways. It reaches the travel only in the APPROACH, because giving ground and
+  circling both compute their own bearing.
+  **AND THE LANE TAPERS TO NOTHING AS HE ARRIVES.** Sidling in from thirty degrees off is a man
+  closing on you; doing it at arm's length is a man who cannot find you.
+  **EACH BODY HAS HIS OWN CLOCK AND HIS OWN PHASE**, so three can never re-sync -- the smoke
+  plumes' rule. **AND A RE-ROLL IS A LANE *OR* A HESITATION, NEVER BOTH**, or a man stops and
+  changes direction on the same frame, which reads as a glitch rather than as a decision.
+  **`V.dash` IS THE HALF THAT WAS MOST VISIBLY SHARED.** A flat `notice * .45` meant every one
+  of them broke into a run at the identical distance and dropped out of it at the identical
+  distance -- so the one moment that could have told them apart was the one moment they all
+  agreed on. Rolled per body, one jogs nearly the whole way in and another is walking from
+  twenty metres out.
+  **THE DRUNKS GET THE SAME FUNCTION WITH NO LANE.** Their path is already their own (the roam
+  ring gives every body a different point to walk to), so a lane would only be a man failing to
+  arrive somewhere nobody can see; what the amble was missing is the speed changing and the
+  occasional stop, which is the other two thirds of it. They breathe harder and stop more,
+  because that is what a drunk amble IS -- and it is one line on the table.
+  **AND THE RUN CLIP IS STILL SLOW**: `K.run` 2.6 against a `runRef` of 1.79 is what `standing_
+  run_forward` is actually walking at, so more of them running does not make them faster. The
+  honest fix for a slow clip is a faster clip, and it stays a stated open item.
 - **A WHITE CONTROL ON A WHITE FLOOR IS NOT A FAINT CONTROL, IT IS NO CONTROL (m49).** *"We need
   to make the joysticks different colors, they're almost impossible to see on the white... I keep
   missing."* Every value on both pads was `#ffffff` at 5 to 30 per cent -- a treatment that only
