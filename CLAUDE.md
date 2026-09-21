@@ -822,6 +822,112 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **THE CHARGE SETS THE REACH; THE TARGET SETS THE DISTANCE (m51, `MELEE.dashFree = 0`,
+  `chargeAim`, `MELEE.dashLand`).** *"The way I think it will work is you still always launch to
+  the character's position... the distance he travels always ends right at them, so that the full
+  animation and swing finishes right at them -- you'll have to basically gauge the distance.
+  There should still be a distance cap, in that the longer you charge the farther you can
+  actually launch to hit them. It's just, regardless, when you release he still always launches
+  to them within reason, within a cap."*
+  **BOTH OF THE PREVIOUS SHAPES WERE ONE HALF OF THAT, AND THE LINE IS THE SAME LINE:**
+      m21   `far = gap`               the man sets it, and the hold buys NOTHING
+      m43   `far = wantD`             the hold sets it, and he goes straight THROUGH him
+      m51   `far = min(gap, wantD)`   the hold is the CAP, the man is the DISTANCE
+  **m43'S FINDING STANDS AND WAS NEVER ABOUT THE `min`.** What made the hold meaningless was
+  that `finishRange` 26 acquired a man in a 24-degree cone from across the street, so `gap` was
+  always the small number and `wantD` had no way to matter. `chargeAim`'s `acq` is what makes
+  the cap real: **a target is only taken if the charge can actually carry him to it**, which is
+  m20's rule -- an assist's range is sized for what it DELIVERS, not for what it draws --
+  arriving on the melee side three builds late. A man past the reach is not acquired, so the
+  dash covers the whole hold and falls short of him, which is what "gauge the distance" means.
+- **AND HE WAS STILL MOVING WHEN THE HAMMER LANDED (m51, `MELEE.dashLand`).** *"He launches
+  through them and so they go flying before he's even swung his hammer."* That is a SECOND
+  cause and clamping the travel does not fix it: `carry` bleeds him to zero across the WHOLE
+  state, so at the contact frame (`finishAt` .38) he has covered **.38 / .725 = 52% of the
+  distance** and spends the other 48% ploughing on past the man he has just hit.
+  **THE TRAVEL IS SPENT BY `dashLand` .42 AND HE IS STATIONARY FROM THERE**, so the blow is the
+  hammer arriving at a body that has already arrived, and the rest of the clip is the
+  follow-through it was drawn as. One `uu = u / arr` in the bleed, `arr` 1 for every other move,
+  so the line is unchanged for everything that is not a dash.
+  **AND `STRIKE.dashFrom` GOES BACK TO `from`.** m45's 0 was the right fix for the wrong shape:
+  the dash used to plough past anybody close, so opening the window on frame one was the only
+  way to catch them -- and catching them ON THE WAY THROUGH is precisely what he then described.
+  **AND `dashV` HAD TO RISE WITH IT**, 66 -> 76: the clock is now `goDur * carryAvg * dashLand`
+  = **.158 s**, not .377, so at 66 the furthest reachable became 10.45 m against a `flatFar` cap
+  of 11 -- a lock the dash cannot deliver, which is the very thing `acq` was added to stop.
+  Measured through the solve: every target case stops **exactly `arrive` 1.05 m short of him**,
+  a full hold with nobody in range still covers 11.00 m, and a half hold 8.38.
+- **A MARK ON THE FLOOR IS NOT A LOCK (m51, `MARK`, `markStep`).** *"Maybe we'll put a little
+  circle under their feet, that kind of shows that they're qualifying as what your target is --
+  rather than the lock, where the aimer is on them."* He has now turned down two assists that
+  MOVED HIS AIM and kept the one that only moves his BODY, and this is the same distinction
+  drawn in the art: **a mark drawn ON a man is a lock** -- your eye goes to it and you stop
+  aiming -- **and a mark on the FLOOR under him is a fact about the world**, where the dash is
+  about to put you, readable without looking away from the fight.
+  **IT PULSES AND THEN SNAPS.** The ring TIGHTENS as the hold fills, which is the reticle's own
+  argument (how loaded something is should be a SHAPE, not a bar), and at full it goes hot and
+  stops breathing -- a DIFFERENT mark rather than a brighter one, which is the only kind
+  readable at a glance instead of by comparison with a memory.
+  **AND `chargeAim` IS ONE FUNCTION BECAUSE THE MARK IS A PROMISE.** `markStep` calls it every
+  frame to draw the ring and `chargeRelease` calls it on the frame the thumb lifts to aim the
+  dash. Two places computing "who is the target" is exactly the m20 bug -- the mark on one man
+  and the shot at another -- and the fix there was to make it one call. **The circle can never
+  appear under somebody the dash will fall short of**, by construction.
+  **The chip reads `charge0.7>4.2`**: how wound, and how far off the man it has. No `>` at all
+  means the release will cover the whole hold instead. "It didn't go to him" and "it never had
+  him" are opposite bugs and one picture from a phone.
+- **THE HAMMER SAYS IT IS LOADED, AND FULL IS AN EVENT (m51, `HCHG`).** *"We need to make it
+  really obvious when the hammer is charging. I'm not sure how to do this, but maybe the hammer
+  starts to glow and pulse, maybe his stance gets more violent, maybe it smokes -- something to
+  know when you're fully charged. We could put a little bar."*
+  **A BAR IS A NUMBER YOU LOOK AWAY TO READ.** Sparks off the head are something you see while
+  still watching the fight, and they cost nothing: `spk` is a pool and one draw call, and
+  `muzzleWorld()` is the measured far end of the geometry along the mount's own axis -- which on
+  a hammer IS the head, so nothing about where they come from is typed.
+  **THE RATE TIGHTENS AS IT FILLS** (`every0` -> `every1`), which is the jetpack's own lesson one
+  weapon over: a single puff is a sticker and a run of them coming faster is a machine winding
+  up. **AND THE TOP-OUT IS THREE THINGS ON ONE FRAME** -- a ring thrown off the head, a clang,
+  and the ring under the target going hot -- fired on the CROSSING (`was < charge && now >=`)
+  rather than on "it is full", which would fire every frame it is held.
+  **AND THE GLOW HOOK WAS GATED ON THE WRONG QUESTION.** `if (slot.aim)` is "does this weapon
+  shoot"; what `hueGlow` actually answers is "does it light up as the hold fills", which the
+  hammer now does too. `GUNU` stays ONE shared uniform set -- only one weapon is ever mounted
+  and `mountWeapon` re-measures the hue per slot -- but the two weapons were then both damping
+  it every frame toward different targets, which is **two writers on one number**, so the slot
+  names the source and there is exactly one line that moves it.
+- **THE MELEE LUNGE SOLVED FOR THE GAP AND THEN THREW THE ANSWER AWAY (m51).** *"When you're
+  swiping generally towards them it more or less moves directly to them, or to right in front of
+  them, so that his melee animation really actually nails them perfectly."* It did solve for
+  `dist - arrive` -- and then clamped the result UP to `base`, a typed lunge speed that has
+  nothing to do with where the man is:
+      man 1.5 m off   solves to 1.0 m/s   floored at 7.0   covers 3.1 m   = **1.6 m PAST him**
+  every single time, which is the whole of "he goes through them". `base` is the FREE lunge, for
+  a flick at nobody; a solved one is solved and the only floor it needs is **zero**. A man
+  already at arm's length now gets a swing thrown on the spot.
+  **AND THE CONE WIDENED, .42 -> .60** (24 deg -> 34). *"You can kind of button-smash with the
+  stick -- swipe, swipe, swipe -- and he hits him, goes back, goes across to them. It's because
+  of the aim assist on the melee, so he always kind of targets them if you're at least flicking
+  in their general direction, and for a mobile game that's pretty good because you're pretty
+  limited."* **"General direction" is a wider cone than "aimed at"**, and this one is safe to
+  widen where the blaster's was not: it only ever pulls a LUNGE -- a physical assist with
+  nothing drawn and nothing taken off the thumb, the half he has now asked to keep three times
+  -- and the strike's own reach caps how far it can drag him.
+- **A DEAD ZONE IS THE SLACK AT CENTRE, NOT A REGION (m51, `CAM.deadAim` .20 -> .12).** *"I
+  really just wanted it to be like a subtle grace right in the middle."* Which is the right way
+  to say what the number is FOR -- and because it SUBTRACTS rather than gates, a wide one is not
+  merely a wide middle: the rescale goes on costing sensitivity all the way out to full lock, so
+  it makes the stick heavy everywhere. Third pass on this number, and the lesson is that .34 and
+  .20 were both sized against the RANGE rather than against the wobble.
+- **NOT DONE, AND DELIBERATELY: the strike-pose clips and the multi-target combo.** *"I do need
+  to put in better animations... I wanna play with the super fast ending in strike position pose
+  things, which actually sounds fairly easy because it's less animation."* He is right that it is
+  less animation and it is also a different SHAPE of move -- the travel comes first and the pose
+  is HELD at the end, which is `MELEE.carry` inverted. `dashLand` is now exactly that shape for
+  the charge: the travel is spent in the first 42% and the rest of the clip is the pose. Wire the
+  ordinary strikes the same way when the clips land; do not fake it by retuning `carry`.
+  And *"maybe if there's two guys or three you do a little combo and quickly hit all of them --
+  not yet"*: `hitAll` already means the swept weapon catches everyone in the arc, so what that
+  would need is a CHAIN of dashes rather than a wider blow.
 - **THE INK WAS PAYING TWICE FOR WHAT THE COLOUR HAD ALREADY BOUGHT (m50).** *"You gave the
   sticks a slight drop shadow, I think we should remove that -- and the slight dim. I think the
   colours are enough. It makes it hard to read the little writing."* m49's rule was right about

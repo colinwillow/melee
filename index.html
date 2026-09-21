@@ -344,10 +344,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m50</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m51</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m50</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m51</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -387,7 +387,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm50';
+const BUILD = 'm51';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -516,7 +516,13 @@ const CAM = {
   // is plainly a turn being asked for. A dead zone is sized to the WOBBLE a held thumb
   // carries (.1 to .3) and not to the whole range it has: .20 kills the bottom of that and
   // leaves the top of it turning, which is where the line actually is.
-  dead: .06, deadAim: .20,
+  // **AND .20 IS STILL TOO MUCH (m51).** *"I really just wanted it to be like a subtle grace
+  // right in the middle."* Which is exactly the right way to put it, and it says what the
+  // number is FOR: the zone is not a REGION the camera is held in, it is the SLACK at dead
+  // centre. And because it SUBTRACTS rather than gates, a wide one is not just a wide middle
+  // -- the rescale goes on costing sensitivity all the way out, so it makes the stick heavy
+  // everywhere. .12.
+  dead: .06, deadAim: .12,
   fov: 58, fovRush: 7, rush0: 2.6, rushSpan: 3.2,
   // IT COMES IN WHEN SOMETHING IS IN THE WAY RATHER THAN CLIMBING OVER IT. Shortening the boom
   // keeps the SHOT -- a level three-quarter view -- while lifting the lens changes it into a
@@ -558,7 +564,15 @@ const MELEE = {
   // A FLICK IN THE GENERAL DIRECTION OF SOMEBODY IS A FLICK AT HIM. Aiming at him is not
   // enough on its own: a punch thrown at exactly the right bearing from four metres still hits
   // air. So the lock also SOLVES the launch for the gap, which is what makes it land.
-  aimCone: .42,        // ~24 degrees either side of the flick. It was .95 -- FIFTY-FOUR, which
+  // **AND IT WIDENED AGAIN AT m51.** *"You can kind of button-smash with the stick -- swipe,
+  // swipe, swipe -- and he hits him, goes back, goes across to them. It's because of the aim
+  // assist on the melee, so he always kind of targets them if you're at least flicking in
+  // their general direction, and for a mobile game that's pretty good because you're pretty
+  // limited."* **"GENERAL DIRECTION" IS A WIDER CONE THAN "AIMED AT"**, and this one is safe
+  // to widen where the blaster's was not: a lock that only ever pulls a LUNGE is a physical
+  // assist with nothing drawn and nothing taken off the thumb -- the half he has now asked to
+  // keep three times -- and its own reach caps how far it can drag him. 24 deg -> 34.
+  aimCone: .60,        // ~34 degrees either side of the flick. It was .95 -- FIFTY-FOUR, which
                        // is most of the screen, and the same complaint as `LOCK.cone`.
   aimNear: .55,        // what a metre of distance is worth against a metre of miss. Raised with
                        // the cone: swinging at two men, the NEAR one is what you meant.
@@ -643,15 +657,46 @@ const MELEE = {
   // through him is not a bug any more -- `hitAll` has meant "a mace does not stop at the first
   // man" since m36, so the swept weapon catches everyone the dash passes and the launch sends
   // them. `mel.MELEE.dashFree = 0` restores m21 exactly.
-  dashFree: 1,
+  // **AND m43 WAS HALF THE ANSWER: THE CHARGE SETS THE REACH, THE TARGET SETS THE DISTANCE
+  // (m51).** *"The way I think it will work is you still always launch to the character's
+  // position... the distance he travels always ends right at them, so that the full animation
+  // and swing finishes right at them -- you'll have to basically gauge the distance. There
+  // should still be a distance cap, in that the longer you charge the farther you can actually
+  // launch to hit them. It's just, regardless, when you release he still always launches to
+  // them within reason, within a cap."* Both of the previous shapes were one half of that:
+  //     m21   `far = gap`                 -- the man sets it, and the hold buys NOTHING
+  //     m43   `far = wantD`               -- the hold sets it, and he goes straight THROUGH him
+  //     m51   `far = min(gap, wantD)`     -- the hold is the CAP, the man is the DISTANCE
+  // which is the m43 line restored and read the other way round. m43's finding stands and was
+  // never about the `min`: it was that `wantD` had no way to matter, because `finishRange` 26
+  // acquired a man in a 24-degree cone from across the street and `gap` was then always the
+  // small number. **`acq` is what makes the cap real** -- a target is only taken if the charge
+  // can actually deliver him, which is m20's rule (an assist's range is sized for what it
+  // DELIVERS, not for what it draws) arriving at the melee three builds late.
+  dashFree: 0,
+  // **AND HE HAS TO BE STOPPED BY THE TIME THE HAMMER LANDS (m51, `dashLand`).** *"He launches
+  // through them and so they go flying before he's even swung his hammer."* Two causes and
+  // this is the second: `carry` bleeds him to zero across the WHOLE state, so at the contact
+  // frame (`finishAt` .38) he has covered .38/.725 = **52% of the distance** and the other 48%
+  // is spent ploughing on past the man he has just hit. The travel is spent by `dashLand`
+  // instead and he is stationary from there -- so the swing lands on a body that has arrived,
+  // and the rest of the clip is the follow-through it was drawn as.
+  // Just past `finishAt`, so he is planted rather than still sliding on the frame it connects.
+  dashLand: .42,
   // **AND IT HAS ITS OWN SPEED CAP (m40).** *"The charge on the weapon still is not far enough
   // -- he needs to LAUNCH forward, launch, launch. I want it to be a very exaggerated forward,
   // fast motion."* `maxV` could not carry that: it is also the ceiling on an ordinary lunge AND
   // the radius `meleeGo` is allowed to ACQUIRE inside, so raising it to dash speed would have
   // every jab locking onto a man twenty metres away and rocketing at him. A number meant for one
   // thing must not be shared with another -- `chargeGoH` learnt that at m27, one constant over.
-  dashV: 66,           // m/s, the charged dash alone. 24 m across .52 s of state is an AVERAGE
-                       // of 46, so this is the launch speed before `carry` bleeds it off.
+  // **AND IT HAD TO RISE WITH `dashLand` (m51).** The travel is spent over `dashLand` of the
+  // state now, so the clock is `goDur * carryAvg * dashLand` = **.158 s**, not .377 -- at 66
+  // the furthest it could reach became 10.45 m against a `flatFar` cap of 11, which is a lock
+  // the dash cannot deliver (the m20 complaint, and the very thing `acq` was added to stop).
+  // 76 reaches 12.0, so the cap is a real distance rather than something the clamp quietly
+  // eats -- which is the note `flatFar` already carries, one constant over.
+  dashV: 76,           // m/s, the charged dash alone. The whole distance is covered in the
+                       // first .22 s of the move, which is most of "exaggerated forward".
   dashDur: .30,        // the beat, and what the clip is compressed to. Shorter is FASTER for
                        // the same distance, which is most of what "it has power to it" means.
   flatHi: .55,         // metres. `mel.MELEE.dash = 0` uses this instead.
@@ -712,9 +757,29 @@ const STRIKE = {
   // took nothing at all.** Measured through the real pad -- 3 m `fired 0, he is idle`, 6 m and
   // 12 m both clean knock-downs. That is half of *"they don't really go flying"*: the ones close
   // enough to matter were never hit.
-  dashFrom: 0,
+  // **AND IT GOES BACK TO `from` AT m51.** `dashFrom` 0 was the right fix for the wrong
+  // shape: the dash used to plough straight past anybody close, so opening the window at once
+  // was the only way to catch them -- and catching them ON THE WAY THROUGH is exactly what he
+  // then described as *"they go flying before he's even swung his hammer."* With `dashLand`
+  // the travel is spent before the contact frame, so the ordinary wind-up is correct again and
+  // the blow is the hammer arriving rather than the body passing. `mel.STRIKE.dashFrom = 0`
+  // is the A/B back.
+  dashFrom: .55,
   to: 1.0,           // and runs to the end of the strike
   swing: 2.4,        // m/s IN HIS OWN FRAME. Under this a limb is being carried, not swung.
+};
+
+// HOW THE HAMMER SAYS IT IS LOADED. See `stepKit`'s wind-up for why it is sparks and an
+// event rather than a bar. `every0`/`every1` are the interval between sparks at the bottom and
+// the top of the hold -- it TIGHTENS as it fills, which is the jetpack's own lesson: a single
+// puff is a sticker and a run of them coming faster is a machine winding up.
+const HCHG = {
+  on: 1,
+  every0: .085, every1: .022,
+  cool: [.45, .82, 1.0],
+  hot:  [1.0, .76, .28],
+  pop: 26,             // the ring thrown off the head the moment it tops out
+  glow: 1.15,          // how far the weapon's own hue lifts against the blaster's peak
 };
 
 const WEAP = {
@@ -2114,10 +2179,15 @@ function mountWeapon(slot, g) {
   console.log('[melee] ' + slot.key + ' muzzle at ' + muzzle.toArray().map(v => v.toFixed(2)).join(', ') +
               ' in mount space, along ' + axis.toArray().map(v => v.toFixed(2)).join(', '));
 
-  if (slot.aim) for (const o of group.children) if (o.material) {
+  // **THE HAMMER TAKES THE GLOW TOO (m51).** It was gated on `slot.aim`, which is "does this
+  // weapon shoot" -- and what the hook actually answers is "does this weapon light up when the
+  // hold fills", which the hammer now does as well. `GUNU` is one shared uniform set and only
+  // one weapon is ever mounted, so there is nothing to keep in step: `mountWeapon` re-measures
+  // the hue per slot and whichever is in his hand is the one being drawn.
+  if (slot.aim || slot.charge) for (const o of group.children) if (o.material) {
     // MEASURED OFF THIS GUN'S OWN MAP. On a grey body with blue trim the grey has no chroma and
     // does not vote, so the histogram finds the trim -- which is the part that should glow.
-    const m = measureHue(o.material.map, 'blaster');
+    const m = measureHue(o.material.map, slot.key);
     if (m) { GUNU.hue.value = m.hue; GUNU.rgb.value.setHSL(m.hue, 1, .6); WEAP.hue = m.hue; }
     hueGlow(o.material, GUNU, 'gun');
   }
@@ -2666,6 +2736,57 @@ const chargeFx = glowBall(.22);
 chargeFx.visible = false;
 scene.add(chargeFx);
 
+// ---- THE TARGET RING (m51, `MARK`, `markStep`) ----
+// *"Maybe we'll put a little circle under their feet, that kind of shows that they're
+//  qualifying as what your target is -- rather than the lock, where the aimer is on them."*
+// **IT IS ON THE GROUND, NOT IN THE AIR, AND THAT IS THE WHOLE DIFFERENCE FROM THE RETICLE.**
+// A mark drawn ON the man is a lock: your eye goes to it and you stop aiming, which is why he
+// turned the blaster's down twice. A mark on the FLOOR under him is a fact about the world --
+// where the dash is going to put you -- and you read it without looking away from the fight.
+// **IT PULSES WITH THE CHARGE AND SNAPS AT FULL.** How loaded the hold is has to be legible
+// without a bar, so the ring TIGHTENS as it fills (the reticle's own argument: how full a shot
+// is should be a SHAPE) and goes hot and stops breathing at the top -- a different mark, not a
+// brighter one, which is the one thing that reads at a glance rather than by comparison.
+const MARK = {
+  on: 1,
+  r0: 1.35, r1: .78,      // it closes in as the charge fills
+  lift: .06,              // off the floor, or it z-fights the ground
+  cool: [.42, .80, 1.0],  // charging
+  hot:  [1.0, .74, .25],  // and full
+  spin: 1.9, pulse: 7.0,
+};
+const markRing = new THREE.Mesh(
+  new THREE.RingGeometry(.80, 1.0, 40),
+  new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .9,
+                                depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
+markRing.rotation.x = -Math.PI / 2;
+markRing.renderOrder = 3;
+markRing.visible = false;
+markRing.frustumCulled = false;
+scene.add(markRing);
+function markStep(dt, t) {
+  if (!MARK.on) { markRing.visible = false; player.chgTgt = null; return null; }
+  const p = player, s = slotNow();
+  // ONLY WHILE THE HAMMER IS WINDING. A ring that is always up is a HUD element, and this one
+  // exists to be read during the one moment there is a decision in it -- gauging the distance.
+  if (!(p.charge && s.charge) || p.chargeGo) { markRing.visible = false; p.chgTgt = null; return null; }
+  const A = chargeAim();
+  p.chgTgt = A.t ? A.t.dist : null;
+  if (!A.t) { markRing.visible = false; return A; }
+  const d = A.t.d, full = A.chg01 >= .995;
+  const c = full ? MARK.hot : MARK.cool;
+  markRing.material.color.setRGB(c[0], c[1], c[2]);
+  // the ring CLOSES as it fills, and only breathes while it is still filling
+  const breathe = full ? 1 : 1 + Math.sin(t * MARK.pulse) * .06;
+  const r = lerp(MARK.r0, MARK.r1, A.chg01) * breathe;
+  markRing.scale.setScalar(r);
+  markRing.position.set(d.root.position.x, d.root.position.y + MARK.lift, d.root.position.z);
+  markRing.rotation.z = t * MARK.spin;
+  markRing.material.opacity = full ? 1 : .55 + A.chg01 * .35;
+  markRing.visible = true;
+  return A;
+}
+
 // ---- the bolts ----
 const BOLTS = [];
 function fireBolt(chg) {
@@ -3132,7 +3253,15 @@ function meleeGo(h) {
   if (L) h = L.h;
   p.melTgt = L ? L.d : null;
   // SOLVE THE LAUNCH FOR THE GAP. A move covers `v * dur * carryAvg`, and that inverts.
-  p.melV = L ? clamp((L.dist - MELEE.arrive) / (p.meleeDur * MELEE.carryAvg), base, MELEE.maxV) : base;
+  // **AND THE FLOOR IS WHAT PUT HIM PAST THEM (m51).** *"When you're swiping generally towards
+  // them it more or less moves directly to them, or to right in front of them, so that his
+  // melee animation really actually nails them perfectly."* It did solve for the gap and then
+  // clamped the answer UP to `base` -- a typed lunge speed that has nothing to do with where
+  // the man is. A man 1.5 m off solves to 1.0 m/s, gets floored at 7.0, and he covers 3.1 m:
+  // **1.6 m PAST him**, every time, which is the whole of "he goes through them". `base` is
+  // the FREE lunge, for a flick at nobody; a solved one is solved, and the only floor it needs
+  // is zero. A man already at arm's length now gets a swing thrown on the spot.
+  p.melV = L ? clamp((L.dist - MELEE.arrive) / (p.meleeDur * MELEE.carryAvg), 0, MELEE.maxV) : base;
   if (h != null) { p.heading = h; p.faceH = h; }
   // THE CLIP IS COMPRESSED TO THE BEAT, not the beat stretched to the clip. `melee_03` is
   // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,
@@ -3152,6 +3281,28 @@ function rollGo(h) {
   snd('swoosh', { r: 1.35, g: .45 });
   p.vel.x = Math.sin(p.rollH) * MELEE.rollV; p.vel.z = Math.cos(p.rollH) * MELEE.rollV;
 }
+// WHO THE CHARGE IS AIMED AT, AND HOW FAR IT CAN CARRY HIM -- ONE ANSWER (m51).
+// *"Maybe we'll put a little circle under their feet, that kind of shows that they're
+//  qualifying as what your target is -- rather than the lock, where the aimer is on them."*
+// Which is exactly the right distinction: the blaster's lock MOVED YOUR AIM and he turned it
+// down twice; this one moves nothing and only says who you are about to arrive at.
+// **AND IT IS ONE FUNCTION BECAUSE THE MARK IS A PROMISE.** `stepKit` calls it every frame the
+// hammer is winding, to draw the ring; `chargeRelease` calls it on the frame the thumb lifts,
+// to aim the dash. Two places computing "who is the target" is exactly the m20 bug -- the mark
+// on one man and the shot at another -- and the fix there was to make it one call.
+// **THE REACH IS THE HOLD'S**, so a man the charge cannot get to is not marked and not taken:
+// the circle can never appear under somebody the dash will fall short of.
+function chargeAim(hold) {
+  const p = player;
+  const t = hold != null ? hold : p.chargeT;
+  const chg01 = clamp(t / MELEE.charge, 0, 1);
+  const hiK = MELEE.finishHiK0 + (1 - MELEE.finishHiK0) * chg01;
+  const want = lerp(MELEE.flatNear, MELEE.flatFar, hiK);
+  const acq = Math.min(MELEE.finishRange, want + MELEE.arrive);
+  const a = p.lock ? aimAt(p.lock) : meleeLock(p.faceH, acq);
+  return { t: (a && a.dist <= acq) ? a : null, want, acq, chg01 };
+}
+
 function chargeRelease() {
   const p = player;
   if (!p.charge) return;
@@ -3160,13 +3311,10 @@ function chargeRelease() {
   p.charge = 0; p.chargeT = 0;
   if (!full) return;                                   // a short hold is not a swing
   p.chargeGo = 1; p.chargeGoT = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
-  // IT LAUNCHES AT WHOEVER HE IS LOCKED ON. That is the whole point of having orbited him:
-  // you let go and you arrive. Twice a strike's range, and the launch is solved for the gap
-  // exactly the way a strike's is.
-  const CL = p.lock ? aimAt(p.lock) : meleeLock(p.faceH, MELEE.finishRange);
-  if (CL && CL.dist <= MELEE.finishRange) { p.faceH = p.heading = CL.h; p.melTgt = CL.d; }
-  else p.melTgt = null;
   // how full it was, from the half-charge floor up -- so even the shortest real swing moves
+  // **IT IS WORKED OUT BEFORE THE LOCK NOW (m51)**, because the hold is what says how far he
+  // can reach and a target beyond that reach is a promise the dash cannot keep -- which is the
+  // m20 complaint ("an assist's range is sized for what it DELIVERS") on the melee side.
   const chg01 = clamp(t0 / MELEE.charge, 0, 1);
   p.chargeGoK = MELEE.finishMin + (1 - MELEE.finishMin) * chg01;
   // THE APEX GETS ITS OWN CURVE. `chargeGoK` floors at `finishMin` because a half-charge swing
@@ -3174,6 +3322,15 @@ function chargeRelease() {
   // wants the whole range, or the hold buys nothing you can see.
   p.chargeGoH = MELEE.finishHiK0 + (1 - MELEE.finishHiK0) * chg01;
   snd('swoosh', { r: .72, g: 1 });
+
+  // IT LAUNCHES AT WHOEVER HE IS AIMED AT, and only at someone the charge can actually carry
+  // him to. `chargeAim` is the ONE answer to "who is the target" -- the ring under his feet is
+  // drawn from the same call every frame the hammer is winding, so the mark and the dash
+  // cannot disagree about who is being promised. That is m20's invariant, one weapon over.
+  const A = chargeAim();
+  const CL = A.t, wantD = A.want;
+  if (CL) { p.faceH = p.heading = CL.h; p.melTgt = CL.d; }
+  else p.melTgt = null;
 
   // ---- THE ARC IS SOLVED FROM THE GAP ----
   const k = p.chargeGoK, reach = MELEE.finishReach * k;
@@ -3203,13 +3360,10 @@ function chargeRelease() {
   const hi = dash ? 0 : flat ? MELEE.flatHi : lerp(MELEE.finishHiNear, MELEE.finishHiFar, f) * p.chargeGoH;
   const vy = hi > 0 ? Math.sqrt(2 * MOVE.g * hi) : 0;
   const T = dash ? MELEE.dashDur : 2 * vy / MOVE.g;
-  // how far the HOLD wants to carry him, and a man in front only ever shortens it -- a lunge
-  // solved to land ON him is what stops the charge going through people
-  const wantD = lerp(MELEE.flatNear, MELEE.flatFar, p.chargeGoH);
-  // **A LOCKED DASH COVERS WHAT THE HOLD ASKED FOR (m43).** `min(gap, wantD)` is what made the
-  // hold meaningless in a populated street: the nearest man decided the distance and the charge
-  // did not. The hop and the arc keep m21 -- they genuinely would sail over him -- but a GROUND
-  // dash that goes through him is what `hitAll` already expects.
+  // **THE HOLD IS THE CAP AND THE MAN IS THE DISTANCE (m51).** `wantD` came off the hold
+  // above; `gap` is to his SURFACE at arm's length. With `acq` refusing a target the charge
+  // cannot reach, `min` can no longer be the thing that eats the hold -- a man inside the reach
+  // sets the distance, and a flick at empty air still covers the whole of what was wound up.
   const clampToMan = p.melTgt && !(dash && MELEE.dashFree);
   const far = dash || flat ? (clampToMan ? Math.min(gap, wantD) : wantD) : gap;
   // **AND IT IS SOLVED AGAINST THE WHOLE STATE, NOT THE TRAVEL TIME.** `goDur` carries
@@ -3217,7 +3371,11 @@ function chargeRelease() {
   // against `T` alone overshot by exactly the tail's share, 5.80 m for a 3.95 m solve. A launch
   // solved against a different clock than the one that spends it lands somewhere else.
   const goDur = T + MELEE.finishTail;
-  const spend = dash ? goDur * MELEE.carryAvg : T;
+  // **AND THE TRAVEL IS SPENT BY `dashLand`, NOT BY THE END OF THE STATE (m51).** The bleed
+  // still runs, it just runs out sooner -- so the whole distance is behind him on the frame the
+  // hammer connects and the rest of the clip is the follow-through. Solving against the wrong
+  // clock lands him somewhere else, which this function has already paid for once (m37).
+  const spend = dash ? goDur * MELEE.carryAvg * MELEE.dashLand : T;
   // THE DASH HAS ITS OWN CEILING. `maxV` is the ordinary lunge's, and it is also the radius a
   // strike may acquire inside -- so the dash cannot borrow it without turning every jab into a
   // rocket at a man across the street.
@@ -3520,7 +3678,13 @@ function stepKit(dt) {
     // what electricity looks like, for the cost of writing a scale
     ballSize(chargeFx, (.35 + p.chg * 1.5) * (.92 + Math.random() * .16));
   }
-  GUNU.k.value = damp(GUNU.k.value, p.chg * WEAP.glow, .06, dt);
+  // **ONE WRITER ON `GUNU.k` (m51).** The blaster drives it off `p.chg` and the hammer off its
+  // own hold, and they are never both live -- but two `damp` calls a frame toward different
+  // targets is two writers on one number, which this file has a standing note about. Whichever
+  // weapon is in his hand names the source; there is exactly one line that moves it.
+  const glowWant = s.charge ? clamp(p.chargeT / MELEE.charge, 0, 1) * WEAP.glow * HCHG.glow
+                            : p.chg * WEAP.glow;
+  GUNU.k.value = damp(GUNU.k.value, glowWant, .06, dt);
 
   // ---- the hammer: PUSH UP and hold to wind up, let go to swing ----
   // **UP, NOT "ANY DIRECTION" (m46).** *"The melee charge should only initiate when you hold up
@@ -3555,6 +3719,38 @@ function stepKit(dt) {
     if (was < WEAP.armT && p.chargeT >= WEAP.armT) {
       playPair(CLIPS.chargeUp, clipLen(CLIPS.chargeUp) / MELEE.chargeBeat);
       snd('swoosh', { g: .55, r: .5 });
+    }
+    // **AND THE HAMMER HAS TO SAY IT IS LOADED (m51, `HCHG`).** *"We need to make it really
+    // obvious when the hammer is charging. I'm not sure how to do this, but maybe the hammer
+    // starts to glow and pulse, maybe his stance gets more violent, maybe it smokes -- something
+    // to know when you're fully charged."*
+    // **SPARKS OFF THE HEAD, NOT A BAR.** A bar is a number you have to look away to read; the
+    // weapon lighting up is something you see while you are still watching the fight -- and it
+    // is already one draw call, because `spk` is a pool. `muzzleWorld()` is the far end of the
+    // geometry along the mount's own axis, which on a hammer IS the head, so nothing about
+    // where they come from is typed.
+    // **AND FULL IS AN EVENT, NOT A BRIGHTER VERSION OF NEARLY-FULL.** The reticle's own rule:
+    // "how loaded is this" has to be legible at a glance rather than by comparison against a
+    // memory of what it looked like a second ago. So the rate climbs while it fills, and the
+    // moment it tops out there is ONE ring thrown off the head, a clang, and the ring under
+    // the target goes hot -- three things on the same frame, so it cannot be missed.
+    const cf = clamp(p.chargeT / MELEE.charge, 0, 1);
+    if (HCHG.on && p.chargeT >= WEAP.armT) {
+      const m = muzzleWorld();
+      p._hcT = (p._hcT || 0) - dt;
+      if (p._hcT <= 0) {
+        p._hcT = lerp(HCHG.every0, HCHG.every1, cf);
+        spkBurst(m.x, m.y, m.z, cf >= .995 ? 2 : 1,
+                 { col: cf >= .995 ? HCHG.hot : HCHG.cool, spread: 1.1 + cf * 2.2, up: .7,
+                   r: .10, size: .09 + cf * .11, life: .34 + cf * .3 });
+      }
+      // THE TOP-OUT, ONCE. `was` is the value before this frame's `dt`, so the crossing is an
+      // edge rather than "it is full", which would fire every frame for as long as it is held.
+      if (was < MELEE.charge && p.chargeT >= MELEE.charge) {
+        spkBurst(m.x, m.y, m.z, HCHG.pop, { col: HCHG.hot, spread: 5.5, up: 1.4, r: .12,
+                                            size: .22, life: .5 });
+        snd('clang', { g: .5, r: 1.5 });
+      }
     }
   } else if (p.charge) chargeRelease();
 
@@ -3663,7 +3859,13 @@ function stepPlayer(dt) {
     // full speed for `carry` of the move, then linear to zero. A flat linear bleed averages
     // half the launch speed, so every metre of travel has to be bought with a speed spike at
     // the front -- which reads as a rocket rather than a lunge.
-    const k = u < MELEE.carry ? 1 : 1 - (u - MELEE.carry) / (1 - MELEE.carry);
+    // **AND A DASH SPENDS ITS TRAVEL BY `dashLand` (m51).** The same bleed on a shorter clock:
+    // `uu` is how far through the TRAVEL he is rather than how far through the state, so he is
+    // stationary from `dashLand` on and the hammer lands on a body that has already arrived.
+    // For every other move `arr` is 1 and `uu` is `u`, so this is the old line exactly.
+    const arr = (p.chargeGo && MELEE.dash) ? MELEE.dashLand : 1;
+    const uu = arr >= 1 ? u : clamp(u / arr, 0, 1);
+    const k = uu >= 1 ? 0 : uu < MELEE.carry ? 1 : 1 - (uu - MELEE.carry) / (1 - MELEE.carry);
     // THE BLOW LANDS WHEN THE LIMB REACHES HIM, AND NOT BEFORE. `at` no longer FIRES the hit --
     // it opens the window the sweep is allowed to count in, so a swing that misses misses.
     if (!p.roll) {
@@ -5471,6 +5673,9 @@ function frame() {
   // matrix it would trail the shot by a frame every time the lens moved, which is exactly the
   // thing a mark on a target must not do.
   stepBolts(dt);
+  // AFTER `stepDummies`, because it sits on a body's feet and a ring a frame behind the man it
+  // is marking is a ring that slides off him every time he moves.
+  markStep(dt, now / 1000);
   stepSparks(dt);
   stepSmoke(dt);
   stepFlashes(dt);
@@ -5491,7 +5696,12 @@ function frame() {
       // THE SOLVED ARC, ON SCREEN. How far it leapt and how high is the whole of what he is
       // judging -- "it jumps through them" and "it falls short" are one word apart otherwise.
       : p.chargeGo ? 'swing' + (p.goGap || 0).toFixed(1) + '/' + (p.goHi || 0).toFixed(1) + (p.melFired ? '!' : '')
-      : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) : !p.grounded ? 'air'
+      // **AND THE WIND-UP SAYS WHO IT HAS (m51).** `charge0.7>4.2` is "seven tenths wound, and
+      // a man 4.2 m off is marked"; no `>` at all means the ring is not up and the release will
+      // cover the whole of the hold instead. "It didn't go to him" and "it never had him" are
+      // opposite bugs and one picture from a phone.
+      : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) +
+          (p.chgTgt != null ? '>' + p.chgTgt.toFixed(1) : '') : !p.grounded ? 'air'
       : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
     // B IS THE POSE'S OWN OFFSET AND C IS WHAT IS BEING TAKEN OFF IT, because "the gun points
     // the wrong way" is two different bugs from a phone: a bias near 0 means the clip is
@@ -5644,7 +5854,7 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
