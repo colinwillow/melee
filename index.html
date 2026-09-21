@@ -161,29 +161,64 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   font-family: var(--disp); font-size: 15px; color: var(--sun); text-align: right; }
 #wep small { display: block; font-family: var(--ui); font-size: 11px; color: #cfe8ff; opacity: .7; letter-spacing: .08em; }
 
-/* ---- the pads ---- */
+/* ---- the pads ----
+   THEY WERE WHITE ON A WHITE FLOOR, WHICH IS NOT A FAINT CONTROL BUT NO CONTROL AT ALL.
+   *"They're almost impossible to see on the white."* Everything here was #ffffff at 5 to 30
+   per cent -- a treatment that only exists against a dark background, and this world is a
+   white floor.
+   THE RULE IS THE DRAWN EFFECT WORDS' OWN, ONE REPO OVER: a FAT DARK RIM UNDER A SATURATED
+   FILL survives ANY background, because the ink carries the shape and the colour carries the
+   identity. A translucent tint survives only the one it was picked against. So every ring
+   here is sandwiched -- dark outside, colour, dark inside -- and the knob is SOLID rather
+   than a wash.
+   AND THE TWO PADS ARE DIFFERENT HUES, which is not decoration: they are different controls
+   (the body and the verb) and on a small phone the thumb that lands on the wrong one has
+   nothing to tell it so. `--pc` is the only thing that differs, so a pad cannot end up half
+   recoloured, and `mel.pads({ left, right })` moves both live -- a look-at-it decision. */
 .pad {
   position: fixed; z-index: 5; width: 132px; height: 132px; border-radius: 50%;
-  border: 2px solid #ffffff24; background: #ffffff0c; touch-action: none;
-  bottom: calc(26px + env(safe-area-inset-bottom));
+  touch-action: none; bottom: calc(26px + env(safe-area-inset-bottom));
+  --pc: var(--sky);
+  background: #0b0d1230;
+  border: 2px solid var(--pc);
+  box-shadow: 0 0 0 2px #0b0d12a6, inset 0 0 0 2px #0b0d1259;
+  transition: background .12s ease;
 }
-.pad.act { background: #ffffff16; border-color: #ffffff40; }
-#padL { left: calc(20px + env(safe-area-inset-left)); }
-#padR { right: calc(20px + env(safe-area-inset-right)); }
+#padL { left: calc(20px + env(safe-area-inset-left)); --pc: var(--hot); }
+#padR { right: calc(20px + env(safe-area-inset-right)); --pc: var(--sky); }
+.pad.act { background: #0b0d1259; }
+/* EIGHT TICKS ROUND THE RIM -- the whole of the styling, and deliberately static.
+   *"A cool stylized thing kind of similar to how we did the radical, but not as complex."*
+   The reticle is five spinning layers because it is a MARK you read; a pad is a place you put
+   a thumb, and anything moving under a thumb is something to look at instead of the game. One
+   conic gradient masked to an annulus: no extra element, no animation, nothing per frame. */
+.pad::before {
+  content: ''; position: absolute; inset: 6px; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(from -2.5deg, var(--pc) 0 5deg, #0000 5deg 45deg);
+  -webkit-mask: radial-gradient(closest-side, #0000 0 78%, #000 78%);
+          mask: radial-gradient(closest-side, #0000 0 78%, #000 78%);
+  opacity: .8;
+}
 .knob {
   position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px;
-  border-radius: 50%; background: #ffffff2e; border: 2px solid #ffffff4a;
+  border-radius: 50%; background: var(--pc); border: 2px solid var(--ink);
+  box-shadow: 0 0 0 1px #ffffff4d, 0 3px 9px #0b0d1273;
   will-change: transform;
 }
-#padR .knob { background: #46e0ff2e; border-color: #46e0ff66; }
-/* the aim ring: dim whenever the weapon is out, bright while the trigger is armed. A pad
-   that looks identical armed and unarmed is a control nobody finds. */
-#padR::after {
-  content: ''; position: absolute; inset: -9px; border-radius: 50%;
-  border: 2px solid var(--sun); opacity: 0; transition: opacity .16s ease;
+.knob::after {
+  content: ''; position: absolute; inset: 8px; border-radius: 50%;
+  border: 2px solid #0b0d1259;
 }
-#padR.arm::after { opacity: .9; }
-#padR.ready::after { opacity: .28; }
+/* the aim ring: dim whenever the weapon is out, bright while the trigger is armed. A pad
+   that looks identical armed and unarmed is a control nobody finds. AMBER on purpose -- it
+   has to be a different hue from whatever `--pc` is, or "armed" is only "slightly brighter". */
+#padR::after {
+  content: ''; position: absolute; inset: -10px; border-radius: 50%;
+  border: 3px solid var(--sun); box-shadow: 0 0 0 2px #0b0d1273, inset 0 0 0 2px #0b0d1273;
+  opacity: 0; transition: opacity .16s ease;
+}
+#padR.arm::after { opacity: 1; }
+#padR.ready::after { opacity: .38; }
 /* ---- the reticle: a geometric portal ----
    IT WAS BIG AND THICK AND THE COLOURS WERE A GUESS. Size, stroke weight and both hues are
    custom properties now, so `mel.retic({...})` moves all of it live on the phone -- how a mark
@@ -283,9 +318,14 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   transform: scale(calc(.3 + .9 * var(--c)));
 }
 
+/* AND THE LABEL WAS WHITE AT .42 OPACITY, which on a white floor is nothing at all. It takes
+   the pad's own hue with ink behind it, so it reads on either background and says which pad
+   it belongs to at the same time. */
 .pad .hint {
   position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%);
-  font-size: 10px; letter-spacing: .12em; opacity: .42; white-space: nowrap; text-transform: uppercase;
+  font-size: 10px; letter-spacing: .12em; white-space: nowrap; text-transform: uppercase;
+  color: var(--pc); font-weight: 600;
+  text-shadow: 0 1px 2px #0b0d12, 0 0 4px #0b0d12cc;
 }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -301,10 +341,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m48</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m49</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m48</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m49</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -344,7 +384,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm48';
+const BUILD = 'm49';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d"};
 /* ASSETS:END */
@@ -5543,6 +5583,19 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, r
     const c = getComputedStyle(el);
     return { size: c.getPropertyValue('--size').trim(), w: c.getPropertyValue('--w').trim(),
              hue: c.getPropertyValue('--h').trim(), lock: c.getPropertyValue('--lh').trim() };
+  },
+  // AND SO IS A PAD'S COLOUR. `mel.pads({ left, right })` takes any CSS colour -- a hex, a
+  // hsl(), or one of the page's own `var(--hot)` / `var(--sun)` / `var(--sky)`. The ink rim,
+  // the ticks, the knob and the label all read `--pc`, so one value moves the whole pad and
+  // it cannot end up half recoloured.
+  pads: o => {
+    const L = document.getElementById('padL'), R = document.getElementById('padR');
+    if (o) {
+      if (o.left != null && L) L.style.setProperty('--pc', o.left);
+      if (o.right != null && R) R.style.setProperty('--pc', o.right);
+    }
+    return { left: L ? getComputedStyle(L).getPropertyValue('--pc').trim() : null,
+             right: R ? getComputedStyle(R).getPropertyValue('--pc').trim() : null };
   },
   // the charge whine is a synth, so every part of it is a live number: `f0`/`f1` the note it
   // climbs through, `det` the detune in CENTS (this is the one that decides whether it reads as

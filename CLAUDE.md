@@ -822,6 +822,34 @@ same picture from a phone.
   the failing shape is a harness that measures a different asset. And the canopy assertion asked
   for a box at `minx > 10.5` when a merged run starts on a cell edge at exactly 10, failing a
   correct answer: **derive the pass mark from the geometry, never from what looks about right.**
+- **A WHITE CONTROL ON A WHITE FLOOR IS NOT A FAINT CONTROL, IT IS NO CONTROL (m49).** *"We need
+  to make the joysticks different colors, they're almost impossible to see on the white... I keep
+  missing."* Every value on both pads was `#ffffff` at 5 to 30 per cent -- a treatment that only
+  exists against a dark background, and the world here is a white floor.
+  **THE RULE IS THE DRAWN EFFECT WORDS' OWN, ONE REPO OVER: a FAT DARK RIM UNDER A SATURATED
+  FILL survives ANY background**, because the ink carries the SHAPE and the colour carries the
+  IDENTITY, while a translucent tint survives only the background it was picked against. Every
+  ring is sandwiched now -- `#0b0d12` outside, the hue, `#0b0d12` inside -- and the knob is
+  SOLID rather than a wash.
+  **AND THE TWO HUES ARE NOT DECORATION.** They are two different controls -- the body and the
+  verb -- and on a phone a thumb that lands on the wrong one has nothing to tell it so. `--pc`
+  is the ONLY thing that differs between `#padL` (rose) and `#padR` (azure): the rim, the
+  ticks, the knob and the label all read it, so a pad cannot end up half recoloured, and
+  `mel.pads({ left, right })` moves both live.
+  **THE ARM RING STAYS AMBER, which is now load-bearing rather than incidental** -- it has to be
+  a different hue from whatever `--pc` is, or "the trigger is armed" degrades to "slightly
+  brighter", which is the comparison-against-a-memory the reticle's own lock note refuses.
+  **THE STYLING IS EIGHT STATIC TICKS AND THAT IS ALL.** *"Kind of similar to how we did the
+  radical, but not as complex."* The reticle is five spinning layers because it is a MARK you
+  READ; a pad is a place you PUT A THUMB, and anything moving under a thumb is something to look
+  at instead of the game. One `repeating-conic-gradient` masked to an annulus on `::before`: no
+  extra element, no animation, nothing written per frame.
+  **THE TOUCH GEOMETRY IS UNTOUCHED.** `* { box-sizing: border-box }` and the border was already
+  2px, so the rect `bindStick` measures is the same 132 px it always was; the `box-shadow` rim
+  paints outside the element and is not in the hit area.
+  **WHAT IS STILL NOT DONE IS THE FLOATING PAD** -- *"since we don't have the whole adjusting
+  joystick thing on, which maybe we should think about in the future"*. A pad that appears where
+  the thumb lands is the real fix for missing one; making it visible is the cheap half.
 - **A THUMB PUSHED UP IS NEVER VERTICAL, AND THE AIM IS THE CAMERA (m48, `CAM.deadAim`).**
   *"When I'm trying to shoot and I'm aiming, I'm holding up on the right stick, and it's slightly
   sensitive -- the aimer goes right a little, goes left a little. I'd like it to just stay still,
