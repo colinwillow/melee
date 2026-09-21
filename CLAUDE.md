@@ -1019,6 +1019,68 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **HIS HIT BANK, AND THREE STAND-INS DISCHARGED AT ONCE (m63, `audio/hit_sounds`).** *"The
+  first like three are for when the melee connects, then there's two for when the plasma cannon
+  actually hits the character, and the last two are for when they fly into the air and then hit
+  a wall or another character or the ground -- play one of these two for every connection
+  point, so if they bounce or hit a wall and then hit the ground."* **The filenames carry the
+  split and the game reads it exactly as he wrote it**, three keys, no guessing.
+      hit_sound_01..03          -> `hit`    the melee connect
+      hit_sound_plasma_01/02    -> `pbody`  the bolt landing ON a man
+      hit_sound_gound_01,
+      hit_sound_ground_02       -> `drop`   every impact a flying body makes
+  **THE FILENAMES ARE LEFT EXACTLY AS UPLOADED, `gound` AND ALL.** A tidy-up here is a 404 the
+  next time he drops the same files in, and `A()` keys on the path -- Shredworld's own rule
+  about `.mp4` in the middle of a skateboard filename.
+  **AND THREE NUMBERS THAT ONLY EXISTED TO RESCUE A STAND-IN WENT WITH THEM.** `soft`'s `r` .55
+  and `dur` .13, and `drop`'s `r` .52 and `dur` .18, were what made `box_break_01` sound
+  remotely like a body; his recordings ARE the thing, so they play at their own rate and their
+  own length. **A number that exists to rescue a stand-in has to go when the stand-in does**, or
+  the fix for one file becomes a bug in the next -- m58 paid for this once on the `dur` cap.
+  **BOTH `HITSND` ROWS NAME THE SAME BANK NOW, WHICH REOPENS m57 DELIBERATELY.** That build put
+  `clang` on the warrior because *"the clang and the clink is for people with armour"*, and
+  these three are recordings of a melee landing with no exception named. So the armoured/flesh
+  distinction stops being two FILES and becomes WEIGHT and PITCH on one set -- the metal clangs'
+  own rule, where three car tiers are told apart by pitch rather than by three recordings. The
+  rows are `hard` and `soft` rather than `clang` and `soft`, because a row called `clang` that
+  does not play a clang is a comment describing an intent the code cannot express.
+  `metal_clang_01..03` stay loaded, so `mel.snd('clang')` is the A/B and the hammer's top-out
+  ring is untouched.
+  **AND THE BOLT PICKS A BANK RATHER THAN A GAIN.** `b.onMan` has told those two events apart
+  since m58 and was only choosing how loud; it chooses the recording now. A near miss into the
+  wall behind him still lands on the `plasma` bank, because that is what an area weapon IS and
+  it must not go silent.
+- **A BODY IN THE AIR IS A PROJECTILE (m63, `FLYHIT`, `bodyBump`).** *"I do think we should make
+  enemies be able to fly there and hit other enemies. Knock them down, or at least hit them back
+  a little bit."*
+  **IT NEEDED NO DAMAGE PATH AND NO SECOND BRAIN.** The man he lands on goes through
+  `dummyBlow`, which is the one function a fist, a mace and a bolt all already reach -- so the
+  reaction clip, the grunt, the shove, the health and the knock-down are written, and **a man
+  knocked down hard enough is a flyer in his own right, so the CHAIN falls out of it** rather
+  than being coded. That is `d.K`'s own dividend, three builds along.
+  **THE POWER COMES FROM THE IMPACT SPEED**, which is the difference between "knock them down"
+  and "hit them back a little": `FOE.fling` .70 is crossed around 14 m/s, so a full fling (24
+  m/s) bowls the next man over and a light knock merely staggers him -- one curve, both of his
+  outcomes, nothing typed per case.
+  **THE STRUCK BODY'S OWN `K.cool` IS WHAT STOPS IT FIRING EVERY FRAME** they overlap, so this
+  needed no state of its own; `dummyHit` has skipped bodies on cool since m56 and the same field
+  does the work here. `cost` is what the flyer pays, or one fling scythes a whole street.
+  **AND A WALL IS A REAL BOUNCE, WITH THE NORMAL COMING FOR FREE.** `resolveBoxes` returns
+  whether it pushed, and **the push itself IS the surface normal** -- so only the component going
+  INTO the wall is reflected and what he had ALONG it he keeps. A slide along a shopfront costs
+  nothing and a square hit comes back off it, which is Shredworld's `SK8.bounce` rule one body
+  over and is exactly the *"if they bounce"* he asked for.
+  **ONE `bodyBump`, SO THREE CONNECTION POINTS CANNOT BECOME THREE RULES.** Its floor is a SPEED
+  (a man scrubbed along the floor or grinding down a wall must not thump) and its `cool` is the
+  same floor in TIME, **per body rather than per key** -- two men landing together are two
+  impacts and one man scraping a wall is not, which `SFX.last`'s global gap gets backwards.
+  **`d.bumpT` HAD TO BE INITIALISED IN `bodySpawn`.** `undefined -= dt` is NaN, and a NaN clock
+  is a body that never bumps again -- silent, and invisible to both gates.
+  **WHAT IS UNVERIFIED**: the flyer-into-body test is horizontal with a height gate, so a body
+  sailing over another one's head at a steep angle may still clip him; and a body knocked into
+  the PLAYER does nothing, because `playerHurt` is a separate path and he did not ask for it.
+  Both stated rather than hidden. `mel.FLYHIT` is live.
+
 - **A BODY MAKES THREE SOUNDS AND `HITSND` HAD NOTHING TO SAY ABOUT ANY OF THEM (m62, `BODYSND`,
   `K.voice`, `bodyWhoosh`).** *"I added a sound effects folder for alien orc grunts, so when he
   gets hit or shot he plays these also. Also, when you launch them in the air it needs to play

@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m62</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m63</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m62</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m63</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,9 +428,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm62';
+const BUILD = 'm63';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1225,8 +1225,8 @@ const SHE = {
 const DUMMY = {
   file: 'models/characters/dummy_officer.glb',
   h: 1.75, r: .42, hp: 3,
-  // a man in a uniform, not an orc in plate. `snd: 'clang'` is the one word if a vest
-  // should ring -- stated rather than assumed, because it is genuinely the arguable one.
+  // a man in a uniform, not an orc in plate, so he takes the duller weight. `snd: 'hard'` is
+  // the one word if a vest should ring -- stated rather than assumed, it is the arguable one.
   snd: 'soft',
   at: [[3, -7], [-6, -2], [8, -14]],     // open ground, clear of every box
   clips: {
@@ -1284,7 +1284,7 @@ const FOE = {
   file: 'models/characters/alien_warrior.glb',
   weapon: 'models/weapons/spikey_mace.glb',
   h: 1.85, r: .46,
-  snd: 'clang',      // ARMOURED. The one body in here his "that's for people with armour" means.
+  snd: 'hard',       // ARMOURED -- the heavier, brighter weight on his melee bank.
   // AND HIS OWN VOICE (m62). The files are named for the orc and this is the orc; the drunks
   // and the officer stay silent until there are recordings for them, which is one word each.
   voice: 'grunt',
@@ -1818,7 +1818,21 @@ const SFX = {
     // recording is a one-line swap**, the way `CLIPS.block` and the hick's empty pose names are.
     // Its own key rather than sharing `thud`'s, so the player being hit and an NPC being hit
     // cannot gate each other through `SFX.last` and either can be re-pointed alone.
-    soft: ['audio/box_break_01.mp3'],
+    // **HIS OWN MELEE IMPACTS (m63), AND THE m57 STAND-IN IS DISCHARGED.** *"The first like
+    // three, I was thinking for when the melee connects."* `soft` pointed at `box_break_01`
+    // because there was nothing on disk that was a body being hit; these are that, so the key
+    // is gone and BOTH `HITSND` rows name this bank. The armoured/flesh split survives as
+    // WEIGHT and PITCH on one recording set, which is the metal clangs' own rule -- three car
+    // tiers told apart by pitch, not by three files.
+    hit: ['audio/hit_sounds/hit_sound_01.mp3', 'audio/hit_sounds/hit_sound_02.mp3',
+          'audio/hit_sounds/hit_sound_03.mp3'],
+    // **THE BOLT LANDING ON A MAN, WHICH IS NOT THE BOLT LANDING (m63).** *"Then there's two
+    // for when the plasma cannon actually hits the character."* `b.onMan` has said which of
+    // those two events it is since m58 and was only choosing a gain; it picks the BANK now.
+    // A near miss into the wall behind him still lands on the `plasma` bank, because that is
+    // what an area weapon is and it must not go silent.
+    pbody: ['audio/hit_sounds/hit_sound_plasma_01.mp3',
+            'audio/hit_sounds/hit_sound_plasma_02.mp3'],
     // **HIS OWN SEVEN, AND A GRUNT IS A VOICE RATHER THAN AN IMPACT (m62).** *"I added a sound
     // effects folder for alien orc grunts, so when he gets hit or shot he plays these also."*
     // ALSO is the word that decides the shape: a blow on a body makes two sounds from two
@@ -1833,13 +1847,15 @@ const SFX = {
             'audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3',
             'audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3',
             'audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3'],
-    // **A BODY ARRIVING (m62). A STAND-IN, and the third key pointed at this one file.** *"I
-    // need to put in a sound effect for when they hit the ground too."* There is nothing on
-    // disk that is a body landing either, so it is the dull break dropped an octave and cut to
-    // an instant -- which is merely closer to a sack of man hitting tarmac than a ring is.
-    // **Its own key so it can be re-pointed alone** and so it cannot gate `thud` or `soft`
-    // through `SFX.last`; the bytes come off the HTTP cache, only the decode is paid again.
-    drop: ['audio/box_break_01.mp3'],
+    // **EVERY CONNECTION POINT A FLYING BODY MAKES (m63), and the m62 stand-in is discharged.**
+    // *"The last two are for when they fly into the air and then they hit or run into like a
+    // wall or another character or the ground -- play one of these two for every connection
+    // point, so if they bounce or hit a wall and then hit the ground."* So it is not a LANDING
+    // sound, it is an IMPACT sound, and the three sites that fire it all go through `bodyBump`.
+    // **THE FILENAMES ARE LEFT EXACTLY AS UPLOADED**, `gound` and all: a tidy-up here is a 404
+    // the next time he drops the same files in, and `A()` keys on the path.
+    drop: ['audio/hit_sounds/hit_sound_gound_01.mp3',
+           'audio/hit_sounds/hit_sound_ground_02.mp3'],
     shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
     big: ['audio/plasma_canon.mp3'],
     boom: ['audio/explosion_small.mp3'],
@@ -1853,9 +1869,14 @@ const SFX = {
 // crate, and dropped an octave and cut to a tenth of a second it is at least a dull impact.
 // The WEAPON's weight multiplies this; it does not replace it. A kind with no `snd` gets `clang`,
 // so a new body is never silent.
+// **BOTH ROWS NAME HIS OWN BANK NOW (m63)** -- *"the first like three, for when the melee
+// connects."* No exception was named and these ARE recordings of a melee landing, so the
+// armoured/flesh distinction stops being two FILES and becomes weight and pitch on one set:
+// harder and brighter on plate, duller and lower on a man in a coat. `metal_clang_01..03` stay
+// loaded and unused, so `mel.snd('clang')` is still the A/B.
 const HITSND = {
-  clang: { key: 'clang', g: .90, r: .80, dur: 0 },     // armour. His word: the clang and the clink.
-  soft:  { key: 'soft',  g: .95, r: .55, dur: .13 },   // flesh. STAND-IN -- see `SFX.files.soft`.
+  hard: { key: 'hit', g: .98, r: 1.00, dur: 0 },   // armoured
+  soft: { key: 'hit', g: .92, r: .88,  dur: 0 },   // flesh
 };
 // **WHAT A BODY ITSELF SOUNDS LIKE (m62).** Three events that `HITSND` has nothing to say
 // about, because that table is the sound of the CONTACT and these are the sound of the MAN.
@@ -1873,11 +1894,38 @@ const BODYSND = {
   // comes DOWN as the speed comes up, because a big body moving fast is a lower sound than a
   // fist -- the metal clangs' rule, where three car tiers are told apart by pitch.
   whoosh: { at: 5, full: 22, g0: .22, g1: .70, r0: 1.20, r1: .74 },
-  // AND THE ARRIVAL, fired where `bodyFly` actually sets him down rather than on a timer.
-  // Percussive (`att`/`dec`), because an impact held flat reads as a tone however hard it
-  // starts. `at` is a floor on the IMPACT SPEED: a man shoved along the floor must not thump.
-  drop: { at: 3, full: 13, g0: .30, g1: .95, r: .52, dur: .18, att: .004, dec: .15 },
+  // AND EVERY ARRIVAL -- the ground, a wall, another man. Percussive (`att`/`dec`), because an
+  // impact held flat reads as a tone however hard it starts. `at` is a floor on the IMPACT
+  // SPEED, so a man shoved along the floor or scraping a wall does not thump; `cool` is the
+  // same floor in TIME, per body rather than per key, because two men landing together are two
+  // impacts and one man grinding along a wall is not.
+  // **`r` AND `dur` WENT WITH THE STAND-IN (m63).** .52 and a 180 ms cap existed to make a box
+  // break sound like a body; these are recordings of the real thing, so they play at their own
+  // rate and their own length. A number that exists to rescue a stand-in has to go when the
+  // stand-in does, or the fix for one file becomes a bug in the next -- m58's own lesson.
+  drop: { at: 3, full: 13, g0: .34, g1: 1.00, r: 1.00, jit: .12, att: .004, dec: .22,
+          cool: .16 },
 };
+// **A BODY IN THE AIR IS A PROJECTILE, AND IT HITS THINGS (m63, `FLYHIT`).** *"I do think we
+// should make enemies be able to fly there and hit other enemies -- knock them down, or at
+// least hit them back a little bit."* It needs no new damage path and no second brain: the man
+// it lands on goes through `dummyBlow`, which is the same function a fist, a mace and a bolt
+// all reach, so he grunts, plays a reaction, takes the shove and goes down if it was hard
+// enough -- and if it WAS hard enough he is now a flyer himself, so a chain falls out of it
+// rather than being written.
+// **THE POWER COMES FROM THE IMPACT SPEED**, which is what makes a full fling bowl a man over
+// (`FOE.fling` .70 is crossed around 14 m/s) and a light knock merely stagger him. `cost` is
+// what the flyer pays for it, so a body cannot scythe through a crowd.
+const FLYHIT = { at: 6, full: 22, pow0: .34, pow1: 1.0, cost: .42, bounce: .45 };
+// ONE impact, so the three connection points cannot drift into three different rules.
+function bodyBump(d, v) {
+  const D = BODYSND.drop;
+  if (v < D.at || d.bumpT > 0) return;
+  d.bumpT = D.cool;
+  const u = clamp((v - D.at) / (D.full - D.at), 0, 1);
+  snd('drop', { g: D.g0 + (D.g1 - D.g0) * u, r: D.r * (1 + (Math.random() - .5) * D.jit),
+                cut: 1, att: D.att, dec: D.dec });
+}
 // the swoosh a flying body drags with it. ONE rule and ONE threshold, called wherever a launch
 // velocity is set, so "a body part moving fast" cannot end up meaning three different things.
 function bodyWhoosh(d) {
@@ -3358,9 +3406,13 @@ function stepBolts(dt) {
                                  WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
                                  b.size * .5 + b.blast, FOE.dmg.bolt);
       const onMan = b.onMan || hitBodies;
-      snd('plasma', { i: plasmaPick(b.chg, 0), cut: 1, att: PUNCH.att, dec: PUNCH.dec,
-                      g: (onMan ? PUNCH.man : PUNCH.floor) + b.chg * PUNCH.chg,
-                      r: (onMan ? 1.00 : 1.14) + b.chg * PUNCH.rate });
+      // **AND IT IS A DIFFERENT BANK, NOT A DIFFERENT GAIN (m63).** `onMan` has been telling
+      // these two events apart since m58; his own two recordings are what it now picks. A
+      // fumble is still quieter and a full charge still lower, so the charge reads either way.
+      if (onMan) snd('pbody', { cut: 1, att: PUNCH.att, dec: PUNCH.dec,
+                                g: PUNCH.man + b.chg * PUNCH.chg, r: 1.00 + b.chg * PUNCH.rate });
+      else snd('plasma', { i: plasmaPick(b.chg, 0), cut: 1, att: PUNCH.att, dec: PUNCH.dec,
+                           g: PUNCH.floor + b.chg * PUNCH.chg, r: 1.14 + b.chg * PUNCH.rate });
       boltHit(b);
       b.g.traverse(o => { if (o.material) o.material.dispose(); });
       scene.remove(b.g); BOLTS.splice(i, 1);
@@ -4394,7 +4446,7 @@ function stepPlayer(dt) {
         // heavier and lower, a fist lighter and higher, on whichever sound the body calls for.
         {
           const K = (hitB && hitB.K) || null;
-          const S = HITSND[(K && K.snd) || 'clang'] || HITSND.clang;
+          const S = HITSND[(K && K.snd) || 'hard'] || HITSND.hard;
           // heavier and lower for a weapon, lighter and higher for a fist -- ON whichever
           // sound the body called for, so one table says what it is and the other how hard.
           const w = slotNow().charge ? 1 : 0;
@@ -5404,7 +5456,7 @@ function bodySpawn(P, K, x, z) {
   scene.add(root);
   const mixer = new THREE.AnimationMixer(model);
   const d = { K, root, model, mats, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff, flash: 0,
-    st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
+    st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, bumpT: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
@@ -6095,29 +6147,58 @@ function playerHurt(dmg, dirH, push, up, stun) {
 // scrubbing against the ground, which is a much shorter half-life.
 function bodyFly(d, dt) {
   const K = d.K, P = d.root.position;
+  if (d.bumpT > 0) d.bumpT -= dt;
   if (!d.vx && !d.vz && !d.vy) return;
   const gy = groundAt(P.x, P.z, P.y, .5);
   const air = P.y > gy + .02 || d.vy > 0;
   if (air) d.vy -= K.flyG * dt;
   const k = Math.exp(-(air ? K.flyDrag : (K.knockDrag || K.flyDrag)) * dt);
   d.vx *= k; d.vz *= k;
-  _fp.set(P.x + d.vx * dt, P.y, P.z + d.vz * dt);
+  const tx = P.x + d.vx * dt, tz = P.z + d.vz * dt;
+  _fp.set(tx, P.y, tz);
   // he is shoved THROUGH the same collider he walks on, or a punch puts him inside a wall
-  resolveBoxes(_fp, K.r, K.h * .9);
+  const wall = resolveBoxes(_fp, K.r, K.h * .9);
   P.x = _fp.x; P.z = _fp.z; P.y += d.vy * dt;
+  // **A WALL IS A CONNECTION POINT, AND HE BOUNCES OFF IT (m63).** *"If they bounce or hit a
+  // wall and then hit the ground."* The push-out `resolveBoxes` applied IS the surface normal,
+  // for free and with no second test -- so only the component going INTO the wall is reflected
+  // and what he had ALONG it he keeps, which is Shredworld's `SK8.bounce` rule one body over.
+  // A slide along a shopfront therefore costs nothing and a square hit comes back off it.
+  if (wall) {
+    const nx = _fp.x - tx, nz = _fp.z - tz, nl = Math.hypot(nx, nz);
+    const flat = Math.hypot(d.vx, d.vz);
+    if (nl > 1e-5 && flat > BODYSND.drop.at) {
+      const ux = nx / nl, uz = nz / nl, into = d.vx * ux + d.vz * uz;
+      if (into < 0) { const j = into * (1 + FLYHIT.bounce); d.vx -= j * ux; d.vz -= j * uz; }
+      bodyBump(d, flat);
+    }
+  }
+  // **AND SO IS ANOTHER MAN.** He goes through `dummyBlow` -- the one function every blow on a
+  // body reaches -- so the reaction, the grunt, the shove and the knock-down are all already
+  // written, and a man knocked down hard enough becomes a flyer in his own right. The struck
+  // body's own `K.cool` is what stops this firing every frame they overlap, so it needed no
+  // state of its own; `cost` is what the flyer pays, or one fling scythes a whole street.
+  const sp = Math.hypot(d.vx, d.vy, d.vz);
+  if (sp > FLYHIT.at) {
+    for (const o of DUMMIES) {
+      if (o === d || o.cool > 0) continue;
+      const ox = o.root.position.x - P.x, oz = o.root.position.z - P.z;
+      const rr = K.r + o.K.r;
+      if (ox * ox + oz * oz > rr * rr) continue;
+      if (Math.abs(o.root.position.y - P.y) > Math.max(K.h, o.K.h) * .8) continue;
+      const u = clamp((sp - FLYHIT.at) / (FLYHIT.full - FLYHIT.at), 0, 1);
+      dummyBlow(o, Math.atan2(d.vx, d.vz), FLYHIT.pow0 + (FLYHIT.pow1 - FLYHIT.pow0) * u);
+      bodyBump(d, sp);
+      d.vx *= FLYHIT.cost; d.vz *= FLYHIT.cost; d.vy *= FLYHIT.cost;
+      break;
+    }
+  }
   const g2 = groundAt(P.x, P.z, P.y, .5);
   if (d.vy <= 0 && P.y <= g2 + .04) {
-    // **AND THE ARRIVAL IS AN EVENT (m62).** *"I need a sound effect for when they hit the
-    // ground too."* It goes HERE, where the flight is actually ended, rather than on the state
-    // clock -- the ground is what stops a body and a timer drops him through whatever he was
-    // thrown onto. The impact SPEED has to be read before it is zeroed, and the floor is what
-    // stops a man being shoved along the floor thumping on every frame that this branch runs.
-    const D = BODYSND.drop;
-    if (-d.vy > D.at) {
-      const u = clamp((-d.vy - D.at) / (D.full - D.at), 0, 1);
-      snd('drop', { g: D.g0 + (D.g1 - D.g0) * u, r: D.r, cut: 1,
-                    att: D.att, dec: D.dec, dur: D.dur });
-    }
+    // **AND THE GROUND IS THE THIRD (m62).** It goes HERE, where the flight is actually ended,
+    // rather than on the state clock -- the ground is what stops a body and a timer drops him
+    // through whatever he was thrown onto. The impact SPEED has to be read before it is zeroed.
+    bodyBump(d, -d.vy);
     P.y = g2; d.vy = 0;
   }
   if (!air && Math.hypot(d.vx, d.vz) < .05) { d.vx = 0; d.vz = 0; }
@@ -6527,7 +6608,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, M
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, STRIKE, PADS, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA,
+  DUMMY, DUMMIES, LOCK, STRIKE, PADS, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
   BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
