@@ -1019,6 +1019,49 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE CLANG IS A LAYER, NOT AN ALTERNATIVE -- AND THAT IS THE THIRD ANSWER (m64, `hitRing`).**
+  *"I'm thinking the metal clang in addition to what we're using, for both the blaster and the
+  melee."* m57 made it the armoured body's SOUND, m63 replaced it with his own recordings, and
+  **ADDITION is what he actually wanted both times**: the hit bank is the BLOW and the ring is
+  what the blow lands ON, so they are two sources and one event -- exactly the shape the grunt
+  already has at m62, and not the m27 duplicate, which was two voices describing one thing.
+  **IT IS STILL A FACT ABOUT THE MAN.** The ring rides `HITSND.hard.ring`, so plate rings and a
+  drunk in a coat does not, and giving a body one is a field on his row. m57's own distinction
+  survives -- what changed is that it is now carried by a LAYER instead of by a different file.
+  Quieter and higher than the clang ever was alone, because it is no longer doing the impact.
+  **AND `dummyHit` RETURNS THE BODY NOW, NOT A FLAG.** The blaster half of his sentence needed
+  to know WHAT the bolt hit in order to ask whether that man rings -- which is the identical
+  one-word change `strikeSweep` needed at m57, for the identical reason. It still loops them
+  ALL (m36's `hitAll`), and every caller tested it for truth rather than comparing it to 1, so
+  returning the man cost nothing. `b.onMan` carries the body rather than a 1.
+- **HIS FOOTSTEPS, AND THE STRIDE IS A DISTANCE THE CLIP ALREADY DECIDED (m64, `STEP`,
+  `stepFeet`).** *"I think his footsteps, we could use the two ground sound effects that I just
+  made, for each footstep."*
+  **A FOOTSTEP IS EVERY N METRES, NOT EVERY N SECONDS**, and that is the whole reason this stays
+  in sync with nothing to keep in step. `rigAnim` time-scales every locomotion clip by
+  `speed / ref`, so one cycle takes `duration * ref / speed` seconds and therefore covers
+  **`duration * ref` METRES whatever speed he is going** -- the speed cancels. Two footfalls to
+  a cycle, so the stride is half of that, and the accumulator does the rest.
+      a TIMER would be right at exactly one speed and wrong at every other
+      a PHASE read off the mixer would be a second clock to keep in step with the clip's own,
+      which is the m59 push-scrape lesson one game over
+  **AND THE THREE STRIDES ARE COMPUTED AT LOAD FROM THE REAL DURATIONS AND THE SCALED REFS**, in
+  `buildRig` where both are known -- so a re-export at a different length, or another change to
+  `RIG.height`, moves them with nothing edited. They are printed at boot beside the clip list.
+  **THE PHASE IS KEPT WHILE HE STANDS STILL.** Zeroing it makes the first step of every start
+  instant, so a jiggled stick is a burst of footfalls; carried, he simply resumes.
+  **LEFT AND RIGHT ALTERNATE BY A SHADE OF PITCH**, plus jitter, because two identical footfalls
+  in a row read as a loop rather than as a man -- the grunt's own argument at m62.
+  **ITS OWN KEY ON THE SAME TWO FILES.** A footstep must not gate out a body hitting the ground
+  through `SFX.last`'s per-key gap, and either wants re-pointing alone. Bytes off the HTTP
+  cache; one extra decode on a short file.
+  **THE PLAYER ONLY, WHICH IS WHAT HE ASKED FOR AND IS ALSO THE CHEAP HALF.** Thirteen bodies
+  with footsteps is thirteen more voices in a fight; `stepFeet` reads `player` directly and
+  giving the NPCs the same thing would want the accumulator on the body, not a second function.
+  **AND HIS OWN LANDING IS STILL SILENT** -- `MOVE.landSoft`/`landHard` fire no sound at all, and
+  the bank for it is now sitting right there. Not done because he did not ask; stated so it is
+  not re-discovered.
+
 - **HIS HIT BANK, AND THREE STAND-INS DISCHARGED AT ONCE (m63, `audio/hit_sounds`).** *"The
   first like three are for when the melee connects, then there's two for when the plasma cannon
   actually hits the character, and the last two are for when they fly into the air and then hit
