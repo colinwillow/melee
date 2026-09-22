@@ -243,6 +243,24 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   width: calc(var(--mr) * 2); height: calc(var(--mr) * 2);
 }
 #modeRow.on { display: block; }
+/* ---- DESKTOP (m79) -------------------------------------------------------------------
+   THE PADS ARE THE ONE THING A MOUSE REPLACES, and everything else on screen stays: the
+   chip, the mode row and the reticle are all still the right pictures. `body.desk` is set
+   by whichever input was used LAST, so a laptop with a touchscreen is never in the wrong
+   mode for more than one gesture. */
+body.desk #padL, body.desk #padR { display: none; }
+/* AND THE HINT IS ONLY UP WHILE THE MOUSE IS FREE. Once the pointer is locked it is a HUD
+   element in the middle of the play area saying something you already know -- the `actB`
+   lesson one game over -- so it goes the moment the game has the mouse. */
+#deskHint {
+  position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
+  z-index: 7; display: none; pointer-events: none; text-align: center;
+  font-family: var(--ui); font-size: 12px; font-weight: 600; letter-spacing: .10em;
+  color: var(--sky); background: rgba(11,13,18,.82); border: 2px solid var(--sky);
+  border-radius: 6px; padding: 7px 14px; max-width: 92vw; line-height: 1.7;
+}
+body.desk.free #deskHint { display: block; }
+#deskHint b { color: var(--ink); background: var(--sky); border-radius: 3px; padding: 0 4px; }
 /* `pointer-events: all` is what gives an UNFILLED path a hit area -- the alternative is a
    translucent fill, and m50's whole finding is that nothing on these pads should be a tint. */
 #modeRow path {
@@ -379,10 +397,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m78</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m79</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m78</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m79</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -393,6 +411,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
      area for a weapon that has no modes. Built from `WEAP.modes` rather than written twice:
      a third mode is a row in that table and nothing here. -->
 <div id="modeRow" aria-hidden="true"></div>
+
+<!-- DESKTOP CONTROLS (m79). Built from `DESK.hint` so the one place that binds a key is the
+     one place that names it -- a printed map and a binding that disagree is worse than none. -->
+<div id="deskHint" aria-hidden="true"></div>
 
 <!-- THE RETICLE -- CONCENTRIC BROKEN RINGS, NOT ARCS IN ONE SVG.
      The first version put every layer in one <svg> and spun each <g> with
@@ -428,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm78';
+const BUILD = 'm79';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -4608,6 +4630,127 @@ PADS.R = bindStick(padR, stick.R,
   // longer held and fires on that edge. Clearing it here would eat every shot in the game.
   () => { chargeRelease(); });
 
+// ============================================================================================
+// DESKTOP (m79, `DESK`)
+//
+// *"I need to make this game work better on desktop web view... if it detects a mouse, have it
+// so the aiming works with the mouse. Left click will be shoot and melee, the keys can be
+// locomotion, the camera is look around with the mouse. Right click for now will be rotate
+// through your weapons. Switching the blaster between automatic and charge will maybe be alt."*
+//
+// **THE MOUSE BECOMES THE RIGHT PAD, IT DOES NOT BYPASS IT.** Every verb in this game reads the
+// right pad's GEOMETRY -- `padUp`'s four gates, the guard's mirrored four, the flick, the tap --
+// so a second input path would be a second answer to "is the thumb pushed up", which is exactly
+// what m46 spent a build collapsing into one. Holding the left button writes `stick.R` to
+// straight-up-at-full-deflection and lets go of it on release, so the trigger, the wind-up, the
+// square-up, the release edge and `chargeRelease` all work with **not one line changed**.
+// **AND IT WRITES x = 0, WHICH IS LOAD-BEARING.** `stepCam` turns the camera off `stick.R.x`, so
+// a synthetic stick with any lean in it would fight the mouse for `cam.az` -- two writers on a
+// camera bearing, this file's oldest standing invariant. At zero the stick contributes nothing
+// and the mouse is the only writer, which is the same arrangement the phone has.
+//
+// **AIMING AND LOOKING ARE THE SAME THING HERE AND THAT IS WHY THE MOUSE DOES BOTH.** While
+// aiming he faces wherever the lens points (one writer), so there is no separate aim axis to
+// bind -- mouse-look IS the aim. **There is no pitch**: `cam.el` is a constant, so `movementY`
+// has nothing to drive and is deliberately ignored rather than wired to something invented.
+//
+// **A TAP IS THE MELEE AND A HOLD IS THE WEAPON'S OWN HOLD**, which is his sentence read
+// literally -- and it falls out of `armT` .09 against `tapT` .30 rather than needing a mode: a
+// click too short to arm the trigger is a punch, and anything longer is the charge. **Not in
+// rapid fire**, where a tap already spends the hold as a ROUND and punching as well would be
+// one click doing two things.
+//
+// **AND THE MODE IS LAST-INPUT-WINS RATHER THAN A SNIFF.** `matchMedia('(pointer: fine)')` seeds
+// it so a desktop starts right, and a real mouse move or a real touch flips it either way -- so
+// a laptop with a touchscreen is never in the wrong mode for more than one gesture, and there is
+// no user-agent string to be wrong about.
+const DESK = {
+  on: 0,
+  sens: .0032,        // radians of yaw per pixel of mouse travel. ~2000 px for a full turn.
+  yaw: 0,             // banked movementX, spent in `stepCam` -- the ONE writer on `cam.az`
+  down: 0, t0: 0,     // the left button, and when it went down
+  hint: 'CLICK TO PLAY &nbsp; <b>WASD</b> move &nbsp; <b>MOUSE</b> look &nbsp; '
+      + '<b>LMB</b> tap melee / hold fire &nbsp; <b>RMB</b> weapon &nbsp; '
+      + '<b>ALT</b> mode &nbsp; <b>SPACE</b> jump &nbsp; <b>SHIFT</b> roll',
+};
+const deskHint = document.getElementById('deskHint');
+deskHint.innerHTML = DESK.hint;
+const locked = () => document.pointerLockElement === canvas;
+function deskPaint() { document.body.classList.toggle('free', !locked()); }
+// THE SYNTHETIC BUTTON IS RELEASED THE SAME WAY THE PADS ARE, and for the same four reasons --
+// losing the lock, backgrounding the tab and switching to touch all leave a button held that
+// nothing will ever hear the up for.
+function deskUp(fire) {
+  if (!DESK.down) return;
+  DESK.down = 0;
+  // ORDER MIRRORS `bindStick`'s `end()`: the release runs while the stick is still down, because
+  // `chargeRelease` is the hammer's edge and `stepKit` finds the blaster's on the NEXT frame.
+  if (fire) chargeRelease();
+  stick.R.down = 0; stick.R.x = 0; stick.R.y = 0; stick.R.far = 0;
+}
+function deskMode(on) {
+  if (DESK.on === (on ? 1 : 0)) return;
+  DESK.on = on ? 1 : 0;
+  document.body.classList.toggle('desk', !!on);
+  if (on) { PADS.L.release(); PADS.R.release(); }
+  else { deskUp(0); if (locked()) document.exitPointerLock(); }
+  deskPaint();
+}
+try { if (matchMedia('(pointer: fine)').matches) deskMode(1); } catch (err) {}
+addEventListener('pointerdown', e => { if (e.pointerType === 'touch') deskMode(0); }, { capture: true });
+addEventListener('mousemove', e => {
+  if (e.movementX || e.movementY) deskMode(1);
+  // only while the game HAS the mouse -- a free cursor moving over the page is not a look
+  if (DESK.on && locked()) DESK.yaw += e.movementX;
+});
+// THE FIRST CLICK TAKES THE MOUSE AND DOES NOTHING ELSE, which is the standard bargain and is
+// also the only one available: `requestPointerLock` needs a gesture. Esc gives it back, and the
+// next click takes it again.
+canvas.addEventListener('mousedown', e => {
+  if (!DESK.on) return;
+  e.preventDefault();
+  if (!locked()) { try { canvas.requestPointerLock(); } catch (err) {} return; }
+  if (e.button === 2) { cycleKit(); return; }
+  if (e.button !== 0 || DESK.down) return;
+  DESK.down = 1; DESK.t0 = performance.now();
+  stick.R.down = 1; stick.R.x = 0; stick.R.y = -1; stick.R.far = 1;
+});
+addEventListener('mouseup', e => {
+  if (e.button !== 0 || !DESK.down) return;
+  const held = (performance.now() - DESK.t0) / 1000;
+  deskUp(1);
+  // A CLICK TOO SHORT TO ARM THE TRIGGER IS A PUNCH. `flickH(0, -1)` is straight up on the pad,
+  // which is forward relative to the camera -- the SAME mapping the stick and the flick use, so
+  // a desktop strike and a phone strike cannot disagree about which way forward is.
+  if (held < MOVE.tapT && !autoNow()) meleeGo(flickH(0, -1));
+});
+addEventListener('contextmenu', e => { if (DESK.on) e.preventDefault(); });
+document.addEventListener('pointerlockchange', () => { if (!locked()) deskUp(0); deskPaint(); });
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if ('wasd'.includes(k) || k.startsWith('arrow')) deskMode(1);
+  if (!DESK.on || e.repeat) return;
+  if (k === ' ') { player.jump = 1; e.preventDefault(); }
+  // THE ROLL HAS NO GESTURE LEFT ON A MOUSE, and it is the one thing that saves you (its
+  // i-frames are what `p.roll` was always for), so it gets a key of its own rather than being
+  // a stated gap. It goes where you are WALKING, falling back to where he faces -- which is
+  // the left pad's own flick, read off the keys instead of off a thumb.
+  if (k === 'shift') {
+    const w = stickWorld();
+    rollGo(w.mag > .05 ? Math.atan2(w.x, w.z) : player.faceH);
+    e.preventDefault();
+  }
+  // AND THE MODE KEY ONLY MEANS SOMETHING ON A WEAPON THAT HAS MODES -- `modeNow()` is the same
+  // test the on-screen row is built from, so the key and the picture cannot disagree.
+  if (k === 'alt' && modeNow()) { setMode((WEAP.mode + 1) % WEAP.modes.length); e.preventDefault(); }
+});
+// the tab going away releases the button, exactly as it releases a pad
+for (const t of ['blur', 'pagehide', 'visibilitychange']) addEventListener(t, () => {
+  if (t === 'visibilitychange' && document.visibilityState === 'visible') return;
+  deskUp(0);
+});
+deskPaint();
+
 // THE HOLD IS READ PER FRAME RATHER THAN ON AN EDGE, because what it means depends on what is
 // in his hand and that can change under a thumb that is already down.
 // **ONE ANSWER TO "IS THE THUMB PUSHED UP" (m46, `padUp`).** The blaster's trigger and the
@@ -7312,6 +7455,11 @@ function stepCam(dt) {
   const dz = padUp(p.aim || p.charge || p.center) ? CAM.deadAim : CAM.dead;
   const ax = Math.abs(rx);
   if (ax > dz) cam.az -= Math.sign(rx) * ((ax - dz) / (1 - dz)) * CAM.yawRate * dt;
+  // **AND THE MOUSE IS THE SAME WRITER, NOT A SECOND ONE (m79).** It is spent HERE rather than
+  // in the listener for exactly the reason the line above it exists: `cam.az` has one writer and
+  // a second one anywhere else is a loop that never settles. It is a DISPLACEMENT and not a
+  // rate, so it is not multiplied by `dt` -- the pixels already happened.
+  if (DESK.yaw) { cam.az -= DESK.yaw * DESK.sens; DESK.yaw = 0; }
 
   // AND IT COMES ROUND TO A LOCKED TARGET. This is inside `stepCam` on purpose -- `cam.az` has
   // exactly one writer, and a second one somewhere else is a loop that never settles.
@@ -7636,7 +7784,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, M
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, STRIKE, PADS, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
+  DUMMY, DUMMIES, LOCK, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
   BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,

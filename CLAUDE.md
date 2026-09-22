@@ -1040,6 +1040,65 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE MOUSE BECOMES THE RIGHT PAD, IT DOES NOT BYPASS IT (m79, `DESK`).** *"I need to make
+  this game work better on desktop web view. Right now you can move with WASD, which is good, but
+  if it detects a mouse have it so the aiming works with the mouse -- left click will be shoot and
+  melee, the keys can be locomotion, the camera is look around with the mouse. Space bar will be
+  jump, right click for now will be rotate through your weapons from unarmed to blaster to melee.
+  Switching the blaster between automatic and charge will maybe be alt."*
+  **EVERY VERB IN THIS GAME READS THE RIGHT PAD'S GEOMETRY**, which is why this is fifteen lines
+  of input and not a second control layer: `padUp`'s four gates, the guard's mirrored four, the
+  flick and the tap all ask where a thumb is. **A second path would be a second answer to "is the
+  thumb pushed up"** -- the exact thing m46 spent a build collapsing into one. So holding the left
+  button writes `stick.R` to straight-up-at-full-deflection and lets go on release, and the
+  trigger, the wind-up, the square-up, the release edge and `chargeRelease` all work with **not
+  one line changed**.
+  **AND IT WRITES x = 0, WHICH IS LOAD-BEARING RATHER THAN TIDY.** `stepCam` turns the camera off
+  `stick.R.x`, so a synthetic stick with any lean in it would fight the mouse for `cam.az` --
+  **two writers on a camera bearing**, this file's oldest standing invariant and the one that
+  shows up every single time. At zero the stick contributes nothing and the mouse is the only
+  writer, which is the identical arrangement the phone has.
+  **THE YAW IS SPENT IN `stepCam`, NOT IN THE LISTENER**, for that same reason -- and it is a
+  DISPLACEMENT rather than a rate, so it is not multiplied by `dt`: the pixels already happened.
+  **AIMING AND LOOKING ARE THE SAME THING HERE, WHICH IS WHY ONE DEVICE DOES BOTH.** While aiming
+  he faces wherever the lens points, so there is no separate aim axis to bind -- **mouse-look IS
+  the aim**, and that falls out of the one-writer rule rather than being arranged. **And there is
+  no pitch**: `cam.el` is a constant, so `movementY` has nothing to drive and is ignored rather
+  than wired to something invented for it.
+  **A TAP IS THE MELEE AND A HOLD IS THE WEAPON'S OWN HOLD**, which is *"shoot and melee"* read
+  literally -- and it needed no mode, because `armT` .09 against `tapT` .30 already separates
+  them: a click too short to arm the trigger is a punch and anything longer is the charge.
+  **Not in rapid fire**, where a tap already spends the hold as a ROUND and punching as well would
+  be one click doing two things. The direction is `flickH(0, -1)` -- straight up on the pad, which
+  is forward relative to the camera -- so **a desktop strike and a phone strike read the same
+  mapping** and cannot disagree about which way forward is.
+  **LAST INPUT WINS, RATHER THAN A SNIFF.** `matchMedia('(pointer: fine)')` seeds it so a desktop
+  starts right, and a real mouse move or a real touch flips it either way -- so a laptop with a
+  touchscreen is never in the wrong mode for more than one gesture, and there is no user-agent
+  string to be wrong about. Flipping to desktop releases both pads, which is the m138 stuck-stick
+  rule: a mode change with a thumb down is an up nobody will ever hear.
+  **THE FIRST CLICK TAKES THE MOUSE AND DOES NOTHING ELSE**, which is the standard bargain and is
+  also the only one available -- `requestPointerLock` needs a gesture. Esc gives it back and the
+  next click takes it again, and **losing the lock releases the button**, alongside the same
+  blur/pagehide/visibilitychange trio the pads have had since m35: all three are ways an up goes
+  missing, one input device over.
+  **AND THE ROLL GOT A KEY RATHER THAN A STATED GAP.** It is the one thing that saves you -- its
+  i-frames are what `p.roll` was always for -- and on a mouse there is no gesture left for it, so
+  SHIFT rolls where you are WALKING and falls back to where he faces. That is the left pad's own
+  flick read off the keys instead of off a thumb, and it is a judgement rather than something he
+  asked for.
+  **THE HINT IS BUILT FROM `DESK.hint` AND ONLY SHOWS WHILE THE MOUSE IS FREE.** One place binds a
+  key and the same place names it, because a printed map that disagrees with a binding is worse
+  than no map; and once the pointer is locked it is a HUD element in the play area saying
+  something you already know, which is the `actB` lesson one game over.
+  **WHAT IS NOT BOUND, AND IS STATED:** the GUARD. It is right-pad DOWN on the phone and right
+  click is spent on the weapon cycle, so there is no desktop block -- which matters more than it
+  sounds now that m67 gave the orcs a knock-down that a guard is what keeps you out of. A key
+  (`Q`, or holding RMB against a tap to cycle) is the obvious next thing and it is his call which.
+  **AND NOTHING IN THIS CONTAINER HAS A MOUSE**, so the sensitivity (`DESK.sens`, about 2000 px
+  for a full turn), whether a tap-punch fires too readily, and whether losing the lock to Esc is a
+  nuisance are all device questions. `mel.DESK` is live and `mel.DESK.sens` is the dial.
+
 - **ONE BOLT, ONE BODY -- AND THE CHAIN IS THE BETTER WAY TO PUT A CROWD DOWN (m78,
   `WEAP.blastMax`).** *"I shoot it and it hits all three orc warrior aliens at the same time and
   it's just cheap. Maybe the blast should only be able to hit one thing at a time? I do like the
