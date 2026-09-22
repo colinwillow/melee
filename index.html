@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m70</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m71</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m70</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m71</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm70';
+const BUILD = 'm71';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -1251,7 +1251,7 @@ const DUMMY = {
     upF: 'get_up_front', upB: 'get_up_back',
   },
   // THE OFFICER GETS THE KICKBACK TOO -- it is a property of being hit, not of being a warrior
-  knock: 3.2, knockUp: .4, knockDrag: 5.5,
+  knock: 3.2, knockUp: .4, knockDrag: 5.5, shoveDrag: 2.2,
   hitBeat: .5,        // the reactions run 1.0-1.5 s at 1x, which is a long time to watch
   downBeat: 1.25,     // and the knock-downs 2.2-2.8
   upBeat: 1.5,
@@ -1406,7 +1406,7 @@ const FOE = {
   // little bit, same with the gun."* Nothing moved him at all unless he went down, so a landed
   // punch was a clip and a number and no contact. Scaled by the blow's power, integrated by the
   // same `bodyFly` the knock-down uses, so there is one place a body carries momentum.
-  knock: 4.2, knockUp: .55, knockDrag: 5.5,
+  knock: 4.2, knockUp: .55, knockDrag: 5.5, shoveDrag: 2.2,
   out: 2.0,          // how long he lies there
   // *"I still wanna launch them forward and have it have some power to it."* A launch you
   // can see the end of is worth more than one that is technically happening.
@@ -1516,7 +1516,7 @@ const HICK = {
   hitBeat: 1.1, bigBeat: 1.4, downBeat: 1.2, upBeat: 1.2,
   out: 1.6,
   flyV: 26.0, flyUp: 9.0, flyG: 20, flyDrag: 1.12,
-  knock: 4.6, knockUp: .6, knockDrag: 5.5,
+  knock: 4.6, knockUp: .6, knockDrag: 5.5, shoveDrag: 2.2,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
   fling: .55,        // but he is a skinny man: it takes far less to launch him
   fly0: .45,
@@ -1599,7 +1599,7 @@ const HOBO = {
   hitBeat: 1.2, bigBeat: 1.5, downBeat: 1.6, upBeat: 1.8,
   out: 2.0,          // how long he lies there. He is drunk; he is in no hurry.
   flyV: 25.0, flyUp: 8.8, flyG: 20, flyDrag: 1.15,
-  knock: 4.2, knockUp: .6, knockDrag: 5.5,
+  knock: 4.2, knockUp: .6, knockDrag: 5.5, shoveDrag: 2.2,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
   fling: .55,
   fly0: .45,
@@ -1956,7 +1956,7 @@ const SFX = {
 // loaded and unused, so `mel.snd('clang')` is still the A/B.
 const HITSND = {
   ringGap: .30,     // the least time between two rings under rapid fire -- see `hitRing`
-  hard: { key: 'hit', g: .98, r: 1.00, dur: 0, ring: { g: .52, r: 1.30 } },   // armoured
+  hard: { key: 'hit', g: .98, r: 1.00, dur: 0, ring: { g: .30, r: 1.30 } },   // armoured
   soft: { key: 'hit', g: .92, r: .88,  dur: 0 },                              // flesh
 };
 // **THE CLANG IS A LAYER NOW, NOT AN ALTERNATIVE (m64).** *"I'm thinking the metal clang in
@@ -6567,7 +6567,22 @@ function bodyFly(d, dt) {
   const gy = groundAt(P.x, P.z, P.y, .5);
   const air = P.y > gy + .02 || d.vy > 0;
   if (air) d.vy -= K.flyG * dt;
-  const k = Math.exp(-(air ? K.flyDrag : (K.knockDrag || K.flyDrag)) * dt);
+  // **A SHOVE IS A DISTANCE *AND* A DURATION, AND ONE DRAG SETS BOTH (m71).** *"When I hit them
+  // like melee and stuff, or even shots, I want there to be like a subtle kickback -- even if
+  // they're not flying through the air -- so it feels like a more dramatic effect."* The
+  // MAGNITUDE was never the problem: a jab is `knock` x power = 1.89 m/s, and at `knockDrag`
+  // 5.5 that is `v/k` = **0.34 m with a 0.18 s time constant** -- a third of a body-width, over
+  // a fifth of a second, which on a phone is a twitch and reads as nothing. `shoveDrag` 2.2 is
+  // the same impulse over **0.86 m and 0.45 s**, which reads as a stagger. Nothing about how
+  // hard a blow hits moved.
+  // **AND IT IS SEPARATE FROM `knockDrag` BECAUSE THAT NUMBER HAS A SECOND JOB** -- it is also
+  // what scrubs a FLUNG body along the ground after it lands, and a fling that slides twice as
+  // far is a different change nobody asked for. The test is the STATE rather than a flag,
+  // because the state IS the fact: `hit` and `block` mean he is on his feet reacting to a blow,
+  // and `down`/`up` mean he is on the floor.
+  const shove = d.st === 'hit' || d.st === 'block';
+  const gDrag = shove ? (K.shoveDrag || K.knockDrag || K.flyDrag) : (K.knockDrag || K.flyDrag);
+  const k = Math.exp(-(air ? K.flyDrag : gDrag) * dt);
   d.vx *= k; d.vz *= k;
   const tx = P.x + d.vx * dt, tz = P.z + d.vz * dt;
   _fp.set(tx, P.y, tz);

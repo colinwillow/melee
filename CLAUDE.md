@@ -1019,6 +1019,55 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A SHOVE IS A DISTANCE *AND* A DURATION, AND ONE DRAG SETS BOTH (m71, `K.shoveDrag`).**
+  *"When I hit them like melee and stuff, or even shots, I want there to be like a subtle kickback
+  -- even if they're not flying through the air -- so it feels like a more dramatic effect."*
+  **THE MAGNITUDE WAS NEVER THE PROBLEM, WHICH IS WHY RAISING `knock` WOULD HAVE BEEN THE WRONG
+  MOVE.** m37 gave every blow a shove and the impulse is real -- a fist on the warrior is
+  `knock` 4.2 x power .45 = **1.89 m/s** -- and `bodyFly` spent it at `knockDrag` 5.5, which is
+  `v/k` metres with a `1/k` time constant:
+      old   drag 5.5   fist 0.34 m over 0.18 s   rapid bolt 0.27 m   near-fling 0.53 m
+      new   drag 2.2   fist 0.86 m over 0.45 s              0.69 m               1.32 m
+  A third of a body-width, over a fifth of a second, is a TWITCH -- on a phone it is
+  indistinguishable from the body not moving at all, which is exactly the report. **The same
+  impulse at 2.2 travels 2.5x as far and takes 2.5x as long**, and nothing about how hard a blow
+  hits, how much damage it does or where `fling` sits moved. **A distance you can see and a
+  duration you can see are the same number in disguise**; when a motion reads as nothing, check
+  the drag before the launch.
+  **AND IT CANNOT SHARE `knockDrag`, BECAUSE THAT NUMBER HAS A SECOND JOB.** The same constant
+  scrubs a FLUNG body along the ground after it lands, so halving it would double every skid
+  as well -- a change nobody asked for, and the `chargeGoH` lesson at m27 one constant over.
+  **THE TEST IS THE STATE RATHER THAN A FLAG, BECAUSE THE STATE *IS* THE FACT**: `hit` and
+  `block` mean he is on his feet reacting to a blow, `down`/`up` mean he is on the floor. No
+  field to set at the blow and nothing for a future shove site to forget.
+  **AND KEYING ON IT CUTS THE TAIL FOR FREE**, which a flag would not have. The warrior's hit
+  state is 1.0 s and the shove would take 1.65 s to reach `bodyFly`'s 0.05 m/s floor -- so the
+  reaction ending flips the drag back to 5.5 and the 0.21 m/s left over dies in 4 cm, instead of
+  a man walking away still drifting.
+  **THE FLING IS STILL PLAINLY A DIFFERENT EVENT.** The hardest blow that does NOT launch a
+  warrior is just under `fling` .70, which is 1.32 m of stagger against a fling's `flyV` 24 m/s
+  -- so "knocked back" and "sent flying" are not two points on one curve you have to compare.
+  **AND THE WHOOSH IS DELIBERATELY STILL SILENT.** `BODYSND.whoosh.at` is 5 m/s and the biggest
+  shove is 3.2, so a stagger makes no air noise -- which is right: it is a man being moved, not
+  a man being thrown. `mel.FOE.shoveDrag = 5.5` is the one word back to m70.
+  **WHAT IS NOT DONE, AND IS THE NEXT LEVER IF THIS STILL READS FLAT: a melee hit does not
+  flash the body.** `bodyFlash` exists (m39) and is called from exactly one place -- the bolt's
+  impact swarm -- so a shot lights the mesh up and a punch does not, although his sentence names
+  both. One line in `dummyBlow` would do it (`bodyFlash` takes a `max`, so it cannot double with
+  the bolt's own), and it is left out here so the kickback can be judged on its own.
+- **THE CLANG LAYER IS A LAYER, SO IT HAS TO SIT *UNDER* SOMETHING (m71, `HITSND.hard.ring.g`).**
+  *"I'm thinking we turned down the metal clang sound effect. It's just kind of loud -- and I'm
+  wearing headphones so it's extra loud -- but maybe tone that down a little bit so it works in
+  conjunction with the other noises."* .52 -> .30. m64's whole argument is that the ring is what
+  the blow lands ON and the hit bank is the BLOW, **so the ring is the one of the two that must
+  never be the loudest thing in the mix** -- at .52 against `hard.g` .98 it was over half the
+  impact it is supposed to be a detail of, and against m59's `cut`/`dec` envelope (which made
+  every impact start AT its peak) the two arrived together and fought. Nothing else moved: the
+  hit bank, the grunt and the plasma impact are untouched, so this is one variable.
+  **AND IT IS THE ONLY DIAL, WHICH IS WHY IT WAS ONE LINE.** `ring` is on the KIND's row, read
+  by all three of its callers (the melee connect, a bolt landing on a man, and the warrior's
+  chest thump), so they cannot disagree about how loud a ring is -- and the flesh row has no
+  `ring` at all, so a drunk in a coat was never in this conversation.
 - **A RAPID ROUND WAS THE LEAST ACCURATE THING IN THE GAME, AND ITS PICTURE IS WHY (m70,
   `WEAP.autoR`).** *"The impact noise from the rapid fire blaster doesn't quite play the same
   sound as the charge blaster. Obviously the charge should be more intense, but I feel like
