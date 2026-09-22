@@ -1040,6 +1040,50 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **HE PILES ON TO WHATEVER YOU ARE HITTING, AND THE SWING IS THE WARRIOR'S OWN MACHINERY
+  (m75, `PALMARK`, `palFoe`, `K.pounce`).** *"Let's make him attack with the mutant punch."*
+  **"ONLY ATTACK IF YOU'RE ATTACKING SOMETHING" IS A MARK ON THE MAN, NOT A MOOD.** m73's standing
+  permission had a condition in it, and the condition is a fact about a BODY rather than a state
+  in the sidekick: `dummyBlow` is the one function every blow on a body reaches, so it is the one
+  place that can stamp *you are fighting this one*, and `palFoe` only ever returns a body still
+  carrying that stamp. He therefore never starts a fight, never wanders off after one, and stops
+  when you stop -- **no aggro of his own, and nothing to tune about when he decides to engage.**
+  **AND HIS OWN PUNCH DOES NOT REFRESH IT** (`pal` 1 on that one call), or he would keep his own
+  victim alive as a target for ever and never come back. The mark is YOUR interest.
+  **`PALMARK` IS A PROPERTY OF THE EVENT, NOT OF A PAL**, so it is a constant beside `FLYHIT`
+  rather than a field on his table -- a second sidekick tomorrow reads the same mark and there is
+  nothing to keep in step.
+  **THE ATTACK IS A TABLE AND ONE BRANCH.** `swings`, `swingDur`, `swingAt`, `swingGap`, `hitR`
+  and `hitArc` are the fields `foeSwing`, `foeAI`'s `swing` branch and `foeStrike` have read since
+  m35 -- so naming them on `CLANCY` IS the attack, and the only new code is a branch in
+  `foeStrike` that swings at a BODY instead of at the player. The beat, the contact frame, the
+  lean through the blow and the cooldown all came with it. **That is `d.K`'s dividend for the
+  sixth time**, and it is why an attack cost less than the hop did.
+  **`mutant_punch` IS 1.167 s AND PLAYS AT x1.37** -- m37's rule, that a reaction too fast to read
+  is the same reaction every time -- and `swingGap` .45 puts a punch every ~1.3 s, which is a
+  helper chipping in rather than a second fighter.
+  **`power` .34 IS UNDER THE WARRIOR'S `fling` .70 AND HIS `hard` 1.01 BY CONSTRUCTION**, so a
+  sidekick's punch staggers and shoves (`knock` 4.2 x .34 = 1.43 m/s, 0.65 m at `shoveDrag` 2.2)
+  and can never put a man down. That is right rather than a limitation: **knocking them over is
+  yours.** `dmg` 2.0 through the same `max(.35, power)` is 0.70 a punch against 6 hit points, so
+  he is worth about a third of a fight.
+  **A MAN ON THE FLOOR IS FINISHED WITH.** `palFoe` skips `down` and `up`, which is what makes him
+  disengage and come back rather than stand over a downed warrior punting him for ever --
+  `dummyBlow`'s punt branch would happily let him.
+  **AND JOINING THE FIGHT OUTRANKS THE LEASH, DELIBERATELY.** `hunt` 9 is further than `leash` 4 --
+  but the range is measured from YOU rather than from him, so he can never be more than `hunt`
+  away however long it runs, and the leash takes him back the moment the marks expire.
+  **`foePlan` HAD TO BE GATED ON `pacifist`.** The swing branch ends by planning what to do next,
+  and that function picks between a guard, a circle and giving ground -- **a fight against the
+  player**, which is the one thing a sidekick's swing must not end in. One clause, and the drunks
+  (who have no `swings` and can never reach it) are unaffected either way.
+  **WHAT IS NOT DONE:** he does not answer a warrior who is attacking YOU but whom you have not
+  hit yet -- his own sentence is "if you're attacking something", and `aggro` would be the other
+  signal if that is wanted. `mutant_swiping` and `jump_attack` are still unnamed, so there is one
+  strike and no chain. And a target behind a box makes him walk into it, build `stuckT` and hop at
+  the wall on m74's own timer: self-limiting, visible in the chip, and not pretty.
+  **The chip says `· PUNCH`.** `mel.CLANCY.pounce = null` takes the attack away entirely.
+
 - **THE 40 cm CUBE STOPPED BEING WALKABLE WHEN THE PLAYER SHRANK, AND ONLY THE COMMENT STILL
   THOUGHT OTHERWISE (m74).** *"He can't get up on -- there was a really short little cube he just
   got stuck on. He just indefinitely was kind of stuck, didn't know what to do."* Read straight

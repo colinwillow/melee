@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m74</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m75</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m74</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m75</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm74';
+const BUILD = 'm75';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -1671,6 +1671,7 @@ const CLANCY = {
     // `hard_landing` is a body arriving. m67's finding one character over.
     air: 'falling_idle',
     jump: 'jumping_up', dive: 'falling_to_roll',
+    swings: ['mutant_punch'],
     hits: ['hard_landing'], big: ['falling_to_roll'],
     downF: 'falling_to_roll', downB: 'falling_to_roll',
     upF: 'cover_to_stand', upB: 'cover_to_stand',
@@ -1713,6 +1714,25 @@ const CLANCY = {
   // or a roll animation but if we do"*) -- it is in the export, it is a body going down into a
   // roll, and it is already his knock-down clip. 1.875 s compressed to .60 is x3.1.
   dive: { v: 4.0, dur: .60, cone: .30, range: 9, cool: 1.6 },
+  // **HE PILES ON TO WHATEVER YOU ARE HITTING (m75, `mutant_punch`).** *"Let's make him attack
+  // with the mutant punch."* and, from m73, *"probably only attack if you're attacking
+  // something."* So there is no aggro of his own: `palFoe` only ever returns a body carrying
+  // the mark `dummyBlow` stamps when YOU hit it, which means he never starts a fight, never
+  // wanders off after one, and stops when you stop.
+  // **AND THE SWING IS THE WARRIOR'S OWN MACHINERY, NOT A SECOND STATE.** `swings`, `swingDur`,
+  // `swingAt`, `swingGap`, `hitR` and `hitArc` are the fields `foeSwing`, the `swing` branch and
+  // `foeStrike` already read -- so naming them here is the whole attack, and the only new code
+  // is one branch in `foeStrike` that swings at a BODY instead of at the player.
+  // **`mutant_punch` IS 1.167 s AND PLAYS AT x1.37**, which is m37's rule: a reaction too fast
+  // to read is the same reaction every time. `swingGap` .45 x `nerve` 1 puts a punch every
+  // ~1.3 s, which is a helper chipping in rather than a second fighter.
+  swingDur: .85, swingAt: .42, swingGap: .45, comboGap: .14,
+  hitR: 1.5, hitArc: 1.0,
+  // **`power` .34 IS UNDER THE WARRIOR'S `fling` .70 AND HIS `hard` 1.01 BY CONSTRUCTION**, so a
+  // sidekick's punch STAGGERS and shoves (4.2 x .34 = 1.43 m/s, 0.65 m at `shoveDrag`) and can
+  // never knock a man down -- which is right: putting them over is yours. `dmg` 2.0 x the same
+  // .34 is 0.70 a punch against 6 hit points, so he is worth about a third of a fight.
+  pounce: { hunt: 9, dmg: 2.0, power: .34 },
   give: 1.6,              // trying and not moving for this long -> that point is unreachable
   leapDrag: 0,
   flee0: 0, fleeAdd: 0, fleeMax: 0,   // he does not run away. He is the one who stays.
@@ -2144,6 +2164,10 @@ const BODYSND = {
 // (`FOE.fling` .70 is crossed around 14 m/s) and a light knock merely stagger him. `cost` is
 // what the flyer pays for it, so a body cannot scythe through a crowd.
 const FLYHIT = { at: 6, full: 22, pow0: .34, pow1: 1.0, cost: .42, bounce: .45 };
+// **HOW LONG A BODY YOU HIT STAYS INTERESTING TO A SIDEKICK (m75).** It is a property of the
+// EVENT rather than of any one pal, so it lives here and not on a kind's table -- a second
+// sidekick tomorrow reads the same mark and there is nothing to keep in step.
+const PALMARK = 3.2;
 // **HIS FOOTSTEPS, AND THE STRIDE IS MEASURED RATHER THAN TYPED (m64, `STEP`, `stepFeet`).**
 // *"I think his footsteps, we could use the two ground sound effects that I just made, for each
 // footstep."*
@@ -5971,7 +5995,7 @@ function bodySpawn(P, K, x, z) {
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // `undefined -= dt` is NaN and a NaN clock is a body that can never hop or dive again --
     // silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time now.
-    stuckT: 0, hopT: 0, diveT: 0,
+    stuckT: 0, hopT: 0, diveT: 0, mark: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
     // script running three times.
@@ -6277,10 +6301,17 @@ function dummyHit(x, z, dirH, power, reach, dmg) {
 // WHAT A LANDED BLOW DOES TO ONE MAN. Split out of `dummyHit` because there are two ways to
 // reach it now -- a bolt arriving, which IS a proximity test at the bolt's own position, and a
 // limb sweeping through him -- and one of them must never grow a second copy of this.
-function dummyBlow(d, dirH, power, dmg) {
+function dummyBlow(d, dirH, power, dmg, pal) {
   const K = d.K;
   d.cool = K.cool;
   d.aggro = 1; d.seen = 0;     // being shot at is how you get noticed
+  // **"ONLY ATTACK IF YOU'RE ATTACKING SOMETHING" IS A MARK ON THE MAN, NOT A MOOD (m75).**
+  // This is the one function every blow on a body reaches, so it is the one place that can say
+  // *you* are fighting this one -- and a flag set anywhere else is a flag some future blow site
+  // forgets. **A PAL'S OWN PUNCH DOES NOT REFRESH IT**, or he would keep his own victim alive as
+  // a target for ever and never come back; the mark is YOUR interest and he follows it, so he
+  // gives up when you do.
+  if (!pal) d.mark = PALMARK;
   // AND HOW A MAN WHO DOES NOT FIGHT DECIDES TO LEAVE. Capped, so standing over him and
   // punching is not a man who runs for a minute.
   if (K.flee0) { d.fleeT = Math.min(K.fleeMax, (d.fleeT || 0) + (d.fleeT ? K.fleeAdd : K.flee0)); d.roamT = 0; }
@@ -6406,7 +6437,9 @@ function foeAI(d, dt, t) {
       // **A COMBINATION, NOT A METRONOME.** One swing and a long pause is the repetition he
       // described; a second one on a shorter beat is a decision you have to answer.
       if (d.combo > 0 && dd < K.hitR + 1) { d.combo--; foeSwing(d, K.comboGap); }
-      else { d.st = 'idle'; d.gap = K.swingGap * (2 - V.nerve); foePlan(d, dd); }
+      // **AND A PACIFIST DOES NOT PLAN.** `foePlan` picks between a guard, a circle and giving
+      // ground -- a fight against YOU, which is the one thing a sidekick's swing must not end in.
+      else { d.st = 'idle'; d.gap = K.swingGap * (2 - V.nerve); if (!K.pacifist) foePlan(d, dd); }
     }
     return;
   }
@@ -6609,6 +6642,33 @@ function foeWander(d, dt, t, dd, toP) {
       d.stuckT = 0;
       return;
     }
+    // **JOINING THE FIGHT OUTRANKS THE LEASH, AND THAT IS DELIBERATE.** `hunt` 9 is further than
+    // `leash` 4, so a pounce takes him off the ring -- but the range is measured from YOU, so he
+    // can never be more than `hunt` away however long the fight runs, and the leash takes him
+    // back the moment it ends.
+    if (K.pounce) {
+      const T = palFoe(d);
+      if (T) {
+        const h = Math.atan2(T.o.root.position.x - d.root.position.x, T.o.root.position.z - d.root.position.z);
+        faceTo(d, h, dt);
+        // he stops a little INSIDE his own reach, or he stands at exactly the range where a
+        // step of separation from `bodySep` puts the punch out again
+        if (T.d > K.hitR + T.o.K.r - .35) {
+          const sp = K.run * V.pace;
+          foeMove(d, d.h, sp, dt);
+          t[K.clips.run] = 1;
+          setSkinScale(d, K.clips.run, clamp(sp / K.runRef, K.tsLo, K.tsHi));
+        } else if (d.gap <= 0) {
+          foeSwing(d, 0);
+        } else {
+          t[K.clips.idle] = 1;                  // squared up, waiting out the cooldown
+        }
+        // and when the fight ends he re-rolls a fresh spot through the ONE picker, centred on
+        // wherever you have got to in the meantime
+        d.roamT = 1e-4; d.hx = cx; d.hz = cz;
+        return;
+      }
+    }
     if (d.catch && dd < K.leashIn) d.catch = 0;
     if (dd > K.leash) d.catch = 1;
     if (d.catch) {
@@ -6671,6 +6731,25 @@ function foeWander(d, dt, t, dd, toP) {
   foeMove(d, d.h, sp, dt);
   t[K.clips.walk] = 1;
   setSkinScale(d, K.clips.walk, clamp(sp / K.walkRef, K.tsLo, K.tsHi));
+}
+
+// **WHO A SIDEKICK PILES ON TO.** The nearest MARKED body, and the range is measured from the
+// PLAYER rather than from him -- the point is that he joins YOUR fight, so the fight has to be
+// where you are or he runs across the street after somebody you shot once and walked away from.
+// **A MAN ON THE FLOOR IS FINISHED WITH**, which is what makes him disengage and come back
+// rather than stand over a downed warrior punting him for ever.
+function palFoe(d) {
+  const P = d.K.pounce;
+  let best = null, bd = 1e9;
+  for (const o of DUMMIES) {
+    if (o === d || o.K.pal || o.mark <= 0 || o.st === 'down' || o.st === 'up') continue;
+    const px = o.root.position.x - player.pos.x, pz = o.root.position.z - player.pos.z;
+    if (px * px + pz * pz > P.hunt * P.hunt) continue;
+    const dx = o.root.position.x - d.root.position.x, dz = o.root.position.z - d.root.position.z;
+    const dd = Math.hypot(dx, dz);
+    if (dd < bd) { bd = dd; best = o; }
+  }
+  return best ? { o: best, d: bd } : null;
 }
 
 // WHAT HE DOES NEXT, once he is in range and off cooldown. One place decides, so the mix can be
@@ -6766,6 +6845,23 @@ function setSkinScale(skin, name, s) { const a = skin.actions[name]; if (a) a.se
 // own melee had at m20 and for the same reason.
 function foeStrike(d) {
   const K = d.K;
+  // **A SIDEKICK SWINGS AT BODIES AND EVERYONE ELSE SWINGS AT YOU (m75).** One branch in the one
+  // function that lands a body's blow, which is what lets the whole swing state machine be
+  // REUSED rather than copied: `foeSwing`, the beat, `swingAt`'s contact frame, the lean through
+  // the blow and the cooldown are all already written and all already read the kind's own table.
+  if (K.pounce) {
+    for (const o of DUMMIES) {
+      if (o === d || o.K.pal || o.cool > 0 || o.st === 'down' || o.st === 'up') continue;
+      const ox = o.root.position.x - d.root.position.x, oz = o.root.position.z - d.root.position.z;
+      if (Math.hypot(ox, oz) > K.hitR + o.K.r) continue;
+      const to = Math.atan2(ox, oz);
+      if (Math.abs(wrapAngle(to - d.h)) > K.hitArc) continue;
+      // `pal` 1, so his own blow does not re-mark the man and keep him hunting for ever
+      dummyBlow(o, to, K.pounce.power, K.pounce.dmg, 1);
+      break;                                    // one man per punch. He is a little guy.
+    }
+    return;
+  }
   if (player.roll) return;                      // a dodge roll is the one thing that saves you
   const dx = player.pos.x - d.root.position.x, dz = player.pos.z - d.root.position.z;
   const dd = Math.hypot(dx, dz);
@@ -6919,6 +7015,7 @@ function stepDummies(dt) {
     if (d.cool > 0) d.cool -= dt;
     if (d.hopT > 0) d.hopT -= dt;
     if (d.diveT > 0) d.diveT -= dt;
+    if (d.mark > 0) d.mark -= dt;
     const t = {};
     if (d.st === 'hit') {
       t[d.cur] = 1;
@@ -7135,7 +7232,8 @@ function frame() {
     // STUCK CLOCK is the one that tells them apart, because it is the thing both the hop and the
     // give-up are triggered off. Silent while he is simply pottering about, `rollREC`'s rule.
     const pal = DUMMIES.find(d => d.K.pal);
-    const cl = !pal ? '' : pal.st === 'hop' ? ' · HOP' : pal.st === 'dive' ? ' · DIVE'
+    const cl = !pal ? '' : pal.st === 'swing' ? ' · PUNCH'
+      : pal.st === 'hop' ? ' · HOP' : pal.st === 'dive' ? ' · DIVE'
       : pal.stuckT > .2 ? ' · STUCK' + pal.stuckT.toFixed(1) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl +
