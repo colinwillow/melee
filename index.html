@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m71</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m72</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m71</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m72</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm71';
+const BUILD = 'm72';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -690,6 +690,23 @@ const MELEE = {
                        // the cone: swinging at two men, the NEAR one is what you meant.
   maxV: 28,            // the fastest a lunge may be solved to. *"When you charge it full he
                        // really launches -- he launches pretty far and pretty fast."*
+  // **AND HOW FAR A STRIKE MAY CARRY HIM, IN METRES (m72).** *"When I melee he launches forward
+  // quite a bit -- sometimes I wanna cap that distance, sometimes it's ridiculous. He can go
+  // forward, but it should be more capped."* The lock solves `melV` for the gap, so where the
+  // MAN is was the only thing deciding the distance and the ceiling fell out of `maxV` times
+  // whichever beat was playing -- **11.8 m on a jab and 15.9 m on the finisher**, which on a
+  // 1.25 m body is ten to thirteen of his own heights. A launch, and he has not drawn one yet.
+  // **IT IS METRES RATHER THAN A LOWER `maxV`, because a speed cap is three different distances
+  // here** -- the beats are .62 / .68 / .82, so one velocity ceiling means the finisher always
+  // travels 32% further than a jab however it is tuned. Distance is what he asked to cap.
+  // **AND IT CAPS BOTH PATHS, SO THEY CANNOT DISAGREE.** An unlocked finisher covered 5.35 m
+  // off `lunge[2]`, so a cap on the solve alone would leave a swing at NOBODY travelling
+  // further than a swing at a man -- a lock that makes him move less is worse than no lock.
+  lungeMax: 4.6,       // METRES of travel. `mel.MELEE.lungeMax` is the dial.
+                       // Raise it, or give the dash its own, the day there IS a flying-kick
+                       // clip -- *"unless I'll make an animation for an actual launch, like a
+                       // slide tackle or flying kick"*. The charged dash is NOT this and keeps
+                       // its own `flatFar`; it is the move that is supposed to cross ground.
   arrive: 1.05 * SZ,   // the gap he is solved to leave -- ARM'S LENGTH, so it is his and it
                        // scales with him. Not his centre. It has
                        // to be inside what the swept fist can REACH now that the sweep decides:
@@ -4102,8 +4119,14 @@ function meleeGo(h) {
   p.meleeDur = MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
   p.meleeChain = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   const base = MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
-  // what this strike could cover at full tilt is what it is allowed to acquire inside
-  const reachMax = MELEE.maxV * p.meleeDur * MELEE.carryAvg;
+  // **WHAT IT CAN REACH IS WHAT IT MAY ACQUIRE INSIDE, AND THE CAP IS NOW WHAT DECIDES THAT
+  // (m72).** A target further off than the lunge can deliver has to be refused, or he is aimed
+  // at a man he then falls short of and swings at the air -- m20's rule (an assist's range is
+  // sized for what it DELIVERS) and `chargeAim`'s `acq` one move over. Reading `maxV` here was
+  // also that number doing two jobs: it is a SPEED ceiling, and it was silently setting the
+  // acquire radius as well.
+  const reachMax = Math.min(MELEE.maxV * p.meleeDur * MELEE.carryAvg,
+                            MELEE.lungeMax + MELEE.arrive);
   const L = h != null ? meleeLock(h, reachMax) : null;
   if (L) h = L.h;
   p.melTgt = L ? L.d : null;
@@ -4116,7 +4139,12 @@ function meleeGo(h) {
   // **1.6 m PAST him**, every time, which is the whole of "he goes through them". `base` is
   // the FREE lunge, for a flick at nobody; a solved one is solved, and the only floor it needs
   // is zero. A man already at arm's length now gets a swing thrown on the spot.
-  p.melV = L ? clamp((L.dist - MELEE.arrive) / (p.meleeDur * MELEE.carryAvg), 0, MELEE.maxV) : base;
+  // and `lungeMax` is a DISTANCE, so it becomes a speed through the same `dur * carryAvg` the
+  // solve inverts -- applied to the free lunge too, which is what keeps one number governing
+  // how far a strike carries whether or not it found anybody.
+  const spend = p.meleeDur * MELEE.carryAvg;
+  const vCap = Math.min(MELEE.maxV, MELEE.lungeMax / spend);
+  p.melV = L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : Math.min(base, vCap);
   if (h != null) { p.heading = h; p.faceH = h; }
   // THE CLIP IS COMPRESSED TO THE BEAT, not the beat stretched to the clip. `melee_03` is
   // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,

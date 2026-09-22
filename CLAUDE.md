@@ -1019,6 +1019,48 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A LUNGE COULD CARRY HIM SIXTEEN METRES, AND THE MAN DECIDED IT (m72, `MELEE.lungeMax`).**
+  *"When I melee he launches forward quite a bit -- sometimes I wanna cap that distance, sometimes
+  it's ridiculous. We're starting to develop a bit more of a system, and I don't want him to launch
+  so far forward -- unless I make an animation for an actual launch, like a slide tackle or flying
+  kick. As is, he can go forward, but it should be more capped."*
+  **"SOMETIMES" IS THE WORD THAT NAMES THE CAUSE.** m51's solve is right and stays: the lock
+  inverts `v * dur * carryAvg` so the swing lands ON him, which is why a man at arm's length gets
+  a punch thrown on the spot. But that means **where the MAN is was the only thing setting the
+  distance**, and the ceiling was never chosen -- it fell out of `maxV` 28 times whichever beat
+  was playing. Measured, with `arrive` 0.75 m:
+      strike  beat   ACQUIRE out to      then TRAVELS      free travel
+      jab     .62    12.59 -> 5.35 m     11.84 -> 4.60 m   3.15 -> 3.15 m
+      two     .68    13.80 -> 5.35       13.05 -> 4.60     3.20 -> 3.20
+      finish  .82    16.65 -> 5.35       15.90 -> 4.60     5.35 -> 4.60
+  On a 1.25 m body that is **ten to thirteen of his own heights** for a jab. A launch, and he has
+  not drawn one yet -- so it is capped rather than made a feature.
+  **IT IS METRES, NOT A LOWER `maxV`, BECAUSE A SPEED CAP IS THREE DIFFERENT DISTANCES HERE.**
+  The beats are .62 / .68 / .82, so one velocity ceiling leaves the finisher travelling 32%
+  further than a jab however it is tuned. **Distance is what he asked to cap**, and it becomes a
+  speed through the same `dur * carryAvg` the solve already inverts.
+  **AND IT CAPS BOTH PATHS, SO THEY CANNOT DISAGREE.** An unlocked finisher covered 5.35 m off
+  `lunge[2]`, so capping only the SOLVE would leave a swing at NOBODY travelling further than a
+  swing at a man -- a lock that makes him move less is worse than no lock. One number governs how
+  far a strike carries whether or not it found anybody; strikes 1 and 2 free are already under it
+  and are byte-for-byte unchanged.
+  **AND THE ACQUIRE RADIUS HAD TO COME DOWN WITH IT, WHICH IS THE HALF THAT IS EASY TO MISS.** A
+  man further off than the lunge can deliver has to be REFUSED, or he is aimed at somebody he then
+  falls short of and swings at the air -- m20's rule (an assist's range is sized for what it
+  DELIVERS, not for what it draws) and `chargeAim`'s `acq` one move over. `lungeMax + arrive` is
+  that radius by construction.
+  **AND THAT FIXES m40's OWN COMPLAINT, WHICH WAS STILL HALF TRUE.** That note says *"`maxV` is
+  also an acquire radius -- a number meant for one thing must not be shared with another"* and
+  then left it shared: `reachMax` read it for the radius while the clamp read it for the speed.
+  It is a speed ceiling only now, and the distance cap is what decides the reach.
+  **THE CHARGED DASH IS NOT THIS AND KEEPS ITS OWN `flatFar` 11.** It is the move that is
+  SUPPOSED to cross ground, it has its own clip, its own `dashV` and its own `acq`, and m43/m45
+  were three builds of getting its distance to mean anything. Capping both through one number
+  would undo that.
+  **`mel.MELEE.lungeMax` IS THE DIAL, and 4.6 is a look-at-it number rather than a derived one** --
+  it is under every current free lunge except the finisher's. Raise it, or give the ordinary
+  strikes their own, the day there IS a flying-kick clip: *"unless I'll make an animation for an
+  actual launch"* is exactly the condition under which a long lunge stops reading as a bug.
 - **A SHOVE IS A DISTANCE *AND* A DURATION, AND ONE DRAG SETS BOTH (m71, `K.shoveDrag`).**
   *"When I hit them like melee and stuff, or even shots, I want there to be like a subtle kickback
   -- even if they're not flying through the air -- so it feels like a more dramatic effect."*
