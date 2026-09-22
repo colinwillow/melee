@@ -1019,6 +1019,79 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE m64 DEPLOY FAILED, AND A PAGES RUN IS A LINK IN THE CHAIN NOBODY WAS WATCHING (m67).**
+  *"My game is stuck on m63."* He was on m63 and the repo was on m66, and the gap is not his cache
+  alone. Read off the runs:
+      m63  run 75  **success**  23:52   <- the last build that actually reached the server
+      m64  run 76  **FAILURE**  00:00   <- deployed nothing
+      m65  run 77  success      00:02
+      m66  run 78  success      00:08
+  **"PUSHED" AND "LIVE" ARE TWO DIFFERENT FACTS AND THIS FILE ONLY EVER CHECKED THE FIRST.** The
+  loop here ends at `git push` and reports the build number, which is right for the ninety-odd
+  builds where the deploy succeeds and is exactly wrong for the one where it does not -- **and
+  from where he is standing a failed deploy, a ten-minute Pages cache and a bug that did not fix
+  anything are all the same picture**, which is the same sentence `npm run bump` exists under.
+  **SO THE CHECK IS ONE CALL AND IT COSTS NOTHING:** after a push, read the newest
+  `pages build and deployment` run for that head sha and say so if it is not green. It is NOT a
+  CI gate -- the "there must not be one" note above is about a workflow that FAILS on every push
+  and trains everybody to ignore a red X; this is reading the one run GitHub creates by itself.
+  **AND A QUEUED RUN IS NOT A SHIPPED BUILD.** m66's run was still `in_progress` when this was
+  looked at, so "shipped unverified -- m66" was true of the repo and not yet true of the phone.
+  Say which, when it matters.
+- **BEING KNOCKED DOWN, AND THE EXPORT ALREADY HAD TWO OF THE THREE BEATS (m67, `HURT`,
+  `p.knock`).** *"When the orcs hit you, you fly through the air a little bit and land on the
+  ground and then get up."* Read straight out of the file -- 24 clips, and what is in there is
+  `in_air` (a real float) and `landing_hard` (a real man hitting the ground and pushing back up
+  off it, 1.50 s authored). **What there is NO clip for is LYING there**, so there is no lying
+  beat: the arc runs straight into the hard landing and that IS the get-up. `HURT.down`/`up` are
+  the hooks, written the way `CLIPS.block` and the hick's empty pose names are -- **the STATE runs
+  either way and naming a clip later adds no branch**, which is the whole return on keeping the
+  two separate.
+  **THE APEX IS THE NUMBER AND `vy` IS DERIVED FROM IT**, m21's rule: a velocity picked by eye is
+  a height nobody chose. `hi` .78 at `MOVE.g` 20 is 5.59 m/s up and 0.56 s of air, and `back` 7.6
+  against `airDrag` integrates to **about four metres** -- `v0(1-e^-kT)/k` with k = .25, not
+  `back * T`, which is the m146 arithmetic one repo over (a launch speed means nothing without
+  the clock and the drag beside it).
+  **AND IT IS SET, NOT ADDED.** Every other shove in `playerHurt` is `+=` on whatever he was
+  already doing, which is right for a nudge and wrong for a solved arc -- added to a sprint it
+  lands him somewhere nobody chose.
+  **IT ALWAYS LANDS HARD, rather than hoping the arc clears `MOVE.hardLand`.** Those are two
+  unrelated numbers -- the apex is chosen for how it READS and the threshold is about falls -- so
+  coupling them means retuning one silently changes the other. At 5.59 m/s it would have failed
+  the 8.0 test and landed SOFT, which is the picture this whole build exists to avoid.
+  **AND `landing_hard` PLAYS AT ITS OWN LENGTH.** `MOVE.landHard` 1.15 compresses a 1.50 s clip
+  to x1.30, which is right for a landing you are running out of and is m37's "too fast to read is
+  the same reaction every time" for a get-up. `HURT.land` is 1.50, so x1.0.
+  **A GET-UP IS NOT CANCELLABLE, WHICH `landFree` WOULD OTHERWISE MAKE IT.** That early-out exists
+  so an ordinary landing does not cost you a step you were already taking; applied here, one nudge
+  of the stick and the get-up is never once seen -- m8's lesson about a state that cuts its own
+  clip short, arriving from the other side. `meleeGo` and `rollGo` refuse to start out of one too.
+  **ONE FLAG FOR BOTH HALVES.** `p.knock` is set at the launch and cleared where the landing ends,
+  so the flight and the get-up are one move rather than two states to keep in step -- and every
+  gate (no steering, no early-out, land hard, no strike, no roll) reads that one thing.
+  **A GUARD IS WHAT KEEPS HIM ON HIS FEET**, which is the third thing blocking now buys on top of
+  the damage and the shove. **And `again` 1.1 is what stops three orcs holding him on the floor**
+  -- a blow inside that window still hurts and still shoves, it just does not re-launch, which is
+  `d.cool`'s own rule pointed at the player. Being unable to move is the least fun state in any
+  game and this file already says so about the stun.
+  **AND A BLOW TAKEN WHILE HE IS DOWN DOES NOT HOP HIM BACK OFF THE FLOOR** -- the shove branch's
+  `if (p.grounded) p.vel.y = up` would otherwise interrupt a get-up with a little jump, which
+  reads as a glitch and not as a second hit.
+  **`whooshSnd` CAME OUT OF `bodyWhoosh`, `bumpSnd`'s own m66 refactor one event over.** A man
+  thrown through the air and a BODY thrown through the air must not be two different sounds; the
+  landing thump was already shared and this is the other half. **`p.knockCool` and `p.knock` are
+  initialised in the player object**, because `undefined -= dt` is NaN and a NaN cooldown is a
+  player who can never be knocked down again -- silent, and invisible to both gates. m63's
+  `d.bumpT` lesson, and the reason it is checked every time now.
+  **THE CHIP SAYS `KNOCKED` IN THE AIR AND `getup` ON THE GROUND**, because "it never fired" and
+  "it fired and I could not tell which half I was in" are opposite bugs and one picture from a
+  phone. `mel.hurt()` knocks him down from the console, `mel.hurt(12, 0)` is the old plain shove,
+  and `mel.HURT` is live.
+  **WHAT IS UNVERIFIED**: whether four metres and 0.56 s read as *"a little bit"* is the
+  look-at-it half and belongs on the phone -- `hi`, `back` and `land` are the three dials. And
+  `npm run sim` has no case for this; the knock-down is arithmetic over the shipped `integrate`
+  and could have one, which is a stated gap rather than a claim.
+
 - **A SOUND KNOWS WHERE IT HAPPENED, AND THAT BELONGS IN `snd` (m66, `SFX.near`).** *"Maybe the
   footsteps on them as well, but they probably -- depending how far away from you they are, the
   volume is quieter."* Right, and it is the whole reason this goes in `snd` rather than at the

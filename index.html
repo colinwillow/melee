@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m66</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m67</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m66</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m67</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm66';
+const BUILD = 'm67';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -1427,6 +1427,8 @@ const FOE = {
   hitArc: 1.15,      // and how far off his nose you may be and still be in it
   hitDmg: 12,
   push: 7.0, pushUp: 2.2,
+  knock: 1,          // **and his mace puts you on the floor** -- a field on the KIND, so a
+                     // weaker enemy tomorrow shoves you without one, and `HURT` is the shape
   stun: .35,         // how long you are not steering afterwards
   bar: { w: .9, h: .10, up: 1.22, fade: 4.0 },
 };
@@ -1606,6 +1608,21 @@ const HEALTH = { max: 100, regen: 4.0, wait: 5.0 };
 // it would have. **That is a stated gap, not a silent one**: the chip says `BLOCK` while it is
 // up, because a defensive state you cannot see is one nobody uses twice.
 const BLOCK = { cut: .25, push: .35, stun: .3, arc: 1.25 };
+// **BEING KNOCKED DOWN (m67).** *"When the orcs hit you, you fly through the air a little bit
+// and land on the ground and then get up."* That is three beats and the game already has two of
+// them: `in_air` is a real float and `landing_hard` is a real man hitting the ground and pushing
+// back up off it. **What there is NO clip for is LYING there**, so there is no lying beat -- the
+// arc runs straight into the hard landing, which reads as the whole move and is honest with what
+// the export actually holds. `down` and `up` are the hooks for when he draws them.
+const HURT = {
+  // **THE APEX IS THE NUMBER AND `vy` IS DERIVED FROM IT**, m21's rule: a velocity picked by eye
+  // is a height nobody chose. At `MOVE.g` 20 this is 5.59 m/s up and 0.56 s of air.
+  hi: .78,
+  back: 7.6,      // along the blow. Against `airDrag` that integrates to about four metres
+  land: 1.50,     // `landing_hard`'s OWN authored length, so it plays at 1.0x and can be READ
+  again: 1.1,     // he cannot be re-launched inside this -- see below
+  down: '', up: '',
+};
 
 // LOCKING ON. Once the trigger is held or the hammer is wound, he is committed to a target --
 // he faces it, the lens comes round to it, and the left stick stops meaning "a direction in the
@@ -2073,12 +2090,17 @@ function bodyBump(d, v) {
 }
 // the swoosh a flying body drags with it. ONE rule and ONE threshold, called wherever a launch
 // velocity is set, so "a body part moving fast" cannot end up meaning three different things.
-function bodyWhoosh(d) {
-  const W = BODYSND.whoosh, v = Math.hypot(d.vx, d.vy, d.vz);
+// ONE swoosh, so a body thrown through the air and a MAN thrown through the air cannot end up
+// two different sounds. The pitch comes DOWN as the speed goes up -- a big body moving fast is
+// a lower sound than a fist, which is the metal clangs' own rule one event over.
+function whooshSnd(v, x, z) {
+  const W = BODYSND.whoosh;
   if (v < W.at) return;
   const u = clamp((v - W.at) / (W.full - W.at), 0, 1);
-  snd('swoosh', { g: W.g0 + (W.g1 - W.g0) * u, r: W.r0 + (W.r1 - W.r0) * u,
-                  x: d.root.position.x, z: d.root.position.z });
+  snd('swoosh', { g: W.g0 + (W.g1 - W.g0) * u, r: W.r0 + (W.r1 - W.r0) * u, x, z });
+}
+function bodyWhoosh(d) {
+  whooshSnd(Math.hypot(d.vx, d.vy, d.vz), d.root.position.x, d.root.position.z);
 }
 // stage one: the bytes, at page load, with no context anywhere
 (function sfxFetch() {
@@ -3695,6 +3717,7 @@ const player = {
   goT: 0,                          // how long he has been asking to move -- the gather
   jump: 0, jumps: 0, fallV: 0,
   land: 0, landT: 0, landHard: 0,  // the landing state
+  knock: 0, knockCool: 0,          // the knock-down, and how long until he can take another
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
@@ -3932,7 +3955,7 @@ function meleeLock(h, reachMax) {
 }
 function meleeGo(h) {
   const p = player;
-  if (!p.grounded) return;
+  if (!p.grounded || p.knock) return;   // and not out of a knock-down: the get-up is not his to cancel
   // BUFFERED, NEVER INTERRUPTING. A flick thrown while a strike is still playing is remembered
   // and taken the moment it finishes, so the chain answers the thumb without any link being
   // cut off halfway. Dropping the input instead would make a fast chain feel unresponsive;
@@ -3977,7 +4000,7 @@ function meleeGo(h) {
 }
 function rollGo(h) {
   const p = player;
-  if (!p.grounded || p.roll || p.melee || p.chargeGo) return;
+  if (!p.grounded || p.knock || p.roll || p.melee || p.chargeGo) return;
   p.roll = 1; p.rollT = 0; p.rollH = (h != null ? h : p.faceH);
   p.heading = p.rollH; p.melee = 0; p.meleeChain = 0;
   playOnce(CLIPS.roll, clipLen(CLIPS.roll) / MELEE.rollDur);
@@ -4663,7 +4686,12 @@ function stepPlayer(dt) {
   // ---- the landing states: he can move out of them, but not instantly ----
   if (p.land) {
     p.landT += dt;
-    if (p.landT >= p.land || (p.landT > p.land * MOVE.landFree && s.mag > .3)) p.land = 0;
+    // **A KNOCK-DOWN IS NOT CANCELLABLE.** `landFree` exists so an ordinary landing does not
+    // cost you a step you were already taking; a get-up you can nudge out of is a get-up
+    // nobody ever sees, which is m8's lesson about a state that cuts its own clip short.
+    if (p.landT >= p.land || (!p.knock && p.landT > p.land * MOVE.landFree && s.mag > .3)) {
+      p.land = 0; p.knock = 0;
+    }
   }
 
   // ---- the jump ----
@@ -4686,7 +4714,7 @@ function stepPlayer(dt) {
   const aiming = committed() || p.block || p.center || !!p.lock;
   let wantSp = MOVE.max * s.mag;
   if (aiming) wantSp = Math.min(wantSp, GAIT.aimRunRef);
-  if (p.land) wantSp *= .35;
+  if (p.land && !p.knock) wantSp *= .35;
   // **A BLOW TAKES THE CONTROLS AWAY FOR A MOMENT, WHICH IS WHAT MAKES IT A BLOW.** Without it
   // a mace landing is a small push you steer straight out of, and getting hit reads as nothing.
   // It is short on purpose -- being unable to move is the least fun state in any game, and the
@@ -4699,6 +4727,11 @@ function stepPlayer(dt) {
   // strafe blend picks the clip off the sign of his travel with nothing new written.
   if (p.block) wantSp = Math.min(wantSp, MOVE.blockSp);
   if (p.hurtT > 0) { p.hurtT = Math.max(0, p.hurtT - dt); wantSp = 0; }
+  if (p.knockCool > 0) p.knockCool = Math.max(0, p.knockCool - dt);
+  // FLYING OR GETTING UP, THE STICK IS NOT HIS. One flag covers both halves, because a
+  // knock-down is one move: `p.knock` is set at the launch and cleared where the landing
+  // ends, so there is no second state to keep in step with the first.
+  if (p.knock) wantSp = 0;
   // AND IT COMES BACK ON ITS OWN, after a pause long enough that a fight is not free. There is
   // no death yet, so what running out of health costs you is nothing -- stated, not hidden.
   if (p.hurtWait > 0) p.hurtWait = Math.max(0, p.hurtWait - dt);
@@ -4755,10 +4788,13 @@ function stepPlayer(dt) {
   if (landed) {
     // SOFT OR HARD IS THE IMPACT SPEED, not how long he was in the air: a long float onto a
     // box top is a soft landing and a short drop off a ledge at pace is not.
-    const hard = p.fallV > MOVE.hardLand;
+    // **A KNOCK-DOWN ALWAYS LANDS HARD**, rather than hoping the arc clears `hardLand`. Those
+    // are two unrelated numbers -- the apex is chosen for how it READS and the threshold is
+    // about falls -- and coupling them means retuning one silently changes the other.
+    const hard = p.knock || p.fallV > MOVE.hardLand;
     p.landHard = hard ? 1 : 0;
     const nm = hard ? CLIPS.landHard : CLIPS.landSoft;
-    p.land = hard ? MOVE.landHard : MOVE.landSoft; p.landT = 0;
+    p.land = p.knock ? HURT.land : hard ? MOVE.landHard : MOVE.landSoft; p.landT = 0;
     // the clip is compressed to the beat the STATE lasts, so the two cannot disagree
     playOnce(nm, clipLen(nm) / p.land);
   }
@@ -6305,13 +6341,13 @@ function foeStrike(d) {
   if (dd > K.hitR + player.r) return;
   const to = Math.atan2(dx, dz);
   if (Math.abs(wrapAngle(to - d.h)) > K.hitArc) return;
-  playerHurt(K.hitDmg, to, K.push, K.pushUp, K.stun);
+  playerHurt(K.hitDmg, to, K.push, K.pushUp, K.stun, K.knock);
 }
 
 // BEING HIT. There is no hit-reaction clip in the player's export and no death yet, so what a
 // blow IS here is a knockback, a moment of no steering and a flash -- which is the part that
 // reads, and the part `MOVE.landHard` already has the shape of.
-function playerHurt(dmg, dirH, push, up, stun) {
+function playerHurt(dmg, dirH, push, up, stun, knock) {
   const p = player;
   // **A GUARD IS WORTH SOMETHING OR IT IS AN ANIMATION** -- the same sentence the warrior's own
   // block is written under, pointed at the player. It costs him most of the damage and most of
@@ -6321,9 +6357,33 @@ function playerHurt(dmg, dirH, push, up, stun) {
   if (guard) { dmg *= BLOCK.cut; push *= BLOCK.push; stun *= BLOCK.stun; up = 0; }
   p.hp = Math.max(0, p.hp - dmg);
   p.hurtT = stun; p.hurtWait = HEALTH.wait;
-  p.vel.x += Math.sin(dirH) * push;
-  p.vel.z += Math.cos(dirH) * push;
-  if (p.grounded) { p.vel.y = up; p.grounded = false; }
+  // **A KNOCK-DOWN IS SET, NOT ADDED (m67).** Every other shove here is `+=` on whatever he was
+  // already doing, which is right for a nudge -- but an arc is SOLVED for an apex, and adding it
+  // to a sprint lands him somewhere nobody chose. m21 paid for that once on the charged leap.
+  // **A GUARD IS WHAT KEEPS HIM ON HIS FEET**, which is the third thing it now buys on top of
+  // the damage and the shove; and `again` is what stops three orcs holding him on the floor --
+  // being unable to move is the least fun state in any game, and a blow inside the window still
+  // hurts and still shoves, it just does not re-launch. `d.cool`'s rule, pointed at the player.
+  if (knock && !guard && p.knockCool <= 0) {
+    const vy = Math.sqrt(2 * MOVE.g * HURT.hi);
+    p.vel.x = Math.sin(dirH) * HURT.back;
+    p.vel.z = Math.cos(dirH) * HURT.back;
+    p.vel.y = vy;
+    p.grounded = false; p.coyote = 0; p.airT = 0;
+    p.knock = 1; p.knockCool = HURT.again;
+    // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
+    // the air with the clip that owns the body still running
+    p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0;
+    p.melFired = 0; p.melQ = null; p.land = 0;
+    whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
+  } else {
+    p.vel.x += Math.sin(dirH) * push;
+    p.vel.z += Math.cos(dirH) * push;
+    // and a blow taken while he is already ON THE FLOOR does not hop him back off it: inside
+    // `again` this is the shove branch, and a get-up interrupted by a little jump reads as a
+    // glitch rather than as a second hit.
+    if (p.grounded && !p.knock) { p.vel.y = up; p.grounded = false; }
+  }
   hurtEl.classList.remove('on'); void hurtEl.offsetWidth; hurtEl.classList.add('on');
   snd('thud', { g: .95, r: .8 });
 }
@@ -6599,7 +6659,7 @@ function frame() {
       // opposite bugs and one picture from a phone.
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) +
           (p.chgTgt != null ? '>' + p.chgTgt.toFixed(1) : '') : !p.grounded ? 'air'
-      : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
+      : p.knock ? (p.grounded ? 'getup' : 'KNOCKED') : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
     // B IS THE POSE'S OWN OFFSET AND C IS WHAT IS BEING TAKEN OFF IT, because "the gun points
     // the wrong way" is two different bugs from a phone: a bias near 0 means the clip is
     // straight and anything crooked is elsewhere, a big one means the clip carries it.
@@ -6818,9 +6878,9 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, M
   BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
   // flash and the bar can be looked at without standing in front of a mace.
-  FOE, HICK, HOBO, SMOKE, BLOCK, HEALTH, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
+  FOE, HICK, HOBO, SMOKE, BLOCK, HEALTH, HURT, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
   smoke: (x, y, z) => { smokeAt(x, y, z); return 'puff'; },
-  hurt: d => playerHurt(d || 12, player.faceH + Math.PI, FOE.push, FOE.pushUp, FOE.stun),
+  hurt: (d, k) => playerHurt(d || 12, player.faceH + Math.PI, FOE.push, FOE.pushUp, FOE.stun, k == null ? 1 : k),
   heal: () => { player.hp = HEALTH.max; return 'full'; },
   // HER, LIVE. `mel.she.spin = 2` turns her on the spot, which is the best look at what the
   // chains are doing; `mel.she.go = 0` parks her; `mel.CHAIN.on = 0` freezes the solver so the
