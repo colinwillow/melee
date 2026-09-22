@@ -1019,6 +1019,44 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A CHARGE TOPPING OUT IS NOT AN IMPACT (m65, `HCHG.snd`, `SFX.files.ready`).** *"As it
+  currently is, when you charge the melee it makes a metal clang noise and I don't really like
+  that -- it's confusing, it seems like you hit something. There's another one we used, I don't
+  know if it was a ping, or there's also a bunch in the other game robits like a power up
+  noise."* He is describing a **vocabulary** error and not a mix one, which is the same shape as
+  m55's plasma-bolt-is-not-a-detonation: the clang is the sound of a blow landing, so playing it
+  when nothing has been hit says the wrong thing however quiet it is. m64 made that worse by
+  putting a real clang on every actual blow, so the two became the same noise.
+  **`powerup_01.mp3`, BORROWED FROM `robits/audio`** the way the swooshes and clangs already
+  were. **And it is played from its PEAK (`cut: 1`), which is what makes a RISE usable as an
+  ARRIVAL** -- Shredworld turned this exact file down for the blaster's charge HUM because it is
+  a one-shot rise and a hum has to loop, which is the opposite requirement. Here the EVENT is
+  the moment the rise lands, so `e.p` throws the wind-up away and leaves the ding. m59's
+  mechanism doing the job it was built for.
+  **THE WHOLE SHAPE IS ON `HCHG` NOW**, not spelt at the call site, so `mel.HCHG.snd = 'lock'`
+  is the A/B to the metal ping he also named and `'clang'` is the one word back.
+- **AND A TAUNT MAKES A NOISE (m65, `K.tauntSnd`).** *"When the warrior beats his chest we could
+  use those same sound effects for that as well. I'll probably make custom orc noises for that,
+  but for the sound of the chest beat."*
+  **KEYED ON THE CLIP NAME, ON THE KIND'S OWN TABLE.** A chest thump and a battlecry are two
+  different events and **the only thing that separates them IS which clip is playing** -- so
+  this is the one place in this file where a name test is the honest test rather than a shortcut
+  for a structural one (`stripPoses`' rule, met from the other side). A taunt with no row is
+  silent, which is what a new one should be until somebody says what it sounds like.
+      standing_taunt_chest_thump   `hit`, TWICE, heavy and low, plus the armour ring
+      standing_taunt_battlecry     `grunt`, once -- the orc bank, which is what a bark is
+  **`at` IS WHERE IN THE CLIP, AS FRACTIONS, AND THE LOOP IS A `while`** -- so a slow frame that
+  steps past two beats fires both rather than losing one, which a per-frame `if` would.
+  `d.tauntN` is how many have gone and is reset where the taunt starts.
+  **BOTH ARE STAND-INS AND BOTH ARE MARKED**, the way `soft` and `drop` were before his own
+  recordings landed: point the keys at files and nothing else moves.
+  **AND THE FRACTIONS ARE A GUESS THAT WANTS A LOOK ON THE PHONE.** A strike has `MELEE.at` --
+  an authored contact frame to measure against -- and a taunt has nothing of the kind, so .30
+  and .50 are where two chest beats plausibly fall in a clip and not a measurement. Stated
+  rather than dressed up; `mel.FOE.tauntSnd` is live.
+  **THE TAUNT IS ONE KNOCK-DOWN IN FOUR** (`FOE.taunt` .25) and only on the way back up, so it
+  takes a few fights to hear. That is the existing rule, not a new one.
+
 - **THE CLANG IS A LAYER, NOT AN ALTERNATIVE -- AND THAT IS THE THIRD ANSWER (m64, `hitRing`).**
   *"I'm thinking the metal clang in addition to what we're using, for both the blaster and the
   melee."* m57 made it the armoured body's SOUND, m63 replaced it with his own recordings, and

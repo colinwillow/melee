@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m64</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m65</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m64</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m65</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,9 +428,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm64';
+const BUILD = 'm65';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -894,6 +894,9 @@ const HCHG = {
   hot:  [1.0, .76, .28],
   pop: 26,             // the ring thrown off the head the moment it tops out
   glow: 1.15,          // how far the weapon's own hue lifts against the blaster's peak
+  // WHAT FULL SOUNDS LIKE. The whole shape lives here, so `mel.HCHG.snd = 'lock'` is the A/B
+  // to the metal ping and `'clang'` is the one word back to what he just turned down.
+  snd: 'ready', play: { g: .70, r: 1.06, cut: 1, att: .004, dec: .30 },
 };
 
 const WEAP = {
@@ -1364,6 +1367,21 @@ const FOE = {
   blockDur: 1.1,
   blockCut: .35,     // what a blow costs him through a raised guard
   taunt: .25,        // how often a knock-down is answered with a battlecry on the way back in
+  // **AND A TAUNT MAKES A NOISE (m65).** *"When the warrior beats his chest we could use those
+  // same sound effects for that as well. I'll probably make custom orc noises for that."*
+  // **KEYED ON THE CLIP NAME, ON THE KIND'S OWN TABLE** -- a chest thump and a battlecry are
+  // two different events and the ONLY thing that separates them is which clip is playing, so
+  // this is the one place a name test is the honest test rather than a shortcut for a
+  // structural one. A taunt with no row here is silent, which is what a new one should be.
+  // `at` is WHERE IN THE CLIP, as fractions -- a chest beat is two thumps, a cry is one bark.
+  // **Both are stand-ins and both are marked**: the thump borrows his melee bank played heavy
+  // and low, the cry borrows the orc grunts. Point them at recordings and nothing else moves.
+  // The fractions are a GUESS and want a look on the phone -- there is no contact frame in a
+  // taunt clip to measure against, which is exactly what `MELEE.at` has for a strike.
+  tauntSnd: {
+    standing_taunt_chest_thump: { key: 'hit', at: [.30, .50], g: 1.05, r: .72, ring: .45 },
+    standing_taunt_battlecry: { key: 'grunt', at: [.20], g: .95, r: .80 },
+  },
   // **A REACTION YOU CANNOT READ IS THE SAME REACTION EVERY TIME (m37).** *"There should be
   // multiple animations when I hit them -- they always play the same one, it's really
   // redundant."* `npm run sim` says the PICK is fine: 24 blows used all five clips, 3 to 8 times
@@ -1868,6 +1886,16 @@ const SFX = {
     big: ['audio/plasma_canon.mp3'],
     boom: ['audio/explosion_small.mp3'],
     lock: ['audio/metal_ping_01.mp3'],
+    // **THE HAMMER TOPPING OUT IS NOT AN IMPACT (m65).** *"When you charge the melee it makes a
+    // metal clang noise and I don't really like that -- it's confusing, it seems like you hit
+    // something. There's another one we used, I don't know if it was a ping, or there's a bunch
+    // in the other game robits like a power up noise."* Both of those are right and the powerup
+    // is the better one, borrowed from `robits/audio` the way the swooshes and clangs were.
+    // **IT IS PLAYED FROM ITS PEAK (`cut`), which is what makes a RISE usable as an ARRIVAL.**
+    // Shredworld turned this file down for the blaster's charge HUM because it is a one-shot
+    // rise and a hum has to LOOP -- the opposite requirement. Here the event IS the moment the
+    // rise lands, so starting at `e.p` throws away the wind-up and leaves the ding.
+    ready: ['audio/powerup_01.mp3'],
   },
   raw: {}, buf: {}, edge: {}, last: {},
 };
@@ -4368,7 +4396,7 @@ function stepKit(dt) {
       if (was < MELEE.charge && p.chargeT >= MELEE.charge) {
         spkBurst(m.x, m.y, m.z, HCHG.pop, { col: HCHG.hot, spread: 5.5, up: 1.4, r: .12,
                                             size: .22, life: .5 });
-        snd('clang', { g: .5, r: 1.5 });
+        snd(HCHG.snd, HCHG.play);
       }
     }
   } else if (p.charge) chargeRelease();
@@ -5532,7 +5560,7 @@ function bodySpawn(P, K, x, z) {
   scene.add(root);
   const mixer = new THREE.AnimationMixer(model);
   const d = { K, root, model, mats, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff, flash: 0,
-    st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, bumpT: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
+    st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, bumpT: 0, tauntN: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
@@ -5969,7 +5997,18 @@ function foeAI(d, dt, t) {
   }
   if (d.st === 'taunt') {
     t[d.cur] = 1;
-    if (d.t >= skinLen(d, d.cur)) { d.st = 'idle'; d.t = 0; }
+    const len = skinLen(d, d.cur);
+    // the beats of the taunt, in order, each fired exactly once -- `d.tauntN` is how many have
+    // gone, so a slow frame that skips past two of them still fires both rather than losing one
+    const TS = K.tauntSnd && K.tauntSnd[d.cur];
+    if (TS && len > .01) {
+      while (d.tauntN < TS.at.length && d.t >= TS.at[d.tauntN] * len) {
+        d.tauntN++;
+        snd(TS.key, { g: TS.g, r: TS.r * (1 + (Math.random() - .5) * .10) });
+        if (TS.ring) hitRing(K, TS.ring);
+      }
+    }
+    if (d.t >= len) { d.st = 'idle'; d.t = 0; }
     faceTo(d, toP, dt);
     return;
   }
@@ -6329,6 +6368,7 @@ function stepDummies(dt) {
         // belongs, and it also puts a beat between standing up and swinging again.
         if (K.ai && d.aggro && K.clips.taunt && Math.random() < K.taunt) {
           d.st = 'taunt'; d.cur = K.clips.taunt[(Math.random() * K.clips.taunt.length) | 0];
+          d.tauntN = 0;
           skinPlay(d, d.cur, 1);
         }
       }
