@@ -1040,6 +1040,69 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **AN ORC SWINGS AT THE LITTLE GUY, AND THE WHOLE BRAIN FOLLOWED ONE PAIR OF NUMBERS (m77,
+  `foeTarget`, `K.foePal`, `K.hitPow`, `d.sfoe`).** *"Let's have the warrior orcs also swing at
+  the little guy and hit him. Send him in the air."*
+  **`foeAI` IS WRITTEN AGAINST `dd` AND `toP` AND NOTHING ELSE**, both derived from `player.pos`
+  in its first three lines -- so pointing those two at a BODY is the whole change, and the
+  approach, the lane, the circle, the giving ground, `foePlan`'s range test and `foeSwing` all
+  come with it. No second brain, no second state, no target field threaded through six branches.
+  That is `d.K`'s dividend for the seventh time, and the reason an attack on a new victim cost
+  less than the dive did.
+  **TWO WAYS HE PICKS ONE, AND THEY NEED DIFFERENT MECHANISMS.** Nearer-than-you is a rule about
+  geometry and retaliation is a rule about history, so one is a per-frame test and the other is a
+  LATCH -- and the latch is what carries the case the test can never see, because a pal who has
+  just punched an orc is usually still the FURTHER of the two.
+      foePal.near 1.2   how much nearer than you he has to be to be worth turning onto. Without
+                        a margin the orc flips between the two of you every time the gap crosses,
+                        which is `LOCK.keep`'s own lesson one system over.
+      foePal.hold 2.4   how long the pick survives. The picker REFRESHES it rather than
+                        re-deciding, so a retaliation outlives the geometry that contradicts it.
+  **A KIND WITH NO `foePal` NEVER FIGHTS A PAL**, so the two drunks and the officer are
+  byte-for-byte what they were -- m38's empty-clip-name pattern, one field over.
+  **THE 5th ARGUMENT OF `dummyBlow` IS THE ATTACKING BODY NOW, NOT A BOOLEAN.** m75 only needed
+  `1` for "this came from a pal"; the moment an orc can be hit BY the pal, the victim has to know
+  WHO hit him or there is nothing to turn onto. `if (!pal)` reads identically, so every existing
+  call site is untouched -- what is added is that a blow names its author. **And `foeStrike`
+  passes `d`**, which is also what keeps the pal from being MARKED: `d.mark` is YOUR interest in a
+  body, and an orc hitting the sidekick is not something you did.
+  **THE BLOW GOES THROUGH `dummyBlow`, SO THE LAUNCH WAS ALREADY WRITTEN.** The grunt, the shove,
+  the reaction pool, the health, the knock-down and the flight are all there, and **a man knocked
+  far enough is a flyer in his own right**, so the chain into whoever he lands on falls out of
+  `FLYHIT` (m63) rather than being coded. CLANCY's `downF`/`downB` are `falling_to_roll` and his
+  get-up is `cover_to_stand`, so he rolls, stands and comes back with no state added anywhere.
+  **`hitPow` .92 IS WHERE IN THE LAUNCH RANGE IT LANDS, AND THAT IS THE WHOLE OF HOW FAR HE
+  GOES.** CLANCY's `fling` is .45, so anything over it launches; `dummyBlow` then grades `k`
+  from `fly0` .55 to 1 across .45..1, **squared**. At .92 that is k .879 on `flyV` 18 and
+  `flyUp` 7.5 -- **6.6 m/s up, an apex of 1.09 m at `flyG` 20, 0.66 s of air and about seven
+  metres of travel** after `flyDrag` 1.2. That is "in the air" rather than a stagger, and it
+  leaves the player's own finisher at 1.0 as the biggest thing in the game.
+  **AND `d.hp = K.hp` ON THE KNOCK-DOWN**, which is why two swings do not accumulate into
+  anything: he is launched on the first one whatever his health says, and stands up whole.
+  **THE TARGET IS LATCHED WHERE THE SWING STARTS (`d.sfoe`), NOT READ AT THE CONTACT FRAME.**
+  `foeTarget` runs every frame and the blow lands `swingAt` .42 of the way through a 0.85 s
+  swing, so reading it late is a mace thrown at one man landing on another -- **the picture and
+  its consequence have to be ONE event**, which is `MELEE.at`'s own rule and the reason the blow
+  was moved off the input frame in the first place.
+  **A MAN ON THE FLOOR IS FINISHED WITH**, `palFoe`'s rule pointed the other way: a launched pal
+  drops out of the picker and clears the latch at once, so the orc turns back to you while Clancy
+  rolls, gets up and runs in again. That is what makes it a LOOP rather than an execution, and it
+  needed one clause rather than a state.
+  **AND THE CHIP SAYS `· vsPAL` / `· PALDOWN`.** "An orc never went for him" and "one did and it
+  did nothing" are opposite bugs and one picture from a phone -- and the pal's own state cannot
+  answer it, because `PALDOWN` is equally what a stray bolt from you looks like. `vs` reads the
+  ORCS (`DUMMIES.some(d => d.foe === pal)`), which is the half only they know.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin (every character GLB
+  is draco and `DRACOLoader` wants a Worker), so whether the punt reads as a launch, and whether
+  an orc peeling off to chase the sidekick is fun or annoying, are device questions. The
+  arithmetic that CAN be checked -- the apex, the hang time, the travel, and that `hitPow` sits
+  over CLANCY's `fling` and under the player's finisher -- is above and was. `mel.FOE.foePal =
+  null` is the one word back to m76, and `mel.FOE.hitPow` is the dial for how far he goes.
+  **AND CLANCY DOES NOT GUARD, DODGE OR RUN FROM A SWING.** His `dive` reads `player.aim` and
+  knows nothing about a mace, `vary.guard` is `[0, 0]` and `flee0` is 0 -- so he takes it. That
+  is a stated gap rather than a claim; a `foeDive` on an orc winding up is the obvious next thing
+  and it is its own build.
+
 - **THE RING HAD A HOLE IN IT AND THE RETURN LEG RAN STRAIGHT DOWN THE MIDDLE (m76, `palPost`).**
   *"He constantly walks down the runway, basically down my line of sight -- if I shoot him once
   and he's downfield, then he's just running back to me in front of me and I'm shooting guys."*

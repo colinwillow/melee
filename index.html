@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m76</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m77</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m76</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m77</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm76';
+const BUILD = 'm77';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -1457,6 +1457,20 @@ const FOE = {
   hitR: 2.6,         // how far his mace reaches
   hitArc: 1.15,      // and how far off his nose you may be and still be in it
   hitDmg: 12,
+  // **AND A PAL IS A BODY HE WILL SWING AT (m77).** *"Let's have the warrior orcs also swing at
+  // the little guy and hit him -- send him in the air."* A kind with no `foePal` never fights
+  // one, which is what keeps the drunks and the officer exactly as they were.
+  //   near  how much NEARER than you a pal has to be before he is worth turning onto. Without
+  //         it the orc flips between the two of you every time the gap crosses, which is the
+  //         sticky-lock lesson one system over.
+  //   hold  how long a pal stays the target once picked, so a re-roll cannot flicker -- and it
+  //         is what carries a RETALIATION, where the pal is not the nearer of the two at all.
+  foePal: { near: 1.2, hold: 2.4 },
+  // **AND THE SWING ON A BODY IS A FULL-WEIGHT BLOW.** CLANCY's `fling` is .45, so anything over
+  // it launches him -- and where in .45..1 it lands is the whole of how far he goes. At .92 the
+  // arc is 1.09 m up and about seven metres out, which is "send him in the air"; the player's
+  // own finisher at 1.0 is still the biggest thing in the game.
+  hitPow: .92,
   push: 7.0, pushUp: 2.2,
   knock: 1,          // **and his mace puts you on the floor** -- a field on the KIND, so a
                      // weaker enemy tomorrow shoves you without one, and `HURT` is the shape
@@ -6007,7 +6021,7 @@ function bodySpawn(P, K, x, z) {
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // `undefined -= dt` is NaN and a NaN clock is a body that can never hop or dive again --
     // silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time now.
-    stuckT: 0, hopT: 0, diveT: 0, mark: 0, lane: 0,
+    stuckT: 0, hopT: 0, diveT: 0, mark: 0, lane: 0, foe: null, foeT: 0, sfoe: null,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
     // script running three times.
@@ -6320,10 +6334,20 @@ function dummyHit(x, z, dirH, power, reach, dmg, palK) {
 // WHAT A LANDED BLOW DOES TO ONE MAN. Split out of `dummyHit` because there are two ways to
 // reach it now -- a bolt arriving, which IS a proximity test at the bolt's own position, and a
 // limb sweeping through him -- and one of them must never grow a second copy of this.
+// **THE 5th ARGUMENT IS THE ATTACKING BODY, NOT A BOOLEAN (m77).** It was `1` for "this came
+// from a pal", which is all m75 needed -- and the moment an orc can swing at the pal, the VICTIM
+// has to know WHO hit him or there is nothing to turn onto. `if (!pal)` still reads the same, so
+// every existing call site is untouched; what is added is that the blow now names its author.
 function dummyBlow(d, dirH, power, dmg, pal) {
   const K = d.K;
   d.cool = K.cool;
   d.aggro = 1; d.seen = 0;     // being shot at is how you get noticed
+  // **A MAN TURNS ON THE THING BITING HIM**, and the LATCH is what carries it: the pal is
+  // usually not the nearer of the two, so the distance rule below would never have picked him.
+  // Bounded by `hold`, so he goes back to you rather than forgetting you exist.
+  if (pal && pal.K && pal.K.pal && K.foePal && K.ai && !K.pacifist) {
+    d.foe = pal; d.foeT = K.foePal.hold;
+  }
   // **"ONLY ATTACK IF YOU'RE ATTACKING SOMETHING" IS A MARK ON THE MAN, NOT A MOOD (m75).**
   // This is the one function every blow on a body reaches, so it is the one place that can say
   // *you* are fighting this one -- and a flag set anywhere else is a flag some future blow site
@@ -6431,9 +6455,37 @@ function dummyBlow(d, dirH, power, dmg, pal) {
 //     inside `reach`    swing, or raise the guard instead
 //     past `lose`       he stops caring, and `lose > notice` so the edge cannot flicker
 // ============================================================================================
+// **WHO HE IS FIGHTING (m77).** The whole brain below is written against ONE pair of numbers --
+// `dd` and `toP` -- so swapping what they point at is what makes an orc approach, circle, give
+// ground and swing at the sidekick with no second copy of any of it. That is `d.K`'s dividend
+// for the seventh time.
+// **A MAN ON THE FLOOR IS FINISHED WITH**, `palFoe`'s own rule pointed the other way: a launched
+// pal drops the target at once and the orc turns back to you, which is what makes it a loop
+// rather than an execution.
+function foeTarget(d) {
+  const K = d.K;
+  if (!K.foePal) return null;
+  const P = d.root.position;
+  const pd = Math.hypot(player.pos.x - P.x, player.pos.z - P.z);
+  let best = null, bd = 1e9;
+  for (const o of DUMMIES) {
+    if (!o.K.pal || o.st === 'down' || o.st === 'up') continue;
+    const od = Math.hypot(o.root.position.x - P.x, o.root.position.z - P.z);
+    // NEARER THAN YOU BY A MARGIN, and inside the range he notices anything at all
+    if (od > K.notice || od > pd - K.foePal.near) continue;
+    if (od < bd) { bd = od; best = o; }
+  }
+  // the picker REFRESHES rather than re-deciding, so a retaliation that the distance rule would
+  // never have made survives until its own clock runs out
+  if (best) { d.foe = best; d.foeT = K.foePal.hold; }
+  else if (!d.foe || d.foeT <= 0 || d.foe.st === 'down' || d.foe.st === 'up') d.foe = null;
+  return d.foe;
+}
+
 function foeAI(d, dt, t) {
   const K = d.K, V = d.v || (d.v = foeRoll(K));
-  const px = player.pos.x - d.root.position.x, pz = player.pos.z - d.root.position.z;
+  const T = foeTarget(d), TP = T ? T.root.position : player.pos;
+  const px = TP.x - d.root.position.x, pz = TP.z - d.root.position.z;
   const dd = Math.hypot(px, pz);
   const toP = Math.atan2(px, pz);
 
@@ -6842,6 +6894,11 @@ function foePlan(d, dd) {
 function foeSwing(d, delay) {
   const K = d.K;
   const nm = K.clips.swings[(Math.random() * K.clips.swings.length) | 0];
+  // **THE TARGET IS LATCHED WHERE THE SWING STARTS (m77).** `foeTarget` runs every frame, so
+  // reading it again at the contact frame is a blow that can land on somebody other than the man
+  // it was thrown at -- the picture and its consequence have to be ONE event, which is this
+  // file's own rule about `MELEE.at`.
+  d.sfoe = d.foe || null;
   d.st = 'swing'; d.t = -(delay || 0); d.swung = 0; d.cur = nm;
   skinPlay(d, nm, skinLen(d, nm) / K.swingDur);
 }
@@ -6920,17 +6977,27 @@ function foeStrike(d) {
       const to = Math.atan2(ox, oz);
       if (Math.abs(wrapAngle(to - d.h)) > K.hitArc) continue;
       // `pal` 1, so his own blow does not re-mark the man and keep him hunting for ever
-      dummyBlow(o, to, K.pounce.power, K.pounce.dmg, 1);
+      dummyBlow(o, to, K.pounce.power, K.pounce.dmg, d);
       break;                                    // one man per punch. He is a little guy.
     }
     return;
   }
-  if (player.roll) return;                      // a dodge roll is the one thing that saves you
-  const dx = player.pos.x - d.root.position.x, dz = player.pos.z - d.root.position.z;
+  // **THE SAME REACH, THE SAME ARC, A DIFFERENT VICTIM (m77).** A blow on a body goes through
+  // `dummyBlow` -- the one function a fist, a mace and a bolt all already reach -- so the grunt,
+  // the shove, the reaction clip, the health and the launch are written, and a man knocked far
+  // enough is a flyer in his own right, which means the chain into whoever he lands on falls out
+  // of `FLYHIT` rather than being coded here.
+  const T = d.sfoe && d.sfoe.st !== 'down' && d.sfoe.st !== 'up' ? d.sfoe : null;
+  if (!T && player.roll) return;                // a dodge roll is the one thing that saves you
+  const TP = T ? T.root.position : player.pos;
+  const dx = TP.x - d.root.position.x, dz = TP.z - d.root.position.z;
   const dd = Math.hypot(dx, dz);
-  if (dd > K.hitR + player.r) return;
+  if (dd > K.hitR + (T ? T.K.r : player.r)) return;
   const to = Math.atan2(dx, dz);
   if (Math.abs(wrapAngle(to - d.h)) > K.hitArc) return;
+  // **AND HE PASSES HIMSELF AS THE AUTHOR**, so the pal is never MARKED: `d.mark` is YOUR
+  // interest in a body and an orc hitting the sidekick is not something you did.
+  if (T) { dummyBlow(T, to, K.hitPow, T.K.dmg ? T.K.dmg.weap : 0, d); return; }
   playerHurt(K.hitDmg, to, K.push, K.pushUp, K.stun, K.knock);
 }
 
@@ -7079,6 +7146,7 @@ function stepDummies(dt) {
     if (d.hopT > 0) d.hopT -= dt;
     if (d.diveT > 0) d.diveT -= dt;
     if (d.mark > 0) d.mark -= dt;
+    if (d.foeT > 0) d.foeT -= dt;
     const t = {};
     if (d.st === 'hit') {
       t[d.cur] = 1;
@@ -7295,12 +7363,17 @@ function frame() {
     // STUCK CLOCK is the one that tells them apart, because it is the thing both the hop and the
     // give-up are triggered off. Silent while he is simply pottering about, `rollREC`'s rule.
     const pal = DUMMIES.find(d => d.K.pal);
-    const cl = !pal ? '' : pal.st === 'swing' ? ' · PUNCH'
+    const cl = !pal ? '' : pal.st === 'down' || pal.st === 'up' ? ' · PALDOWN'
+      : pal.st === 'swing' ? ' · PUNCH'
       : pal.st === 'hop' ? ' · HOP' : pal.st === 'dive' ? ' · DIVE'
       : pal.lane ? ' · LANE'
       : pal.stuckT > .2 ? ' · STUCK' + pal.stuckT.toFixed(1) : '';
+    // "an orc never went for him" and "one did and it did nothing" are opposite bugs and one
+    // picture from a phone, and the pal's own state cannot answer it -- `PALDOWN` is equally
+    // what a stray bolt looks like.
+    const vs = pal && DUMMIES.some(d => d.foe === pal) ? ' · vsPAL' : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
