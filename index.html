@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m67</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m68</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m67</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m68</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm67';
+const BUILD = 'm68';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -1907,6 +1907,11 @@ const SFX = {
     // **ITS OWN KEY, pointing at the same two files**, so a footstep cannot gate out a body
     // hitting the ground through `SFX.last`'s per-key gap and either can be re-pointed alone.
     // The bytes come off the HTTP cache; only the decode is paid twice, on a short file.
+    // **AND IT IS A STAND-IN, WHICH ITS OWN KEY IS WHAT MAKES CHEAP (m68).** *"Get rid of it
+    // altogether and I'll put in a different footsteps sound."* These are BODY-IMPACT
+    // recordings -- a man arriving flat -- and six of them a second is a drum rather than a
+    // stride, whatever the rate is. Drop real footstep files at this key, `npm run bump`, and
+    // nothing else in the file moves.
     foot: ['audio/hit_sounds/hit_sound_gound_01.mp3',
            'audio/hit_sounds/hit_sound_ground_02.mp3'],
     shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
@@ -2018,19 +2023,39 @@ const STEP = {
   g0: .20, g1: .46,       // a walk is a scuff and a sprint is a stamp
   r0: 1.34, r1: 1.12,     // and heavier means lower
   alt: .07, jit: .05,     // left/right, and a shade of noise so two steps are never identical
-  stride: { walk: 0, run: 0, sprint: 0 },
+  // **HIS OWN, THEIRS, AND A MASTER SWITCH (m68).** *"The footsteps are insane... either way we
+  // need to fix it or just get rid of it altogether."* `mel.STEP.on = 0` is the one word, and
+  // `npc = 0` keeps his and drops the other thirteen.
+  on: 1, npc: 1,
+  near: 9,                // an NPC further away than this does not get a footfall AT ALL
+  npcG: .52,              // and the ones that do are behind him rather than beside him
+  clip: { walk: null, run: null, sprint: null },   // { d, r } per band -- measured in buildRig
 };
+// **A STRIDE IS THE DISTANCE THE CLIP ACTUALLY COVERS, NOT THE DISTANCE IT WAS ASKED TO (m68).**
+// m64's `duration * ref` is right ONLY while the clip is really playing at `sp / ref` -- and
+// `tsLo`/`tsHi` CLAMP that, on him and on every body. Where the clamp bites the feet slow down
+// and the sound did not, which is a rate that has nothing to do with what is on screen.
+// One cycle takes `duration / ts` seconds at whatever scale is really playing, so it covers
+// `sp * duration / ts` metres -- and with `ts` unclamped that is `duration * ref` exactly, so
+// this is m64's answer generalised rather than replaced.
+// **BOTH HALVES READ ONE `ts`, so the foot and the sound cannot disagree by construction** --
+// which is the only kind of agreement worth having, since nothing here can hear the game.
+function strideOf(sp, dur, ref, lo, hi) {
+  if (!dur || !ref) return 0;
+  const ts = clamp(sp / Math.max(.05, ref), lo, hi);
+  return sp * dur / Math.max(.05, ts) / STEP.perCycle;
+}
 function strideNow(sp) {
-  const S = STEP.stride;
-  const L = sp < GAIT.runAt ? S.walk : sp < GAIT.sprintAt ? S.run : S.sprint;
+  const C = sp < GAIT.runAt ? STEP.clip.walk : sp < GAIT.sprintAt ? STEP.clip.run : STEP.clip.sprint;
+  const L = C ? strideOf(sp, C.d, C.r, GAIT.tsLo, GAIT.tsHi) : 0;
   return L > .05 ? L : STEP.fallback;
 }
 // ONE footfall, so his and theirs cannot drift into two different sounds. `top` is whatever
 // counts as flat out for that body, which is what makes the same curve read on a 7.2 m/s sprint
 // and on a 1.8 m/s drunk run. `x`/`z` are what `SFX.near` needs; his own are simply near.
-function footSnd(sp, top, x, z, left) {
+function footSnd(sp, top, x, z, left, gk) {
   const u = clamp((sp - STEP.at) / Math.max(.1, top - STEP.at), 0, 1);
-  snd('foot', { g: STEP.g0 + (STEP.g1 - STEP.g0) * u,
+  snd('foot', { g: (STEP.g0 + (STEP.g1 - STEP.g0) * u) * (gk == null ? 1 : gk),
                 r: (STEP.r0 + (STEP.r1 - STEP.r0) * u) * (left ? 1 + STEP.alt : 1 - STEP.alt)
                    * (1 + (Math.random() - .5) * STEP.jit),
                 cut: 1, att: .003, dec: .09, x, z });
@@ -2041,33 +2066,44 @@ function footSnd(sp, top, x, z, left) {
 // the KIND, because it is a fact about the export rather than about the man: three warriors
 // share it. A kind with no walk clip (the officer, who never moves) gets nothing and stays
 // silent, which is correct rather than a gap.
-function bodyStride(d) {
+function bodyStride(d, sp) {
   const K = d.K;
-  if (K._stride) return K._stride;
-  const st = (n, ref) => { const c = n && d.clips && d.clips[n]; return c ? c.duration * ref / STEP.perCycle : 0; };
-  K._stride = { walk: st(K.clips.walk, K.walkRef), run: st(K.clips.run, K.runRef) };
-  return K._stride;
+  if (!K._stride) {
+    const du = n => { const c = n && d.clips && d.clips[n]; return c ? c.duration : 0; };
+    K._stride = { wd: du(K.clips.walk), rd: du(K.clips.run) };
+  }
+  const S = K._stride;
+  // the crossover is midway between his own two references, so it needs no constant of its own
+  const run = sp >= (K.walkRef + K.runRef) * .5;
+  return strideOf(sp, run ? S.rd : S.wd, run ? K.runRef : K.walkRef, K.tsLo, K.tsHi);
 }
 function bodyFeet(d, sp, dt) {
   const K = d.K;
   // ON HIS FEET AND WALKING. `idle` is the umbrella the AI states live under; `hit`, `down`,
   // `up`, `taunt` and `block` are not walking, and a man being SHOVED along the ground covers
   // distance without taking a step -- which is exactly what `bodyBump` is for instead.
-  if (!K.clips.walk || d.st !== 'idle' || sp < STEP.at) return;
+  if (!STEP.on || !STEP.npc || !K.clips.walk || d.st !== 'idle' || sp < STEP.at) return;
+  // **AND THIRTEEN OF THEM SHARE ONE KEY, WHICH IS MOST OF WHAT WENT WRONG (m68).** `SFX.gap`
+  // refuses two `foot` sounds inside 45 ms, so a street of amblers does not come out as
+  // thirteen rhythms -- it comes out as ONE saturated stream with no rhythm in it at all, which
+  // is why "whose footsteps are those" had no answer. `SFX.near` is a MIX rule and fades to
+  // nothing at 40 m; this is a different question -- is a man over there worth a voice at all
+  // -- and the answer inside a fight is only the ones you could reach out and touch.
+  const P = d.root.position;
+  const dx = P.x - player.pos.x, dz = P.z - player.pos.z;
+  if (dx * dx + dz * dz > STEP.near * STEP.near) return;
   d.stepD += sp * dt;
-  const S = bodyStride(d);
-  // the crossover is midway between his own two references, so it needs no constant of its own
-  const L = (sp < (K.walkRef + K.runRef) * .5 ? S.walk : S.run) || STEP.fallback;
+  const L = bodyStride(d, sp) || STEP.fallback;
   if (d.stepD < L) return;
   d.stepD -= L; d.stepL = !d.stepL;
-  footSnd(sp, K.runRef, d.root.position.x, d.root.position.z, d.stepL);
+  footSnd(sp, K.runRef, P.x, P.z, d.stepL, STEP.npcG);
 }
 // Called with his own measured speed, so it needs no knowledge of the pad, the gait or the clip.
 function stepFeet(dt) {
   const p = player;
   // **ON THE GROUND ONLY, and the phase is KEPT while he stands still** -- zeroing it would
   // make the first step of every start instant, so a jiggled stick is a burst of footfalls.
-  if (!p.grounded || p.speed < STEP.at) return;
+  if (!STEP.on || !p.grounded || p.speed < STEP.at) return;
   p.stepD += p.speed * dt;
   const L = strideNow(p.speed);
   if (p.stepD < L) return;
@@ -3998,11 +4034,27 @@ function meleeGo(h) {
   // averages .725 rather than .5 and is what a lunge actually looks like
   p.vel.x = Math.sin(p.faceH) * p.melV; p.vel.z = Math.cos(p.faceH) * p.melV;
 }
+// **EVERYTHING THAT ENDS A HOLD COMES THROUGH ONE PLACE (m68).** The guard already spelt these
+// five assignments out inline; a roll and a knock-down want exactly the same thing, and three
+// copies of it is three places for the aim, the charge and the hum to start disagreeing about
+// whether the trigger is up. `chargeStop` is what silences the rising synth, and forgetting it
+// is a hum that plays for the rest of the session.
+function triggerStop() {
+  const p = player;
+  if (!p.aim && !p.charge) return;
+  p.aim = 0; p.armT = 0; p.chg = 0; p.charge = 0; p.chargeT = 0; chargeStop();
+}
 function rollGo(h) {
   const p = player;
   if (!p.grounded || p.knock || p.roll || p.melee || p.chargeGo) return;
   p.roll = 1; p.rollT = 0; p.rollH = (h != null ? h : p.faceH);
   p.heading = p.rollH; p.melee = 0; p.meleeChain = 0;
+  // **A ROLL STOPS THE SHOT (m68).** *"When I'm shooting and then I roll, he needs to stop
+  // shooting -- right now he just continues shooting while he rolls, it looks weird."* It did:
+  // nothing in the trigger block had a `busy` gate at all, where the guard and the square-up
+  // both do, so a wound shot went on winding and a rapid-fire hold went on firing ROUNDS out
+  // of a man rolling along the floor. A roll costs you the charge, which is the trade.
+  triggerStop();
   playOnce(CLIPS.roll, clipLen(CLIPS.roll) / MELEE.rollDur);
   snd('swoosh', { r: 1.35, g: .45 });
   p.vel.x = Math.sin(p.rollH) * MELEE.rollV; p.vel.z = Math.cos(p.rollH) * MELEE.rollV;
@@ -4291,7 +4343,7 @@ function stepKit(dt) {
       p.blockT += dt;
       if (p.blockT >= WEAP.blockT) {
         p.block = 1;
-        if (p.aim || p.charge) { p.aim = 0; p.armT = 0; p.chg = 0; p.charge = 0; p.chargeT = 0; chargeStop(); }
+        triggerStop();
         p.center = 0; p.centerT = 0;
       }
     } else { p.block = 0; p.blockT = 0; }
@@ -4337,7 +4389,13 @@ function stepKit(dt) {
   //                that is already carrying the camera and the jump
   //      It does NOT wait for `tapT` the way a hold does: a push to `fireAt` is already far
   //      past the tap's own `far < .42`, so the jump and the trigger cannot collide.
-  if (s.aim) {
+  // **AND IT REFUSES TO RE-ARM WHILE THE BODY IS NOT HIS.** Clearing on the way IN is not
+  // enough on its own: the thumb is still up there, so the very next frame walks straight
+  // back through `padUp` and arms again mid-roll. `p.roll` and `p.knock` are the two states
+  // that OWN the body -- not the air, because shooting out of a jump is fine and always was.
+  const noTrig = p.roll || p.knock;
+  if (noTrig) triggerStop();
+  if (s.aim && !noTrig) {
     // THE SAME GATE THE HAMMER USES -- see `padUp`. Two copies of this is two places for
     // the trigger and the wind-up to start disagreeing about what a push up is.
     if (padUp(p.aim)) {
@@ -4431,7 +4489,7 @@ function stepKit(dt) {
   // it is redundant here for the trigger's own reason: a push past `fireAt` .78 is already far
   // beyond the tap's `far < .42`, so the jump and the wind-up cannot collide, and the wind-up
   // can now be entered as fast as the thumb moves.
-  if (s.charge && padUp(p.charge) && p.grounded && !p.melee && !p.roll && !p.chargeGo) {
+  if (s.charge && padUp(p.charge) && p.grounded && !p.melee && !p.roll && !p.knock && !p.chargeGo) {
     // REWOUND ON THE RISING EDGE. `weapon_melee_charge` is a ONCE clip so it holds its last
     // frame -- a man straining rather than winding up over and over -- and a clip that holds
     // has to be rewound BY THE STATE that starts it or the second charge never winds up.
@@ -6809,12 +6867,17 @@ async function init() {
   // and `perCycle` footfalls divide it. Done HERE because the refs are already scaled by the
   // model scale a few dozen lines up, and the durations are only known once the clips are in.
   {
-    const st = (n, ref) => { const c = rig.clips[n]; return c ? c.duration * ref / STEP.perCycle : 0; };
-    STEP.stride.walk = st(CLIPS.walk, GAIT.walkRef);
-    STEP.stride.run = st(CLIPS.run, GAIT.runRef);
-    STEP.stride.sprint = st(CLIPS.sprint, GAIT.sprintRef);
-    console.log('[melee] stride walk ' + STEP.stride.walk.toFixed(2) + ' m, run ' +
-                STEP.stride.run.toFixed(2) + ', sprint ' + STEP.stride.sprint.toFixed(2));
+    // **THE PAIR, NOT THE ANSWER (m68).** A stride is only a fixed number of metres while the
+    // clip plays at `sp / ref`, and `tsHi` clamps that -- so what is measured here is the two
+    // facts about the CLIP and the distance is worked out at the speed he is actually going.
+    const st = (n, ref) => { const c = rig.clips[n]; return c ? { d: c.duration, r: ref } : null; };
+    STEP.clip.walk = st(CLIPS.walk, GAIT.walkRef);
+    STEP.clip.run = st(CLIPS.run, GAIT.runRef);
+    STEP.clip.sprint = st(CLIPS.sprint, GAIT.sprintRef);
+    const sh = (C, sp) => C ? strideOf(sp, C.d, C.r, GAIT.tsLo, GAIT.tsHi).toFixed(2) : '-';
+    console.log('[melee] stride walk ' + sh(STEP.clip.walk, 1.5) + ' m @1.5, run ' +
+                sh(STEP.clip.run, 3.5) + ' @3.5, sprint ' + sh(STEP.clip.sprint, MOVE.max) +
+                ' @' + MOVE.max);
   }
   // THE TABLE IS CHECKED AGAINST THE FILE. A table naming a clip that is not there leaves a
   // bone at zero total weight, and the mixer blends a zero-weight bone back to its BIND value

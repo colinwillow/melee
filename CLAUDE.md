@@ -1019,6 +1019,65 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE SOUND RAN AHEAD OF THE FEET, AND THIRTEEN MEN SHARED ONE KEY (m68, `strideOf`,
+  `STEP.near`).** *"The footsteps are insane. I can't tell if it's coming from my guy or all the
+  other guys but they're just constantly going and it just sounds like tap dancing."* Two causes,
+  and the second is why he could not tell whose they were.
+  **1. m64's STRIDE IS ONLY TRUE WHILE THE CLIP PLAYS AT `sp / ref`, AND `tsHi` CLAMPS THAT.**
+  That note's argument -- one cycle covers `duration * ref` METRES whatever the speed, because
+  the speed cancels -- is exactly right and has a precondition nobody wrote down: it cancels
+  through the TIME SCALE, and the time scale is `clamp(sp / ref, tsLo, tsHi)`. Wherever the clamp
+  bites the feet slow down and the sound does not. Tabled against what is actually on screen:
+      speed  band     ts     OLD/s   NEW/s   feet/s
+        1.5  walk    1.60      3.5     2.3      2.3
+        2.0  walk    1.60      4.7     2.3      2.3   <- TWICE his feet, for the whole walk band
+        3.0  run     1.36      3.6     3.6      3.6   <- unclamped, and m64 was right here
+        7.2  sprint  1.60      8.9     6.4      6.4
+  **THE WALK BAND IS CLAMPED ACROSS ITS WHOLE RANGE**, which is the part I would not have
+  guessed: `walk_fwd` is 1.417 s against a scaled `walkRef` of 0.60, so ANY real walking speed
+  asks for more than 1.6x. Nearly every step he takes was in the broken half.
+  **THE FIX IS THE SAME ARITHMETIC WITH THE REAL `ts` IN IT.** One cycle takes `duration / ts`
+  seconds, so it covers `sp * duration / ts` metres -- and with `ts` unclamped that reduces to
+  `duration * ref` exactly, so this GENERALISES m64 rather than replacing it. **Both halves now
+  read one `ts`, so the foot and the sound cannot disagree by construction**, which is the only
+  agreement worth having given that nothing in this container can hear the game.
+  **SO WHAT IS MEASURED AT LOAD IS THE PAIR, NOT THE ANSWER.** `STEP.clip` holds `{d, r}` and the
+  distance is worked out at the speed he is going. A stride is not a constant on a clamped clip.
+  **2. AND `SFX.gap` TURNS THIRTEEN RHYTHMS INTO ONE STREAM.** It refuses two `foot` sounds
+  inside 45 ms, so a street of amblers does not come out as thirteen sets of footsteps -- it
+  comes out as ONE saturated key with no rhythm in it at all. **That is precisely why "whose are
+  those" had no answer**: the interval nobody could hear a pattern in was the gap's, not anyone's
+  stride. `SFX.near` could not fix it either -- it is a MIX rule that fades to nothing at 40 m,
+  and a body at thirty metres was still spending voices and still spending the gap.
+  **A HARD RANGE IS A DIFFERENT QUESTION FROM A FADE**: `STEP.near` 9 m is "is a man over there
+  worth a voice at all", answered at the producer, and `npcG` .52 puts the ones that survive it
+  behind him rather than beside him.
+  **AND THERE IS A MASTER SWITCH, BECAUSE HE ASKED FOR ONE.** *"Either way we need to fix it or
+  just get rid of it altogether."* `mel.STEP.on = 0` is the one word and `mel.STEP.npc = 0` keeps
+  his and drops the other thirteen -- so the A/B is on the phone rather than in a build.
+  **THE BANK IS A STAND-IN AND IS MARKED AS ONE.** *"I'll put in a different footsteps sound."*
+  `SFX.files.foot` points at the two BODY-IMPACT recordings, which is a man arriving flat -- six
+  of those a second is a drum rather than a stride whatever the rate is. Its own key is what
+  makes the swap one line.
+- **AND NOTHING IN THE TRIGGER BLOCK HAD A `busy` GATE AT ALL (m68, `triggerStop`).** *"When I'm
+  shooting and then I roll, he needs to stop shooting -- right now he just continues shooting
+  while he rolls. It looks weird."* The guard has one, the square-up has one, and the blaster's
+  trigger never did: a wound shot went on winding and a rapid-fire hold went on firing ROUNDS out
+  of a man rolling along the floor.
+  **CLEARING ON THE WAY IN IS NOT ENOUGH, WHICH IS THE HALF THAT IS EASY TO MISS.** The thumb is
+  still up there, so the very next frame walks straight back through `padUp` and arms again
+  mid-roll. It takes both: `rollGo` stands it down, and the block refuses to run while the body
+  is not his.
+  **`p.roll` AND `p.knock`, NOT `!p.grounded`.** Shooting out of a jump is fine and always was;
+  what is wrong is shooting out of a move that owns the body. Copying the guard's `busy` verbatim
+  would have taken the air with it.
+  **AND A ROLL COSTS YOU THE CHARGE**, which is the trade rather than an oversight: you spent the
+  move to go somewhere.
+  **`triggerStop` IS ONE FUNCTION BECAUSE IT WAS ALREADY THREE COPIES WAITING TO HAPPEN.** The
+  guard spelt the five assignments out inline; the roll and the knock-down want the identical
+  thing, and `chargeStop()` is the one of the five that is easy to forget -- a rising synth hum
+  nobody stops plays for the rest of the session.
+
 - **THE m64 DEPLOY FAILED, AND A PAGES RUN IS A LINK IN THE CHAIN NOBODY WAS WATCHING (m67).**
   *"My game is stuck on m63."* He was on m63 and the repo was on m66, and the gap is not his cache
   alone. Read off the runs:
