@@ -1019,6 +1019,58 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A LOOPING CLIP THAT TRAVELS TELEPORTS AT ITS LOOP POINT (m69, `deDrift`).** *"He's like
+  walking, most of his locomotion and animations go well, but then every now and again he'll walk
+  to the side and then teleport like 5 feet back to where he was. I don't know what causes this,
+  if it's an animation that's unaligned or what."* **It is the animation, and it is not
+  alignment** -- it is baked root travel in the two clips the circle plays. Read straight out of
+  his file, net Hips drift from the first key to the last, in armature units:
+      standing_walk_forward   0.0      standing_walk_left    44.4   -> 1.06 m
+      standing_run_forward    0.0      standing_walk_right   51.4   -> 1.23 m
+      standing_walk_back      0.0      (and the drunks' unused strafes: 110 to 117)
+  m35's note says *"THE CLIPS ANIMATE IN PLACE"* -- that was measured on the ANTENNA ALIEN and
+  written under his section, and it was never true of the warrior's two strafes. **`K.strafe` and
+  `K.strafeR` are `standing_walk_left/right`**, they are what `foeMove` plays while he CIRCLES,
+  and `bodyLoops` correctly makes them LOOP: so the cycle carries him 1.2 m sideways and the wrap
+  snaps him back. Four feet, intermittently, exactly as described. Nothing to do with a collider,
+  a state machine or `bodySep`.
+  **THE DRIFT IS REMOVED, NOT THE MOTION -- WHICH IS WHY IT IS NOT A FREEZE.** Pinning X and Z at
+  the first key is the obvious fix and it would take the lateral hip sway out of every gait in
+  the game along with it: the GOOD clips carry 1.9 to 2.3 units of it and that sway IS the walk.
+  What is subtracted is the LINEAR RAMP from the first key to the last, so the clip starts and
+  ends in the same place BY CONSTRUCTION and everything else survives. **No threshold to pick**,
+  which matters -- a magic number here would have had to separate 2.3 from 44.4 by taste.
+  **AND Y IS NEVER TOUCHED.** The Hips translation is the body's height off the ground and every
+  crouch, landing and fall in the set uses it -- this file's own standing rule about why that one
+  position track is kept when all the others are stripped.
+  **A `ONCE` CLIP THAT TRAVELS IS FINE AND MUST BE LEFT ALONE.** `Shoulder_Hit_And_Fall` drifts
+  26.7 units and `Getting_Up` 26.5, which is a man falling forwards and getting back up -- there
+  is no loop point for it to snap at, and de-drifting those would make him fall straight down.
+  So the pass is over `bodyLoops(K)`, the set the game already derives for exactly this question,
+  rather than over a second list to keep in step.
+  **ONCE PER KIND, NOT PER BODY.** `bodyProto` runs once and every copy of that kind shares the
+  clip objects, so three warriors cannot de-drift the same track three times. Doing it in
+  `bodySpawn` would have subtracted the ramp once per man.
+  **AND `values` IS CLONED BEFORE IT IS WRITTEN.** GLTFLoader resolves an accessor once and
+  caches it, so two tracks can hold the same `Float32Array` -- `normaliseClips` already clones
+  `times` for that reason a few dozen lines up, and this is the same landmine one array over.
+  **VERIFIED BY RUNNING THE SHIPPED ARITHMETIC OVER THE REAL TRACKS**, with the clean clips as
+  the control, which is the half that says the fix is not also a bug:
+      clip                    net before   net after   X-sway before / after
+      standing_walk_left           44.38      0.0000     44.38 / 2.77   <- what is left is SWAY
+      standing_walk_right          51.41      0.0000     51.41 / 3.39
+      standing_walk_forward         0.00      0.0000      2.33 / 2.33   <- provably a NO-OP
+      standing_run_forward          0.00      0.0000      1.89 / 1.89
+  **AND THE PLAYER'S OWN EXPORT MEASURES CLEAN**, so this is not applied to him: every looping
+  clip he has drifts under 0.5 units, and the four that drift at all (`landing_soft` 4.5,
+  `Standing_Melee_Attack_360_High` 10.4) are `ONCE` clips at one to fourteen centimetres.
+  `deDrift` is general and is there the day one of his re-exports is not.
+  **WHAT THIS SAYS ABOUT THE NEXT MIXAMO CLIP** is the part worth keeping: an "in place" export
+  is a CHECKBOX, and the strafes in this file were not exported with it ticked. `npm run clips`
+  is where a net-drift column belongs the next time that tool is touched -- until then, the one
+  thing that makes this class of bug invisible is that it looks like a physics or collider fault
+  and is neither.
+
 - **THE SOUND RAN AHEAD OF THE FEET, AND THIRTEEN MEN SHARED ONE KEY (m68, `strideOf`,
   `STEP.near`).** *"The footsteps are insane. I can't tell if it's coming from my guy or all the
   other guys but they're just constantly going and it just sounds like tap dancing."* Two causes,
