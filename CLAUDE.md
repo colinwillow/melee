@@ -1040,6 +1040,95 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE 40 cm CUBE STOPPED BEING WALKABLE WHEN THE PLAYER SHRANK, AND ONLY THE COMMENT STILL
+  THOUGHT OTHERWISE (m74).** *"He can't get up on -- there was a really short little cube he just
+  got stuck on. He just indefinitely was kind of stuck, didn't know what to do."* Read straight
+  out of the world builder, and it is the box nearest the spawn:
+      put(6, 0, -3, 3, .40, 3, 0);   // "under MOVE.step, so this one is WALKED onto"
+  `MOVE.step` is `.5 * SZ`. At `RIG.height` 1.75 that was **0.50 m** and the claim was true; m52
+  took him to 1.45 and m57 to 1.25, and the step came down **to 0.357 m** with him -- so this box
+  has been a WALL since m57, to the player as much as to anybody, and the 0.35 platform beside it
+  is still walkable by seven millimetres. **A comment describing an intent the code no longer has
+  is the tell**, and this file already has that sentence about `blast0`'s own comment at m56.
+  **THE BOX IS LEFT ALONE AND THE CLAIM IS CORRECTED.** A low obstacle is a fair thing for a test
+  site to have, and changing the world to suit a body is the wrong instinct -- he asked for the
+  sidekick to be able to get up on things, not for the things to get shorter.
+- **HE TRIES, THEN HE HOPS, THEN HE GOES SOMEWHERE ELSE (m74, `d.stuckT`, `K.hop`, `K.give`).**
+  Both halves of that report are ONE detector, and it lives in `foeMove` because **that is the
+  one place a body is ever told to travel** -- so it is the one place that knows both what was
+  asked and what was delivered, and comparing those two needs nothing from the state machine.
+  That makes it equally true of a wall, a kerb, another body and a corner. **A detector every
+  caller has to remember is not a detector**, which is this file's own sentence about `roadTag`
+  one repo over.
+      stuckT > hop.at .55   -> he jumps at the thing
+      stuckT > give   1.6   -> that point is unreachable; re-roll it
+  **THE ORDER IS WHAT MAKES IT READ AS A CREATURE**: a hop first, and only when that has not
+  helped does he give up on the point. And it DECAYS at twice the rate it builds, so a body that
+  scrapes past something forgets rather than carrying a grudge into the next corner.
+  **THE HOP IS AN ARC SOMEBODY CHOSE, SO THE APEX IS THE NUMBER** -- m21's rule, and `vy` is
+  derived from it rather than picked. At `flyG` 20:
+      up 4.8   apex **0.576 m**, 0.48 s of air   -- clears the 0.40 box by 18 cm
+                                                 -- does NOT clear the 1.15 one, which is right
+      fwd 3.0  x 0.48 s = **1.44 m** of travel   -- exact, because `leapDrag` is 0
+  **AND 3.0 IS UNDER `FLYHIT.at` 6 BY CONSTRUCTION**, so a hopping sidekick can never bowl a
+  warrior over. That needed no case at all -- only a number kept under one that already exists.
+  **IT OWNS NOTHING BUT A VELOCITY.** `d.vx/vy/vz` and `bodyFly` -- the integrator the knock-down
+  flight has used since m37 -- so the wall bounce, the ground stop and the landing thump come
+  with it and there is no second physics path. **What it did need is `K.leapDrag`**: `flyDrag` is
+  right for a body that was THROWN and wrong for one that jumped, and a drag on top of a solved
+  arc makes the arithmetic above a lie and lands him short of the thing he jumped at.
+  **AND THE STATE HAS TO SIT ABOVE `foeWander`**, which ends in `foeMove`, which snaps `P.y` to
+  the ground: walking and flying at once is a hop that never leaves the floor.
+  **THE MINIMUM (`d.t > .12`) IS WHAT STOPS IT ENDING ON THE FRAME IT BEGAN** -- `bodyFly` runs
+  at the TOP of `stepDummies`, so on the launch frame the velocity has not been integrated yet
+  and he is still standing on the floor.
+  **BOTH ARE GATED ON THE KIND'S OWN FIELDS**, so the drunks are byte-for-byte unchanged. A stuck
+  drunk is a real bug too and it is a different build, not a free ride on this one.
+- **THE RING HAS A HOLE IN IT WHERE YOU ARE POINTING (m74, `K.palArc`).** *"The leash is too long.
+  I do want him to more or less stay near me, checking out what I'm doing, stand off the side of
+  me. He goes in front of me a lot and then I just end up shooting him."* Two separate things and
+  the second is the one that matters: a uniform ring puts him in front of you a third of the
+  time, for ever, whatever its radius.
+      leash 7.0 -> 4.0    leashIn 3.2 -> 1.8    roam 4.2 -> 2.2    roamAt .7 -> .5
+      palArc 1.05 rad (60 deg either side of your nose) that the roam point may not be in
+  **`player.faceH` IS THE FIRING BEARING AND IT ALREADY EXISTS.** While aiming he faces wherever
+  the lens looks -- the one-writer-on-`cam.az` invariant -- so the arc to keep clear of needed no
+  second number to keep in step with the first.
+  **AND THE ANGLE IS PUSHED TO THE NEARER EDGE, NOT RE-ROLLED.** A rejection loop is unbounded;
+  a push is one line. It also piles him up along the two EDGES of the arc, which is *"off the
+  side of me"* rather than merely "anywhere but in front" -- the better behaviour falls out of
+  the cheaper implementation, which is worth noticing rather than arguing about.
+- **AND THE DIVE IS THE BACKSTOP, NOT THE FIX (m74, `K.dive`).** *"Maybe he jumps out of the way,
+  doesn't mean I can't hit him. I don't think I have a dive animation or a roll animation but if
+  we do, you could like dive roll out of the way."*
+  **HE HAS ONE AND IT IS ALREADY IN HIS TABLE.** `falling_to_roll`, 1.875 s -- a body going down
+  into a roll, which is what a dive IS, and m73 wired it as his knock-down. Second build running
+  that the clip he thinks he has not drawn is in the export: **read the file before taking his
+  word for what is missing from it.** Compressed to `dur` .60, which is x3.1.
+  **NO I-FRAMES, WHICH IS WHAT HE ASKED FOR AND IS ALSO THE SIMPLER THING.** It MOVES him and
+  nothing else: 4.0 m/s for .60 s is **2.4 m** out of the line, against a `cone` of .30 rad which
+  is 2.7 m of half-width at the 9 m range. So he clears most of the way out of a shot he was
+  standing in, and a shot that was going to hit him anyway still does.
+  **AND IT IS PERPENDICULAR TO THE LINE, NOT AWAY FROM YOU** -- away from you is down the barrel,
+  which is the whole difference between getting clear and running at the muzzle. The side comes
+  off the sign of his own offset from the line, so he goes the way he was already leaning.
+  **`p.aim` COVERS BOTH TRIGGERS** -- it is true for the charge and for rapid fire -- so one test
+  rather than two to keep in step.
+  **WHAT IS NOT DONE:** `crouched_sneaking_left/right` and `left/right_cover_sneak` are a sidestep
+  set that would read better than a roll for a small dodge, and nothing names them. And there is
+  no attack: `mutant_punch`, `mutant_swiping` and `jump_attack` are all in the file, *"you're
+  welcome to make him attack, I don't really care"* is the standing permission, and it is its own
+  build rather than a rider on this one.
+- **AND THE CHIP SAYS WHICH OF THE THREE IT IS (m74).** *"He just indefinitely was kind of stuck"*
+  is the report, and "he never hopped", "he hopped and it did nothing" and "he is stuck and never
+  tried" are three different bugs with one picture from a phone. `· HOP`, `· DIVE`, `· STUCK1.4`
+  -- and the STUCK CLOCK is the one that separates them, because it is the thing both the hop and
+  the give-up are triggered off. Silent while he is simply pottering about, `rollREC`'s rule.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin (his GLB is draco and
+  `DRACOLoader` wants a Worker), so the hop's apex, the dive's read and whether the ring now keeps
+  him out of the way are all device questions. The arithmetic that CAN be checked -- the apex, the
+  flight time, the travel, and that `fwd` sits under `FLYHIT.at` -- is above and was.
+
 - **A SIDEKICK IS m38'S PACIFIST WITH THE RING MOVED (m73, `CLANCY`, `K.pal`, `K.clips.rest`).**
   *"He's basically like your little sidekick, so he just sort of follows you around... I don't want
   it to be like super super mechanical, I want him to kinda wander a little bit and walk around a

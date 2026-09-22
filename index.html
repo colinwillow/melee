@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m73</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m74</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m73</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m74</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm73';
+const BUILD = 'm74';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -1670,6 +1670,7 @@ const CLANCY = {
     // `falling_idle` is a real float, `falling_to_roll` is the roll he described, and
     // `hard_landing` is a body arriving. m67's finding one character over.
     air: 'falling_idle',
+    jump: 'jumping_up', dive: 'falling_to_roll',
     hits: ['hard_landing'], big: ['falling_to_roll'],
     downF: 'falling_to_roll', downB: 'falling_to_roll',
     upF: 'cover_to_stand', upB: 'cover_to_stand',
@@ -1678,6 +1679,13 @@ const CLANCY = {
   // `clancy_idle_01` reads 0.024 m/s, which is the control that says the rest can be trusted.
   walkRef: .265, runRef: .711, fleeRef: .711, tsHi: 2.2, tsLo: .7,
   walk: .55, run: 2.6, flee: 2.6,
+  // **HE KEEPS CLOSE AND HE KEEPS OUT OF THE LINE (m74, `palArc`).** *"The leash is too long. I
+  // do want him to more or less stay near me, checking out what I'm doing, stand off the side of
+  // me. He goes in front of me a lot and then I just end up shooting him."* Two separate things:
+  // the ring is SMALLER, and it has a hole in it where you are pointing. `player.faceH` IS the
+  // firing bearing -- while aiming he faces wherever the lens looks (the one-writer-on-cam.az
+  // rule) -- so the arc to keep clear of is a number that already exists.
+  palArc: 1.05,
   turn: 5.0,                       // a small thing turns quickly
   vary: { pace: [.85, 1.2], nerve: [1, 1], react: [.3, 1.2], guard: [0, 0] },
   // THE BREATHING IS THE HOBO'S, HARDER. *"I don't want it to be like super super mechanical."*
@@ -1687,8 +1695,26 @@ const CLANCY = {
   // **THE RING IS ROUND YOU** -- `roam` is how far he is willing to wander off, `leash` is how
   // far before he stops wandering and comes back at a run. The gap between them is hysteresis:
   // without it he would flip between amble and dash on the boundary every frame.
-  roam: 4.2, roamWait: [1.2, 3.4], roamAt: .7,
-  leash: 7.0, leashIn: 3.2,
+  roam: 2.2, roamWait: [1.2, 3.0], roamAt: .5,
+  leash: 4.0, leashIn: 1.8,
+  // **A HOP IS AN ARC SOMEBODY CHOSE, SO THE APEX IS THE NUMBER (m74, m21's rule).** At `flyG`
+  // 20, `up` 4.8 is an apex of **0.576 m** and 0.48 s of air -- which clears the 0.40 box he got
+  // stuck on with 18 cm to spare and does NOT clear the 1.15 one, which is correct: that needs a
+  // real climb. `fwd` 3.0 x 0.48 s is **1.44 m** of travel (exact, because `leapDrag` is 0), so
+  // he lands well in from the edge of a 3 m box.
+  // **AND 3.0 IS UNDER `FLYHIT.at` 6 BY CONSTRUCTION**, so a hopping sidekick can never bowl a
+  // warrior over -- which needed no case, only a number kept under one that already exists.
+  hop: { up: 4.8, fwd: 3.0, at: .55, again: 1.0, beat: .34 },
+  // **AND A DIVE IS THE BACKSTOP, NOT THE FIX.** *"If I'm shooting maybe he jumps out of the way
+  // -- doesn't mean I can't hit him."* So no i-frames: it MOVES him and nothing else, which is
+  // what he asked for and is also the simpler thing. `palArc` is what keeps him out of the line
+  // in the first place; this is for when you turn and he is already there.
+  // **`falling_to_roll` IS THE DIVE HE THOUGHT HE HAD NOT DRAWN** (*"I don't think I have a dive
+  // or a roll animation but if we do"*) -- it is in the export, it is a body going down into a
+  // roll, and it is already his knock-down clip. 1.875 s compressed to .60 is x3.1.
+  dive: { v: 4.0, dur: .60, cone: .30, range: 9, cool: 1.6 },
+  give: 1.6,              // trying and not moving for this long -> that point is unreachable
+  leapDrag: 0,
   flee0: 0, fleeAdd: 0, fleeMax: 0,   // he does not run away. He is the one who stays.
   hitBeat: 1.4, bigBeat: 1.8, downBeat: 1.8, upBeat: 1.1,
   out: 1.2,
@@ -2575,7 +2601,13 @@ scene.add(world);
     BOXES.push({ minx: x - w / 2, maxx: x + w / 2, miny: y, maxy: y + h, minz: z - d / 2, maxz: z + d / 2 });
   };
   // a few things at jumpable heights, and a couple far too tall to get on
-  put(  6, 0,  -3, 3, .40, 3, 0);   // under MOVE.step, so this one is WALKED onto
+  // **THIS ONE STOPPED BEING WALKABLE WHEN HE SHRANK, AND THE COMMENT DID NOT NOTICE (m74).**
+  // `MOVE.step` is `.5 * SZ`, so at `RIG.height` 1.75 it was 0.50 m and this 0.40 box really was
+  // walked onto; m52 and m57 took him to 1.25 and the step came down to **0.357 m** with him. It
+  // has been a WALL ever since -- to the player and to everybody -- which is exactly the "really
+  // short little cube he just got stuck on". The box is left alone (a low obstacle is a fair
+  // thing for a test site to have); what is corrected is the claim.
+  put(  6, 0,  -3, 3, .40, 3, 0);   // 0.40 > MOVE.step 0.357: a WALL. The 0.35 platform below is not.
   put( 9.5, 0, -6, 3, 1.15, 3, 1);
   put( 13, 0,  -9, 3, 1.85, 3, 2);
   put( -7, 0,   4, 4, 2.6, 4, 3);
@@ -5937,6 +5969,9 @@ function bodySpawn(P, K, x, z) {
   const d = { K, root, model, mats, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff, flash: 0,
     st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, bumpT: 0, tauntN: 0, stepD: 0, stepL: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
+    // `undefined -= dt` is NaN and a NaN clock is a body that can never hop or dive again --
+    // silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time now.
+    stuckT: 0, hopT: 0, diveT: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
     // script running three times.
@@ -6402,6 +6437,31 @@ function foeAI(d, dt, t) {
     return;
   }
 
+  // **A HOP AND A DIVE ARE COMMITTED STATES THAT OWN NOTHING BUT A VELOCITY (m74).** Both set
+  // `d.vx/vy/vz` and hand the whole move to `bodyFly` -- the integrator the knock-down flight
+  // has used since m37 -- so there is no second physics path, the wall bounce, the ground stop
+  // and the landing thump all come with it, and what is added here is a clip and a clock.
+  // **AND THEY HAVE TO SIT ABOVE `foeWander`**, because that function ends with `foeMove`, which
+  // snaps `P.y` to the ground: walking and flying at once is a hop that never leaves the floor.
+  if (d.st === 'hop' || d.st === 'dive') {
+    const P = d.root.position;
+    const air = P.y > groundAt(P.x, P.z, P.y, .5) + .06;
+    if (d.st === 'dive') {
+      t[d.cur] = 1;
+      if (d.t >= K.dive.dur) { d.st = 'idle'; d.t = 0; d.cur = ''; }
+    } else {
+      // the air pose while he is off the ground, the launch clip either side of it -- `clips.air`
+      // is the same field m38 wrote for a body being thrown, doing the same job for a body that
+      // jumped
+      t[air && K.clips.air ? K.clips.air : d.cur] = 1;
+      // **THE MINIMUM IS WHAT STOPS IT ENDING ON THE FRAME IT BEGAN.** `bodyFly` runs at the TOP
+      // of `stepDummies`, so on the launch frame the velocity has not been integrated yet and he
+      // is still standing on the floor.
+      if (d.t > .12 && !air) { d.st = 'idle'; d.t = 0; d.cur = ''; }
+    }
+    return;
+  }
+
   // ---- free
   // **A PACIFIST NEVER PLANS A SWING, A GUARD OR A CIRCLE.** One branch, above everything that
   // decides how to fight, rather than a `if (!K.pacifist)` sprinkled through four of them.
@@ -6504,6 +6564,25 @@ function foeWander(d, dt, t, dd, toP) {
     setSkinScale(d, nm, clamp(sp / (K.clips.flee ? K.fleeRef : K.runRef), K.tsLo, K.tsHi));
     return;
   }
+  // **HE TRIES, THEN HE HOPS, THEN HE GOES SOMEWHERE ELSE (m74).** *"There was a really short
+  // little cube he just got stuck on -- he just indefinitely was kind of stuck, didn't know what
+  // to do. He needs to be able to jump up on things."* Both halves are the same detector:
+  // `foeMove` counts how long he has been asking to travel and not travelling, and the two
+  // thresholds are what he does about it. The ORDER is what makes it read as a creature: a hop
+  // first, and only when that has not helped does he give up on the point.
+  // **AND BOTH ARE GATED ON THE KIND'S OWN FIELDS**, so the drunks are byte-for-byte unchanged --
+  // a stuck drunk is a real bug too and it is a different build, not a free ride on this one.
+  if (K.hop && d.stuckT > K.hop.at && d.hopT <= 0) {
+    const gx = d.rx - d.root.position.x, gz = d.rz - d.root.position.z;
+    const h = Math.hypot(gx, gz) > 1e-3 ? Math.atan2(gx, gz) : d.h;
+    d.st = 'hop'; d.t = 0; d.h = h; d.hopT = K.hop.again; d.stuckT = 0;
+    d.cur = K.clips.jump || K.clips.idle;
+    skinPlay(d, d.cur, skinLen(d, d.cur) / K.hop.beat);
+    d.vy = K.hop.up; d.vx = Math.sin(h) * K.hop.fwd; d.vz = Math.cos(h) * K.hop.fwd;
+    return;
+  }
+  // it re-rolls through the ONE place that picks a point rather than inventing a second one
+  if (K.give && d.stuckT > K.give) { d.stuckT = 0; d.roamT = 1e-4; }
   // **AND A SIDEKICK'S RING IS ROUND YOU (m73, `K.pal`).** *"He just sort of follows you around
   // -- I want him to kinda wander a little bit and walk around a sort of radius around you."*
   // Every other word of that sentence is already `foeWander`: the ring, the stop, the look, the
@@ -6515,6 +6594,21 @@ function foeWander(d, dt, t, dd, toP) {
   // every frame, which is the m36 `hold`/`reach` lesson one body over.
   if (K.pal) {
     const cx = player.pos.x, cz = player.pos.z;
+    // **OUT OF THE LINE OF FIRE.** The cone is off `player.faceH`, which IS where the shot goes;
+    // `p.aim` is true for the charge AND for rapid fire, so one test covers both triggers. He
+    // dives PERPENDICULAR -- away from the line rather than away from you, which is the whole
+    // difference between getting clear and running down the barrel.
+    if (K.dive && d.diveT <= 0 && player.aim && dd < K.dive.range
+        && Math.abs(wrapAngle(toP + Math.PI - player.faceH)) < K.dive.cone) {
+      const side = Math.sign(wrapAngle(toP + Math.PI - player.faceH)) || 1;
+      const h = player.faceH + side * Math.PI / 2;
+      d.st = 'dive'; d.t = 0; d.h = h; d.diveT = K.dive.cool;
+      d.cur = K.clips.dive || K.clips.idle;
+      skinPlay(d, d.cur, skinLen(d, d.cur) / K.dive.dur);
+      d.vx = Math.sin(h) * K.dive.v; d.vz = Math.cos(h) * K.dive.v; d.vy = 0;
+      d.stuckT = 0;
+      return;
+    }
     if (d.catch && dd < K.leashIn) d.catch = 0;
     if (dd > K.leash) d.catch = 1;
     if (d.catch) {
@@ -6534,7 +6628,17 @@ function foeWander(d, dt, t, dd, toP) {
   if (d.roamT > 0) {
     d.roamT -= dt;
     if (d.roamT <= 0) {
-      const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * K.roam;
+      let a = Math.random() * Math.PI * 2;
+      // **THE RING HAS A HOLE IN IT WHERE YOU ARE POINTING (m74, `K.palArc`).** *"He goes in
+      // front of me a lot and then I just end up shooting him... stand off the side of me."*
+      // PUSHED to the nearer edge rather than re-rolled: a rejection loop is unbounded and a
+      // push is one line, and it also piles him up along the two edges of the arc, which IS
+      // "off the side of me" rather than "anywhere but in front".
+      if (K.palArc) {
+        const off = wrapAngle(a - player.faceH);
+        if (Math.abs(off) < K.palArc) a = player.faceH + (off >= 0 ? K.palArc : -K.palArc);
+      }
+      const r = Math.sqrt(Math.random()) * K.roam;
       d.rx = d.hx + Math.sin(a) * r; d.rz = d.hz + Math.cos(a) * r;
     }
     t[d.look && d.t < skinLen(d, d.look) ? d.look : d.rest || K.clips.idle] = 1;
@@ -6604,10 +6708,22 @@ function foeSwing(d, delay) {
 // rule that separates the player from all of them -- one description of a body taking up room.
 function foeMove(d, h, sp, dt) {
   const K = d.K, step = sp * dt;
-  _fp.set(d.root.position.x + Math.sin(h) * step, d.root.position.y, d.root.position.z + Math.cos(h) * step);
+  const x0 = d.root.position.x, z0 = d.root.position.z;
+  _fp.set(x0 + Math.sin(h) * step, d.root.position.y, z0 + Math.cos(h) * step);
   resolveBoxes(_fp, K.r, K.h * .9);
   d.root.position.x = _fp.x; d.root.position.z = _fp.z;
   d.root.position.y = groundAt(_fp.x, _fp.z, d.root.position.y, MOVE.step);
+  // **ASKED TO MOVE AND NOT MOVING IS THE ONLY HONEST STUCK TEST, AND IT BELONGS HERE (m74).**
+  // This is the one place a body is ever told to travel, so it is the one place that knows what
+  // was asked AND what was delivered -- and comparing the two needs nothing from the state
+  // machine, which is what makes it true of a wall, a kerb, another body or a corner alike.
+  // A detector every caller has to remember is not a detector.
+  if (step > 1e-4) {
+    const got = Math.hypot(d.root.position.x - x0, d.root.position.z - z0);
+    // **IT DECAYS FASTER THAN IT BUILDS**, so a body that scrapes past something forgets about
+    // it rather than carrying a grudge into the next corner.
+    if (got < step * .35) d.stuckT += dt; else d.stuckT = Math.max(0, d.stuckT - dt * 2);
+  }
 }
 
 // **AND THEY DO NOT STAND INSIDE EACH OTHER (m36).** *"They shouldn't be able to overlap each
@@ -6728,9 +6844,14 @@ function bodyFly(d, dt) {
   // far is a different change nobody asked for. The test is the STATE rather than a flag,
   // because the state IS the fact: `hit` and `block` mean he is on his feet reacting to a blow,
   // and `down`/`up` mean he is on the floor.
+  // **AND A LEAP IS NOT A SHOVE (m74, `K.leapDrag`).** A hop and a dive are arcs somebody CHOSE,
+  // solved against `flyG` for an apex and a distance -- so a drag on top of them makes the
+  // arithmetic a lie and lands him short of the thing he jumped at. `flyDrag` is right for a
+  // body that was THROWN and wrong for one that jumped. A kind with no `leapDrag` is untouched.
   const shove = d.st === 'hit' || d.st === 'block';
+  const leap = (d.st === 'hop' || d.st === 'dive') && K.leapDrag != null;
   const gDrag = shove ? (K.shoveDrag || K.knockDrag || K.flyDrag) : (K.knockDrag || K.flyDrag);
-  const k = Math.exp(-(air ? K.flyDrag : gDrag) * dt);
+  const k = Math.exp(-(leap ? K.leapDrag : air ? K.flyDrag : gDrag) * dt);
   d.vx *= k; d.vz *= k;
   const tx = P.x + d.vx * dt, tz = P.z + d.vz * dt;
   _fp.set(tx, P.y, tz);
@@ -6796,6 +6917,8 @@ function stepDummies(dt) {
     bodyFeet(d, Math.hypot(d.wvx || 0, d.wvz || 0), dt);
     d.t += dt;
     if (d.cool > 0) d.cool -= dt;
+    if (d.hopT > 0) d.hopT -= dt;
+    if (d.diveT > 0) d.diveT -= dt;
     const t = {};
     if (d.st === 'hit') {
       t[d.cur] = 1;
@@ -7007,8 +7130,15 @@ function frame() {
     const bk = p.block ? ' · BLOCK' : p.center ? ' · SQUARE' : '';
     const bx = BUILDINGS.length
       ? ' · BX' + BUILDINGS.reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) : '';
+    // **AND WHAT THE SIDEKICK IS DOING (m74).** "He got stuck", "he never jumped" and "he jumped
+    // and it did nothing" are three different bugs and one picture from a phone -- and the
+    // STUCK CLOCK is the one that tells them apart, because it is the thing both the hop and the
+    // give-up are triggered off. Silent while he is simply pottering about, `rollREC`'s rule.
+    const pal = DUMMIES.find(d => d.K.pal);
+    const cl = !pal ? '' : pal.st === 'hop' ? ' · HOP' : pal.st === 'dive' ? ' · DIVE'
+      : pal.stuckT > .2 ? ' · STUCK' + pal.stuckT.toFixed(1) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
