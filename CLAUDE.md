@@ -1040,6 +1040,75 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **ONE BOLT, ONE BODY -- AND THE CHAIN IS THE BETTER WAY TO PUT A CROWD DOWN (m78,
+  `WEAP.blastMax`).** *"I shoot it and it hits all three orc warrior aliens at the same time and
+  it's just cheap. Maybe the blast should only be able to hit one thing at a time? I do like the
+  idea of guys physically running into each other -- I shoot one, he goes flying, hits another."*
+  **m36 ASKED FOR THE OPPOSITE AND HE IS RIGHT TO TAKE IT BACK.** *"If I shoot a ball and it hits
+  in the general area of a few of them, that should hit more than one at a time"* is a perfectly
+  good idea that turns out to play as three men leaving the ground on one frame for one tap --
+  which is the whole of "cheap", and which no amount of varying the FLIGHT can rescue, because
+  the thing that reads wrong is the simultaneity and not the animation.
+  **AND THE SECOND HALF OF HIS MESSAGE IS THE REPLACEMENT.** `FLYHIT` (m63) already puts a crowd
+  down and does it **sequentially by construction**: a flyer bowls over the man he reaches, pays
+  `cost`, and carries on -- so the second man leaves a beat after the first and the third a beat
+  after him. That is the un-simultaneity being asked for, and it is already built. **The two
+  halves of his message solve each other**, which is why this is a cap rather than a new system.
+  **THE BUDGET COVERS THE DIRECT HIT TOO**, or a ball landing ON somebody would still splash a
+  second man and two would go over together -- which is the complaint at a smaller number. The
+  direct victim is already on `K.cool` and skipped either way, so this is purely about the COUNT.
+  **AND `dummyHit` TAKES THE NEAREST, NOT THE FIRST.** Unbudgeted it catches everyone in range,
+  which is what a melee sweep wants (m36's `hitAll`) and what every other caller has always had.
+  With a budget, **the order `DUMMIES` happens to be stored in would otherwise decide who dies** --
+  the same class of arbitrariness as a tiebreak that flips, and invisible until three men stand
+  in a line.
+  **THE REACH CAME DOWN WITH IT, WHICH IS THE JUDGEMENT HALF AND IS SAID AS ONE.** The cap is
+  what answers his complaint; 4 m to catch ONE man is still "I did not aim at him and he died":
+      full charge   ball .95 + blast 2.60 + warrior .46  =  **4.01 m**  ->  3.01 m
+      fumble                .225 + .55 + .46 = 1.24      ->  1.04 m
+      the DIRECT hit in flight, 1.41 m at a full charge  ->  **untouched** (m56, m70)
+  `mel.WEAP.blastMax = 9` is the one word back to m36 and `mel.WEAP.blast1` is the other dial.
+- **AND NO TWO MEN FLY THE SAME WAY (m78, `FLAIL`).** *"Is there any way to make their flail in
+  the air unique somehow. I shoot all three, they all go flying at the exact same time and do the
+  exact same animation timed exactly the same, so it looks repetitive."* Three separate things
+  were shared, and m50 had already fixed the two on the far side of them -- the LIE and the
+  GET-UP are rolled per body and have been since *"they all get up at the exact same time"*. The
+  FLIGHT never was.
+      beat   the fall clip played at `K.downBeat` exactly, so two men hit the same pose on the
+             same frame. `d.downB` now, rolled at the knock-down, and **read by the state length
+             as well as the clip scale** -- the m8 landmine, which is precisely what a per-body
+             beat walks into. `downVary` [.80, 1.25] on `downBeat` 1.5 is 1.20 s to 1.88 s.
+      arc    and the launch `k` was a pure function of `power`, so two men blown by one event
+             left on IDENTICAL trajectories and landed on the same frame. That is the one that
+             matters, because **a clip rate cannot change when he arrives**: `flyVary`
+             [.86, 1.16] on the warrior's `flyUp` 8.5 gives 7.31 to 9.86 m/s up, an apex of 1.34
+             to 2.43 m and a hang time of 0.73 to 0.99 s -- so two men launched on the same frame
+             land as much as **a quarter of a second apart**, which is fifteen frames.
+      spin   a tumble about his own axis. There is ONE fall clip per direction and no amount of
+             rolling numbers makes one clip into two, so what is left is to turn him while he is
+             in the air -- which is what "flail" reads as and is the cheapest thing on screen.
+             Up to 5 rad/s, about two thirds of a turn over a typical flight.
+  **THE BOTTOM OF THE SPIN RANGE IS ZERO ON PURPOSE.** A man who simply goes over backwards is
+  one of the ways this should read, and **a street where everybody spins is as uniform as a
+  street where nobody does** -- which is the m50 lesson stated forwards.
+  **IT IS A PROPERTY OF THE EVENT, NOT OF A KIND**, so `FLAIL` sits beside `FLYHIT` and every
+  body gets it, `PALMARK`'s own argument. A kind may still name its own `downVary`/`flyVary`.
+  **THE TUMBLE LIVES IN `bodyFly` BECAUSE THAT IS THE ONE PLACE THAT KNOWS HE IS IN THE AIR** --
+  `d.stuckT`-in-`foeMove`'s own argument -- and it is an OFFSET on top of `d.h` rather than a
+  write to it, so the brain's bearing is untouched and the get-up still faces where `d.back` says.
+  **AND IT IS WRAPPED BEFORE IT IS UNWOUND.** A long flight banks several turns and damping THAT
+  to zero is a visible spin-up on a man lying still; wrapped to half a turn on landing, what is
+  left reads as settling and is gone long before the get-up starts.
+  **`bodyFly`'s EARLY RETURN HAD TO LEARN ABOUT IT**, which was a real bug and not a detail: the
+  velocity is zeroed the moment he settles, so `if (!vx && !vz && !vy) return` fires on the very
+  next frame -- the tumble freezes where it stopped, and he lies on the floor at an angle and
+  then STANDS UP at that angle. A state that needs a per-frame step has to keep its stepper alive.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin, so whether a
+  tumbling man reads as a flail or as a bug is a device question, and so is whether one body per
+  bolt now feels weak. The arithmetic -- the hang times, the apexes, the blast reaches and the
+  budget -- is above and was. `mel.FLAIL.spin = [0, 0]` turns the tumble off alone;
+  `mel.FLAIL.flyVary = [1, 1]` and `mel.FLAIL.downVary = [1, 1]` are the other two A/Bs.
+
 - **AN ORC SWINGS AT THE LITTLE GUY, AND THE WHOLE BRAIN FOLLOWED ONE PAIR OF NUMBERS (m77,
   `foeTarget`, `K.foePal`, `K.hitPow`, `d.sfoe`).** *"Let's have the warrior orcs also swing at
   the little guy and hit him. Send him in the air."*

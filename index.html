@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m77</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m78</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m77</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m78</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm77';
+const BUILD = 'm78';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -990,8 +990,19 @@ const WEAP = {
   ball0: .45, ball1: 1.90,          // metres across, fumble to full. *"Still isn't big enough."*
   palBlast: .30,                    // ...but a FRIEND catches only this much of it (m76). The
                                     // DIRECT hit is unscaled: aiming at him still hits him.
-  blast0: .55, blast1: 2.60,        // how far from the IMPACT POINT a body is caught. Spent
+  // **A BOLT ACCOUNTS FOR ONE BODY (m78).** *"I shoot it and it hits all three orc warrior
+  // aliens at the same time and it's just cheap. Maybe the blast should only be able to hit one
+  // thing at a time?"* m36 asked for the opposite and he is right to take it back: three men
+  // launched on one frame by one tap is the whole of "cheap", and **the CHAIN is the better way
+  // to put a crowd down** -- a flying body bowling the next one over is sequential by
+  // construction, which is the un-simultaneity he is asking for and is the half he says he likes.
+  // `mel.WEAP.blastMax = 9` is the one word back to m36.
+  blastMax: 1,                      // how many bodies ONE bolt may account for, direct + splash
+  blast0: .35, blast1: 1.60,        // how far from the IMPACT POINT a body is caught. Spent
                                     // where the ball lands, never swept down the flight -- see m56
+                                    // **SMALLER TOO**: a full charge reached 4.01 m with his own
+                                    // radius, which is "I did not aim at him and he died" even
+                                    // with the count capped. 3.01 m now.
   // **AND A FULL CHARGE SENDS THEM FLYING WHATEVER THEIR HEALTH SAYS.** `FOE.hard` is
   // unreachable on purpose so DAMAGE is what puts a warrior down -- which is right for a fist
   // and wrong for the biggest shot in the game. `fling` is the power at which a blow launches
@@ -2190,6 +2201,23 @@ const BODYSND = {
 // (`FOE.fling` .70 is crossed around 14 m/s) and a light knock merely stagger him. `cost` is
 // what the flyer pays for it, so a body cannot scythe through a crowd.
 const FLYHIT = { at: 6, full: 22, pow0: .34, pow1: 1.0, cost: .42, bounce: .45 };
+// **AND NO TWO MEN FLY THE SAME WAY (m78, `FLAIL`).** *"I shoot all three, they all go flying at
+// the exact same time and do the exact same animation timed exactly the same, so it looks
+// repetitive."* Three separate things were shared and each one had to be rolled:
+//   beat   the fall clip played at `K.downBeat` exactly, so two men hit the same pose on the
+//          same frame. m50 already rolled the LIE and the GET-UP and simply never reached this.
+//   arc    and the launch `k` was a pure function of `power`, so two men blown by one event left
+//          on identical trajectories and LANDED on the same frame -- which is most of it, because
+//          the clip rate alone cannot change when he arrives.
+//   spin   a tumble about his own axis. There is one fall clip per direction and no amount of
+//          rolling numbers makes one clip into two, so what is left is to turn him while he is
+//          in the air -- which is what "flail" reads as and is the cheapest thing on screen.
+// **IT IS A PROPERTY OF THE EVENT, NOT OF A KIND**, so it lives here beside `FLYHIT` and every
+// body gets it -- `PALMARK`'s own argument. A kind may still override `downVary`/`flyVary`.
+// **AND THE SPIN IS WRAPPED BEFORE IT IS UNWOUND.** A long flight can bank several turns, and
+// damping THAT to zero is a visible spin-up on a man lying still; wrapped to half a turn on
+// landing, what is left reads as settling. It is gone long before the get-up starts.
+const FLAIL = { downVary: [.80, 1.25], flyVary: [.86, 1.16], spin: [0, 5.0], settle: 4.5 };
 // **HOW LONG A BODY YOU HIT STAYS INTERESTING TO A SIDEKICK (m75).** It is a property of the
 // EVENT rather than of any one pal, so it lives here and not on a kind's table -- a second
 // sidekick tomorrow reads the same mark and there is nothing to keep in step.
@@ -3823,7 +3851,7 @@ function stepBolts(dt) {
       if (!dead) {
         const got = dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                              WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
-                             b.auto ? WEAP.autoR : b.size * .5, FOE.dmg.bolt);
+                             b.auto ? WEAP.autoR : b.size * .5, FOE.dmg.bolt, 0, WEAP.blastMax);
         if (got) { dead = true; b.onMan = got; }
       }
       if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
@@ -3876,9 +3904,13 @@ function stepBolts(dt) {
       // the impact and a crowd goes over together. What changed is that you have to LAND it
       // first. The man the ball hit directly is already on `K.cool`, which `dummyHit` skips,
       // so nobody is blown twice and that needed no case of its own.
-      const hitBodies = dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
+      // **AND THE DIRECT HIT SPENDS FROM THE SAME BUDGET (m78)**, so a ball that landed ON
+      // somebody does not then splash a second man: one bolt, one body. The direct victim is
+      // already on `K.cool` and skipped either way, so this is only about the COUNT.
+      const budget = WEAP.blastMax - (b.onMan ? 1 : 0);
+      const hitBodies = budget > 0 ? dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                                  WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
-                                 b.size * .5 + b.blast, FOE.dmg.bolt, WEAP.palBlast);
+                                 b.size * .5 + b.blast, FOE.dmg.bolt, WEAP.palBlast, budget) : 0;
       const onMan = b.onMan || hitBodies;
       // **AND IT IS A DIFFERENT BANK, NOT A DIFFERENT GAIN (m63).** `onMan` has been telling
       // these two events apart since m58; his own two recordings are what it now picks. A
@@ -6022,6 +6054,7 @@ function bodySpawn(P, K, x, z) {
     // `undefined -= dt` is NaN and a NaN clock is a body that can never hop or dive again --
     // silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time now.
     stuckT: 0, hopT: 0, diveT: 0, mark: 0, lane: 0, foe: null, foeT: 0, sfoe: null,
+    spin: 0, spinW: 0, downB: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
     // script running three times.
@@ -6318,17 +6351,24 @@ function strikeSweep(dt, power, live, dmg) {
 // reaches 3.55 m from the impact, which is further than a dive can carry him, so he could get
 // clear of the line and still be caught by a shot that landed on somebody else. **Clearing the
 // shot has to be able to work**, and at `palBlast` .30 it does -- 1.35 m rather than 3.83.
-function dummyHit(x, z, dirH, power, reach, dmg, palK) {
-  let hit = 0;
+// **AND `maxN` IS HOW MANY OF THEM IT MAY TAKE (m78).** Absent, it catches everyone in range,
+// which is what a melee sweep wants (m36's `hitAll`) and what the officer's own callers have
+// always had. Set, it takes the NEAREST that many -- **nearest, not first in the list**, because
+// with a budget the order the bodies happen to be stored in would otherwise decide who dies,
+// which is the same class of arbitrariness as a tiebreak that flips.
+function dummyHit(x, z, dirH, power, reach, dmg, palK, maxN) {
+  const near = [];
   for (const d of DUMMIES) {
     if (d.cool > 0) continue;
     const rr = reach * (palK && d.K.pal ? palK : 1) + d.K.r;
     const dx = d.root.position.x - x, dz = d.root.position.z - z;
-    if (dx * dx + dz * dz > rr * rr) continue;
-    if (!hit) hit = d;
-    dummyBlow(d, dirH, power, dmg);
+    const q = dx * dx + dz * dz;
+    if (q > rr * rr) continue;
+    near.push({ d, q });
   }
-  return hit;
+  if (maxN != null) { near.sort((a, b) => a.q - b.q); near.length = Math.min(near.length, Math.max(0, maxN)); }
+  for (const n of near) dummyBlow(n.d, dirH, power, dmg);
+  return near.length ? near[0].d : 0;
 }
 
 // WHAT A LANDED BLOW DOES TO ONE MAN. Split out of `dummyHit` because there are two ways to
@@ -6376,7 +6416,7 @@ function dummyBlow(d, dirH, power, dmg, pal) {
     d.vz = Math.cos(dirH) * K.flyV * .35 * power;
     d.vy = K.flyUp * .30 * power;
     bodyWhoosh(d);
-    d.t = Math.min(d.t, K.downBeat);
+    d.t = Math.min(d.t, d.downB || K.downBeat);
     return;
   }
   // **A GUARD IS WORTH SOMETHING OR IT IS AN ANIMATION.** Blocking does not stop a blow, it
@@ -6424,12 +6464,22 @@ function dummyBlow(d, dirH, power, dmg, pal) {
   const lo = Math.min(K.hard, K.fling !== undefined ? K.fling : K.hard);
   const t = clamp((power - lo) / Math.max(.01, 1 - lo), 0, 1);
   const k = K.fly0 !== undefined ? K.fly0 + (1 - K.fly0) * t * t : .55;
-  d.vx = Math.sin(dirH) * K.flyV * k;
-  d.vz = Math.cos(dirH) * K.flyV * k;
-  d.vy = K.flyUp * k;
+  // **EVERY MAN GETS HIS OWN ARC AND HIS OWN CLOCK (m78).** Rolled HERE rather than at spawn, so
+  // the same three do not fly the same way twice -- m50's own rule, one event earlier.
+  const fk = k * rnd(K.flyVary || FLAIL.flyVary);
+  d.vx = Math.sin(dirH) * K.flyV * fk;
+  d.vz = Math.cos(dirH) * K.flyV * fk;
+  d.vy = K.flyUp * fk;
+  // a TUMBLE, sign random, and the bottom of the range is zero on purpose: a man who simply goes
+  // over backwards is one of the ways this should read, and a street where everybody spins is as
+  // uniform as a street where nobody does.
+  d.spinW = rnd(FLAIL.spin) * (Math.random() < .5 ? -1 : 1);
   bodyWhoosh(d);
   d.cur = d.back ? K.clips.downB : K.clips.downF;
-  skinPlay(d, d.cur, skinLen(d, d.cur) / K.downBeat);
+  // **AND THE BEAT IS READ BY BOTH THE CLIP AND THE STATE**, or the state cuts its own clip off
+  // part-way -- the m8 landmine, which is exactly what a per-body beat walks into.
+  d.downB = K.downBeat * rnd(K.downVary || FLAIL.downVary);
+  skinPlay(d, d.cur, skinLen(d, d.cur) / d.downB);
   // **NOBODY GETS UP ON THE SAME FRAME (m50).** *"If I shoot them all three down at the same
   // time they all get up at the exact same time. I think we should stagger it by a different
   // small amount so that it feels more random."* `K.out` was a CONSTANT, so three men knocked
@@ -7053,7 +7103,10 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
 function bodyFly(d, dt) {
   const K = d.K, P = d.root.position;
   if (d.bumpT > 0) d.bumpT -= dt;
-  if (!d.vx && !d.vz && !d.vy) return;
+  // **AND `d.spin` HAS TO KEEP THIS FUNCTION ALIVE.** The velocity is zeroed the moment he
+  // settles, so without it the early return fires on the very next frame and the tumble freezes
+  // where it stopped -- a man lying on the floor at an angle, who then stands up at that angle.
+  if (!d.vx && !d.vz && !d.vy && !d.spin) return;
   const gy = groundAt(P.x, P.z, P.y, .5);
   const air = P.y > gy + .02 || d.vy > 0;
   if (air) d.vy -= K.flyG * dt;
@@ -7118,6 +7171,16 @@ function bodyFly(d, dt) {
       break;
     }
   }
+  // **THE TUMBLE LIVES IN `bodyFly` BECAUSE THIS IS THE ONE PLACE THAT KNOWS HE IS IN THE AIR**
+  // -- the same argument `d.stuckT` is in `foeMove` under. It is an OFFSET on top of `d.h`, so
+  // the brain's own bearing is untouched and the get-up faces where `d.back` says it should.
+  if (d.spinW) {
+    if (air) d.spin = (d.spin || 0) + d.spinW * dt;
+    else { d.spinW = 0; d.spin = wrapAngle(d.spin || 0); }
+  } else if (d.spin) {
+    d.spin *= Math.exp(-FLAIL.settle * dt);
+    if (Math.abs(d.spin) < .01) d.spin = 0;
+  }
   const g2 = groundAt(P.x, P.z, P.y, .5);
   if (d.vy <= 0 && P.y <= g2 + .04) {
     // **AND THE GROUND IS THE THIRD (m62).** It goes HERE, where the flight is actually ended,
@@ -7158,7 +7221,7 @@ function stepDummies(dt) {
       // a branch about who is flying.
       const air = K.clips.air && d.root.position.y > groundAt(d.root.position.x, d.root.position.z, d.root.position.y, .5) + .25;
       t[air ? K.clips.air : d.cur] = 1;
-      if (d.t >= K.downBeat + (d.lie != null ? d.lie : K.out)) {
+      if (d.t >= (d.downB || K.downBeat) + (d.lie != null ? d.lie : K.out)) {
         // ONE OF THE FOUR COMBINATIONS CAN BE AUTHORED THE OTHER WAY ROUND, AND IT WAS MEASURED
         // rather than guessed: on the officer's export `knock_down_front` ENDS 174 degrees from
         // where `get_up_front` starts, while the back pair agrees to 14. So the front pair needs
@@ -7192,7 +7255,7 @@ function stepDummies(dt) {
     }
     skinWeights(d, t, dt, .06, K.clips.idle);
     d.mixer.update(dt);
-    d.root.rotation.y = d.h + d.faceOff;
+    d.root.rotation.y = d.h + d.faceOff + (d.spin || 0);
     stepFlash(d, dt);
     if (d.bar) foeBarStep(d, dt);
   }
