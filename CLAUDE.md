@@ -1019,6 +1019,61 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A RAPID ROUND WAS THE LEAST ACCURATE THING IN THE GAME, AND ITS PICTURE IS WHY (m70,
+  `WEAP.autoR`).** *"The impact noise from the rapid fire blaster doesn't quite play the same
+  sound as the charge blaster. Obviously the charge should be more intense, but I feel like
+  they're maybe doing different stuff -- it's just kind of this pitter patter thing, it doesn't
+  really feel like you're fully hitting him."* **His instinct was right and it is not a mix
+  problem.** m56 tied the in-flight test to the visible BALL, which is exactly right for a
+  charge shot -- the ball IS the thing, so what you see is what you hit -- and a rapid round's
+  ball is small ON PURPOSE:
+      full charge   ball 1.90 across  ->  .95 + warrior .46  =  **1.41 m** of forgiveness
+      rapid round   ball 0.68         ->  .34 + .46          =  **0.80 m**, 43% less
+  So a stream aimed at a man passes wide of him far more often than a cannonball does, flies on,
+  and dies on the tarmac behind him -- **which plays the `plasma` bank rather than `pbody`, and
+  does no damage.** That is "not the same sound" LITERALLY: a good fraction of the time it is a
+  different bank, because a good fraction of the time you are not hitting him. `autoR` .60 puts
+  it at 1.06 m, between a fumble and a full charge.
+  **AND IT IS NOT m56's CORRIDOR COMING BACK.** That was `size * .5 + blast` = 4.01 m swept down
+  a sixty-metre shot, with no impact to measure from; this is one round's own body, a quarter of
+  that, and the full charge is untouched at 1.41. **The ball stays the picture for everything
+  that HAS a meaningful ball; a round whose picture is a tracer needs its own number.**
+- **AND NINE IMPACTS A SECOND WITH A 0.27 s TAIL ARE ALWAYS THREE DEEP (m70, `PUNCH.autoTail`).**
+  The other half of "pitter patter", and it is not that each round is quiet -- measured, a rapid
+  impact is already **77% of a full charge's gain**. It is that `PUNCH.dec` .17 stops at
+  `dec * 1.6` = **.272 s** against a round every `WEAP.autoRate` .11, so **2.5 impacts overlap at
+  all times**: the tails sum into a continuous wash and not one of the ATTACKS stands out of it.
+  **No round has anywhere to land.**
+      tail was   0.272 s  ->  2.5 deep
+      tail now   0.109 s  ->  0.99 deep
+  **THE TAIL IS DERIVED FROM THE ROUND INTERVAL, NOT PICKED.** `autoRate * .62` is one impact per
+  round BY CONSTRUCTION and follows if the fire rate is ever retuned; a number typed here would
+  silently stop fitting the first time `autoRate` moved. `autoG` 1.14 lifts the PEAK to pay for
+  the shorter tail, which is the same trade `cut` makes at m59 -- an impact is a transient, and
+  what carries it is the front, not the length.
+  **AND `pbody` IS TWO FILES AT NINE A SECOND**, which is a recognisable loop inside a second --
+  m62 wrote that rule about seven grunts and it had never been applied here. `autoJit` .09.
+- **A LAYER THAT SAYS "PLATE" ONCE IS WEIGHT; NINE A SECOND IS A SECOND DRUM (m70,
+  `HITSND.ringGap`).** m64's ring is a deliberate blow's second source, and under rapid fire it
+  fired on **every round** -- so two short percussive layers at 9 Hz each, which is rain rather
+  than an impact. It is thinned to `ringGap` .30 under auto and untouched everywhere else: a
+  charge shot, a fist and a hammer all still ring on every blow.
+  **ITS OWN INTERVAL RATHER THAN `SFX.gap`**, because what is wrong here is musical and not a
+  voice budget -- .045 would let all nine through and changing the global would thin every clang
+  in the game. And `thin` is a parameter rather than a read of the mode, so the one caller that
+  knows it is a stream is the one that asks for it.
+- **AND THE FOOTSTEPS WERE PLAYING THROUGH THE ROLL, WHICH IS WHERE `stepFeet` IS CALLED (m70).**
+  *"The footsteps are way better. Now we need to make sure when he rolls he's not playing
+  footsteps, because it currently is."* `stepFeet` is the FIRST line of `stepPlayer`, above the
+  branch that owns the body -- so a roll, a lunge, a dash and a get-up all covered ground and all
+  counted footfalls, and a dodge roll at `MELEE.rollV` is the fastest of them.
+  **THE GAIT IS THE ONLY THING WITH FEET IN IT.** Everything in that list is a clip of a man
+  doing something that is not walking, which is `bodyFeet`'s own `d.st !== 'idle'` test pointed
+  at the player -- and it is the fourth time in this file that "when a feature does something
+  wrong, check WHERE it is called before what it does".
+  **The phase carries through rather than being zeroed**, so the first step out of a roll is not
+  instant -- m64's own rule, which is exactly what a reset here would have broken.
+
 - **A LOOPING CLIP THAT TRAVELS TELEPORTS AT ITS LOOP POINT (m69, `deDrift`).** *"He's like
   walking, most of his locomotion and animations go well, but then every now and again he'll walk
   to the side and then teleport like 5 feet back to where he was. I don't know what causes this,

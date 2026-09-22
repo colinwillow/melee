@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m69</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m70</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m69</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m70</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm69';
+const BUILD = 'm70';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -989,6 +989,18 @@ const WEAP = {
   hitK: .45,
   autoRate: .11,     // seconds between rounds in `rapid`
   autoChg: .16,      // and what each one is worth -- a fumble's power, fired eight times a second
+  // **AND ITS REACH IS ITS OWN, BECAUSE ITS PICTURE IS DELIBERATELY SMALL (m70).** m56 tied the
+  // in-flight test to the visible BALL, which is exactly right for a charge shot -- the ball is
+  // the thing, so what you see is what you hit. A rapid round's ball is small ON PURPOSE (it is
+  // a machine gun) and that quietly made it the least accurate thing in the game:
+  //     full charge   ball 1.90 across -> .95 + warrior .46 = **1.41 m** of forgiveness
+  //     rapid round   ball 0.68        -> .34 + .46         = **0.80 m**, 43% less
+  // So a stream aimed at a man passes wide of him far more often than a cannonball does, flies
+  // on, and dies on the tarmac somewhere behind -- which plays the `plasma` bank instead of
+  // `pbody` and does no damage. **That is the "not quite the same sound" and the "doesn't feel
+  // like you're hitting him" in one number**, and it is not a mix problem.
+  autoR: .60,        // -> 1.06 m, between a fumble and a full charge. Not m56's corridor: that
+                     // was 4.01 m swept down a sixty-metre shot, and this is a round's own body
   // **OFF (m42).** *"I take back what I said about the ball from the blaster curving to hit
   // targets. Let's silence that."* So the blaster has NO assist of any kind now: m36 took the
   // reticle's lock off because a mark that moves where you are pointing takes the aim off your
@@ -1943,6 +1955,7 @@ const SFX = {
 // harder and brighter on plate, duller and lower on a man in a coat. `metal_clang_01..03` stay
 // loaded and unused, so `mel.snd('clang')` is still the A/B.
 const HITSND = {
+  ringGap: .30,     // the least time between two rings under rapid fire -- see `hitRing`
   hard: { key: 'hit', g: .98, r: 1.00, dur: 0, ring: { g: .52, r: 1.30 } },   // armoured
   soft: { key: 'hit', g: .92, r: .88,  dur: 0 },                              // flesh
 };
@@ -1954,9 +1967,18 @@ const HITSND = {
 // still a fact about the MAN: plate rings and a drunk in a coat does not, and putting a ring on
 // one is a field on his row. It is quieter and higher than the clang ever was on its own,
 // because it is no longer carrying the impact by itself.
-function hitRing(K, w, x, z) {
+let _ringT = 0;
+function hitRing(K, w, x, z, thin) {
   const R = (HITSND[(K && K.snd) || 'hard'] || HITSND.hard).ring;
   if (!R) return;
+  // a deliberate blow always rings; a STREAM of them rings at a rate you can still hear as
+  // separate events. `now` rather than a dt clock, because this is called from three places
+  // and none of them is a step function.
+  if (thin) {
+    const t = SFX.ctx ? SFX.ctx.currentTime : 0;
+    if (t - _ringT < HITSND.ringGap) return;
+    _ringT = t;
+  }
   snd('clang', { g: R.g * w, r: R.r * (1 + (Math.random() - .5) * .12), x, z });
 }
 // **WHAT A BODY ITSELF SOUNDS LIKE (m62).** Three events that `HITSND` has nothing to say
@@ -2103,7 +2125,16 @@ function stepFeet(dt) {
   const p = player;
   // **ON THE GROUND ONLY, and the phase is KEPT while he stands still** -- zeroing it would
   // make the first step of every start instant, so a jiggled stick is a burst of footfalls.
-  if (!STEP.on || !p.grounded || p.speed < STEP.at) return;
+  // **AND ONLY WHEN HE IS WALKING (m70).** *"When he rolls he's not playing footsteps because
+  // it is currently."* Right, and it is WHERE this is called: `stepFeet` is the first line of
+  // `stepPlayer`, ABOVE the branch that owns the body -- so a roll, a lunge, a dash and a
+  // get-up all covered ground and all counted footfalls, and a dodge roll at `MELEE.rollV` is
+  // the fastest of them. **The gait is the only thing with feet in it**: everything in this
+  // list is a clip of a man doing something that is not walking, which is `bodyFeet`'s own
+  // `d.st !== 'idle'` test pointed at the player. The phase carries through, so the first step
+  // out of a roll is not instant.
+  if (!STEP.on || p.roll || p.melee || p.chargeGo || p.knock || p.land) return;
+  if (!p.grounded || p.speed < STEP.at) return;
   p.stepD += p.speed * dt;
   const L = strideNow(p.speed);
   if (p.stepD < L) return;
@@ -2283,6 +2314,17 @@ const PUNCH = {
   floor: .46,       // landing on tarmac -- the same event, and not the same event
   chg: .30,         // how much louder a full charge lands
   rate: -.20,       // and how much LOWER, which is what reads as heavier
+  // **AND NINE IMPACTS A SECOND WITH A 0.27 s TAIL ARE ALWAYS THREE DEEP (m70).** `dec` .17
+  // stops at `dec * 1.6` = .272 s against `WEAP.autoRate` .11 -- so under rapid fire two and a
+  // half impacts overlap at all times, the tails sum into a continuous wash and not one of the
+  // ATTACKS stands out of it. That is the "pitter patter" precisely: it is not that each round
+  // is quiet, it is that no round has anywhere to land.
+  // **THE TAIL IS DERIVED FROM THE ROUND INTERVAL, NOT PICKED** -- `autoRate * .62` puts the
+  // stop at .068 * 1.6 = .109 s, one impact per round by construction, and it follows if the
+  // fire rate is ever retuned. A number typed here would silently stop fitting.
+  autoTail: .62,
+  autoG: 1.14,      // a shorter tail carries less, so the PEAK comes up to meet it
+  autoJit: .09,     // and `pbody` is TWO files at nine a second -- m62's rule, unapplied here
 };
 function plasmaPick(chg, auto) {
   const n = (SFX.buf.plasma || SFX.files.plasma || []).length;
@@ -3463,7 +3505,7 @@ function fireBolt(chg) {
   const g = glowBall(size);
   g.position.copy(m);
   scene.add(g);
-  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size,
+  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size, auto: autoNow() ? 1 : 0,
                blast: lerp(WEAP.blast0, WEAP.blast1, chg) });
 }
 // **THE ASSIST IS ON THE SHOT NOW, NOT ON THE AIM (m36).** *"No aim assist like with the
@@ -3605,7 +3647,7 @@ function stepBolts(dt) {
       if (!dead) {
         const got = dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                              WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
-                             b.size * .5, FOE.dmg.bolt);
+                             b.auto ? WEAP.autoR : b.size * .5, FOE.dmg.bolt);
         if (got) { dead = true; b.onMan = got; }
       }
       if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
@@ -3666,10 +3708,20 @@ function stepBolts(dt) {
       // these two events apart since m58; his own two recordings are what it now picks. A
       // fumble is still quieter and a full charge still lower, so the charge reads either way.
       if (onMan) {
-        snd('pbody', { cut: 1, att: PUNCH.att, dec: PUNCH.dec,
-                       g: PUNCH.man + b.chg * PUNCH.chg, r: 1.00 + b.chg * PUNCH.rate });
-        // and a bolt landing on plate rings too, which is the other half of his sentence
-        hitRing(onMan.K, .55 + b.chg * .45, onMan.root.position.x, onMan.root.position.z);
+        // an auto round is a TICK and a charge shot is a BLOW -- same bank, and the envelope is
+        // what separates them rather than a second recording
+        const aut = b.auto;
+        snd('pbody', { cut: 1, att: PUNCH.att,
+                       dec: aut ? Math.min(PUNCH.dec, WEAP.autoRate * PUNCH.autoTail) : PUNCH.dec,
+                       g: (PUNCH.man + b.chg * PUNCH.chg) * (aut ? PUNCH.autoG : 1),
+                       r: (1.00 + b.chg * PUNCH.rate)
+                          * (aut ? 1 + (Math.random() - .5) * PUNCH.autoJit : 1) });
+        // and a bolt landing on plate rings too, which is the other half of his sentence.
+        // **THINNED UNDER RAPID FIRE**: the ring is a LAYER that says "this landed on plate",
+        // and one of those per blow reads as weight while nine a second is a second drum on
+        // top of the first. `HITSND.ringGap` is its own interval rather than `SFX.gap`,
+        // because what is wrong here is musical rather than a voice budget.
+        hitRing(onMan.K, .55 + b.chg * .45, onMan.root.position.x, onMan.root.position.z, aut);
       }
       else snd('plasma', { i: plasmaPick(b.chg, 0), cut: 1, att: PUNCH.att, dec: PUNCH.dec,
                            g: PUNCH.floor + b.chg * PUNCH.chg, r: 1.14 + b.chg * PUNCH.rate });
