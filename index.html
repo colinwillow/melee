@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m79</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m80</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m79</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m80</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,9 +450,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm79';
+const BUILD = 'm80';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1667,6 +1667,104 @@ const HOBO = {
   flyV: 25.0, flyUp: 8.8, flyG: 20, flyDrag: 1.15,
   knock: 4.2, knockUp: .6, knockDrag: 5.5, shoveDrag: 2.2,
   hard: 1.01,        // damage puts him down, not one big blow -- the warrior's rule
+  fling: .55,
+  fly0: .45,
+  dmg: { bolt: 1.6, fist: .9, weap: 1.4, finish: 3.0 },
+  cool: .16,
+  sep: .85,
+  bar: { w: .8, h: .09, up: 1.20, fade: 4.0 },
+};
+
+// ============================================================================================
+// THE SKATER -- A KIND IS A TABLE, AND THIS ONE IS THE CHEAPEST YET (m80)
+//
+// *"Hey I just added a alien roller skate blue model, can you add her to the game as an NPC?"*
+//
+// **SHE IS THE HICK'S BRAIN WITH A DIFFERENT SET OF CLIPS**, which is the fifth time `d.K` has
+// paid for itself: the bolt, the swept limb, `bodyFly`, `bodySep`, `dummyBlow`, the player's own
+// resolver and `foeWander` all reach anything in `DUMMIES`, so an NPC is a TABLE and one load
+// line. No builder worth the name, no second brain, nothing to keep in step.
+//
+// MEASURED BEFORE A LINE WAS WRITTEN (`npm run rig`, `npm run gait`) -- and she reads clean:
+//     1 mesh / 1 material / 1 texture, 67 nodes, draco + EXT_texture_webp + specular
+//     authored height 0.9995 m, soles at EXACTLY 0   -> x1.681 to stand 1.68 m
+//     toes (0.0000, 1.0000), shoulders cross-check 1.0000   -> +Z, like everyone else here
+//     NO weapon mounts, which is right -- an NPC, not a wearer
+//     13 clips, `CINEMA_4D_Main` being the usual one-frame residue
+//     idle    reads 0.002 m/s   <- THE CONTROL. A gait measurement with no case that must come
+//                                  back zero is a gait measurement nobody can trust.
+//     walking 0.807 authored, feet AGREE   -> walkRef .81
+//     running 2.005, **feet disagree 25%** (L 2.26, R 1.75) -> runRef 2.00, and the asymmetry
+//                                  is real and in the clip. If her run ever reads limpy, that
+//                                  is why. Reported rather than quietly averaged away.
+//
+// **HER TURN CLIPS ARE HER HIT REACTIONS, AND ON SKATES THAT IS A DEFENSIBLE READ RATHER THAN A
+// SHORTCUT.** She has no `hit_*`, no fall and no get-up -- this export is locomotion and nothing
+// else. On the hick a turn plays as a stumble because he is drunk; on a body ON WHEELS a blow
+// that spins her round is what actually happens, and m78's `FLAIL.spin` already tumbles her in
+// the air on top of it. Said out loud because it is a judgement: the honest fix is drawn poses.
+//
+// **AND THE FALL AND THE GET-UP ARE NAMED AND EMPTY**, m38's pattern: the STATES run either way
+// -- she flies, lands, lies there, gets up and runs off -- and naming a clip later is one string
+// with no branch to add anywhere.
+//
+// **SHE IS NOT GIVEN A `flee` CLIP, WHICH IS ONE FEWER THING TO KEEP IN STEP.** `foeWander` reads
+// `K.clips.flee || K.clips.run` and picks `fleeRef` or `runRef` to match, so naming `running`
+// twice would be two fields describing one clip. The fleeing read comes from `flee` being the
+// fastest SPEED on the table; `tsHi` caps how far past its own reference the clip is pushed.
+//
+// NOTHING USES `left/right_strafe`, `left/right_strafe_walking` or `jump` beyond the air pose --
+// a pacifist never circles, so no strafe is named. They cost nothing until they are.
+const SKATER = {
+  // LEFT WHERE HE PUT IT (`models/`, not `models/characters/`). That folder is already in
+  // `bump.mjs`'s `DIRS`, so `A()` hashes her contents and a re-export under the same name
+  // actually arrives on his phone. A tidy-up here is a 404 the next time he drops the file in.
+  file: 'models/alien_rollerskate_blue.glb',
+  // A look-at-it number: plainly taller than the player's 1.25 and plainly under the orcs' 1.85,
+  // and near the purple alien's 1.70 because they are the same kind of character. `mel.SKATER.h`
+  // wants a RELOAD -- the scale is measured at load off the geometry, never typed.
+  h: 1.68, r: .38, hp: 3, snd: 'soft',
+  // CHECKED AS RECTANGLES, not placed by eye: each of these clears every one of the ten boxes,
+  // the building's plan and the tower's by at least 2.1 m, and the nearest of the fourteen other
+  // bodies by 7.2 m. Farthest-point spread over the 9-26 m band the rest of the street occupies,
+  // so one is within a walk of the spawn and two are a walk away -- ranked nearest-first would
+  // have put all three in his face, and unconstrained it ran off to the corners of the void.
+  at: [[9, 1], [-26, 0], [-7, -25]],
+  drop: /^CINEMA_4D/,
+  ai: 1, pacifist: 1,
+  clips: {
+    idle: 'idle',
+    look: ['left_turn', 'right_turn'],
+    walk: 'walking', run: 'running',
+    air: 'jump',                     // hers, and any kind that names one holds it while airborne
+    // HER OWN TURNS, AND A WIDER ONE FOR A BIGGER BLOW -- see above for why that is a read and
+    // not a shortcut on a body with wheels under it.
+    hits: ['left_turn', 'right_turn'],
+    big: ['left_turn_90', 'right_turn_90'],
+    // NAMED AND EMPTY. The states run; the poses arrive when they are drawn.
+    downF: '', downB: '', upF: '', upB: '',
+  },
+  walkRef: .81, runRef: 2.00, tsHi: 1.5, tsLo: .7,
+  // SHE ROLLS, so she is the quickest ambler on the street -- and both of these sit just OVER
+  // their own reference (x1.11 and x1.20, well inside `tsHi`), which is as far as a walk cycle
+  // can be pushed before the feet scramble. A skating clip is the honest way to go faster.
+  walk: .90, run: 2.4, flee: 3.0,
+  turn: 3.0,
+  vary: { pace: [.85, 1.2], nerve: [1, 1], react: [.3, 1.2], guard: [0, 0] },
+  // A SKATER STOPS LESS AND SURGES LESS THAN A DRUNK, because she is rolling rather than
+  // stumbling -- one line, on the same `foeGait` the warrior's approach calls.
+  gait: { lane: 0, laneT: [1.2, 3.0], surge: .30, stop: .16, stopT: [.5, 1.6] },
+  // AND SHE COVERS MORE GROUND. The drunks' ring is 9 m; wheels want a bigger one, and the ring
+  // is round where she SPAWNED so the street keeps its shape however long she is left alone.
+  roam: 14, roamWait: [1.6, 4.5], roamAt: .85,
+  flee0: 5.5, fleeAdd: 2.5, fleeMax: 12,
+  // NEAR THEIR OWN LENGTHS (m37): her turn clips run 1.00 to 1.04 s, and a reaction too fast to
+  // read is the same reaction every time.
+  hitBeat: 1.0, bigBeat: 1.1, downBeat: 1.2, upBeat: 1.2,
+  out: 1.6,
+  flyV: 26.0, flyUp: 9.0, flyG: 20, flyDrag: 1.12,
+  knock: 4.6, knockUp: .6, knockDrag: 5.5, shoveDrag: 2.2,
+  hard: 1.01,        // damage puts her down, not one big blow -- the warrior's rule
   fling: .55,
   fly0: .45,
   dmg: { bolt: 1.6, fist: .9, weap: 1.4, finish: 3.0 },
@@ -6330,6 +6428,15 @@ function buildHobos(g) {
   for (const [x, z] of HOBO.at) { const d = bodySpawn(P, HOBO, x, z); foeBar(d); HOBO.up++; }
 }
 
+// THE SKATER. A third pacifist, and the builder is byte-for-byte the other two with a different
+// table in it -- which is the whole of m35's claim, collected on for the fifth time.
+function buildSkaters(g) {
+  SKATER.loops = bodyLoops(SKATER);
+  const P = bodyProto(g, SKATER);
+  SKATER.up = 0;
+  for (const [x, z] of SKATER.at) { const d = bodySpawn(P, SKATER, x, z); foeBar(d); SKATER.up++; }
+}
+
 // CLANCY IS m38'S PACIFIST WITH THE RING MOVED, and that is the whole build. `foeWander`
 // already ambles round a point, stops, looks about and breathes; a FOLLOWER changes WHICH POINT
 // that ring is round and nothing else. No bar -- `foeBar` is simply not called.
@@ -7768,6 +7875,7 @@ async function init() {
   await side(FOE.file, 'loading the warrior', { name: 'WARRIOR', build: buildFoes });
   await side(HICK.file, 'loading the locals', { name: 'HICK', build: buildHicks });
   await side(HOBO.file, 'loading the locals', { name: 'HOBO', build: buildHobos });
+  await side(SKATER.file, 'loading the locals', { name: 'SKATER', build: buildSkaters });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
 
   paintKit();
@@ -7790,7 +7898,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, M
   BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
   // flash and the bar can be looked at without standing in front of a mace.
-  FOE, HICK, HOBO, SMOKE, BLOCK, HEALTH, HURT, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
+  FOE, HICK, HOBO, SKATER, SMOKE, BLOCK, HEALTH, HURT, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
   smoke: (x, y, z) => { smokeAt(x, y, z); return 'puff'; },
   hurt: (d, k) => playerHurt(d || 12, player.faceH + Math.PI, FOE.push, FOE.pushUp, FOE.stun, k == null ? 1 : k),
   heal: () => { player.hp = HEALTH.max; return 'full'; },

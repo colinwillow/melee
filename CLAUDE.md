@@ -1040,6 +1040,67 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A NEW NPC COST A TABLE AND A LOAD LINE, FOR THE FIFTH TIME (m80, `SKATER`, `buildSkaters`).**
+  *"Hey I just added a alien roller skate blue model, can you add her to the game as an NPC?"*
+  **THE FILE HAD ARRIVED AND WAS NOT WHERE THE OTHERS ARE.** `models/alien_rollerskate_blue.glb`,
+  in `models/` rather than `models/characters/` -- so a listing of the characters folder came back
+  with the seven that were already there and said nothing. **`git log --stat -1` is the command**,
+  and it is worth reaching for first every time: this repo's other failure mode is an EMPTY commit
+  (m58: four of his five "fixed colin" pushes never left his machine), and "the file is somewhere
+  else" and "the file never came" are one picture from a directory listing.
+  **IT IS LEFT WHERE HE PUT IT.** `models` is already in `bump.mjs`'s `DIRS`, so `A()` hashes her
+  contents and a re-export under the same name actually reaches his phone -- and moving it would
+  be a 404 the next time he drops the same file in the same place, which is the audio filenames'
+  own rule (`gound_01`, `.mp4` in the middle of a skateboard name) one asset type over.
+  **AND SHE NEEDED NO BUILDER, NO BRAIN AND NO SECOND PATH.** The bolt, the swept limb, `bodyFly`,
+  `bodySep`, `dummyBlow`, the player's own resolver and `foeWander` all reach anything in
+  `DUMMIES`, so `buildSkaters` is `buildHobos` with a different table in it. That is `d.K`'s
+  dividend for the fifth time and it is why this build is a table and a `side(...)` line.
+  **MEASURED BEFORE A LINE WAS WRITTEN, which is what those two tools are for** -- and they are
+  not a verification pass: `walkRef` and `runRef` are numbers the table CANNOT be written without,
+  and eyeballing them is what put the city's rifle run 36% too fast and its walk 37% too slow in
+  one build, in opposite directions.
+      1 mesh / 1 material / 1 texture, 67 nodes, draco + EXT_texture_webp + specular
+      authored height 0.9995 m, soles at EXACTLY 0        -> x1.681 to stand 1.68 m
+      toes (0.0000, 1.0000), shoulders cross-check 1.0000 -> +Z, like everyone else here
+      NO weapon mounts, which is right -- an NPC, not a wearer
+      13 clips; `CINEMA_4D_Main` is the usual one-frame residue
+      idle     0.002 m/s   <- THE CONTROL, and the reason the other two can be believed
+      walking  0.807 authored, feet AGREE            -> walkRef .81
+      running  2.005, **feet disagree 25%** (L 2.26, R 1.75) -> runRef 2.00
+  **THAT 25% IS REAL AND IS IN THE CLIP**, reported rather than quietly averaged away -- the
+  warrior's own m35 shape. If her run ever reads limpy, that is why.
+  **HER TURN CLIPS ARE HER HIT REACTIONS, AND THAT IS A JUDGEMENT SAID OUT LOUD.** This export is
+  locomotion and nothing else: no `hit_*`, no fall, no get-up. On the hick a turn plays as a
+  stumble because he is drunk; on a body ON WHEELS a blow that spins her round is what actually
+  happens, and m78's `FLAIL.spin` already tumbles her in the air on top of it. The alternative was
+  nothing at all, and **a blow that produces the idle is a blow nobody can see landing.** The
+  honest fix is drawn poses, and `big` takes the two 90-degree turns so a heavy blow reads wider.
+  **THE FALL AND THE GET-UP ARE NAMED AND EMPTY**, m38's pattern: the STATES run either way -- she
+  flies, lands, lies there, gets up and runs off -- and naming a clip later is one string with no
+  branch to add. m41 is the build that collected on exactly that, one character over.
+  **AND SHE IS GIVEN NO `flee` CLIP, WHICH IS ONE FEWER THING TO KEEP IN STEP.** `foeWander` reads
+  `K.clips.flee || K.clips.run` and picks `fleeRef` or `runRef` to MATCH, so naming `running`
+  twice would be two fields describing one clip and two places for them to drift apart. The
+  fleeing read comes from `flee` being the fastest speed on the table.
+  **SHE ROLLS, so both her speeds sit just OVER their own references** (x1.11 walking and x1.20
+  running, well inside `tsHi` 1.5) -- which makes her the quickest ambler on the street and is as
+  far as a walk cycle can be pushed before the feet scramble. **A skating clip is the honest way
+  to go faster**, and `walk`/`run` are the two dials until there is one. Her `gait` stops less and
+  surges less than a drunk's and her roam ring is 14 m against their 9, because wheels cover
+  ground.
+  **THE SPAWNS ARE CHECKED AS RECTANGLES, NEVER PLACED BY EYE** -- m60's rule, and it caught two
+  things. Each of `[9, 1]`, `[-26, 0]` and `[-7, -25]` clears all ten boxes, the building's plan
+  and the tower's by at least 2.1 m, and the nearest of the fourteen other bodies by 7.2 m.
+  **And farthest-point sampling had to be CONSTRAINED to the band the street occupies**: run over
+  the whole search square it went straight to the corners and put her at 42 m, which is the void
+  rather than the test site. 9 to 26 m is where every other body already is.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin (her GLB is draco and
+  `DRACOLoader` wants a Worker), so **whether a walk cycle on a body wearing roller skates reads
+  as skating at all** is a device question, and so are her height and whether the turn-as-hit
+  lands. The arithmetic that CAN be checked -- the scale, the references, the time scales and the
+  clearances -- is above and was. `mel.SKATER` is live except `h`, which wants a reload.
+
 - **THE MOUSE BECOMES THE RIGHT PAD, IT DOES NOT BYPASS IT (m79, `DESK`).** *"I need to make
   this game work better on desktop web view. Right now you can move with WASD, which is good, but
   if it detects a mouse have it so the aiming works with the mouse -- left click will be shoot and
