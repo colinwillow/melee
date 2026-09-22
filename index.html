@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m75</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m76</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m75</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m76</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm75';
+const BUILD = 'm76';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -988,6 +988,8 @@ const WEAP = {
   // should be a fairly hefty ball and the effect greater."* One number drives all three: the
   // picture, the thing it collides with, and how wide the blast reaches. They cannot drift.
   ball0: .45, ball1: 1.90,          // metres across, fumble to full. *"Still isn't big enough."*
+  palBlast: .30,                    // ...but a FRIEND catches only this much of it (m76). The
+                                    // DIRECT hit is unscaled: aiming at him still hits him.
   blast0: .55, blast1: 2.60,        // how far from the IMPACT POINT a body is caught. Spent
                                     // where the ball lands, never swept down the flight -- see m56
   // **AND A FULL CHARGE SENDS THEM FLYING WHATEVER THEIR HEALTH SAYS.** `FOE.hard` is
@@ -1696,8 +1698,15 @@ const CLANCY = {
   // **THE RING IS ROUND YOU** -- `roam` is how far he is willing to wander off, `leash` is how
   // far before he stops wandering and comes back at a run. The gap between them is hysteresis:
   // without it he would flip between amble and dash on the boundary every frame.
-  roam: 2.2, roamWait: [1.2, 3.0], roamAt: .5,
-  leash: 4.0, leashIn: 1.8,
+  // **TIGHTER (m76).** *"I kind of want him on a little tighter of a leash -- I like that he can
+  // go far away, but I want him to try to get back into a more closer position."* Both halves:
+  // the leash and the ring come in, and `pounce.hunt` 9 -- which is the ONLY thing that takes
+  // him properly far -- is deliberately untouched, because that is the going-far he likes.
+  roam: 1.7, roamWait: [1.2, 3.0], roamAt: .45,
+  leash: 3.2, leashIn: 1.1,
+  // `laneArc` is the arc he will actively STEP OUT of and `palArc` is where the ring puts him;
+  // the gap between them is the hysteresis that stops him clearing the spot he was just sent to.
+  laneArc: .70, laneOut: 16,
   // **A HOP IS AN ARC SOMEBODY CHOSE, SO THE APEX IS THE NUMBER (m74, m21's rule).** At `flyG`
   // 20, `up` 4.8 is an apex of **0.576 m** and 0.48 s of air -- which clears the 0.40 box he got
   // stuck on with 18 cm to spare and does NOT clear the 1.15 one, which is correct: that needs a
@@ -1713,7 +1722,10 @@ const CLANCY = {
   // **`falling_to_roll` IS THE DIVE HE THOUGHT HE HAD NOT DRAWN** (*"I don't think I have a dive
   // or a roll animation but if we do"*) -- it is in the export, it is a body going down into a
   // roll, and it is already his knock-down clip. 1.875 s compressed to .60 is x3.1.
-  dive: { v: 4.0, dur: .60, cone: .30, range: 9, cool: 1.6 },
+  // v 5.2 x dur .60 = **3.1 m** clear of the line, against a full charge's splash on a friend
+  // of 1.35 m (`WEAP.palBlast`) -- so a dive out of the lane now actually gets him out of range
+  // of the blast, which at m74's 2.4 m against 3.83 m it could not.
+  dive: { v: 5.2, dur: .60, cone: .42, range: 11, cool: 1.0 },
   // **HE PILES ON TO WHATEVER YOU ARE HITTING (m75, `mutant_punch`).** *"Let's make him attack
   // with the mutant punch."* and, from m73, *"probably only attack if you're attacking
   // something."* So there is no aggro of his own: `palFoe` only ever returns a body carrying
@@ -3852,7 +3864,7 @@ function stepBolts(dt) {
       // so nobody is blown twice and that needed no case of its own.
       const hitBodies = dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                                  WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
-                                 b.size * .5 + b.blast, FOE.dmg.bolt);
+                                 b.size * .5 + b.blast, FOE.dmg.bolt, WEAP.palBlast);
       const onMan = b.onMan || hitBodies;
       // **AND IT IS A DIFFERENT BANK, NOT A DIFFERENT GAIN (m63).** `onMan` has been telling
       // these two events apart since m58; his own two recordings are what it now picks. A
@@ -5995,7 +6007,7 @@ function bodySpawn(P, K, x, z) {
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // `undefined -= dt` is NaN and a NaN clock is a body that can never hop or dive again --
     // silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time now.
-    stuckT: 0, hopT: 0, diveT: 0, mark: 0,
+    stuckT: 0, hopT: 0, diveT: 0, mark: 0, lane: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
     // script running three times.
@@ -6285,11 +6297,18 @@ function strikeSweep(dt, power, live, dmg) {
 // `strikeSweep` needed at m57, and for the same reason: the caller has to know WHAT it hit to
 // ask whether that man rings. It still loops them ALL (m36's `hitAll`: a blast does not stop
 // at the first man), and every caller tests it for truth rather than comparing it to 1.
-function dummyHit(x, z, dirH, power, reach, dmg) {
+// **AND A FRIEND IS HARDER TO SPLASH THAN AN ENEMY (m76, `palK`).** *"Maybe we could narrow
+// the collider for the charge cannon."* Not the whole collider -- the DIRECT hit is skill and
+// must stay (*"doesn't mean I can't hit him"*, m74), and shrinking the blast for everybody is a
+// change to the weapon nobody asked for. It is the AREA half that is the problem: a full charge
+// reaches 3.55 m from the impact, which is further than a dive can carry him, so he could get
+// clear of the line and still be caught by a shot that landed on somebody else. **Clearing the
+// shot has to be able to work**, and at `palBlast` .30 it does -- 1.35 m rather than 3.83.
+function dummyHit(x, z, dirH, power, reach, dmg, palK) {
   let hit = 0;
   for (const d of DUMMIES) {
     if (d.cool > 0) continue;
-    const rr = reach + d.K.r;
+    const rr = reach * (palK && d.K.pal ? palK : 1) + d.K.r;
     const dx = d.root.position.x - x, dz = d.root.position.z - z;
     if (dx * dx + dz * dz > rr * rr) continue;
     if (!hit) hit = d;
@@ -6631,7 +6650,14 @@ function foeWander(d, dt, t, dd, toP) {
     // `p.aim` is true for the charge AND for rapid fire, so one test covers both triggers. He
     // dives PERPENDICULAR -- away from the line rather than away from you, which is the whole
     // difference between getting clear and running down the barrel.
-    if (K.dive && d.diveT <= 0 && player.aim && dd < K.dive.range
+    // **AND IT FIRES ON THE THUMB, NOT ON THE LATCH (m76).** *"If I'm aiming down sight he
+    // should basically know to get out of the way, rather than he's kind of delayed."*
+    // `p.aim` only goes true after `WEAP.armT` of the thumb being up there, and a dive takes
+    // `dur` to deliver -- so the shot was already leaving while he was still mid-roll.
+    // `p.armT > 0` is the moment the thumb ARRIVES, which is the earliest thing there is to
+    // know, and the cone is what buys the rest: at .42 he is reacting to a shot lined up on him
+    // rather than to one already on top of him.
+    if (K.dive && d.diveT <= 0 && (player.aim || player.armT > 0) && dd < K.dive.range
         && Math.abs(wrapAngle(toP + Math.PI - player.faceH)) < K.dive.cone) {
       const side = Math.sign(wrapAngle(toP + Math.PI - player.faceH)) || 1;
       const h = player.faceH + side * Math.PI / 2;
@@ -6671,14 +6697,25 @@ function foeWander(d, dt, t, dd, toP) {
     }
     if (d.catch && dd < K.leashIn) d.catch = 0;
     if (dd > K.leash) d.catch = 1;
-    if (d.catch) {
-      faceTo(d, toP, dt);
-      const sp = K.run * V.pace;
+    // **STANDING IN THE LANE IS ITS OWN REASON TO MOVE, NOT ONLY A DETAIL OF COMING BACK.** He
+    // can wander into it, be shoved into it, or simply have you turn onto him -- so the test is
+    // WHERE HE IS rather than what he was doing, and it outranks the ring for the same reason
+    // the dive outranks everything: it is the thing that gets him shot.
+    const P = palPost(K, d);
+    const clear = P.lane && dd < K.laneOut;
+    d.lane = 0;
+    if (d.catch || clear) {
+      const gx = P.x - d.root.position.x, gz = P.z - d.root.position.z;
+      if (Math.hypot(gx, gz) > .25) faceTo(d, Math.atan2(gx, gz), dt);
+      // **AND HE RUNS, BOTH WAYS.** Ambling off the runway is exactly the delay he described
+      // on the dive, one system over -- and a catch-up was always a run. Either way in to this
+      // branch is a run, so there is no walk case to write.
+      const sp = K.run * V.pace, nm = K.clips.run;
       foeMove(d, d.h, sp, dt);
-      const nm = K.clips.run;
       t[nm] = 1;
       setSkinScale(d, nm, clamp(sp / K.runRef, K.tsLo, K.tsHi));
-      d.roamT = 0; d.rx = cx; d.rz = cz;   // and he picks a fresh spot the moment he arrives
+      d.lane = P.lane ? 1 : 0;
+      d.roamT = 1e-4; d.hx = cx; d.hz = cz;   // a fresh spot through the ONE picker on arrival
       return;
     }
     d.hx = cx; d.hz = cz;
@@ -6731,6 +6768,32 @@ function foeWander(d, dt, t, dd, toP) {
   foeMove(d, d.h, sp, dt);
   t[K.clips.walk] = 1;
   setSkinScale(d, K.clips.walk, clamp(sp / K.walkRef, K.tsLo, K.tsHi));
+}
+
+// **GETTING OUT OF THE LANE COMES BEFORE CLOSING (m76, `palPost`).** *"He constantly walks
+// down the runway, basically down my line of sight -- if I shoot him once and he's downfield
+// then he's just running back to me IN FRONT OF ME while I'm shooting guys."* m74 put a hole in
+// the roam RING and left the return leg running `faceTo(d, toP)` -- **straight at the player**,
+// which from downfield is the runway by definition. So the one moment he was guaranteed to be
+// in the line was the moment he was coming back from having been shot.
+// **AND CLOSING FIRST IS WHAT MAKES IT THE RUNWAY.** A point beside you is still reached by
+// walking the length of the lane if he starts at the far end of it, so inside the lane the
+// target keeps HIS OWN RANGE and only moves him sideways -- he steps off the runway at whatever
+// distance he is at, and only once he is clear does the target become a post beside you.
+// One continuous steer, no state, and it falls out of the same `off` the ring is pushed by.
+function palPost(K, d) {
+  const px = player.pos.x, pz = player.pos.z;
+  const dx = d.root.position.x - px, dz = d.root.position.z - pz;
+  const r = Math.hypot(dx, dz);
+  const to = r > 1e-3 ? Math.atan2(dx, dz) : d.h;
+  const off = wrapAngle(to - player.faceH);
+  // **THE CLEAR ARC IS NARROWER THAN THE RING'S, AND THAT GAP IS HYSTERESIS.** The roam point is
+  // PUSHED to `palArc`, so a clear that triggered at `palArc` would fire on the spot he was just
+  // sent to, every frame. `laneArc` is the inner one and the margin between them is the margin.
+  const lane = Math.abs(off) < K.laneArc;
+  const a = lane ? player.faceH + (off >= 0 ? K.laneArc : -K.laneArc) : to;
+  const rr = lane ? Math.max(r, K.leashIn) : K.leashIn * .8;
+  return { x: px + Math.sin(a) * rr, z: pz + Math.cos(a) * rr, lane };
 }
 
 // **WHO A SIDEKICK PILES ON TO.** The nearest MARKED body, and the range is measured from the
@@ -7234,6 +7297,7 @@ function frame() {
     const pal = DUMMIES.find(d => d.K.pal);
     const cl = !pal ? '' : pal.st === 'swing' ? ' · PUNCH'
       : pal.st === 'hop' ? ' · HOP' : pal.st === 'dive' ? ' · DIVE'
+      : pal.lane ? ' · LANE'
       : pal.stuckT > .2 ? ' · STUCK' + pal.stuckT.toFixed(1) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl +

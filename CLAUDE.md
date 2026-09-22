@@ -1040,6 +1040,63 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE RING HAD A HOLE IN IT AND THE RETURN LEG RAN STRAIGHT DOWN THE MIDDLE (m76, `palPost`).**
+  *"He constantly walks down the runway, basically down my line of sight -- if I shoot him once
+  and he's downfield, then he's just running back to me in front of me and I'm shooting guys."*
+  **m74 FIXED THE RING AND LEFT THE ONE PATH THAT IS ALWAYS IN THE LANE.** The catch-up was
+  `faceTo(d, toP, dt)` -- **straight at the player** -- which from downfield is the runway by
+  definition, so the single moment he was guaranteed to be in the line was the moment he was
+  coming back from having been shot. His sentence describes the geometry exactly.
+  **AND CLOSING FIRST IS WHAT MAKES IT A RUNWAY, WHICH IS WHY A POST BESIDE YOU IS NOT ENOUGH.**
+  A point at your flank is still reached by walking the length of the lane if he starts at the
+  far end of it. So inside the lane the target keeps **HIS OWN RANGE** and only moves him
+  SIDEWAYS -- he steps off the runway at whatever distance he is at, and only once he is clear
+  does the target become a post beside you. One continuous steer, no state, and it falls out of
+  the same `off` the ring was already being pushed by.
+  **AND STANDING IN THE LANE IS ITS OWN REASON TO MOVE**, not merely a detail of coming back: he
+  can wander in, be shoved in, or simply have you turn onto him. The test is WHERE HE IS rather
+  than what he was doing, which is why it outranks the ring.
+  **`laneArc` .70 IS NARROWER THAN `palArc` 1.05 AND THE GAP IS HYSTERESIS.** The roam point is
+  PUSHED to `palArc`, so a clear that triggered at `palArc` would fire on the spot he had just
+  been sent to, every frame, for ever. Same shape as `leash`/`leashIn` and as m36's `hold`/`reach`.
+  **AND HE RUNS OUT OF IT.** Ambling off the runway is the same complaint as the delayed dive,
+  one system over -- and since every path into that branch is either a catch-up or a lane clear,
+  both of which are runs, there is no walk case to write. The chip says `· LANE`.
+- **THE DIVE FIRED ON THE LATCH AND THE SHOT WAS ALREADY LEAVING (m76).** *"If I'm aiming down
+  sight he should basically know to get out of the way, rather than he's kind of delayed."*
+  `p.aim` only goes true after `WEAP.armT` of the thumb being up there, and a dive takes `dur`
+  .60 s to deliver -- so the earliest he could start was already late. `p.armT > 0` is the moment
+  the thumb ARRIVES, which is the earliest thing there is to know, and it is free.
+  **THE CONE IS WHAT BUYS THE REST**, .30 -> .42: at .30 he only reacted to a shot already on top
+  of him, and at .42 he is reacting to one lined up on him. `range` 9 -> 11 and `cool` 1.6 -> 1.0.
+- **AND A DIVE THAT CANNOT OUTRUN THE SPLASH IS NOT A DIVE (m76, `WEAP.palBlast`).** *"Part of it
+  is the blast radius of the charge cannon... maybe we could narrow the collider for the charge
+  cannon or something."* The arithmetic says he is right and says which half:
+      a full charge's blast on a body   size*.5 + blast  =  .95 + 2.60 = 3.55 m, + his r = 3.83
+      m74's dive carried him            v 4.0 x dur .60  =  **2.4 m**
+  So he could clear the LINE perfectly and still be inside the blast of a shot that landed on
+  somebody else -- **the dive could not win against the weapon however well it was timed**, which
+  is the "I end up shooting him a bunch" that survived m74.
+  **BOTH ENDS MOVED, AND ONLY THE AREA HALF OF THE WEAPON.** `palBlast` .30 is a multiplier on
+  the SPLASH reach for a `pal` body only: 1.35 m rather than 3.83. **The DIRECT hit is unscaled
+  and unchanged** -- aiming at him still hits him, which is m74's own *"doesn't mean I can't hit
+  him"* -- and no enemy's blast moved, so the weapon he tuned is the weapon he still has. And
+  `dive.v` 4.0 -> 5.2 carries him **3.1 m**, which is now comfortably outside that 1.35.
+  **IT IS ONE OPTIONAL ARGUMENT ON `dummyHit`, PASSED BY THE BLAST CALL AND NOT BY THE FLIGHT
+  CALL** -- which is what keeps "a friend is harder to splash" and "a friend is harder to hit"
+  from becoming the same number by accident.
+- **TIGHTER, AND `hunt` IS DELIBERATELY NOT (m76).** *"I kind of want him on a little tighter of a
+  leash. I like that he can go far away, but I want him to try to get back into a more closer
+  position."* Two halves of one sentence that pull opposite ways, and they are two different
+  numbers: `leash` 4.0 -> 3.2, `leashIn` 1.8 -> 1.1 and `roam` 2.2 -> 1.7 are the coming-back;
+  **`pounce.hunt` 9 is the only thing that takes him properly far and it is untouched**, because
+  that is the going-away he said he likes.
+  **WHAT IS NOT DONE:** the lane clear is horizontal and has no idea about the boxes, so he can
+  step sideways into one and fall through to m74's stuck-then-hop on the wall. And nothing stops
+  him being in the lane while POUNCING -- joining the fight outranks it, which is right, but it
+  means the one time he is deliberately near an enemy you are shooting is the one time the clear
+  is switched off. `mel.CLANCY.laneArc = 0` turns the whole clear off for an A/B.
+
 - **HE PILES ON TO WHATEVER YOU ARE HITTING, AND THE SWING IS THE WARRIOR'S OWN MACHINERY
   (m75, `PALMARK`, `palFoe`, `K.pounce`).** *"Let's make him attack with the mutant punch."*
   **"ONLY ATTACK IF YOU'RE ATTACKING SOMETHING" IS A MARK ON THE MAN, NOT A MOOD.** m73's standing
