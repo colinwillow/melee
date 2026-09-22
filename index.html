@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m65</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m66</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m65</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m66</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,7 +428,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm65';
+const BUILD = 'm66';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -1782,6 +1782,16 @@ const note = m => { if (!MISSING.includes(m)) MISSING.push(m); console.warn('[me
 const SFX = {
   on: 1, vol: .85, ctx: null, bus: null, ready: 0,
   gap: .045,        // the least time between two of the same key
+  // **A SOUND HAPPENS SOMEWHERE (m66).** *"Maybe the footsteps on them as well, but depending
+  // how far away from you they are the volume is quieter."* Right, and it is not only the
+  // footsteps: thirteen bodies grunting, thumping, ringing and taunting at full volume wherever
+  // they stand is a street that is loud in proportion to how many men are in it rather than to
+  // what is happening near you. **So it goes in `snd`, keyed on an optional world position** --
+  // the one place every sound already passes through, so no call site can forget it and nothing
+  // that does NOT pass a position (the player's own weapon, the HUD) changes at all.
+  // `out` also CULLS: a sound too far to hear takes no voice and does not spend the per-key gap,
+  // which matters because a far grunt would otherwise gate out a near one inside `gap`.
+  near: { full: 7, out: 40 },
   voices: 0, max: 14,
   hit: .25,         // the onset is the first sample over this much of the file's own peak
   pre: .03,         // with this much run-up kept, so the attack survives
@@ -1922,10 +1932,10 @@ const HITSND = {
 // still a fact about the MAN: plate rings and a drunk in a coat does not, and putting a ring on
 // one is a field on his row. It is quieter and higher than the clang ever was on its own,
 // because it is no longer carrying the impact by itself.
-function hitRing(K, w) {
+function hitRing(K, w, x, z) {
   const R = (HITSND[(K && K.snd) || 'hard'] || HITSND.hard).ring;
   if (!R) return;
-  snd('clang', { g: R.g * w, r: R.r * (1 + (Math.random() - .5) * .12) });
+  snd('clang', { g: R.g * w, r: R.r * (1 + (Math.random() - .5) * .12), x, z });
 }
 // **WHAT A BODY ITSELF SOUNDS LIKE (m62).** Three events that `HITSND` has nothing to say
 // about, because that table is the sound of the CONTACT and these are the sound of the MAN.
@@ -1953,7 +1963,11 @@ const BODYSND = {
   // rate and their own length. A number that exists to rescue a stand-in has to go when the
   // stand-in does, or the fix for one file becomes a bug in the next -- m58's own lesson.
   drop: { at: 3, full: 13, g0: .34, g1: 1.00, r: 1.00, jit: .12, att: .004, dec: .22,
-          cool: .16 },
+          cool: .16,
+          // HIS OWN weight on that curve. A man landing on his feet out of a jump is not a body
+          // arriving flat, so he reads a little lighter for the same impact speed -- and `at` is
+          // what keeps a step off a kerb silent either way.
+          me: .72 },
 };
 // **A BODY IN THE AIR IS A PROJECTILE, AND IT HITS THINGS (m63, `FLYHIT`).** *"I do think we
 // should make enemies be able to fly there and hit other enemies -- knock them down, or at
@@ -1994,6 +2008,43 @@ function strideNow(sp) {
   const L = sp < GAIT.runAt ? S.walk : sp < GAIT.sprintAt ? S.run : S.sprint;
   return L > .05 ? L : STEP.fallback;
 }
+// ONE footfall, so his and theirs cannot drift into two different sounds. `top` is whatever
+// counts as flat out for that body, which is what makes the same curve read on a 7.2 m/s sprint
+// and on a 1.8 m/s drunk run. `x`/`z` are what `SFX.near` needs; his own are simply near.
+function footSnd(sp, top, x, z, left) {
+  const u = clamp((sp - STEP.at) / Math.max(.1, top - STEP.at), 0, 1);
+  snd('foot', { g: STEP.g0 + (STEP.g1 - STEP.g0) * u,
+                r: (STEP.r0 + (STEP.r1 - STEP.r0) * u) * (left ? 1 + STEP.alt : 1 - STEP.alt)
+                   * (1 + (Math.random() - .5) * STEP.jit),
+                cut: 1, att: .003, dec: .09, x, z });
+}
+// **AND THEIR STRIDE IS THE SAME ARITHMETIC ON THEIR OWN CLIPS (m66).** `duration * ref` is how
+// far one authored cycle carries a body whatever speed it is played at, and `perCycle` footfalls
+// divide it -- so this needs no new idea, only the kind's own two clips and two refs. Cached on
+// the KIND, because it is a fact about the export rather than about the man: three warriors
+// share it. A kind with no walk clip (the officer, who never moves) gets nothing and stays
+// silent, which is correct rather than a gap.
+function bodyStride(d) {
+  const K = d.K;
+  if (K._stride) return K._stride;
+  const st = (n, ref) => { const c = n && d.clips && d.clips[n]; return c ? c.duration * ref / STEP.perCycle : 0; };
+  K._stride = { walk: st(K.clips.walk, K.walkRef), run: st(K.clips.run, K.runRef) };
+  return K._stride;
+}
+function bodyFeet(d, sp, dt) {
+  const K = d.K;
+  // ON HIS FEET AND WALKING. `idle` is the umbrella the AI states live under; `hit`, `down`,
+  // `up`, `taunt` and `block` are not walking, and a man being SHOVED along the ground covers
+  // distance without taking a step -- which is exactly what `bodyBump` is for instead.
+  if (!K.clips.walk || d.st !== 'idle' || sp < STEP.at) return;
+  d.stepD += sp * dt;
+  const S = bodyStride(d);
+  // the crossover is midway between his own two references, so it needs no constant of its own
+  const L = (sp < (K.walkRef + K.runRef) * .5 ? S.walk : S.run) || STEP.fallback;
+  if (d.stepD < L) return;
+  d.stepD -= L; d.stepL = !d.stepL;
+  footSnd(sp, K.runRef, d.root.position.x, d.root.position.z, d.stepL);
+}
 // Called with his own measured speed, so it needs no knowledge of the pad, the gait or the clip.
 function stepFeet(dt) {
   const p = player;
@@ -2005,20 +2056,20 @@ function stepFeet(dt) {
   if (p.stepD < L) return;
   p.stepD -= L;
   p.stepL = !p.stepL;
-  const u = clamp((p.speed - STEP.at) / Math.max(.1, MOVE.max - STEP.at), 0, 1);
-  snd('foot', { g: STEP.g0 + (STEP.g1 - STEP.g0) * u,
-                r: (STEP.r0 + (STEP.r1 - STEP.r0) * u) * (p.stepL ? 1 + STEP.alt : 1 - STEP.alt)
-                   * (1 + (Math.random() - .5) * STEP.jit),
-                cut: 1, att: .003, dec: .09 });
+  footSnd(p.speed, MOVE.max, p.pos.x, p.pos.z, p.stepL);
 }
 // ONE impact, so the three connection points cannot drift into three different rules.
-function bodyBump(d, v) {
+function bumpSnd(v, x, z) {
   const D = BODYSND.drop;
-  if (v < D.at || d.bumpT > 0) return;
-  d.bumpT = D.cool;
+  if (v < D.at) return;
   const u = clamp((v - D.at) / (D.full - D.at), 0, 1);
   snd('drop', { g: D.g0 + (D.g1 - D.g0) * u, r: D.r * (1 + (Math.random() - .5) * D.jit),
-                cut: 1, att: D.att, dec: D.dec });
+                cut: 1, att: D.att, dec: D.dec, x, z });
+}
+function bodyBump(d, v) {
+  if (v < BODYSND.drop.at || d.bumpT > 0) return;
+  d.bumpT = BODYSND.drop.cool;
+  bumpSnd(v, d.root.position.x, d.root.position.z);
 }
 // the swoosh a flying body drags with it. ONE rule and ONE threshold, called wherever a launch
 // velocity is set, so "a body part moving fast" cannot end up meaning three different things.
@@ -2026,7 +2077,8 @@ function bodyWhoosh(d) {
   const W = BODYSND.whoosh, v = Math.hypot(d.vx, d.vy, d.vz);
   if (v < W.at) return;
   const u = clamp((v - W.at) / (W.full - W.at), 0, 1);
-  snd('swoosh', { g: W.g0 + (W.g1 - W.g0) * u, r: W.r0 + (W.r1 - W.r0) * u });
+  snd('swoosh', { g: W.g0 + (W.g1 - W.g0) * u, r: W.r0 + (W.r1 - W.r0) * u,
+                  x: d.root.position.x, z: d.root.position.z });
 }
 // stage one: the bytes, at page load, with no context anywhere
 (function sfxFetch() {
@@ -2187,6 +2239,14 @@ function snd(key, o) {
   if (!SFX.on || !SFX.ctx || SFX.voices >= SFX.max) return 1;
   const list = SFX.buf[key]; if (!list || !list.length) return 1;
   const t = SFX.ctx.currentTime;
+  // DISTANCE FIRST, so a sound nobody can hear neither takes a voice nor spends the gap.
+  let dk = 1;
+  if (o && o.x != null) {
+    const dd = Math.hypot(o.x - player.pos.x, o.z - player.pos.z);
+    if (dd > SFX.near.out) return 1;
+    dk = 1 - smooth(SFX.near.full, SFX.near.out, dd);
+    if (dk < .02) return 1;
+  }
   if (SFX.last[key] != null && t - SFX.last[key] < SFX.gap) return 1;
   const i = (o && o.i != null) ? o.i : (Math.random() * list.length) | 0;
   const b = list[i]; if (!b) return 1;
@@ -2194,7 +2254,7 @@ function snd(key, o) {
   const e = (SFX.edge[key] && SFX.edge[key][i]) || { a: 0, b: b.duration };
   const src = SFX.ctx.createBufferSource(); src.buffer = b;
   src.playbackRate.value = (o && o.r) || 1;
-  const gv = (o && o.g != null) ? o.g : 1;
+  const gv = ((o && o.g != null) ? o.g : 1) * dk;
   const g = SFX.ctx.createGain(); g.gain.value = gv;
   src.connect(g); g.connect(SFX.bus);
   SFX.voices++;
@@ -3510,7 +3570,7 @@ function stepBolts(dt) {
         snd('pbody', { cut: 1, att: PUNCH.att, dec: PUNCH.dec,
                        g: PUNCH.man + b.chg * PUNCH.chg, r: 1.00 + b.chg * PUNCH.rate });
         // and a bolt landing on plate rings too, which is the other half of his sentence
-        hitRing(onMan.K, .55 + b.chg * .45);
+        hitRing(onMan.K, .55 + b.chg * .45, onMan.root.position.x, onMan.root.position.z);
       }
       else snd('plasma', { i: plasmaPick(b.chg, 0), cut: 1, att: PUNCH.att, dec: PUNCH.dec,
                            g: PUNCH.floor + b.chg * PUNCH.chg, r: 1.14 + b.chg * PUNCH.rate });
@@ -4482,6 +4542,12 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
     if (p.coyote > 0) p.coyote -= dt;
     if (p.vel.y <= 0 && p.pos.y <= gy + .04) {
       p.fallV = -p.vel.y;
+      // **AND HIS OWN LANDING IS AN ARRIVAL TOO (m66).** m64 left this as a stated gap -- the
+      // bank was sitting there and he had not asked. He has: it is the same `bumpSnd` a body
+      // gets, off the same two recordings and the same impact-speed curve, so a man hitting the
+      // ground sounds like a man hitting the ground whichever man it is. `MOVE.landSoft` and
+      // `landHard` pick the CLIP by the same speed; this is the sound of the same event.
+      bumpSnd(p.fallV * BODYSND.drop.me, p.pos.x, p.pos.z);
       p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; landed = 1;
     }
   }
@@ -4553,10 +4619,11 @@ function stepPlayer(dt) {
           // heavier and lower for a weapon, lighter and higher for a fist -- ON whichever
           // sound the body called for, so one table says what it is and the other how hard.
           const w = slotNow().charge ? 1 : 0;
+          const P = hitB.root.position;
           snd(S.key, { g: w ? S.g : S.g * .69,
                        r: (w ? S.r : S.r * 1.52) * (1 + (Math.random() - .5) * .14),
-                       dur: S.dur });
-          hitRing(K, w ? 1 : .72);
+                       dur: S.dur, x: P.x, z: P.z });
+          hitRing(K, w ? 1 : .72, P.x, P.z);
         }
       }
     }
@@ -5560,7 +5627,7 @@ function bodySpawn(P, K, x, z) {
   scene.add(root);
   const mixer = new THREE.AnimationMixer(model);
   const d = { K, root, model, mats, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff, flash: 0,
-    st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, bumpT: 0, tauntN: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
+    st: 'idle', t: 0, hp: K.hp, hpMax: K.hp, cool: 0, bumpT: 0, tauntN: 0, stepD: 0, stepL: 0, back: 0, vx: 0, vy: 0, vz: 0, cur: '',
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
@@ -5869,7 +5936,8 @@ function dummyBlow(d, dirH, power, dmg) {
   if (K.voice) {
     const V = BODYSND.grunt, u = clamp(power, 0, 1);
     snd(K.voice, { g: V.g0 + (V.g1 - V.g0) * u,
-                   r: (V.r0 + (V.r1 - V.r0) * u) * (1 + (Math.random() - .5) * V.jit) });
+                   r: (V.r0 + (V.r1 - V.r0) * u) * (1 + (Math.random() - .5) * V.jit),
+                   x: d.root.position.x, z: d.root.position.z });
   }
   // A MAN ON THE GROUND IS STILL A BODY. Hitting him while he is down does not stand him up
   // to play a reaction -- it PUNTS him, and restarts the clock on the lie, so kicking him
@@ -6004,8 +6072,9 @@ function foeAI(d, dt, t) {
     if (TS && len > .01) {
       while (d.tauntN < TS.at.length && d.t >= TS.at[d.tauntN] * len) {
         d.tauntN++;
-        snd(TS.key, { g: TS.g, r: TS.r * (1 + (Math.random() - .5) * .10) });
-        if (TS.ring) hitRing(K, TS.ring);
+        const P = d.root.position;
+        snd(TS.key, { g: TS.g, r: TS.r * (1 + (Math.random() - .5) * .10), x: P.x, z: P.z });
+        if (TS.ring) hitRing(K, TS.ring, P.x, P.z);
       }
     }
     if (d.t >= len) { d.st = 'idle'; d.t = 0; }
@@ -6332,6 +6401,9 @@ function stepDummies(dt) {
     // `boltHome` leads him with it and a state machine is the wrong place to ask.
     if (d.lx !== undefined && dt > 1e-5) { d.wvx = (d.root.position.x - d.lx) / dt; d.wvz = (d.root.position.z - d.lz) / dt; }
     d.lx = d.root.position.x; d.lz = d.root.position.z;
+    // and his feet, off the speed he is ACTUALLY covering ground at rather than off whatever
+    // the brain asked for -- measured, the same way `boltHome` leads him
+    bodyFeet(d, Math.hypot(d.wvx || 0, d.wvz || 0), dt);
     d.t += dt;
     if (d.cool > 0) d.cool -= dt;
     const t = {};

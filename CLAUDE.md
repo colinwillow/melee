@@ -1019,6 +1019,54 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A SOUND KNOWS WHERE IT HAPPENED, AND THAT BELONGS IN `snd` (m66, `SFX.near`).** *"Maybe the
+  footsteps on them as well, but they probably -- depending how far away from you they are, the
+  volume is quieter."* Right, and it is the whole reason this goes in `snd` rather than at the
+  call sites: **a body sound is emitted from ten places now** (the grunt, the melee hit, the ring,
+  the bolt on a man, two taunt beats, the whoosh, the bump and both footstep callers) and a rule
+  every producer has to remember is not a rule. One optional `{ x, z }` on the options object,
+  absent for anything that happens to the player himself, and the gain is multiplied on the way
+  past. `mel.SFX.near` is live.
+  **THE DISTANCE IS CHECKED FIRST, BEFORE THE VOICE CAP AND BEFORE THE PER-KEY GAP.** A warrior
+  thirty metres away being punched by another warrior must not take one of `SFX.max` voices and
+  must not spend `SFX.gap` on the `hit` key -- if it did, a brawl across the street would silence
+  the fight you are standing in, which is exactly backwards. Past `out` it returns before
+  touching either.
+  **AND IT IS A SMOOTHSTEP TO ZERO, NOT AN INVERSE SQUARE.** A physical falloff is 1/d and never
+  actually reaches zero, so a hundred bodies at a hundred metres each contribute a little and the
+  mix turns to mud; `full` (7 m) is "as loud as it gets" and `out` (40 m) is silence, which is a
+  decision about the MIX rather than about acoustics. No `PannerNode` either: this is one gain
+  multiply against a whole spatial audio graph, and nothing in here is stereo-positioned.
+- **HIS LANDING IS THE SAME IMPACT A BODY'S IS (m66, `bumpSnd`, `BODYSND.drop.me`).** *"He said
+  the bank -- for it is still sitting right there for the hero. I'm assuming we could do it for
+  his landing as well."* `bodyBump` was already the one rule for a body arriving; the half that
+  is genuinely shared is the SOUND, so `bumpSnd(v, x, z)` came out of it and `bodyBump` kept the
+  cooldown and the position lookup, which are the body's own business. `integrate` calls it where
+  `p.fallV` is already measured -- **the one frame `landed` is set**, so there is no second test
+  for "is he on the ground" to drift from the first.
+  **`me` .72 IS WHY HE IS NOT A SACK.** A man landing on his feet absorbs it; a body arriving flat
+  does not, and the same recording at the same gain would make every jump sound like somebody
+  being dropped. One multiplier rather than a second table, so retuning `drop` moves both.
+- **AND THEIR FOOTSTEPS ARE m64'S ARITHMETIC ON THEIR OWN CLIPS (m66, `bodyStride`, `bodyFeet`).**
+  A stride is `duration * ref / perCycle` metres -- how far one authored cycle carries a body
+  whatever rate it is played at -- so an NPC needed no new idea, only the kind's own two clips and
+  two refs. **Cached on the KIND**, because it is a fact about the EXPORT and not about the man:
+  three warriors share one measurement.
+  **THE CROSSOVER NEEDS NO CONSTANT**, because each kind already carries its own two reference
+  speeds: midway between `walkRef` and `runRef` is the point the gait blend is halfway across, by
+  construction, and a typed threshold would be a third number to keep in step with two that
+  already exist.
+  **A KIND WITH NO WALK CLIP IS SILENT AND THAT IS CORRECT.** The officer never moves; `K.clips.walk`
+  being absent is the honest test for it, not a flag to remember to set.
+  **AND `d.st !== 'idle'` IS DOING REAL WORK.** `idle` is the umbrella every AI state lives under;
+  `hit`, `down`, `up`, `taunt` and `block` are not walking -- and a man being SHOVED along the
+  ground covers distance without taking a step, which would otherwise read as him jogging while
+  unconscious. That distance already has its own sound in `bodyBump`.
+  **THE PHASE IS KEPT, NEVER ZEROED, on both bodies and the player.** Resetting it on a stop makes
+  the first step of every start instant, so a jiggled stick is a burst of footfalls -- which is the
+  push cycle's own lesson one repo over, where a released thumb re-seeding the stroke turned a
+  rhythm into four sounds.
+
 - **A CHARGE TOPPING OUT IS NOT AN IMPACT (m65, `HCHG.snd`, `SFX.files.ready`).** *"As it
   currently is, when you charge the melee it makes a metal clang noise and I don't really like
   that -- it's confusing, it seems like you hit something. There's another one we used, I don't
