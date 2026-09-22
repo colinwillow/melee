@@ -379,10 +379,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m72</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m73</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m72</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m73</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -428,9 +428,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm72';
+const BUILD = 'm73';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1624,6 +1624,83 @@ const HOBO = {
   cool: .16,
   sep: .85,
   bar: { w: .8, h: .09, up: 1.20, fade: 4.0 },
+};
+
+// **CLANCY, THE SIDEKICK (m73).** *"He's basically like your little sidekick, so he just sort of
+// follows you around. I don't want it to be super super mechanical -- I want him to kinda wander
+// a little bit and walk around a sort of radius around you. I kinda just want him to be your
+// little dog sidekick that hangs out and is fairly autonomous, but stays within a certain radius
+// of you."*
+// **HE IS m38's PACIFIST WITH THE RING MOVED (`pal`).** `foeWander` already ambles round a point,
+// stops, looks about, breathes its pace and starts again -- everything in that sentence but WHICH
+// POINT. So a sidekick is that ring centred on the PLAYER instead of on his spawn, plus a leash,
+// and the rest of him (being shot, being launched, landing, being shoved, not standing inside the
+// other bodies) is what `DUMMIES` membership already buys. **No second brain and no follow code.**
+// MEASURED BEFORE A LINE WAS WRITTEN, which is what `npm run rig` is for:
+//   1 mesh / 1 material / 1 texture, 27 joints, draco + webp -- the good phone shape
+//   authored height 0.9028 m, soles at EXACTLY 0, toes (0.0000, 1.0000) so he faces +Z
+//   no weapon mounts, which is right for something that is not a wearer
+//   37 clips, `CINEMA_4D_Main` being the usual one-frame residue
+const CLANCY = {
+  file: 'models/characters/clancy.glb',
+  // **SMALL, WHICH IS THE WHOLE BRIEF** -- *"he should be small"*. Half the player's 1.25 m, so
+  // he is about knee height on him, which is what "little dog sidekick" means. It is a
+  // look-at-it number and `mel.CLANCY.h` wants a reload (the scale is measured at load).
+  h: .62, r: .28, hp: 3, snd: 'soft',
+  at: [[-3, 4]],                   // one of him, and he spawns beside you
+  drop: /^CINEMA_4D/,
+  ai: 1, pacifist: 1, pal: 1,
+  clips: {
+    // **THE TWO MAINS ARE A POOL AND THE FOUR EXTRAS ARE THE FLOURISH.** *"I got some idles
+    // titled clancy_idle_01 and clancy_idle_02, those are the main ones -- but I have four more
+    // idles you can mix in randomly."* That is exactly the two mechanisms `foeWander` already
+    // has: `rest` is what he HOLDS when he stops (picked fresh each stop, so the resting loop is
+    // not always the same one) and `look` is the one-shot he plays half the time on arriving.
+    idle: 'clancy_idle_01',        // the structural fallback -- one string, read in nine places
+    rest: ['clancy_idle_01', 'clancy_idle_02'],
+    look: ['idle_00', 'idle_01', 'idle_02_stretch', 'idle_03'],
+    // `mutant_walking` and `running` are the two whose FEET AGREE. `walking` reads 157% apart
+    // (L 0.51, R 0.06) -- the warrior's own m35 shape, and a number the tool refuses to stand
+    // behind is a number not to build on. `mutant_run` agrees too and is only 1.5x the walk,
+    // which is not a walk/run split; `running` is 2.7x, which is.
+    walk: 'mutant_walking', run: 'running', flee: 'running',
+    // **HE DOES HAVE AN AIR POSE, AND HE THINKS HE DOES NOT.** *"I should've put in an air pose
+    // because I wanted to be able to be hit by both you and NPCs, kinda launching -- and maybe
+    // he'll roll around or something, but I don't have that yet."* It is all in the export:
+    // `falling_idle` is a real float, `falling_to_roll` is the roll he described, and
+    // `hard_landing` is a body arriving. m67's finding one character over.
+    air: 'falling_idle',
+    hits: ['hard_landing'], big: ['falling_to_roll'],
+    downF: 'falling_to_roll', downB: 'falling_to_roll',
+    upF: 'cover_to_stand', upB: 'cover_to_stand',
+  },
+  // MEASURED at his own x0.687 (`npm run gait`), not eyeballed: authored 0.386 and 1.035.
+  // `clancy_idle_01` reads 0.024 m/s, which is the control that says the rest can be trusted.
+  walkRef: .265, runRef: .711, fleeRef: .711, tsHi: 2.2, tsLo: .7,
+  walk: .55, run: 2.6, flee: 2.6,
+  turn: 5.0,                       // a small thing turns quickly
+  vary: { pace: [.85, 1.2], nerve: [1, 1], react: [.3, 1.2], guard: [0, 0] },
+  // THE BREATHING IS THE HOBO'S, HARDER. *"I don't want it to be like super super mechanical."*
+  // `foeGait`'s surge and stop are what stop a follower being a tractor beam, and a pet that
+  // pauses to look at something is most of what reads as a mind.
+  gait: { lane: 0, laneT: [1.0, 2.6], surge: .46, stop: .30, stopT: [.5, 1.8] },
+  // **THE RING IS ROUND YOU** -- `roam` is how far he is willing to wander off, `leash` is how
+  // far before he stops wandering and comes back at a run. The gap between them is hysteresis:
+  // without it he would flip between amble and dash on the boundary every frame.
+  roam: 4.2, roamWait: [1.2, 3.4], roamAt: .7,
+  leash: 7.0, leashIn: 3.2,
+  flee0: 0, fleeAdd: 0, fleeMax: 0,   // he does not run away. He is the one who stays.
+  hitBeat: 1.4, bigBeat: 1.8, downBeat: 1.8, upBeat: 1.1,
+  out: 1.2,
+  flyV: 18.0, flyUp: 7.5, flyG: 20, flyDrag: 1.2,
+  knock: 5.0, knockUp: .7, knockDrag: 5.5, shoveDrag: 2.2,
+  hard: 1.01, fling: .45,           // he is light: less of a blow sends him
+  fly0: .55,
+  dmg: { bolt: 2.0, fist: 1.2, weap: 1.8, finish: 3.0 },
+  cool: .18,
+  sep: .55,
+  // NO HEALTH BAR. A gauge over your own pet reads as a thing to manage; he has hit points so a
+  // stray bolt still sends him, and `foeBar` is simply not called.
 };
 
 // HIS HEALTH, WHICH UNTIL NOW DID NOT EXIST. *"Maybe he has like a health bar or something."*
@@ -5960,6 +6037,9 @@ function foeLane(d, K, dd) {
 function bodyLoops(K) {
   const L = new Set([K.clips.idle]);
   for (const k of ['walk', 'run', 'block', 'flee']) if (K.clips[k]) L.add(K.clips[k]);
+  // the REST pool is idles and they are held, so they loop like the one in `idle` does. `look`
+  // is deliberately not here: it is a one-shot flourish and looping one is a tic.
+  for (const n of K.clips.rest || []) L.add(n);
   // the circling clips live beside the table rather than in it, and they loop like any gait
   if (K.strafe) L.add(K.strafe);
   if (K.strafeR) L.add(K.strafeR);
@@ -5987,6 +6067,15 @@ function buildHobos(g) {
   const P = bodyProto(g, HOBO);
   HOBO.up = 0;
   for (const [x, z] of HOBO.at) { const d = bodySpawn(P, HOBO, x, z); foeBar(d); HOBO.up++; }
+}
+
+// CLANCY IS m38'S PACIFIST WITH THE RING MOVED, and that is the whole build. `foeWander`
+// already ambles round a point, stops, looks about and breathes; a FOLLOWER changes WHICH POINT
+// that ring is round and nothing else. No bar -- `foeBar` is simply not called.
+function buildClancy(g) {
+  CLANCY.loops = bodyLoops(CLANCY);
+  const P = bodyProto(g, CLANCY);
+  for (const [x, z] of CLANCY.at) bodySpawn(P, CLANCY, x, z);
 }
 
 function buildFoes(g) {
@@ -6415,6 +6504,31 @@ function foeWander(d, dt, t, dd, toP) {
     setSkinScale(d, nm, clamp(sp / (K.clips.flee ? K.fleeRef : K.runRef), K.tsLo, K.tsHi));
     return;
   }
+  // **AND A SIDEKICK'S RING IS ROUND YOU (m73, `K.pal`).** *"He just sort of follows you around
+  // -- I want him to kinda wander a little bit and walk around a sort of radius around you."*
+  // Every other word of that sentence is already `foeWander`: the ring, the stop, the look, the
+  // breathing. The only thing a follower changes is WHICH POINT the ring is round, so that is
+  // the only thing this branch changes.
+  // **THE LEASH IS WHAT KEEPS IT A RADIUS RATHER THAN A DRIFT.** Past `leash` he stops wandering
+  // and comes back at a run; he goes back to ambling at `leashIn`, and **the gap between the two
+  // is hysteresis** -- one number would have him flipping between amble and dash on the boundary
+  // every frame, which is the m36 `hold`/`reach` lesson one body over.
+  if (K.pal) {
+    const cx = player.pos.x, cz = player.pos.z;
+    if (d.catch && dd < K.leashIn) d.catch = 0;
+    if (dd > K.leash) d.catch = 1;
+    if (d.catch) {
+      faceTo(d, toP, dt);
+      const sp = K.run * V.pace;
+      foeMove(d, d.h, sp, dt);
+      const nm = K.clips.run;
+      t[nm] = 1;
+      setSkinScale(d, nm, clamp(sp / K.runRef, K.tsLo, K.tsHi));
+      d.roamT = 0; d.rx = cx; d.rz = cz;   // and he picks a fresh spot the moment he arrives
+      return;
+    }
+    d.hx = cx; d.hz = cz;
+  }
   // THE RING IS ROUND WHERE HE SPAWNED, so a street left alone keeps its shape rather than
   // slowly emptying out as four random walks drift apart.
   if (d.roamT > 0) {
@@ -6423,17 +6537,23 @@ function foeWander(d, dt, t, dd, toP) {
       const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * K.roam;
       d.rx = d.hx + Math.sin(a) * r; d.rz = d.hz + Math.cos(a) * r;
     }
-    t[d.look && d.t < skinLen(d, d.look) ? d.look : K.clips.idle] = 1;
+    t[d.look && d.t < skinLen(d, d.look) ? d.look : d.rest || K.clips.idle] = 1;
     return;
   }
   const gx = d.rx - d.root.position.x, gz = d.rz - d.root.position.z;
   const gd = Math.hypot(gx, gz);
   if (gd < K.roamAt) {
     d.roamT = rnd(K.roamWait);
+    // **WHICH IDLE HE HOLDS IS PICKED FRESH ON EACH STOP.** *"clancy_idle_01 and clancy_idle_02
+    // are the main ones."* Two clips and one `idle` field is one clip; a pool read HERE, where
+    // he actually comes to rest, is the whole of it -- and `K.clips.idle` stays a single string
+    // so the nine other places that read it as the structural fallback are untouched.
+    const R = K.clips.rest;
+    if (R && R.length) d.rest = R[(Math.random() * R.length) | 0];
     d.look = K.clips.look && Math.random() < .5
       ? K.clips.look[(Math.random() * K.clips.look.length) | 0] : '';
     if (d.look) { skinPlay(d, d.look, 1); d.t = 0; }
-    t[K.clips.idle] = 1;
+    t[d.rest || K.clips.idle] = 1;
     return;
   }
   faceTo(d, Math.atan2(gx, gz), dt);
@@ -6442,7 +6562,7 @@ function foeWander(d, dt, t, dd, toP) {
   // arrive at a place nobody can see. What the amble was missing is the SPEED changing and the
   // occasional stop, which is the other two thirds of `foeGait`.
   const surge = foeGait(d, K, dt);
-  if (surge <= 0) { t[d.look && d.t < skinLen(d, d.look) ? d.look : K.clips.idle] = 1; return; }
+  if (surge <= 0) { t[d.look && d.t < skinLen(d, d.look) ? d.look : d.rest || K.clips.idle] = 1; return; }
   const sp = K.walk * V.pace * surge;
   foeMove(d, d.h, sp, dt);
   t[K.clips.walk] = 1;
@@ -7072,6 +7192,7 @@ async function init() {
   await side(FOE.file, 'loading the warrior', { name: 'WARRIOR', build: buildFoes });
   await side(HICK.file, 'loading the locals', { name: 'HICK', build: buildHicks });
   await side(HOBO.file, 'loading the locals', { name: 'HOBO', build: buildHobos });
+  await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
 
   paintKit();
 

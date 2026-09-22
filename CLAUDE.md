@@ -277,6 +277,27 @@ same picture from a phone.
       running            1.350                  -> 2.67      (`fleeRef` -- he sobers up to run)
   **NOTHING USES** `walking`, `left/right_strafe*`, the four turn clips, `backward_walking_turn`,
   `run_backward_arc_right`, `drunk_run_backward`, `drunk_walking_turn` or `jump`.
+- **`models/characters/clancy.glb`** (m73) — 27-joint rig, **authored height 0.9028 m**, soles at
+  exactly y = 0, 1 mesh / 1 material / 1 texture, draco + `EXT_texture_webp` +
+  `KHR_materials_specular`. Toes read (0.0000, 1.0000) and the shoulder span cross-checks to
+  **1.0000**: he faces **+Z** like everyone else here. **No weapon mounts**, which is right.
+  **37 clips**, plus `CINEMA_4D_Main` residue, dropped.
+  **AND HE ALREADY HAS THE AIR POSE HE THINKS HE HAS NOT.** *"Eventually I should've put in an
+  air pose, because I wanted to be able to be hit by both you and NPCs, kinda launching, and maybe
+  he'll roll around or something -- but I don't have that yet."* He does: `falling_idle` is a real
+  float, `falling_to_roll` is the roll he described, and `hard_landing` is the arrival. **Same
+  shape as m67's finding one character over** -- read the export before taking his word for what
+  is missing from it, because the clips he has forgotten are the ones already paid for.
+  **HIS GAIT MEASURED CLEAN ON TWO CLIPS AND NOT ON THE ONE NAMED `walking`.** `npm run gait`
+  flagged it **FEET DISAGREE 157%** (L 0.51, R 0.06), which is the warrior's own m35 shape, so it
+  is not used at all -- `mutant_walking` and `running` both have their two feet corroborating, and
+  `clancy_idle_01` reading **0.024 m/s** is the control that says the other two can be trusted:
+      mutant_walking   0.265 authored  x2.026 -> 0.54 m/s   (`walkRef`)
+      running          0.711           x2.026 -> 1.44       (`runRef` and `fleeRef`)
+  **NOTHING USES** `walking`, the mutant attack clips, or the remaining two dozen. They cost
+  nothing until they are named, and *"you're welcome to make him attack, I don't really care"* is
+  a slot rather than a build.
+
 - **A NEW NPC COST A TABLE AND A LOAD LINE, AND THAT IS m35 COLLECTING (m41, `HOBO`).** *"He's got
   all the same animations as the hick, so he's just an NPC and walks around -- but I gave him
   more. Three hit animations, you can knock him down, he has a get-up, and I gave him an in-air
@@ -1018,6 +1039,49 @@ same picture from a phone.
   blast call it reads from -- a `ReferenceError` on **every bolt death**, and invisible to both
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
+
+- **A SIDEKICK IS m38'S PACIFIST WITH THE RING MOVED (m73, `CLANCY`, `K.pal`, `K.clips.rest`).**
+  *"He's basically like your little sidekick, so he just sort of follows you around... I don't want
+  it to be like super super mechanical, I want him to kinda wander a little bit and walk around a
+  sort of radius around you. I kinda just want him to be your little dog sidekick that hangs out
+  and is fairly autonomous, but stays within a certain radius of you."*
+  **EVERY WORD OF THAT EXCEPT ONE IS ALREADY `foeWander`.** m38 built the amble for a drunk: a roam
+  ring, a stop timer, a look-about flourish and m50's surge-and-hesitate breathing -- which is
+  precisely *"wander a little bit"* and *"not super super mechanical"*, written and shipped three
+  builds before anybody asked for a sidekick. **The only thing a follower changes is WHICH POINT
+  the ring is round**, so that is the only thing the branch changes: `d.hx/d.hz` become the
+  player's position instead of the spawn. Six lines, and the wander, the stops, the idles, the
+  clip scaling and the pacifism come with it.
+  **AND BEING HITTABLE COST NOTHING AT ALL**, which is `d.K`'s own dividend for the fifth time: the
+  bolt, the swept limb, `bodyFly`, `bodySep`, `dummyBlow`, the player's resolver and the fly-into-a-
+  body chain all reach anything in `DUMMIES`. *"I wanted to be able to be hit by both you and
+  NPCs"* is a table and a load line, and his own roll and landing clips are wired into the states
+  m38 and m41 already wrote.
+  **THE LEASH IS WHAT KEEPS IT A RADIUS RATHER THAN A DRIFT, AND IT NEEDS TWO NUMBERS.** He stops
+  wandering past `leash` 7.0 and comes back at a run, and goes back to ambling at `leashIn` 3.2 --
+  **the gap between them is hysteresis**, and one number would flip him between amble and dash on
+  the boundary every frame. That is the m36 `hold`/`reach` lesson one body over, and it is also
+  why the catch-up state is a LATCH (`d.catch`) rather than a distance test.
+  **WHICH IDLE HE HOLDS IS A POOL PICKED FRESH ON EACH STOP.** *"I got some idles titled Clancy
+  idle one and Clancy idle two, those are the main ones I want, but I do have like four more idles
+  in addition that you can mix in randomly."* Two facts, two fields: `rest` is the pool he SETTLES
+  into and `look` is the existing one-shot flourish, which is exactly what four occasional extras
+  are. **`K.clips.idle` stays a single string**, because nine other places read it as the
+  structural fallback and a pool there would have been nine readers to change for one character.
+  **And the pool goes into `bodyLoops`** -- an idle is held, so it loops like the one in `idle`
+  does; `look` deliberately does not, because looping a one-shot flourish is a tic.
+  **HE DOES NOT RUN AWAY (`flee0: 0`).** m38's pacifist flees when hit, which is what a drunk does
+  and is the opposite of a sidekick: the one thing a dog does when you get into a fight is stay.
+  The flee branch is untouched and simply never entered, rather than being gated on `pal`.
+  **AND HE HAS NO HEALTH BAR**, because `foeBar` is a call `buildClancy` does not make. A gauge
+  over the head of the thing on your own side reads as a target.
+  **WHAT IS NOT DONE AND IS STATED RATHER THAN HIDDEN:** he cannot keep up with a full 7.2 m/s
+  sprint -- `running` is walking at 1.44 m/s and `run` 2.6 is already above its own reference, so
+  a faster approach than the clip can sell is a scramble and the leash plus the catch-up is the
+  honest answer. Nothing calls the mutant attack clips. And **nothing in this container can build
+  a skin** (the GLB is draco and `DRACOLoader` wants a Worker), so his scale at `h` .62, his facing
+  and whether a knee-high alien reads as a dog are all device questions. `mel.CLANCY` is live
+  except `h`, which is measured at load and wants a reload.
 
 - **A LUNGE COULD CARRY HIM SIXTEEN METRES, AND THE MAN DECIDED IT (m72, `MELEE.lungeMax`).**
   *"When I melee he launches forward quite a bit -- sometimes I wanna cap that distance, sometimes
