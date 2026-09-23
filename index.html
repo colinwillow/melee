@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m86</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m87</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m86</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m87</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm86';
+const BUILD = 'm87';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -567,6 +567,52 @@ const MOVE = {
   sub: .34, subMax: 6,
   hardLand: 8.0,      // impact speed (m/s) above which the landing is the HARD one
   tapT: .30,          // longer than this on a pad is a HOLD, and a hold is not a tap
+  // AND `tapR` IS THE OTHER HALF OF THE SAME FACT: a tap is near the CENTRE. `bindStick` read
+  // it as a literal and m87 needed the same radius to decide whether a hold was a camera drag,
+  // so it is one number in one place rather than two that drift.
+  tapR: .42,
+};
+
+// ============================================================================================
+// THE SECOND JUMP IS A FLIP, AND THE RIGHT PAD HELD AT REST IS A CHARGED BACKFLIP (m87)
+//
+// *"We're gonna have a double jump. Second jump is a flip, a front flip. Also, if you're on the
+// ground and you press and hold the right stick, he ducks and it charges a backflip, and then
+// when you release he backflips and it's high."*
+//
+// **THE ONLY FREE GESTURE LEFT ON THAT PAD IS A HOLD AT REST, AND THAT IS WHAT THIS IS.** Up is
+// the trigger, the wind-up and the square-up (`padUp`); down is the guard; sideways is the
+// camera; a tap is the jump and a flick is a strike. What nothing has ever read is a thumb that
+// goes down, stays near the middle and stays there -- and `MOVE.tapT`/`tapR` already draw that
+// line, because they are exactly what makes something NOT a tap.
+// **AND THE DRAG CANNOT BECOME A BACKFLIP, BY CONSTRUCTION.** `out.far` is a HIGH-WATER MARK for
+// the whole touch, so one sweep anywhere in the hold kills the charge for the rest of it -- the
+// same property that makes it safe to share a pad with the camera. It also means the trigger,
+// the wind-up and the guard exclude this without a single line of coordination: all three need
+// `mag` past `fireAt`/`blockAt`, which is far past `tapR`.
+const AIR = {
+  // ---- the second jump ----
+  second: .92,        // **SET, NEVER ADDED.** Added to whatever he had, a double off the top of
+                      // a jump goes into orbit and one off the bottom of a fall does nothing;
+                      // set, it is the same height whenever it is spent, which is what makes it
+                      // a save you can rely on.
+  fill: .86,          // the flip has to be OVER by this much of the flight, so the last of the
+                      // air is spent aiming the landing rather than still coming round
+  rateHi: 1.6,        // and it may be sped up to get there, never slowed down
+
+  // ---- the charged backflip ----
+  hold: .85,          // seconds of duck to a full charge
+  hi0: 3.4, hi1: 6.8, // **THE APEX IS THE NUMBER CHOSEN AND `vy` IS DERIVED FROM IT** (m21's
+                      // rule). An ordinary jump is 2.81 m, so even a bare release is higher.
+  duckSp: 1.1,        // he can shuffle while ducked, he cannot run
+
+  // ---- and the three landmarks in a flip clip are MEASURED, never typed ----
+  // The hips carry the body's height off the ground, so a standing flip reads as a dip, a peak
+  // and a second dip: the CROUCH it winds up through, the APEX, and the LANDING absorb. Taking
+  // them off the curve means `Backflip`'s wind-up is found rather than trimmed by hand, and a
+  // re-export at any length lands right with no edit.
+  scan: .45,          // the crouch is the lowest hips inside this much of the clip -- and on a
+                      // clip with no wind-up that argmin is t=0, so it needs no threshold
 };
 
 // THE GAIT IS A WEIGHTED BLEND OF CLIPS BY MEASURED SPEED -- never a run FLAG. Each clip's
@@ -2065,6 +2111,11 @@ const CLIPS = {
   fist: ['melee_01', 'melee_03'],
   weap: ['weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_04'],
   chargeUp: 'weapon_melee_charge', chargeGo: 'weapon_melee_finish',
+  // THE TWO FLIPS, AND THE DUCK IS DERIVED FROM THE BACKFLIP'S OWN WIND-UP (m87). `backPose` is
+  // not in the file: it is one key lifted from the deepest frame of `Backflip`'s crouch, so the
+  // release continues from the very frame the hold was sitting on and there is no seam to blend
+  // over. Same trick as `aimPose`, at a measured time rather than at frame zero.
+  flipAir: 'front_flip', flipBack: 'Backflip', backPose: 'backCrouch',
   // **EMPTY, AND THAT IS THE HOOK.** *"I know I don't have a block animation yet, but I'll put
   // one in."* Name it here and `rigAnim` blends it in at full weight while the guard is up; an
   // empty name falls through to the gait with no branch to add, which is how `GAIT.sprint` and
@@ -3188,6 +3239,36 @@ function deDrift(clip) {
 // these buffers are shared, so a derived clip that aliased one would put the same landmine back
 // one function along.
 // --------------------------------------------------------------------------------------------
+// WHERE THE CROUCH, THE APEX AND THE LANDING ARE IN A FLIP CLIP -- read off the Hips height
+// rather than typed, so `Backflip`'s half-second of wind-up is FOUND and a re-export moves it.
+const FLIP = {};
+function flipMarks(clip) {
+  const t = clip.tracks.find(t => /Hips\.position$/.test(t.name));
+  if (!t || t.times.length < 3) return null;
+  const y = i => t.values[i * 3 + 1], n = t.times.length, dur = clip.duration;
+  // the CROUCH: the lowest hips inside the opening. On a clip with no wind-up that argmin is
+  // the first key, so `from` comes out 0 and no threshold has to be invented.
+  let ci = 0; for (let i = 0; i < n && t.times[i] <= dur * AIR.scan; i++) if (y(i) < y(ci)) ci = i;
+  let pi = ci; for (let i = ci; i < n; i++) if (y(i) > y(pi)) pi = i;         // the APEX
+  let li = pi; for (let i = pi; i < n; i++) if (y(i) < y(li)) li = i;         // the LANDING
+  const from = t.times[ci], air = t.times[li] - from;
+  if (!(air > .05)) return null;
+  return { from, air, peak: t.times[pi] - from, dur };
+}
+// ONE KEY OF A CLIP AT AN ARBITRARY TIME. `deriveClips` already lifts frame zero for `aimPose`;
+// a wind-up is not at frame zero, so this samples through the track's OWN interpolant, which is
+// what gets a quaternion right (component-wise lerp between two keys is not a rotation).
+function poseAt(clip, time, name) {
+  const tracks = [];
+  for (const t of clip.tracks) {
+    const n = t.getValueSize();
+    if (!t.values || t.values.length < n) continue;
+    const v = t.createInterpolant().evaluate(time);
+    tracks.push(new t.constructor(t.name, new Float32Array([0]), Float32Array.from(v)));
+  }
+  return tracks.length ? new THREE.AnimationClip(name, .1, tracks) : null;
+}
+
 function deriveClips(clips) {
   const out = clips.slice();
   const src = clips.find(c => c.name === WEAP.aimFrom);
@@ -3204,6 +3285,22 @@ function deriveClips(clips) {
   out.push(new THREE.AnimationClip(CLIPS.aimPose, .1, tracks));
   console.log('[melee] ' + CLIPS.aimPose + ' derived from the first frame of ' + WEAP.aimFrom +
               ' (' + tracks.length + ' tracks)');
+
+  // ---- the flips: measure both, and lift the backflip's duck out of its own wind-up ----
+  for (const k of ['flipAir', 'flipBack']) {
+    const c = out.find(c => c.name === CLIPS[k]);
+    if (!c) { note('NO CLIP ' + CLIPS[k]); continue; }
+    const M = flipMarks(c);
+    if (!M) { note('NO HIPS IN ' + c.name); continue; }
+    FLIP[c.name] = M;
+    console.log('[melee] ' + c.name + '  dur ' + c.duration.toFixed(3) + 's  crouch ' +
+                M.from.toFixed(3) + '  apex +' + M.peak.toFixed(3) + '  air ' + M.air.toFixed(3) + 's');
+  }
+  {
+    const c = out.find(c => c.name === CLIPS.flipBack), M = FLIP[CLIPS.flipBack];
+    const pose = c && M ? poseAt(c, M.from, CLIPS.backPose) : null;
+    if (pose) out.push(pose); else note('NO ' + CLIPS.backPose);
+  }
 
   // ---- and the two half-body families ----
   // `KeyframeTrack.clone()` slices its own times AND values, so these are new arrays and the
@@ -4331,6 +4428,8 @@ const player = {
   stepD: 0, stepL: 0,          // ground covered since the last footfall, and which foot it was
   goT: 0,                          // how long he has been asking to move -- the gather
   jump: 0, jumps: 0, fallV: 0,
+  flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
+  bkT: 0, bkOn: 0,                  // the backflip's charge, and whether he is visibly ducked
   land: 0, landT: 0, landHard: 0,  // the landing state
   knock: 0, knockCool: 0,          // the knock-down, and how long until he can take another
   roll: 0, rollT: 0, rollH: 0,
@@ -4638,6 +4737,50 @@ function meleeGo(h) {
 // bearing to throw it along. The pad's +Y is DOWN (`flickH(0, -1)` is the desktop punch, and
 // that is straight UP), so `dy > 0` is the gesture and the dominance test is what keeps a
 // sideways flick a strike.
+// THE FLIP ITSELF. Started from two places -- the second jump and the backflip release -- so
+// it is a function: two copies is two things to keep in step, and the clip scaling is the part
+// that would drift. **IT IS STRETCHED TO THE AIR HE HAS LEFT**, because a clip played at 1x is
+// right at exactly one jump height: `front_flip` is 0.67 s of air and a charged backflip hangs
+// for over a second and a half, so at 1x one finishes a third of the way up and the other could
+// never be landed. The rate is clamped, because a clip played at half speed is slow motion
+// whatever the ballistics say.
+function flipGo(nm, T) {
+  const p = player, M = FLIP[nm];
+  p.flip = ''; p.flipT = 0;
+  if (!rig.actions[nm] || !M) return 0;
+  // **THE FLOOR IS 1, NOT A SMALL NUMBER.** Fitting the clip to the air in BOTH directions is
+  // the board-trick rule from one repo over and it is wrong here: these two are drawn at the
+  // speed a flip reads at, so stretching one to fill a long hang is slow motion. It is only
+  // ever sped UP, when the air is too short to fit it. At today's heights both come out at
+  // exactly 1.00 and this term is the guard for a re-export or a retune, not a live scaling.
+  const rate = Math.min(AIR.rateHi, Math.max(1, M.air / Math.max(.2, T * AIR.fill)));
+  p.flip = nm; p.flipDur = M.air / rate;
+  playOnce(nm, rate);
+  // AND IT STARTS AT THE CROUCH, NOT AT FRAME ZERO. The wind-up is the pose he has been HOLDING;
+  // playing it again is half a second of ducking after he has already left the ground. `from` is
+  // 0 on a clip with no wind-up, so the front flip needs no case of its own.
+  const a = rig.actions[nm]; if (a) a.time = M.from;
+  return 1;
+}
+
+// THE CHARGED BACKFLIP. The hold is spent here and nowhere else, so the duck, the release and
+// the height cannot disagree about how wound it was.
+function backGo(far, fired) {
+  const p = player, k = clamp(p.bkT / AIR.hold, 0, 1), on = p.bkOn;
+  p.bkT = 0; p.bkOn = 0;
+  // a flick or a tap already answered this thumb, and one gesture may only mean one thing
+  if (!on || fired || far >= MOVE.tapR || !p.grounded || p.land) return 0;
+  const hi = AIR.hi0 + (AIR.hi1 - AIR.hi0) * k, vy = Math.sqrt(2 * MOVE.g * hi);
+  p.vel.y = vy; p.grounded = false; p.coyote = 0; p.airT = 0;
+  // **IT SPENDS THE DOUBLE.** A front flip started out of a backflip is two rotations fighting
+  // over one body, and this is already the higher jump of the two -- so the backflip IS the
+  // flip for that airtime.
+  p.jumps = 2;
+  flipGo(CLIPS.flipBack, 2 * vy / MOVE.g);
+  snd('swoosh', { r: 1.05 + k * .12, g: .40 + k * .16 });
+  return 1;
+}
+
 function slamGo(dx, dy) {
   const p = player;
   if (p.grounded || p.knock || p.slam || p.slamUsed || p.roll) return 0;
@@ -4646,7 +4789,7 @@ function slamGo(dx, dy) {
   if (!rig.actions[nm]) { note('NO CLIP ' + nm); return 0; }
   // ONE PER AIRTIME. Without it a held thumb flicking repeatedly is a man hammering the floor
   // on the way down, which is the flutter-kick shape `p.airKick` refuses one repo over.
-  p.slam = 1; p.slamUsed = 1; p.slamT = 0;
+  p.slam = 1; p.slamUsed = 1; p.slamT = 0; p.flip = '';
   p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   triggerStop();                      // the same thumb, and a wound shot has nowhere to go
   p.vel.x *= SLAM.keep; p.vel.z *= SLAM.keep; p.vel.y = 0;
@@ -4902,7 +5045,7 @@ function bindStick(el, out, onTap, onFlick, onHold, onRel) {
     if (pend && onFlick && now - pend.t < FLICK.let * 1000 && now - lastFlick > FLICK.gap * 1000) {
       lastFlick = now; fired = 1; onFlick(pend.x, pend.y);
     }
-    if (!fired && onTap && far < .42 && held < MOVE.tapT) { fired = 1; onTap(); }
+    if (!fired && onTap && far < MOVE.tapR && held < MOVE.tapT) { fired = 1; onTap(); }
     if (onRel) onRel(far, held, fired);
     id = null; pend = null; out.down = 0; out.x = out.y = 0; out.far = 0; hist = [];
     knob.style.transform = 'translate(0,0)'; el.classList.remove('act');
@@ -4956,7 +5099,7 @@ PADS.R = bindStick(padR, stick.R,
   null,
   // THE RELEASE IS THE SHOT, so this must NOT clear `p.aim` -- `stepKit` sees the pad is no
   // longer held and fires on that edge. Clearing it here would eat every shot in the game.
-  () => { chargeRelease(); });
+  (far, held, fired) => { backGo(far, fired); chargeRelease(); });
 
 // ============================================================================================
 // DESKTOP (m79, `DESK`)
@@ -5159,6 +5302,25 @@ function stepKit(dt) {
       p.centerT += dt;
       if (p.centerT >= WEAP.armT) p.center = 1;
     } else { p.center = 0; p.centerT = 0; }
+  }
+
+  // ---- AND A HOLD AT REST IS THE BACKFLIP'S DUCK (m87). *"If you're on the ground and you
+  //      press and hold the right stick, he ducks and it charges a backflip, and then when you
+  //      release he backflips and it's high."*
+  //      **`far` IS A HIGH-WATER MARK FOR THE WHOLE TOUCH**, which is what makes this safe on a
+  //      pad that is also the camera: one sweep anywhere in the hold kills the charge for the
+  //      rest of it, and it can never come back. It is also why the trigger, the wind-up and the
+  //      guard need no coordination with this -- all three arm well past `tapR`.
+  //      **AND THE DUCK ONLY APPEARS ONCE THE GESTURE STOPS BEING A TAP** (`MOVE.tapT`), so the
+  //      first third of a second of every touch looks exactly as it always did. That is one
+  //      constant doing one job in two places rather than a second threshold to tune.
+  {
+    const busy = p.melee || p.roll || p.knock || p.chargeGo || p.slam || p.block || p.center ||
+                 p.aim || p.charge || p.land || !p.grounded;
+    if (!busy && R.down && R.far < MOVE.tapR) {
+      p.bkT = Math.min(AIR.hold, p.bkT + dt);
+      p.bkOn = p.bkT >= MOVE.tapT ? 1 : 0;
+    } else { p.bkT = 0; p.bkOn = 0; }
   }
 
   // ---- the blaster: PRESS AND HOLD UP to take the firing position and wind a shot up,
@@ -5412,7 +5574,7 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
       // ground sounds like a man hitting the ground whichever man it is. `MOVE.landSoft` and
       // `landHard` pick the CLIP by the same speed; this is the sound of the same event.
       bumpSnd(p.fallV * BODYSND.drop.me, p.pos.x, p.pos.z);
-      p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; p.slamUsed = 0; landed = 1;
+      p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; p.slamUsed = 0; p.flip = ''; landed = 1;
     }
   }
   p.speed = Math.hypot(p.vel.x, p.vel.z);
@@ -5549,10 +5711,23 @@ function stepPlayer(dt) {
     }
   }
 
+  // ---- the flip runs out on its own clock, and the flight usually outlasts it ----
+  if (p.flip) { p.flipT += dt; if (p.flipT >= p.flipDur || p.grounded) p.flip = ''; }
+
   // ---- the jump ----
   if (p.jump) {
     p.jump = 0;
-    if ((p.grounded || p.coyote > 0) && !p.land) {
+    // **THE SECOND TAP IS THE SECOND JUMP, AND IT IS THE FLIP (m87).** The gate is `p.jumps > 0`,
+    // so walking off a box grants nothing: the double exists only if he actually took the first,
+    // which is what stops a ledge being a free extra jump. `coyote` still covers the first .12 s.
+    if (!p.grounded && p.coyote <= 0 && p.jumps === 1 && !p.knock && !p.slam && !p.roll && !p.melee) {
+      p.jumps = 2;
+      p.vel.y = MOVE.jump * AIR.second;       // SET, never added -- see `AIR.second`
+      flipGo(CLIPS.flipAir, (p.vel.y + Math.sqrt(p.vel.y * p.vel.y +
+        2 * MOVE.g * Math.max(0, p.pos.y - groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step)))) / MOVE.g);
+      snd('swoosh', { r: 1.30, g: .40 });
+    }
+    else if ((p.grounded || p.coyote > 0) && !p.land) {
       p.vel.y = MOVE.jump; p.grounded = false; p.coyote = 0; p.airT = 0; p.jumps = 1;
       // the same swoosh the strikes use, pitched UP and quiet -- a body leaving the ground is
       // a smaller version of the same event, and a second sample for it would be a second
@@ -5581,6 +5756,7 @@ function stepPlayer(dt) {
   // point that way. So it joins that branch rather than growing a second one, and `rigAnim`'s
   // strafe blend picks the clip off the sign of his travel with nothing new written.
   if (p.block) wantSp = Math.min(wantSp, MOVE.blockSp);
+  if (p.bkOn) wantSp = Math.min(wantSp, AIR.duckSp);   // a duck shuffles; it does not run
   if (p.hurtT > 0) { p.hurtT = Math.max(0, p.hurtT - dt); wantSp = 0; }
   if (p.knockCool > 0) p.knockCool = Math.max(0, p.knockCool - dt);
   // FLYING OR GETTING UP, THE STICK IS NOT HIS. One flag covers both halves, because a
@@ -5667,7 +5843,15 @@ function rigAnim(dt) {
   // THE GUARD, WHEN THERE IS A CLIP FOR IT. An empty name falls straight through to the gait,
   // so this line costs nothing until the clip lands and needs no second branch when it does.
   if (p.block && CLIPS.block && rig.actions[CLIPS.block]) { t[CLIPS.block] = 1; setWeights(t, dt); return; }
+  // THE DUCK. One key held at full weight, so the release continues from the frame it is sitting
+  // on -- and `setWeights` damps it in, so a hold that ends up being a camera drag reads as a
+  // small lean rather than as a twitch.
+  if (p.bkOn && rig.actions[CLIPS.backPose]) { t[CLIPS.backPose] = 1; setWeights(t, dt); return; }
   if (!p.grounded) {
+    // A FLIP IF ONE IS RUNNING, and `in_air` once it has finished -- the rotation is fitted to
+    // `AIR.fill` of the flight on purpose, so the last of the air is spent in the ordinary pose
+    // aiming the landing rather than still coming round.
+    if (p.flip && rig.actions[p.flip]) { t[p.flip] = 1; setWeights(t, dt); return; }
     // `in_air` is 2.83 s of a subtle float and loops, so it reads at any airtime; a jump here
     // is about 0.84 s, so what is seen is its opening third.
     t[CLIPS.air] = 1; setWeights(t, dt); return;
@@ -7610,7 +7794,7 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
-    p.melFired = 0; p.melQ = null; p.land = 0;
+    p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0;
     whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
   } else {
     p.vel.x += Math.sin(dirH) * push;
@@ -7987,7 +8171,14 @@ function frame() {
       // cover the whole of the hold instead. "It didn't go to him" and "it never had him" are
       // opposite bugs and one picture from a phone.
       : p.charge ? 'charge' + (p.chargeT / MELEE.charge).toFixed(1) +
-          (p.chgTgt != null ? '>' + p.chgTgt.toFixed(1) : '') : !p.grounded ? 'air'
+          (p.chgTgt != null ? '>' + p.chgTgt.toFixed(1) : '')
+      // **HOW WOUND THE BACKFLIP IS, AND WHICH FLIP IS RUNNING (m87).** "It never ducked", "it
+      // ducked and the release did nothing" and "it flipped but the rotation is wrong" are three
+      // bugs with one picture from a phone, and only the number tells them apart. `FLIPback0.42`
+      // is which clip and how much of it is left to run.
+      : p.bkOn ? 'DUCK' + (p.bkT / AIR.hold).toFixed(2)
+      : p.flip ? 'FLIP' + (p.flip === CLIPS.flipBack ? 'back' : 'fwd') +
+          Math.max(0, p.flipDur - p.flipT).toFixed(2) : !p.grounded ? 'air'
       : p.knock ? (p.grounded ? 'getup' : 'KNOCKED') : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
     // B IS THE POSE'S OWN OFFSET AND C IS WHAT IS BEING TAKEN OFF IT, because "the gun points
     // the wrong way" is two different bugs from a phone: a bias near 0 means the clip is

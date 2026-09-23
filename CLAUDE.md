@@ -1040,6 +1040,68 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE SECOND JUMP IS A FLIP, AND THE RIGHT PAD HELD AT REST IS A CHARGED BACKFLIP (m87, `AIR`,
+  `flipGo`, `backGo`, `flipMarks`, `poseAt`).** *"We're gonna have a double jump. Second jump is a
+  flip, a front flip. Also, if you're on the ground and you press and hold the right stick, he
+  ducks and it charges a backflip, and then when you release he backflips and it's high."*
+  **THE ONLY FREE GESTURE LEFT ON THAT PAD IS A HOLD AT REST, AND THAT IS EXACTLY WHAT HE ASKED
+  FOR.** Up is the trigger, the wind-up and the square-up (`padUp`); down is the guard; sideways
+  is the camera; a tap is the jump and a flick is a strike. What nothing has ever read is a thumb
+  that goes down, stays near the middle and stays there -- and `MOVE.tapT`/`tapR` already draw
+  that line, because they are precisely what makes something NOT a tap. No mode, nothing to be in
+  without knowing it.
+  **AND A CAMERA DRAG CANNOT BECOME A BACKFLIP, BY CONSTRUCTION.** `out.far` is a HIGH-WATER MARK
+  for the whole touch, so one sweep anywhere in the hold kills the charge for the rest of it and
+  it can never come back -- the same property that makes this safe to share a pad with the look.
+  It is also what makes the trigger, the wind-up and the guard need **no coordination at all**:
+  every one of them arms past `fireAt`/`blockAt`, which is far past `tapR`.
+  **`.42` WAS A LITERAL IN `bindStick` AND IS `MOVE.tapR` NOW.** Two copies of the tap radius is
+  two things to drift, and this build needed the same number to decide what a drag is.
+  **THE DUCK IS ONE KEY LIFTED OUT OF THE BACKFLIP'S OWN WIND-UP.** `Backflip` is a STANDING
+  backflip: measured off the Hips height it drops from 38.4 to 28.3 over its first third of a
+  second, then pushes to a peak at +0.500 and absorbs into a landing at +1.125. That opening dip
+  IS the duck, so the charge pose is that frame held -- **in register**, so the release continues
+  from the very frame the hold was sitting on and there is no seam to blend over. `aimPose`'s
+  trick at a measured time rather than at frame zero, which is why `poseAt` samples through the
+  track's OWN interpolant: a component-wise lerp between two quaternion keys is not a rotation.
+  **THE THREE LANDMARKS ARE MEASURED, NEVER TYPED (`flipMarks`).** The hips carry the body's
+  height off the ground, so a standing flip reads as a dip, a peak and a second dip -- the crouch
+  it winds up through, the apex, and the landing absorb. Taking them off the curve means the
+  wind-up is FOUND rather than trimmed by hand, and a re-export at any length lands right:
+      front_flip   dur 0.833s   crouch 0.000   apex +0.292   air 0.667s
+      Backflip     dur 2.167s   crouch 0.333   apex +0.500   air 1.125s
+  **AND THE CROUCH NEEDS NO THRESHOLD**, which is the part that makes one function serve both: it
+  is the argmin of the hips inside the opening `AIR.scan`, and on a clip with no wind-up that
+  argmin is the first key. `front_flip` rises from its very first frame and comes out `from` 0.
+  **THE APEX IS THE NUMBER CHOSEN AND `vy` IS DERIVED FROM IT** (m21's rule). An ordinary jump is
+  2.81 m and 1.06 s, so even a bare release clears it:
+      charge 0.00   apex 3.40 m   vy 11.66   airtime 1.17s
+      charge 0.50   apex 5.10 m   vy 14.28   airtime 1.43s
+      charge 1.00   apex 6.80 m   vy 16.49   airtime 1.65s
+      the double, tapped at the apex of the first   apex +5.19 m   0.98 to 1.21 s of air left
+  **THE SECOND JUMP IS SET, NEVER ADDED.** Added to whatever he had, a double off the top of a
+  jump goes into orbit and one off the bottom of a fall does nothing; set, it is the same height
+  whenever it is spent, which is what makes it a save you can rely on. And the gate is
+  `p.jumps === 1`, so **walking off a box grants nothing** -- the double exists only if he
+  actually took the first. `coyote` still covers the first .12 s off a ledge.
+  **A BACKFLIP SPENDS THE DOUBLE** (`p.jumps = 2`). A front flip started out of a backflip is two
+  rotations fighting over one body, and the backflip is already the higher jump of the two.
+  **AND THE FLIP RATE IS FLOORED AT 1, NOT FITTED IN BOTH DIRECTIONS.** Stretching a clip to fill
+  the air is the board-trick rule from one repo over and it is wrong here: these two are drawn at
+  the speed a flip reads at, so slowing one to fill a long hang is slow motion. It is only ever
+  sped UP, when the air is too short to fit it -- and at today's heights both come out at exactly
+  **1.00**, so that term is the guard for a re-export or a retune rather than a live scaling. The
+  flip then finishes with air to spare and `in_air` takes the rest, which is the landing being
+  aimed rather than the rotation still coming round.
+  **AND THE CHIP SAYS WHICH OF THE THREE IT IS.** `DUCK0.62`, `FLIPback0.42`, `FLIPfwd0.31` --
+  "it never ducked", "it ducked and the release did nothing" and "it flipped and the rotation is
+  wrong" are three bugs with one picture from a phone.
+  **STATED GAPS:** there is **no desktop binding**, because m79 maps the left mouse button to the
+  right pad at full deflection UP (`stick.R.far = 1`), so the hold can never be at rest -- the
+  same gap the guard has. And **nothing here can see a skin** (the GLB is draco and `DRACOLoader`
+  wants a Worker), so whether `Backflip`'s frame 8 reads as a duck, and whether 6.8 m is "high"
+  rather than silly, are device questions. `mel.AIR` is live.
+
 - **A SMALL BODY LANDS LIGHTER, AND THERE WERE TWO MEASURES OF "SMALL" (m84, `STEP.sizeG`,
   `voxWeight`).** *"I think we need to turn down the footsteps for Clancy cause he's like
   small."*
