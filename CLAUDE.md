@@ -1040,52 +1040,80 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
-- **CLANCY HAS A VOICE, AND m62 SAID IT WOULD BE A WORD (m82, `CLANCY.voice`, `CLANCY.chirp`,
-  `bodyChirp`).** *"I think we could steal some of the creature noises from Plutopia for Clancy's
-  little noises."*
-  **HALF OF IT WAS LITERALLY ONE WORD.** m62 wrote *"it rides `K.voice` on the kind table the way
-  `K.snd` does; the drunks and the officer have no voice until he records theirs, and adding one
-  is a word"* -- and `voice: 'creature'` is that word. `dummyBlow` is the one function every blow
-  on a body reaches, so what he says when he is hit came with the bank and **no code at all**.
-  **AND THE BANK IS UNUSED IN PLUTOPIA**, which is worth knowing before borrowing: it loads the
-  seven as `beast` and nothing over there ever fires one. This is a bank finding a job rather
-  than a loan, the same way `powerup_01` was at m65.
-  **BUT A SIDEKICK WHO ONLY SPEAKS WHEN YOU SHOOT HIM IS THE WRONG HALF**, and *"little noises"*
-  is plainly the ambient one. That is the part that needed building, and it is three ideas:
-      every    re-rolled EVERY TIME, never set once -- a fixed interval is a metronome, and a
-               creature is exactly what a metronome is not (`SMOKE`'s own rule, m41)
-      per body rolled at SPAWN rather than started at zero, or every body chirps on frame one
-               and then on the same frame for ever, which is one creature drawn N times --
-               m50's staggered get-ups, on the audio side
-      r        1.18 to 1.42, because **he is LITTLE**. Plutopia's creature is not knee height on
-               a 1.25 m man, and the metal clangs' rule is that tiers are told apart by PITCH
-               and not by more recordings
-  **AND HE ONLY SPEAKS WHEN THERE IS NOTHING HAPPENING TO HIM.** `hit`, `down` and `up` are the
-  three states where he already HAS a noise, and a chirp on top of a grunt is two voices
-  describing one event -- m27's duplicate exactly. **The clock still runs through them**, so he
-  does not go silent for a minute after a fight.
-  **ONE PLACE MAKES THE NOISE (`chirp`), AND AN EVENT RE-ARMS THE CLOCK.** The ambient one and
-  the dive's yelp cannot disagree about how loud a creature is or where he is standing, and the
-  re-arm is what stops m81's two-dive scramble being two yelps with a chirp landing on top.
-  **THE YELP IS THE ONE MOMENT A SIDEKICK'S VOICE HAS SOMETHING TO BE ABOUT** -- he has just
-  thrown himself out of your line -- and it is the same voice louder and higher rather than an
-  eighth file, which is the same argument as the pitch.
-  **A KIND WITH NO `chirp` NEVER REACHES ANY OF IT**, so the two drunks, the skater, the officer
-  and the orcs are byte-for-byte what they were. m38's empty-field pattern, which is why this
-  needed no gate naming anybody -- and giving the skater one is now a word too.
+- **CLANCY HAS A VOICE, AND THE MECHANISM WAS WORTH MORE THAN THE FILES (m82/m83, `CVOX`,
+  `bodyVox`).** *"I think we could steal some of the creature noises from Plutopia for Clancy's
+  little noises."* Then: *"No, they're definitely used. Are you sure you're grabbing the right
+  ones?"*
+  **HE WAS RIGHT AND I HAD GREPPED FOR THE WRONG WORD.** I searched Plutopia for `'creature'`,
+  found only the filenames, and shipped m82 saying the bank was unused over there. **The key is
+  `beast`**, and `snd.beast` is a whole system: a `beastTick` that picks a near animal every 3.4
+  to 8.5 s, six MOODS, a per-creature gap, and a pitch derived from the animal's size. Grepping
+  for the value when the thing you want is keyed by a name is how you conclude a live system is
+  dead -- **search for the KEY, not for the payload.**
+  **AND THE SEVEN FILES ARE UNLABELLED ON PURPOSE, WHICH IS THE ANSWER TO HIS QUESTION.**
+  Plutopia's own note: *"Naming one of them 'angry' would spend it on one feeling; kept as one
+  voice they are the ISLAND'S voice, and which feeling it is comes out of pitch and weight
+  instead."* So there is no calm subset to grab and no angry one -- **all seven are every mood**,
+  which means the files were right and it was the MECHANISM that was missing.
+  **THE MOOD TABLE IS PLUTOPIA'S, UNCHANGED**, `[rate, gain]`: alarm goes up and gets shorter,
+  anger goes down and gets louder, contentment sits low and quiet, a hurt one is a bark at the
+  top of its range. One pool doing six jobs, which is the metal clangs' rule (three car tiers by
+  PITCH, not three recordings) stated from the other side -- and it is strictly better than the
+  single `r` range m82 shipped, because that conflated "which feeling" with "not the same twice".
+  The jitter is its own term now.
+  **BUT THE SIZE CURVE IS THE ONE THING THAT DOES NOT PORT, AND IT WOULD HAVE BEEN SILENT.**
+  Over there it is `pow(1.05 / clamp(rad, .5, 2.6), .45)` -- half an octave across a 5.2x range
+  of creature. **Every body in THIS game has a radius between .28 and .46**, so that clamp puts
+  all of them on its FLOOR and returns the identical pitch for a knee-high sidekick and a 1.85 m
+  orc. Nothing would have thrown; it would just have sounded wrong. Same curve, refitted --
+  `ref` .40 over a 1.9x range with `k` .53 solved so that range still spans half an octave
+  (`1.92^k = 1.41`):
+      Clancy r .28 -> x1.208   skater .38 -> x1.028   hobo .40 -> x1.000   warrior .46 -> x0.929
+      span across the roster 1.30x, and the clamp keeps headroom either side
+      Clancy's own moods:  calm 1.09   fond 1.14   angry 0.99   alarm 1.50   hurt 1.62
+  **A ported number is only as good as the shape of the world it was tuned in**, which is now the
+  fourth time across these repos after the see-through hole's radius, the jetpack's palette and
+  the aim assist's cone.
+  **IT IS READ OFF `K.r`, THE COLLIDER RADIUS THAT ALREADY EXISTS**, so a body added tomorrow is
+  pitched for its own size with nothing typed -- and `voxSize` is called from the HIT path too,
+  or one body would be two different creatures depending on what happened to him.
+  **`BODYSND.grunt` STAYS ON THE HIT PATH RATHER THAN BECOMING A MOOD**, because it maps POWER to
+  gain and rate and the mood table cannot: a jab and a full charge are not the same noise. What
+  it was missing was only the size term.
+  **THE MOODS ARE WIRED TO STATES THAT ALREADY EXISTED, one line each:**
+      calm / fond   the ambient tick, and WHICH one is how near you he is. Plutopia picks this
+                    off the animal's `trust`; a sidekick has none to grow because he is already
+                    yours, so the honest equivalent is that he is happier stood next to you
+      alarm         the m81 dive -- the one moment a sidekick's voice has something to be about
+      angry         his own swing (`foeSwing`), which is m75's punch
+      daze          the get-up, the one beat of a knock-down with no noise on it
+      hurt          `dummyBlow`, through `K.voice` -- m62's hook, and it needed no code at all
+  **AN EVENT RE-ARMS THE AMBIENT CLOCK**, so a mood and a chirp can never stack and m81's
+  two-dive scramble is one yelp rather than two.
+  **AND HE ONLY CHIRPS WHEN NOTHING IS HAPPENING TO HIM** -- `hit`, `down` and `up` already have
+  a noise, and a chirp on top of a grunt is two voices describing one event, m27's duplicate. The
+  clock still runs through them, so he does not go quiet for a minute after a fight.
+  **THE INTERVAL IS RE-ROLLED EVERY TIME AND SEEDED AT SPAWN.** A fixed one is a metronome, which
+  is what a creature is not (`SMOKE`'s rule, m41); and seeded rather than started at zero, or
+  every body chirps on frame one and then on the same frame for ever -- m50's staggered get-ups,
+  on the audio side. It is a NUMBER rather than `undefined`, because `undefined -= dt` is NaN and
+  a NaN clock is a body that never speaks again (m63).
+  **A KIND WITH NO `chirp` NEVER REACHES ANY OF IT** -- no ambient tick, no moods, and `voxSize`
+  returns 1 on the hit path -- so the two drunks, the skater, the officer and the orcs are
+  byte-for-byte what they were. m38's empty-field pattern, which is why none of this needed a
+  gate naming anybody. Giving the skater a voice is two words.
+  **NOTHING HERE PASSES `cut` OR `dec`**, which is correct: those are for an IMPACT, a transient
+  that has to start at its own peak (m59). A vocalisation plays whole, through `SFX.edge`'s
+  ordinary onset trim, which since m59 is relative to the file's own peak and handles a natural
+  attack for free.
   **AND `audio/creature_noises` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not
   recursive, so a new asset folder is a new entry there or every file in it goes stale silently.
   **Sixth time**, after `models/buildings` (m25), `audio/plasma_sounds` (m58), `models/towers`
   (m60), `audio/alien_orc_grunt_sounds` (m62) and Shredworld's own.
-  **NOTHING HERE PASSES `cut` OR `dec`**, which is correct and is worth saying because m59 built
-  both: those are for an IMPACT, which is a transient that has to start at its own peak. A
-  vocalisation is not one -- it plays whole, through `SFX.edge`'s ordinary onset trim, which
-  since m59 is relative to the file's own peak and so handles a natural attack for free.
-  **WHAT IS UNVERIFIED:** how often a chirp should land, and whether 1.18-1.42 reads as small or
-  as chipmunk, are look-at-it decisions and belong on the phone. `mel.CLANCY.chirp` is live
-  (`= null` silences the ambient half and leaves the hit voice), and `mel.snd('creature')` plays
-  one from the console. `npm run sfx` would print what is actually in each file if the bank ever
-  needs ranking the way the plasma one did.
+  **WHAT IS NOT PORTED, AND IS STATED:** Plutopia's `beastTick` picks ONE near animal out of all
+  of them so the island speaks with one voice at a time; here every body with a `chirp` runs its
+  own clock, which is right for one sidekick and would want that picker the day a second kind
+  gets a voice. `mel.CVOX` is live and `mel.snd('creature')` plays one from the console.
 
 - **THE DIVE COULD NOT LEAVE THE WEDGE, AND PAST 7 m THAT WAS ARITHMETIC (m81, `K.dive.clear`).**
   *"The little Clancy sidekick still just constantly walks in front of my shot. His reflexes or

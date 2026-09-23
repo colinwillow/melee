@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m82</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m83</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m82</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m83</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm82';
+const BUILD = 'm83';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -1803,15 +1803,11 @@ const CLANCY = {
   // in `dummyBlow`, the one function every blow on a body reaches, so what he says when he is
   // hit came free with the bank and no code at all.
   voice: 'creature',
-  // **BUT A SIDEKICK WHO ONLY SPEAKS WHEN YOU SHOOT HIM IS THE WRONG HALF**, and *"little
-  // noises"* is plainly the ambient one. So he pipes up on his own clock while he is pottering
-  // about -- rolled PER BODY and re-rolled every time, because a fixed interval is a metronome
-  // and a creature is exactly what a metronome is not (the smoke plumes' own rule, m41).
-  // **AND HE IS PITCHED UP BECAUSE HE IS LITTLE.** Plutopia's creature is not knee height on a
-  // 1.25 m man; `r` 1.18 to 1.42 is the metal clangs' rule, where three car tiers are told apart
-  // by PITCH rather than by three recordings. `yelp` is the same voice louder and higher still.
-  // `mel.CLANCY.chirp = null` silences the ambient half and leaves the hit voice.
-  chirp: { every: [3.0, 8.5], g: .34, r: [1.18, 1.42], yelp: { g: .60, r: 1.52 } },
+  // **AND HE PIPES UP ON HIS OWN (m82, `CVOX`).** *"Little noises"* is plainly the ambient half,
+  // and a sidekick who only speaks when you shoot him is the wrong one. Naming `chirp` is the
+  // whole of opting in -- the moods, the pitch and the interval all live in `CVOX`, which is
+  // Plutopia's `snd.beast` ported rather than re-derived.
+  chirp: 1,
   at: [[-3, 4]],                   // one of him, and he spawns beside you
   drop: /^CINEMA_4D/,
   ai: 1, pacifist: 1, pal: 1,
@@ -2273,8 +2269,9 @@ const SFX = {
             'audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3'],
     // **CLANCY'S LITTLE NOISES (m82).** *"I think we could steal some of the creature noises from
     // Plutopia for Clancy's little noises."* Seven of them, borrowed the way the swooshes, the
-    // clangs and `powerup_01` already were -- and they are UNUSED over there (Plutopia loads them
-    // as `beast` and nothing fires one), so this is a bank finding a job rather than a loan.
+    // clangs and `powerup_01` already were. **They are very much USED over there** -- `snd.beast`
+    // is a whole system with a tick, six moods and a size-derived pitch -- and that MECHANISM is
+    // what was worth taking, not just the files. See `CVOX`.
     // **AND `audio/creature_noises` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not
     // recursive, so a new asset folder is a new entry there or every file in it goes stale
     // silently. **Sixth time**, after `models/buildings` (m25), `audio/plasma_sounds` (m58),
@@ -2365,6 +2362,42 @@ function hitRing(K, w, x, z, thin) {
 }
 // **WHAT A BODY ITSELF SOUNDS LIKE (m62).** Three events that `HITSND` has nothing to say
 // about, because that table is the sound of the CONTACT and these are the sound of the MAN.
+// ============================================================================================
+// A CREATURE'S VOICE -- PLUTOPIA'S `snd.beast`, PORTED (m82, corrected)
+//
+// **THE SEVEN FILES ARE UNLABELLED ON PURPOSE, AND THAT IS THE WHOLE DESIGN.** Plutopia's own
+// note: *"Naming one of them 'angry' would spend it on one feeling; kept as one voice they are
+// the ISLAND'S voice, and which feeling it is comes out of pitch and weight instead."* So there
+// is no calm subset to pick and no angry one -- **all seven are every mood**, and the table
+// below is what tells them apart. One pool doing six jobs, which is the metal clangs' rule
+// (three car tiers by PITCH, not three recordings) stated from the other side.
+//
+// **`mood` IS PLUTOPIA'S TABLE UNCHANGED**, [rate, gain]: alarm goes up and gets shorter, anger
+// goes down and gets louder, contentment sits low and quiet, and a hurt one is a bark at the top
+// of its range.
+//
+// **BUT THE SIZE CURVE HAD TO BE REFITTED, AND THAT IS THE ONE THING THAT DOES NOT PORT.**
+// Over there it is `pow(1.05 / clamp(rad, .5, 2.6), .45)` -- half an octave over a 5.2x range of
+// creature. **Every body in THIS game is between .28 and .46**, so that clamp puts all of them
+// on its floor and returns the identical pitch for a knee-high sidekick and a 1.85 m orc. A
+// ported number is only as good as the shape of the world it was tuned in, which this file has
+// now paid for four times. Same curve, refitted: `ref` .40 and a 1.9x range, with `k` .53 solved
+// so that range still spans half an octave (1.92^k = 1.41).
+//     Clancy  r .28 -> x1.21      skater .38 -> x1.03      warrior .46 -> x0.93
+// **AND THE JITTER IS ITS OWN TERM, NOT WIDTH ON THE MOOD.** "Which feeling" and "not the same
+// twice" are two different things, and rolling them together means widening one blurs the other.
+const CVOX = {
+  mood: { alarm: [1.24, .60], angry: [.82, .78], hurt: [1.34, .70],
+          fond: [.94, .34], calm: [.90, .24], daze: [.70, .52] },
+  ref: .40, lo: .26, hi: .50, k: .53,
+  jit: [.94, 1.07],
+  every: [3.4, 8.5],        // Plutopia's own interval, re-rolled every time
+  fond: 2.6,                // nearer than this to you and a calm noise becomes a fond one
+};
+// HOW BIG HE IS, AS A PITCH. Read off `K.r` -- the radius the collider already uses -- so a body
+// added tomorrow is pitched for its own size with nothing typed.
+function voxSize(K) { return Math.pow(CVOX.ref / clamp(K.r, CVOX.lo, CVOX.hi), CVOX.k); }
+
 const BODYSND = {
   // THE VOICE, on any kind that names one. Louder and a touch lower the harder he was hit, so
   // a jab and a full charge are not the same noise -- the charge's own rule, one event over.
@@ -6470,7 +6503,7 @@ function bodySpawn(P, K, x, z) {
     // then on the same frame for ever, which is one creature drawn N times -- m50's lesson about
     // the get-ups, on the audio side. And it is a NUMBER rather than `undefined`, because
     // `undefined -= dt` is NaN and a NaN clock is a body that never speaks again (m63).
-    chirpT: K.chirp ? rnd(K.chirp.every) : 0,
+    chirpT: K.chirp ? rnd(CVOX.every) : 0,
     spin: 0, spinW: 0, downB: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
@@ -6830,8 +6863,14 @@ function dummyBlow(d, dirH, power, dmg, pal) {
   // down-punt return on purpose: kicking a man who is already on the floor is still hitting him.
   if (K.voice) {
     const V = BODYSND.grunt, u = clamp(power, 0, 1);
+    // **AND HOW BIG HE IS REACHES THIS ONE TOO (m82).** `BODYSND.grunt` maps POWER to gain and
+    // rate, which the mood table cannot do and which is why this path stays -- but without the
+    // size term a knee-high sidekick and a 1.85 m orc yelp at the identical pitch, so one body
+    // would be two different creatures depending on what happened to him. A kind with no `chirp`
+    // has no size pitch and is byte-for-byte what it was.
+    const sz = K.chirp ? voxSize(K) : 1;
     snd(K.voice, { g: V.g0 + (V.g1 - V.g0) * u,
-                   r: (V.r0 + (V.r1 - V.r0) * u) * (1 + (Math.random() - .5) * V.jit),
+                   r: sz * (V.r0 + (V.r1 - V.r0) * u) * (1 + (Math.random() - .5) * V.jit),
                    x: d.root.position.x, z: d.root.position.z });
   }
   // A MAN ON THE GROUND IS STILL A BODY. Hitting him while he is down does not stand him up
@@ -7203,9 +7242,9 @@ function foeWander(d, dt, t, dd, toP) {
       skinPlay(d, d.cur, skinLen(d, d.cur) / K.dive.dur);
       d.vx = Math.sin(h) * v; d.vz = Math.cos(h) * v; d.vy = 0;
       d.stuckT = 0;
-      // and he says so -- the one moment a sidekick's voice has something to be about, and it
-      // re-arms the ambient clock so a two-dive scramble (m81) is one yelp rather than two
-      if (K.chirp && K.chirp.yelp) chirp(d, K.chirp.yelp.g, K.chirp.yelp.r);
+      // and he says so. `alarm` is the mood the table already has for exactly this, and it
+      // re-arms the ambient clock so a two-dive scramble (m81) is one yelp rather than two.
+      bodyVox(d, 'alarm');
       return;
     }
     // **BUT YOUR LINE OF FIRE OUTRANKS THE FIGHT, AND THAT IS THE OTHER HALF OF IT (m81).**
@@ -7392,6 +7431,7 @@ function foePlan(d, dd) {
 // clip holds its last frame, so re-entering one without resetting it plays nothing at all.
 function foeSwing(d, delay) {
   const K = d.K;
+  bodyVox(d, 'angry');            // a kind with no voice never reaches the sound
   const nm = K.clips.swings[(Math.random() * K.clips.swings.length) | 0];
   // **THE TARGET IS LATCHED WHERE THE SWING STARTS (m77).** `foeTarget` runs every frame, so
   // reading it again at the contact frame is a blow that can land on somebody other than the man
@@ -7650,22 +7690,28 @@ function bodyFly(d, dt) {
 // clock still runs through them, so he does not go quiet for a minute after a fight.
 // **THE INTERVAL IS RE-ROLLED EVERY TIME, NOT SET ONCE**, because a fixed one is a metronome.
 function bodyChirp(d, dt) {
-  const K = d.K, C = K.chirp;
-  if (!C || !K.voice) return;
+  const K = d.K;
+  if (!K.chirp || !K.voice) return;
   d.chirpT -= dt;
   if (d.chirpT > 0) return;
-  d.chirpT = rnd(C.every);
+  d.chirpT = rnd(CVOX.every);
   if (d.st === 'hit' || d.st === 'down' || d.st === 'up') return;
-  chirp(d, C.g, rnd(C.r));
+  // **CALM OR FOND, AND THE TEST IS HOW NEAR YOU HE IS.** Plutopia picks this off the animal's
+  // own `trust`; a sidekick has no trust to grow because he is already yours, so the honest
+  // equivalent is that he is happier stood next to you -- which is what his leash is about.
+  const dd = Math.hypot(d.root.position.x - player.pos.x, d.root.position.z - player.pos.z);
+  bodyVox(d, dd < CVOX.fond ? 'fond' : 'calm');
 }
 // ONE PLACE MAKES THE NOISE, so the ambient one and an event one cannot disagree about how loud
 // a creature is or where he is standing -- and **an event RE-ARMS the clock**, which is what
 // stops a two-dive scramble being two yelps and a chirp landing on top of one.
-function chirp(d, g, r) {
-  const C = d.K.chirp;
-  if (!C || !d.K.voice) return;
-  d.chirpT = rnd(C.every);
-  snd(d.K.voice, { g, r, x: d.root.position.x, z: d.root.position.z });
+function bodyVox(d, k) {
+  const K = d.K;
+  if (!K.voice || !K.chirp) return;
+  const m = CVOX.mood[k] || CVOX.mood.calm;
+  d.chirpT = rnd(CVOX.every);     // an event re-arms the ambient clock, so the two never stack
+  snd(K.voice, { g: m[1], r: voxSize(K) * m[0] * rnd(CVOX.jit),
+                 x: d.root.position.x, z: d.root.position.z });
 }
 
 function stepDummies(dt) {
@@ -7708,6 +7754,7 @@ function stepDummies(dt) {
         // `flip` is a property of the kind rather than a rule about everybody.
         if (!d.back && K.flip !== 0) d.h += Math.PI;
         d.st = 'up'; d.t = 0;
+        bodyVox(d, 'daze');       // groggy, and the one beat in a knock-down with no noise on it
         d.cur = d.back ? K.clips.upB : K.clips.upF;
         skinPlay(d, d.cur, skinLen(d, d.cur) / (d.upB || K.upBeat));
       }
@@ -8131,7 +8178,7 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
