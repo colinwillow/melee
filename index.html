@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m83</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m84</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m83</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m84</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm83';
+const BUILD = 'm84';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2378,25 +2378,41 @@ function hitRing(K, w, x, z, thin) {
 //
 // **BUT THE SIZE CURVE HAD TO BE REFITTED, AND THAT IS THE ONE THING THAT DOES NOT PORT.**
 // Over there it is `pow(1.05 / clamp(rad, .5, 2.6), .45)` -- half an octave over a 5.2x range of
-// creature. **Every body in THIS game is between .28 and .46**, so that clamp puts all of them
-// on its floor and returns the identical pitch for a knee-high sidekick and a 1.85 m orc. A
-// ported number is only as good as the shape of the world it was tuned in, which this file has
-// now paid for four times. Same curve, refitted: `ref` .40 and a 1.9x range, with `k` .53 solved
-// so that range still spans half an octave (1.92^k = 1.41).
-//     Clancy  r .28 -> x1.21      skater .38 -> x1.03      warrior .46 -> x0.93
+// creature. **Every body in THIS game is between .28 and .46 of radius**, so that clamp puts all
+// of them on its floor and returns the identical pitch for a knee-high sidekick and a 1.85 m
+// orc. A ported number is only as good as the shape of the world it was tuned in, which this
+// file has now paid for four times.
+//
+// **AND THE MEASURE IS `K.h`, NOT `K.r` (m84).** m83 fitted this to the collider RADIUS, and
+// that was two measures of one thing waiting to drift -- the footsteps needed "how big is this
+// body" as well, and a game with two answers to that has two answers to everything downstream.
+// Height is the better of the two on its own merits: it is the number he actually sets per
+// character (*"he should be small"* is `h: .62`), it spans **3x** across the roster where the
+// radii span 1.6, and those radii are collider tuning that only correlates with size.
+//     on RADIUS   Clancy 1.21   skater 1.03   officer 0.97   warrior 0.93
+//     on HEIGHT   Clancy 1.21   skater 1.01   officer 1.00   warrior 0.99
+// **`k` IS SOLVED SO CLANCY LANDS EXACTLY WHERE m83 PUT HIM**, so changing the measure moves the
+// voice by nothing and only the feet are new -- each toggle has to move one variable or neither
+// can be judged. What it also does is collapse the adults onto 1.0, which is the honest answer:
+// they ARE all the same size, and the old spread was reading a collider number as a body.
 // **AND THE JITTER IS ITS OWN TERM, NOT WIDTH ON THE MOOD.** "Which feeling" and "not the same
 // twice" are two different things, and rolling them together means widening one blurs the other.
 const CVOX = {
   mood: { alarm: [1.24, .60], angry: [.82, .78], hurt: [1.34, .70],
           fond: [.94, .34], calm: [.90, .24], daze: [.70, .52] },
-  ref: .40, lo: .26, hi: .50, k: .53,
+  ref: 1.75, lo: .55, hi: 2.0, k: .182,
   jit: [.94, 1.07],
   every: [3.4, 8.5],        // Plutopia's own interval, re-rolled every time
   fond: 2.6,                // nearer than this to you and a calm noise becomes a fond one
 };
-// HOW BIG HE IS, AS A PITCH. Read off `K.r` -- the radius the collider already uses -- so a body
-// added tomorrow is pitched for its own size with nothing typed.
-function voxSize(K) { return Math.pow(CVOX.ref / clamp(K.r, CVOX.lo, CVOX.hi), CVOX.k); }
+// HOW BIG HE IS, AS A PITCH -- **the one answer in this file to that question**, read by the
+// voice, the hit grunt and the footsteps alike, so a body added tomorrow sounds its own size in
+// all three with nothing typed.
+function voxSize(K) { return Math.pow(CVOX.ref / clamp(K.h, CVOX.lo, CVOX.hi), CVOX.k); }
+// AND AS A WEIGHT. A small body lands lighter as well as higher, and those are two different
+// curves on one ratio -- `sizeG` is how hard the gain follows it.
+// (`STEP` is declared below this -- read at CALL time, from `bodyFeet`, so it is not a TDZ.)
+function voxWeight(K) { return Math.pow(clamp(K.h, CVOX.lo, CVOX.hi) / CVOX.ref, STEP.sizeG); }
 
 const BODYSND = {
   // THE VOICE, on any kind that names one. Louder and a touch lower the harder he was hit, so
@@ -2487,6 +2503,15 @@ const STEP = {
   on: 1, npc: 1,
   near: 9,                // an NPC further away than this does not get a footfall AT ALL
   npcG: .52,              // and the ones that do are behind him rather than beside him
+  // **AND A SMALL BODY LANDS LIGHTER (m84).** *"I think we need to turn down the footsteps for
+  // Clancy cause he's like small."* Right, and it is not a Clancy number: `npcG` was ONE gain
+  // for a knee-high sidekick and a 1.85 m orc, so the fix is the same one the voice already
+  // uses -- read `K.h` through `voxWeight` and every body is its own weight with nothing typed.
+  // `sizeG` is how hard the gain follows height; 0 is flat, which is m83 exactly.
+  //     Clancy h .62 -> x0.319   skater 1.68 -> x0.956   warrior 1.85 -> x1.063
+  // So Clancy's footfall drops to about a third and **the adults move by at most 4%**, which is
+  // what says this is a size rule and not a Clancy patch. His walk lands at g 0.033.
+  sizeG: 1.1,
   clip: { walk: null, run: null, sprint: null },   // { d, r } per band -- measured in buildRig
 };
 // **A STRIDE IS THE DISTANCE THE CLIP ACTUALLY COVERS, NOT THE DISTANCE IT WAS ASKED TO (m68).**
@@ -2511,10 +2536,15 @@ function strideNow(sp) {
 // ONE footfall, so his and theirs cannot drift into two different sounds. `top` is whatever
 // counts as flat out for that body, which is what makes the same curve read on a 7.2 m/s sprint
 // and on a 1.8 m/s drunk run. `x`/`z` are what `SFX.near` needs; his own are simply near.
-function footSnd(sp, top, x, z, left, gk) {
+// `gk` and `rk` are the body's own weight and pitch, and BOTH default to 1 so the player's own
+// call is byte-for-byte what it was. **The rate already means weight here** -- `r0`/`r1` are
+// "heavier is lower" across his speed range -- so a small body is the same idea on the same
+// term rather than a new one, which is the metal clangs' rule for the third time this week.
+function footSnd(sp, top, x, z, left, gk, rk) {
   const u = clamp((sp - STEP.at) / Math.max(.1, top - STEP.at), 0, 1);
   snd('foot', { g: (STEP.g0 + (STEP.g1 - STEP.g0) * u) * (gk == null ? 1 : gk),
                 r: (STEP.r0 + (STEP.r1 - STEP.r0) * u) * (left ? 1 + STEP.alt : 1 - STEP.alt)
+                   * (rk == null ? 1 : rk)
                    * (1 + (Math.random() - .5) * STEP.jit),
                 cut: 1, att: .003, dec: .09, x, z });
 }
@@ -2554,7 +2584,7 @@ function bodyFeet(d, sp, dt) {
   const L = bodyStride(d, sp) || STEP.fallback;
   if (d.stepD < L) return;
   d.stepD -= L; d.stepL = !d.stepL;
-  footSnd(sp, K.runRef, P.x, P.z, d.stepL, STEP.npcG);
+  footSnd(sp, K.runRef, P.x, P.z, d.stepL, STEP.npcG * voxWeight(K), voxSize(K));
 }
 // Called with his own measured speed, so it needs no knowledge of the pad, the gait or the clip.
 function stepFeet(dt) {

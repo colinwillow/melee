@@ -1040,6 +1040,44 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A SMALL BODY LANDS LIGHTER, AND THERE WERE TWO MEASURES OF "SMALL" (m84, `STEP.sizeG`,
+  `voxWeight`).** *"I think we need to turn down the footsteps for Clancy cause he's like
+  small."*
+  **IT IS NOT A CLANCY NUMBER, WHICH IS THE WHOLE POINT.** m66 gave every NPC the same `npcG`
+  .52 -- one gain for a knee-height sidekick and a 1.85 m orc -- so the honest fix is the one
+  the voice already had a day earlier: read the body's own size and let every kind be its own
+  weight with nothing typed. `sizeG` 1.1 on the height ratio:
+      Clancy h .62 -> x0.319     skater 1.68 -> x0.956     warrior 1.85 -> x1.063
+      his walk lands at g 0.033 against an adult's 0.104 -- **32% of an adult footfall**
+  **AND THE ADULTS MOVE BY AT MOST 4%**, which is what says this is a size rule rather than a
+  Clancy patch. `sizeG` 0 is flat, which is m83 exactly.
+  **THE RATE GOES UP WITH IT, ON THE TERM THAT ALREADY MEANT WEIGHT.** `STEP.r0`/`r1` are
+  "heavier is lower" across his speed range, so a small body is the same idea on the same term
+  rather than a new one -- the metal clangs' rule, for the third time this week. A fifth higher
+  and a third as loud is the difference between "quieter" and "smaller".
+  **AND BOTH ARGUMENTS DEFAULT TO 1**, so the PLAYER's own `footSnd` call is byte-for-byte what
+  it was: this is about the bodies, and he is not one of them.
+  **BUT THE REAL FINDING IS THAT I HAD JUST BUILT A SECOND MEASURE OF SIZE.** m83 fitted
+  `voxSize` to the collider RADIUS; the footsteps needed the same question answered, and **a
+  game with two answers to "how big is this body" has two answers to everything downstream** --
+  which is the `KIT.on`-with-three-owners bug wearing a different hat, caught one build after
+  creating it rather than four builds later. It is `K.h` for both now, and height is the better
+  of the two on its own merits:
+      it is the number he SETS per character (*"he should be small"* is `h: .62`)
+      it spans **3x** across the roster where the radii span 1.6
+      and a radius is collider tuning that only CORRELATES with size
+          on RADIUS   Clancy 1.21   skater 1.03   officer 0.97   warrior 0.93
+          on HEIGHT   Clancy 1.21   skater 1.01   officer 1.00   warrior 0.99
+  **`CVOX.k` IS SOLVED SO CLANCY LANDS EXACTLY WHERE m83 PUT HIM** (1.2081 -> 1.2077), so
+  swapping the measure moves the voice by nothing and the feet are the only new thing -- **each
+  toggle has to move one variable or neither can be judged**, and only Clancy has a `chirp` so
+  no other body's voice exists to change. What it also does is collapse the adults onto 1.0,
+  which is the honest answer: they ARE all the same size, and the old spread was reading a
+  collider number as a body.
+  **`voxWeight` READS `STEP` FROM 78 LINES BELOW IT**, at CALL time, from `bodyFeet` -- not a
+  TDZ, and there is a comment saying so, because this file has been bitten eight times by the
+  real thing and the shape is worth not mistaking.
+
 - **CLANCY HAS A VOICE, AND THE MECHANISM WAS WORTH MORE THAN THE FILES (m82/m83, `CVOX`,
   `bodyVox`).** *"I think we could steal some of the creature noises from Plutopia for Clancy's
   little noises."* Then: *"No, they're definitely used. Are you sure you're grabbing the right
