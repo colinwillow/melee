@@ -15,7 +15,7 @@
 // while the upper half of the body is collapsed to a point.
 import { openGLB } from './glb.mjs';
 
-const FILE = process.argv[2] || 'models/characters/alien_antenna_game.glb';
+const FILE = process.argv[2] || 'models/characters/zap.glb';
 const { json: g, read } = openGLB(FILE);
 const nm = i => g.nodes[i]?.name || ('#' + i);
 const qdeg = (a, b) => 2 * Math.acos(Math.min(1, Math.abs(a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]))) * 180 / Math.PI;

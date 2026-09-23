@@ -24,7 +24,7 @@
 // number is not to be trusted, and the tool says so rather than quietly averaging them.
 import { openGLB, poseAt, posOf, nodeIndex } from './glb.mjs';
 
-const FILE = process.argv[2] || 'models/characters/alien_antenna_game.glb';
+const FILE = process.argv[2] || 'models/characters/zap.glb';
 const { json: g, read } = openGLB(FILE);
 
 // The clips whose reference speed the game needs, and what each is called in index.html.

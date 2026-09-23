@@ -99,7 +99,7 @@ function run(secs, fn) {
 // read straight out of the file, so the time scaling under test is the real arithmetic.
 {
   const { openGLB } = await import(pathToFileURL(process.cwd() + '/tools/glb.mjs').href);
-  const { json: g, read } = openGLB('models/characters/alien_antenna_game.glb');
+  const { json: g, read } = openGLB('models/characters/zap.glb');
   for (const a of g.animations || []) {
     let t0 = Infinity, t1 = 0;
     for (const ch of a.channels) { const t = read(a.samplers[ch.sampler].input); t0 = Math.min(t0, t[0]); t1 = Math.max(t1, t[t.length - 1]); }

@@ -5,7 +5,7 @@
 // wrong place" and "his rig moved" are the same picture from a phone.
 import { openGLB, poseAt, posOf, nodeIndex } from './glb.mjs';
 
-const CHAR = process.argv[2] || 'models/characters/alien_antenna_game.glb';
+const CHAR = process.argv[2] || 'models/characters/zap.glb';
 const WEAPONS = process.argv.slice(3);
 const defaults = ['models/weapons/alien_antenna_blaster_game.glb', 'models/weapons/alien_antenna_hammer_game.glb'];
 const weps = WEAPONS.length ? WEAPONS : defaults;
