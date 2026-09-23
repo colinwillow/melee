@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m89</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m90</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m89</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m90</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm89';
+const BUILD = 'm90';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2086,7 +2086,8 @@ const HURT = {
   // is a height nobody chose. At `MOVE.g` 20 this is 5.59 m/s up and 0.56 s of air.
   hi: .78,
   back: 7.6,      // along the blow. Against `airDrag` that integrates to about four metres
-  land: 1.50,     // `landing_hard`'s OWN authored length, so it plays at 1.0x and can be READ
+  // (`land` is GONE at m90: a knock-down no longer enters a landing state at all, and a
+  //  constant nobody reads is indistinguishable from one that is broken.)
   again: 1.1,     // he cannot be re-launched inside this -- see below
 
   // **AND THE THREE EMPTY HOOKS ARE FULL NOW (m88).** *"I want them to hit me and me to play
@@ -2098,10 +2099,36 @@ const HURT = {
   hits: ['take_damage_head', 'take_damage_body'],
   stagger: .80,   // how long a reaction READS for. m37's lesson: a blow too fast to see is the
                   // same blow every time, and these clips are 0.83 s and 1.46 s at 1x.
-  down: 'laying_down',    // ONE KEY -- a held pose, which is why `normaliseClips` keeps it
+
+  // **THE KNOCK-DOWN IS ONE CLIP FROM THE BLOW TO THE GET-UP, WHICH IS WHAT THE WARRIORS HAVE
+  // ALWAYS DONE (m90).** *"The warrior aliens fly through the air and land perfectly on the
+  // ground, and they're playing one of the same animations I have on Zap -- I named it something
+  // like take damage and fall down. The problem with our hero is when he's hit through the air
+  // and then eventually lands, the momentum already stops and he's not laying down, and then he
+  // blends to a lay position and it looks horrible."*
+  // **HE IS DESCRIBING A STRUCTURAL DIFFERENCE AND IT IS ONE LINE OF `bodyAnim` (7654):**
+  //     t[air && K.clips.air ? K.clips.air : d.cur] = 1;
+  // `FOE.clips` HAS NO `air`, so a warrior plays his FALL clip for the whole flight AND the
+  // landing -- one continuous animation started at the moment of the blow, which is the sequence
+  // he likes. m88 gave the player the opposite: `in_air` (a FLOAT LOOP, so the body looks static
+  // while it travels) and then `laying_down`, which is ONE KEY -- **a held pose is not an
+  // arrival**, so the weight table drags him into it and that drag IS "it blends to a lay
+  // position". There was never a fall in it at all.
+  // **SO `laying_down` IS OUT OF THE SEQUENCE AND `take_damage_and_fall_down` IS IN.** m41's own
+  // rule -- one fall and one get-up, so the pair cannot disagree -- and this pair does agree:
+  // the fall ENDS lying down and `lay_to_get_up` STARTS lying down. Naming `laying_down` as a
+  // held tail is one word if the lie should ever outlast the clip.
+  down: 'take_damage_and_fall_down',
   up: 'lay_to_get_up',
-  lie: .55,       // how long he is on his back before he starts getting up
+  beat: 1.35,     // the fall state, FLIGHT INCLUDED. The clip is 2.042 s, so x1.51 -- and the
+                  // flight is 0.56 s, so its first 41% covers the air and the rest is the
+                  // landing, which is the warrior's own shape (3.0 s over a 1.5 s beat).
   upBeat: 2.20,   // and the get-up is 2.708 s authored, so x1.23 -- quick, still readable
+  // **AND A BODY ON THE FLOOR SCRUBS LIKE A BODY (m90).** `MOVE.drag` is a man BRAKING on his
+  // feet, and at `1.9 * .25` its time constant is 2.1 s -- so landing at 6.6 m/s he had
+  // **13.9 m of slide** still to come, on his back. The warrior has had `knockDrag` 5.5 for
+  // this since m37 and the player was simply reading the locomotion number.
+  skid: 5.5,
 };
 
 // LOCKING ON. Once the trigger is held or the hammer is wound, he is committed to a target --
@@ -2279,8 +2306,10 @@ const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_m
   'front_flip', 'Backflip', 'backCrouch', 'slide_kick', 'flying_kick',
   // the two wall TRANSITIONS are one-shots; the two shimmies are LOOPS and must not be here
   'idle_to_wall_cover_right', 'wall_cover_left_to_stand',
-  'take_damage_head', 'take_damage_body', 'take_damage_and_fall_down',
-  'laying_down', 'lay_to_get_up',
+  'take_damage_head', 'take_damage_body',
+  // the FALL and the GET-UP: one-shots that hold their last frame, which is what makes the
+  // fall's own tail the lie and `laying_down` unnecessary
+  'take_damage_and_fall_down', 'laying_down', 'lay_to_get_up',
   // the split one-shots hold their last frame exactly like the clips they came from
   'shoot__up', 'weapon_melee_charge__up', 'weapon_melee_finish__up']);
 // EXPORTER RESIDUE. One frame, 0 bones moving -- measured, not guessed.
@@ -4563,7 +4592,7 @@ const player = {
   goT: 0,                          // how long he has been asking to move -- the gather
   jump: 0, jumps: 0, fallV: 0,
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
-  hurtNm: '', hurtClipT: 0, gotUp: 0,   // the reaction clip, and whether the get-up has started
+  hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0,   // the reaction clip, and the knock-down's own clock
   runT: 0, airKick: 0, meleeAir: 0,     // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   bkT: 0, bkOn: 0,                  // the backflip's charge, and whether he is visibly ducked
@@ -5805,7 +5834,11 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
         p.vel.x += ex * k; p.vel.z += ez * k;
       }
     } else {
-      const k = Math.exp(-(p.grounded ? MOVE.drag : MOVE.airDrag) * dt * .25);
+      // A BODY ON THE FLOOR SCRUBS LIKE A BODY, NOT LIKE A MAN BRAKING (m90) -- `MOVE.drag`'s
+      // time constant is 2.1 s, which left 13.9 m of slide still to come on his back.
+      const dk = p.knock ? (p.grounded ? HURT.skid : MOVE.airDrag * .25)
+                         : (p.grounded ? MOVE.drag : MOVE.airDrag) * .25;
+      const k = Math.exp(-dk * dt);
       p.vel.x *= k; p.vel.z *= k;
     }
   }
@@ -5993,19 +6026,22 @@ function stepPlayer(dt) {
   // this flick running, not whether the thumb is pointed somewhere.
   if (p.grounded && p.speed > MELEE.slideAt) p.runT += dt; else p.runT = 0;
 
-  if (p.land) {
-    p.landT += dt;
-    // **THE GET-UP IS FIRED ON THE CROSSING, NOT EVERY FRAME PAST IT.** `p.gotUp` is the edge;
-    // without it `playOnce` rewinds the clip on every frame of the get-up and he never stands.
-    if (p.knock && !p.gotUp && p.landT >= HURT.lie && rig.actions[HURT.up]) {
+  // ---- THE KNOCK-DOWN RUNS ON ITS OWN CLOCK, FROM THE BLOW (m90). Not on `p.land`: the fall
+  //      begins in the air, so a clock that starts at the landing is a clock that starts after
+  //      most of what it is timing. **THE GET-UP IS FIRED ON THE CROSSING** (`p.gotUp`), or
+  //      `playOnce` rewinds it on every frame past it and he never stands.
+  if (p.knock) {
+    p.knockT += dt;
+    if (!p.gotUp && p.knockT >= HURT.beat && rig.actions[HURT.up]) {
       p.gotUp = 1; playOnce(HURT.up, clipLen(HURT.up) / HURT.upBeat);
     }
-    // **A KNOCK-DOWN IS NOT CANCELLABLE.** `landFree` exists so an ordinary landing does not
-    // cost you a step you were already taking; a get-up you can nudge out of is a get-up
-    // nobody ever sees, which is m8's lesson about a state that cuts its own clip short.
-    if (p.landT >= p.land || (!p.knock && p.landT > p.land * MOVE.landFree && s.mag > .3)) {
-      p.land = 0; p.knock = 0;
-    }
+    // **AND IT IS NOT CANCELLABLE.** A get-up you can nudge out of is a get-up nobody ever sees,
+    // which is m8's lesson about a state that cuts its own clip short.
+    if (p.knockT >= HURT.beat + HURT.upBeat) { p.knock = 0; p.goT = 0; }
+  }
+  if (p.land) {
+    p.landT += dt;
+    if (p.landT >= p.land || (p.landT > p.land * MOVE.landFree && s.mag > .3)) p.land = 0;
   }
 
   // ---- the flip runs out on its own clock, and the flight usually outlasts it ----
@@ -6136,20 +6172,16 @@ function stepPlayer(dt) {
     // **A KNOCK-DOWN ALWAYS LANDS HARD**, rather than hoping the arc clears `hardLand`. Those
     // are two unrelated numbers -- the apex is chosen for how it READS and the threshold is
     // about falls -- and coupling them means retuning one silently changes the other.
-    const hard = p.knock || p.fallV > MOVE.hardLand;
-    p.landHard = hard ? 1 : 0;
-    p.landT = 0; p.gotUp = 0;
-    // **A KNOCK-DOWN LANDS ON HIS BACK, NOT ON HIS FEET (m88).** *"When I get sent through the
-    // air I don't land on my feet, I always land on my back laying down and then I get up."*
-    // So the state is the LIE plus the GET-UP, and one `p.land` clock carries both -- which is
-    // what keeps `wantSp = 0`, the not-cancellable rule and the chip line working unchanged.
-    // The switch between the two clips happens on `landT` crossing `lie`, in `stepPlayer`.
-    if (p.knock && rig.actions[HURT.down] && rig.actions[HURT.up]) {
-      p.land = HURT.lie + HURT.upBeat;
-      playOnce(HURT.down, 1);              // one key: there is nothing to compress
-    } else {
+    // **A KNOCK-DOWN DOES NOT ENTER A LANDING STATE AT ALL (m90).** The fall clip has been
+    // running since the blow and it is what draws the arrival; a `landing_hard` on top of it, or
+    // a pose switched to here, is the second event that made the old one read as a blend. The
+    // ground simply ends the flight, which is `bodyFly`'s own rule one body over.
+    if (!p.knock) {
+      const hard = p.fallV > MOVE.hardLand;
+      p.landHard = hard ? 1 : 0;
+      p.landT = 0;
       const nm = hard ? CLIPS.landHard : CLIPS.landSoft;
-      p.land = p.knock ? HURT.land : hard ? MOVE.landHard : MOVE.landSoft;
+      p.land = hard ? MOVE.landHard : MOVE.landSoft;
       // the clip is compressed to the beat the STATE lasts, so the two cannot disagree
       playOnce(nm, clipLen(nm) / p.land);
     }
@@ -6184,6 +6216,15 @@ function rigAnim(dt) {
   // on -- and `setWeights` damps it in, so a hold that ends up being a camera drag reads as a
   // small lean rather than as a twitch.
   if (p.bkOn && rig.actions[CLIPS.backPose]) { t[CLIPS.backPose] = 1; setWeights(t, dt); return; }
+  // **THE KNOCK-DOWN OWNS THE BODY THROUGH THE AIR AS WELL (m90).** It has to sit ABOVE the air
+  // branch, or `in_air` takes the whole flight and the fall only starts once he has landed --
+  // which is the shape that made this read as a blend into a pose. The warriors have always had
+  // it this way round: `bodyAnim` only reaches for a body's `clips.air` if the kind names one,
+  // and `FOE.clips` does not.
+  if (p.knock) {
+    const nm = p.gotUp ? HURT.up : HURT.down;
+    if (rig.actions[nm]) { t[nm] = 1; setWeights(t, dt); return; }
+  }
   if (!p.grounded) {
     // A FLIP IF ONE IS RUNNING, and `in_air` once it has finished -- the rotation is fitted to
     // `AIR.fill` of the flight on purpose, so the last of the air is spent in the ordinary pose
@@ -6197,14 +6238,9 @@ function rigAnim(dt) {
     // FULL WEIGHT UNTIL `landFree`, THEN IT GIVES WAY. Ramping it down from the first frame
     // put the gait at 0.55 through the whole second half, which dilutes exactly the part of a
     // hard landing worth watching -- he comes out of the roll with a run blended over it.
-    // A KNOCK-DOWN IS LYING THERE AND THEN GETTING UP, and it is NOT cancellable -- so it holds
-    // full weight for the whole of both rather than giving way, which is `landFree`'s own rule
-    // pointed the other way: a get-up you can nudge out of is a get-up nobody ever sees.
-    const kn = p.knock && rig.actions[HURT.down] && rig.actions[HURT.up];
-    const nm = kn ? (p.landT < HURT.lie ? HURT.down : HURT.up)
-                  : p.landHard ? CLIPS.landHard : CLIPS.landSoft;
+    const nm = p.landHard ? CLIPS.landHard : CLIPS.landSoft;
     const u = clamp(p.landT / p.land, 0, 1), f = MOVE.landFree;
-    t[nm] = kn || u < f ? 1 : 1 - (u - f) / (1 - f);
+    t[nm] = u < f ? 1 : 1 - (u - f) / (1 - f);
   }
   // THE REACTION TO A BLOW HE STAYED ON HIS FEET FOR. Same shape as the landing and out of the
   // same budget, so the table still sums to exactly 1 -- under it bleeds the BIND pose in.
@@ -8151,7 +8187,11 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     p.vel.z = Math.cos(dirH) * HURT.back;
     p.vel.y = vy;
     p.grounded = false; p.coyote = 0; p.airT = 0;
-    p.knock = 1; p.knockCool = HURT.again;
+    p.knock = 1; p.knockCool = HURT.again; p.knockT = 0; p.gotUp = 0;
+    // **THE FALL STARTS HERE, NOT ON THE LANDING.** That is the whole of the fix: the clip runs
+    // from the blow, through the flight, into the ground, and there is nothing left to blend
+    // into when he arrives because he has been going down the entire time.
+    if (rig.actions[HURT.down]) playOnce(HURT.down, clipLen(HURT.down) / HURT.beat);
     // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
@@ -8557,7 +8597,7 @@ function frame() {
       : p.bkOn ? 'DUCK' + (p.bkT / AIR.hold).toFixed(2)
       : p.flip ? 'FLIP' + (p.flip === CLIPS.flipBack ? 'back' : 'fwd') +
           Math.max(0, p.flipDur - p.flipT).toFixed(2) : !p.grounded ? 'air'
-      : p.knock ? (p.grounded ? 'getup' : 'KNOCKED') : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
+      : p.knock ? (p.gotUp ? 'getup' : 'FALL' + p.knockT.toFixed(2)) : p.land ? (p.landHard ? 'land!' : 'land') : p.aim ? 'chg' + p.chg.toFixed(2) : gunOut() ? 'armed' : 'ground';
     // B IS THE POSE'S OWN OFFSET AND C IS WHAT IS BEING TAKEN OFF IT, because "the gun points
     // the wrong way" is two different bugs from a phone: a bias near 0 means the clip is
     // straight and anything crooked is elsewhere, a big one means the clip carries it.

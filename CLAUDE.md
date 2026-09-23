@@ -1040,6 +1040,51 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE WARRIORS HAD THE RIGHT SEQUENCE ALL ALONG, AND IT IS ONE LINE OF `bodyAnim` (m90).**
+  *"The warrior aliens fly through the air and land perfectly on the ground, and they're playing
+  one of the same animations I have on Zap -- I named it something like take damage and fall
+  down. The problem with our hero is when he's hit through the air and then eventually lands, the
+  momentum already stops and he's not laying down, and then he blends to a lay position and it
+  looks horrible."*
+  **HE IS DESCRIBING A STRUCTURAL DIFFERENCE, NOT A TUNING ONE, AND IT IS VISIBLE IN ONE LINE:**
+      t[air && K.clips.air ? K.clips.air : d.cur] = 1;        // bodyAnim, line 7654
+  **`FOE.clips` HAS NO `air` FIELD**, so a warrior plays his FALL clip (`Shoulder_Hit_And_Fall`)
+  for the whole flight AND the landing -- one continuous animation started at the moment of the
+  blow. That is the sequence he likes and it has been there since m35 without anybody writing
+  down that the absence of a field is what makes it work.
+  **m88 GAVE THE PLAYER THE OPPOSITE, IN BOTH HALVES.** `in_air` is a FLOAT LOOP, so the body
+  looks static while it travels -- which is the *"momentum already stops"* -- and `laying_down`
+  is ONE KEY. **A held pose is not an arrival**: nothing draws him going down, so the weight
+  table drags him into the pose over a few frames, and that drag IS *"it blends to a lay
+  position"*. There was never a fall in it at all.
+  **SO THE FALL STARTS AT THE BLOW AND RUNS THROUGH THE GROUND.** `take_damage_and_fall_down`
+  was sitting in the export unused since m85; it is `HURT.down` now, played from `playerHurt`
+  rather than from the landing, and **the knock-down branch in `rigAnim` had to move ABOVE the
+  air branch** -- left below it, `in_air` takes the whole flight and the fall only begins once he
+  has already landed, which is precisely the shape being complained about.
+  **AND THE CLOCK MOVED OFF `p.land` ONTO `p.knockT`.** The fall begins in the air, so a clock
+  that starts at the landing is a clock that starts after most of what it is timing -- and a
+  knock-down no longer enters a landing state at all, because a `landing_hard` on top of a fall
+  clip is the second event that made the old one read as a blend. `HURT.land` is deleted rather
+  than left: a constant nobody reads is indistinguishable from one that is broken.
+      the flight     vy 5.59 m/s, 0.56 s, 3.96 m, arriving at 6.61 m/s
+      the fall clip  2.042 s over a 1.35 s beat -> x1.51, and the flight is 41% of it, so the
+                     rest is the landing -- the warrior's own shape (3.0 s over a 1.5 s beat)
+      the get-up     2.708 s over 2.20 -> x1.23
+      total down     3.55 s, against the warrior's 3.30
+  **`laying_down` IS OUT OF THE SEQUENCE**, which is m41's rule (one fall and one get-up, so the
+  pair cannot disagree) and this pair agrees: the fall ENDS lying down and `lay_to_get_up` STARTS
+  lying down. `clampWhenFinished` holds the fall's last frame, so the lie is its own tail and
+  needs no second clip. Naming it as a held tail is one word if the lie should ever outlast it.
+  **AND A BODY ON THE FLOOR SCRUBS LIKE A BODY, NOT LIKE A MAN BRAKING (`HURT.skid`).** This is a
+  second, separate bug found on the way and it is stated as one: the player's stop branch reads
+  `MOVE.drag`, whose time constant is **2.11 s**, so landing at 6.61 m/s he had **13.9 m of
+  slide** still to come, on his back. The warrior has had `knockDrag` 5.5 for exactly this since
+  m37 and the player was simply reading the locomotion number. 5.5 is **1.20 m** and 0.18 s.
+  **THE CHIP SAYS `FALL0.42` THEN `getup`**, because "the fall never played", "it played and the
+  landing is wrong" and "the get-up is the bit that reads badly" are three bugs with one picture
+  from a phone -- and the number is the clock both halves are cut from.
+
 - **WALL COVER, AND THE WHOLE THING RESTS ON A FACT THIS GAME HAD NEVER ASKED FOR (m89, `WALL`,
   `wallFind`, `wallGo`, `stepWall`).** *"We have the animation from standing to wall. I only put
   in one standing-to-wall animation, so he'll always land in the equivalent of wall cover right --
