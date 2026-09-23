@@ -1040,6 +1040,77 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE GUARD TOOK THE LOCK BACK, AND EVERY LINE OF IT WAS ALREADY BUILT (m101, `LOCK.block`,
+  `findLock`).** *"I think we used to have the lock where once you pushed forward it would lock on
+  them and you would basically be rotating around them. We're gonna use the block as that -- if
+  somebody is within 45 degrees of your 12 o'clock and you press and hold down on the right stick,
+  it sort of locks on them and then you can kind of rotate around them."*
+  **HE IS REMEMBERING m20, AND IT HAS BEEN SITTING INTACT AND SWITCHED OFF SINCE m36.**
+  `findLock`, `lockH`, `stickLocked`'s orbit, `faceTgt` reading `p.lock`, `stepCam`'s come-round
+  and the acquire chirp are all there; **m36's own note is why** -- *"nothing is deleted, which is
+  what makes this a decision rather than a rewrite."* So this build is a SECOND SWITCH and a
+  second cone, not a second system, and it is the first time that sentence has actually been
+  collected on.
+  **AND THE REASON IT WAS TURNED OFF DOES NOT REACH THE GUARD.** m36: *"a mark that moves where
+  you are POINTING takes the aim off your thumb, so you stop aiming."* **A guard has no aim to
+  take.** This moves his BODY and the LENS and nothing else, which is m51's own line -- he has
+  turned down two assists that moved his AIM and kept the one that only moves his BODY -- and the
+  melee lunge is the third thing on the keep side of it. `LOCK.on` (the blaster's) and
+  `LOCK.block` are two switches and must stay two.
+  **THE ORBIT IS `stickLocked` AND IT NEEDED NOTHING.** *"You can kind of rotate around them."*
+  That function reads the left stick in the TARGET's frame -- up and down close or open the range,
+  left and right run along the tangent, and because the tangent is recomputed every frame a
+  straight step along it IS a circle. `MOVE.blockSp` 2.4 caps him, so it is a circling shuffle
+  rather than a sprint round a post.
+  **45 DEGREES IS HIS NUMBER AND IT IS FOUR TIMES THE BLASTER'S ON PURPOSE.** `LOCK.cone` is .19
+  (11 deg) because m20/m27 sized it for what a BULLET must deliver; `blockCone` .79 only has to
+  notice who is in front of you. `blockRange` 10 rather than 24: a mace reaches 2.6 m, and a lock
+  on a man across the street swings the lens off the fight you are in.
+  **AND A MAN ON THE FLOOR IS NOT SOMETHING TO GUARD AGAINST** -- `palFoe`'s rule (m75) one state
+  over, on the GUARD path only. A downed man is still a perfectly good thing to shoot, so the aim
+  lock must not gain it.
+- **AND IT ACTUALLY BLOCKS NOW -- WHICH IS A SECOND ARC, NOT A BIGGER NUMBER (m101,
+  `BLOCK.perfect`, `blockFx`).** *"We need to make the block actually block and deflect or parry
+  or whatever... and if they swing it blocks, and we have an animation for block react."*
+  **THE REACT HAS PLAYED SINCE m95** (`HURT.hits` is `weapon_block_reaction`, and with `FOE.knock`
+  at 1 a raised guard is the only way to reach it), so that half was already true. What was
+  missing is that a guard cost him a flat quarter of the blow from ANYWHERE inside 72 degrees --
+  **there was nothing to do well and nothing to do badly.**
+      perfect .55   31 deg either side -- DEFLECTED, and it costs nothing
+      arc    1.25   72 either side -- the partial guard it has always been
+      outside       not blocked at all, exactly as before
+  **SO THE LOCK DOES NOT MAKE THE BLOCK STRONGER; IT MAKES IT POSSIBLE TO KEEP IT POINTED.**
+  `faceTgt` reads `p.lock` and comes round at `LOCK.face` 9, so a locked guard sits at about zero
+  off and parries by construction, while an unlocked one is steered by the left stick and is luck.
+  **That is an assist paying in the one currency this file trusts** -- a thing you were going to do
+  anyway, done reliably -- rather than in a damage multiplier nobody can see.
+  **AND A BLOCK THAT MAKES NO NOISE IS A NUMBER.** `blockFx` puts the contact in front of his
+  chest, back down the blow (`dirH` is the direction the blow TRAVELS, so the man who threw it is
+  at `dirH + PI`), as a spark burst plus **m64's ring layer** -- which is what a blow lands ON, and
+  here it lands on a raised guard, the most literal reading that layer has ever had. A deflect is
+  hotter, louder and knocks the lens; **only a deflect knocks it**, because a shake on every
+  guarded blow is a shake on most of a fight and m99's own note is that it has to read as ONE
+  thump.
+  **AND THE RING UNDER HIS FEET IS m51's, BORROWED.** A lock you cannot see is a lock you cannot
+  trust, and `markRing` is already the right idiom: a mark ON a man is a lock you stop playing
+  around, one on the FLOOR under him is a fact about the world. Steady rather than breathing --
+  there is nothing filling, so a closing ring would be drawing a number that does not exist.
+  **THE CHIP SAYS `PARRY` OR `BLOCK`**, because *"it didn't block"* and *"it blocked and I still
+  took it"* are the two bugs this build could have, and `· LOCK` above says whether it had anybody.
+- **AND THE GUARD HAD BEEN RUNNING ON THE NARROW CAMERA DEAD ZONE SINCE m37 (m101).** m48's
+  argument is about the residual x a HELD thumb carries, and that is the same whichever way it is
+  held -- so a block has been drifting the lens at up to 45 deg/s under a thumb asking for nothing.
+  It matters now the guard LOCKS, because the drift fights the come-round and the two settle at
+  `drift / LOCK.cam` of permanent error:
+      x .30 residual, dead .06     ->  0.71 rad/s  ->  the lock parks **17 deg** off his nose
+                      deadAim .12  ->  0.53        ->  **12.7 deg**
+  Both hold (`blockCone` is 45 and `perfect` 31), so this is steadiness rather than a fix for
+  something broken -- but 17 degrees of permanent lean is half the parry window.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container has a GPU or can build a skin, so
+  whether 45 degrees is too eager, whether the orbit reads as circling him, and whether the parry
+  spark reads as a deflect are device questions. `mel.LOCK.block = 0` is the one word back to m100,
+  `mel.BLOCK.perfect = 0` turns the deflect off alone, and `mel.MARK.on = 0` drops the ring.
+
 - **THE PUSH GETS ITS OWN RATE, AND m97 STRETCHED THE ONE SEGMENT NOBODY WANTED STRETCHED
   (m100, `AIR.pushRate`, `flipAirRate`).** *"Once you release the backflip it like slows, you're
   just like on the ground for a bit -- the portion from being down released to then jumping is too

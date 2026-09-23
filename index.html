@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m100</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m101</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m100</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m101</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm100';
+const BUILD = 'm101';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2368,7 +2368,35 @@ const HEALTH = { max: 100, regen: 4.0, wait: 5.0 };
 // idle and the only thing that says he is blocking is that the blow costs him a quarter of what
 // it would have. **That is a stated gap, not a silent one**: the chip says `BLOCK` while it is
 // up, because a defensive state you cannot see is one nobody uses twice.
-const BLOCK = { cut: .25, push: .35, stun: .3, arc: 1.25 };
+// **AND IT ACTUALLY BLOCKS NOW, WHICH IS A SECOND ARC AND NOT A BIGGER NUMBER (m101).** *"We
+// need to make the block actually block and deflect or parry or whatever... and if they swing
+// it blocks, and we have an animation for block react."* The react has played since m95
+// (`HURT.hits` is `weapon_block_reaction`, and with `FOE.knock` at 1 a raised guard is the only
+// way to reach it) -- what was missing is that a guard cost him a quarter of the blow WHEREVER
+// it came from inside 72 degrees, so there was nothing to do well and nothing to do badly.
+// **THE PAYOFF IS AN ARC, WHICH IS WHAT MAKES THE LOCK WORTH HAVING.** A blow arriving inside
+// `perfect` of his nose is DEFLECTED and costs nothing; wider, inside `arc`, is the partial
+// guard it has always been; outside it is not blocked at all.
+//     perfect .55   31 degrees either side -- squared up, which is what a guard IS
+//     arc    1.25   72 either side -- raised, and turned the wrong way
+// **SO THE LOCK DOES NOT MAKE THE BLOCK STRONGER; IT MAKES IT POSSIBLE TO KEEP IT POINTED.**
+// `faceTgt` reads `p.lock` and comes round at `LOCK.face` 9, so a locked guard sits at about
+// zero off and parries by construction, while an unlocked one is steered by the left stick and
+// is luck. That is an assist that pays in the one currency this file trusts -- **a thing you
+// were going to do anyway, done reliably** -- rather than in a damage multiplier nobody can see.
+// **AND A PARRY HAS TO MAKE A NOISE AND A MARK, or "it blocked" and "it took the hit" are one
+// picture.** `blockFx` is a spark off the guard, the `hard` row's own clang (m64's ring layer,
+// which is what the blow lands ON and is exactly right here) and a knock on the lens.
+const BLOCK = {
+  cut: .25, push: .35, stun: .3, arc: 1.25,
+  perfect: .55,                              // a deflect is a blow taken on the nose
+  cutHard: 0, pushHard: .12, stunHard: .10,  // and it costs nothing, which is what he asked for
+  show: .45,                                 // how long the chip says PARRY
+  fxOut: .55, fxUp: .55,                     // where the contact is: in front of his chest
+  fxN: 16, fxV: 5.5, fxSize: .12, fxLife: .34, fxRing: .85,
+  fxHot: [1, .90, .55], fxCool: [.62, .74, .90],
+  shake: .22,
+};
 // **BEING KNOCKED DOWN (m67).** *"When the orcs hit you, you fly through the air a little bit
 // and land on the ground and then get up."* That is three beats and the game already has two of
 // them: `in_air` is a real float and `landing_hard` is a real man hitting the ground and pushing
@@ -2506,6 +2534,31 @@ const LOCK = {
   face: 9,          // how fast he comes round to it
   cam: 2.4,         // and how fast the lens does
   chest: .62,       // where on him the mark sits, as a fraction of his height
+
+  // **AND THE GUARD TAKES IT BACK, WHICH IS THE ONE PLACE IT WAS NEVER WRONG (m101).** *"I
+  // think we used to have the lock where once you pushed forward it would lock on them and you
+  // would basically be rotating around them. We're gonna use the block as that -- if somebody
+  // is within 45 degrees of your 12 o'clock and you press and hold down on the right stick, it
+  // sort of locks on them and then you can kind of rotate around them."*
+  // **EVERY LINE OF THIS WAS ALREADY BUILT AND SWITCHED OFF.** `findLock`, `stickLocked`'s
+  // orbit, `lockH`, the camera coming round at `cam`, `faceTgt` reading `p.lock` and the
+  // acquire chirp are all m20's, intact since m36 turned them off -- so this is a SECOND
+  // SWITCH rather than a second system, which is exactly what "nothing is deleted" was for.
+  // **AND THE REASON IT WAS TURNED OFF DOES NOT REACH IT.** m36: *"a mark that moves where you
+  // are POINTING takes the aim off your thumb, so you stop aiming."* A guard has no aim to
+  // take: this moves his BODY and the LENS and nothing else -- which is m51's own distinction
+  // (*"he has turned down two assists that MOVED HIS AIM and kept the one that only moves his
+  // BODY"*), and the melee lunge is the third thing on the keep side of that line.
+  // **SO `on` AND `block` ARE TWO SWITCHES AND MUST STAY TWO.** `mel.LOCK.on = 1` is still the
+  // blaster's aim lock, still off, and still the thing he turned down twice; `LOCK.block = 0`
+  // is the one word back to m100 without disturbing it.
+  block: 1,
+  blockCone: .79,   // **45 DEGREES OF HIS 12 O'CLOCK**, his sentence as a number -- against the
+                    // blaster's 11, because that one is sized for what a BULLET must deliver
+                    // (m20) and this one only has to notice who is in front of you
+  blockKeep: 1.25,  // and it HOLDS wider than it takes, or two men shoulder to shoulder flicker
+  blockRange: 10,   // a mace reaches 2.6 m; past this there is nothing to be guarding against,
+                    // and a lock on a man across the street would swing the lens off the fight
 };
 
 // THE CLIP TABLE. Every name here is checked against the file at load and anything missing is
@@ -4606,6 +4659,7 @@ const MARK = {
   lift: .06,              // off the floor, or it z-fights the ground
   cool: [.42, .80, 1.0],  // charging
   hot:  [1.0, .74, .25],  // and full
+  gR: 1.05, gOpacity: .55, gCol: [.55, .80, 1.0],   // and the GUARD lock's own, steady (m101)
   spin: 1.9, pulse: 7.0,
 };
 const markRing = new THREE.Mesh(
@@ -4622,7 +4676,26 @@ function markStep(dt, t) {
   const p = player, s = slotNow();
   // ONLY WHILE THE HAMMER IS WINDING. A ring that is always up is a HUD element, and this one
   // exists to be read during the one moment there is a decision in it -- gauging the distance.
-  if (!(p.charge && s.charge) || p.chargeGo) { markRing.visible = false; p.chgTgt = null; return null; }
+  if (!(p.charge && s.charge) || p.chargeGo) {
+    p.chgTgt = null;
+    // **AND THE GUARD BORROWS IT (m101).** *"It sort of locks on them."* A lock you cannot see
+    // is a lock you cannot trust, and this ring is already the right idiom for exactly that:
+    // m51's own argument is that a mark ON a man is a LOCK you stop playing around, and one on
+    // the FLOOR under him is a fact about the world you can read without looking away from the
+    // fight. It does not breathe and it does not close -- there is nothing filling, so a steady
+    // ring is the honest picture.
+    if (p.block && p.lock) {
+      const d = p.lock;
+      markRing.material.color.setRGB(MARK.gCol[0], MARK.gCol[1], MARK.gCol[2]);
+      markRing.scale.setScalar(MARK.gR);
+      markRing.position.set(d.root.position.x, d.root.position.y + MARK.lift, d.root.position.z);
+      markRing.rotation.z = t * MARK.spin * .5;
+      markRing.material.opacity = MARK.gOpacity;
+      markRing.visible = true;
+      return null;
+    }
+    markRing.visible = false; return null;
+  }
   const A = chargeAim();
   p.chgTgt = A.t ? A.t.dist : null;
   if (!A.t) { markRing.visible = false; return A; }
@@ -5013,6 +5086,7 @@ const player = {
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
   flipRate: 0, flipPush: 0,        // the AIR rate, and how long the push takes at its own (m100)
   hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0, knockDur: 0,   // the reaction clip, and the knock-down's own clock
+  parryT: 0,                     // how long ago he deflected one, for the chip (m101)
   runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0,   // the reach into the backpack
@@ -5091,22 +5165,33 @@ function gunOut() { return !!slotNow().aim; }
 // the whole follow-through, which is the dramatic beat rather than a decoration on it.
 function committed() { return !!(player.aim || player.charge || player.fireT > 0); }
 function findLock() {
+  const p = player;
+  // **TWO LOCKS, TWO SWITCHES (m101).** The AIM lock is off since m36 and stays off; the GUARD
+  // lock is the same loop with its own cone, its own reach and its own reason to exist. See
+  // `LOCK.block` for why the m36 complaint does not reach this one.
+  const guard = !!(LOCK.block && p.block);
   // OFF SINCE m36. Everything below is intact and `mel.LOCK.on = 1` brings it back -- the
   // reticle, the camera coming round and the stick's orbit mode all hang off the result.
-  if (!LOCK.on || !committed()) return null;
-  const p = player;
+  if (!guard && (!LOCK.on || !committed())) return null;
   // wide when the trigger first arms, tight by the time it is loaded
-  const cone = p.aim ? lerp(LOCK.cone, LOCK.coneTight, p.chg) : LOCK.cone;
+  const cone = guard ? LOCK.blockCone : p.aim ? lerp(LOCK.cone, LOCK.coneTight, p.chg) : LOCK.cone;
+  const keep = guard ? LOCK.blockKeep : LOCK.keep;
+  const range = guard ? LOCK.blockRange : LOCK.range;
   let best = null, bestS = -Infinity;
   for (const d of DUMMIES) {
+    // **A MAN ON THE FLOOR IS NOT SOMETHING TO GUARD AGAINST**, which is `palFoe`'s own rule
+    // (m75) one state over: locking the lens onto somebody who cannot swing takes it off
+    // whoever can. The aim lock never had this and must not gain it -- a downed man is still
+    // a perfectly good thing to shoot.
+    if (guard && (d.st === 'down' || d.st === 'up')) continue;
     const dx = d.root.position.x - p.pos.x, dz = d.root.position.z - p.pos.z;
     const dist = Math.hypot(dx, dz);
-    if (dist > LOCK.range || dist < .4) continue;
+    if (dist > range || dist < .4) continue;
     const off = Math.abs(wrapAngle(Math.atan2(dx, dz) - cam.az));
-    if (off > (d === p.lock ? cone * LOCK.keep : cone)) continue;
+    if (off > (d === p.lock ? cone * keep : cone)) continue;
     // straightest wins, nearest breaks it -- and BOTH terms are fractions of their own limit,
     // so "how far off" and "how far away" are comparable rather than one drowning the other
-    const sc = (1 - off / cone) - LOCK.near * (dist / LOCK.range);
+    const sc = (1 - off / cone) - LOCK.near * (dist / range);
     if (sc > bestS) { bestS = sc; best = d; }
   }
   return best;
@@ -6744,6 +6829,7 @@ function stepPlayer(dt) {
   // ---- the landing states: he can move out of them, but not instantly ----
   // the reaction clip runs on its own clock and gives way out of `rest` -- see `rigAnim`
   if (p.hurtNm) { p.hurtClipT += dt; if (p.hurtClipT >= HURT.stagger) p.hurtNm = ''; }
+  if (p.parryT > 0) p.parryT = Math.max(0, p.parryT - dt);
   // THE REACH, and the weapon arrives PART-WAY THROUGH IT -- `SWAP.at`, fired on the crossing
   // rather than every frame past it, which is `p.gotUp`'s own rule one state over.
   if (p.swap) {
@@ -9007,6 +9093,32 @@ function foeStrike(d) {
   playerHurt(K.hitDmg, to, K.push, K.pushUp, K.stun, K.knock);
 }
 
+// **A BLOCK THAT MAKES NO NOISE IS A NUMBER (m101).** "It blocked" and "it took the hit" are
+// one picture from a phone otherwise, and the guard is the one state whose whole job is to make
+// a blow NOT happen -- so the thing that says it worked has to be the thing you see instead.
+// **THE CONTACT IS IN FRONT OF HIS CHEST, BACK DOWN THE BLOW.** `dirH` is the direction the blow
+// TRAVELS (it is what the shove is applied along), so whoever threw it is at `dirH + PI` and the
+// guard meets it there. Nothing is typed per weapon: a parry is the same event harder.
+// **AND THE RING IS m64's LAYER, WHICH IS WHAT MAKES IT THE RIGHT SOUND RATHER THAN A LOUD ONE.**
+// That one is what a blow lands ON -- and here it lands on a raised guard, which is the most
+// literal reading that layer has ever had. `null` takes `HITSND.hard`, the plate row.
+function blockFx(dirH, hard) {
+  const p = player, B = BLOCK;
+  const bh = dirH + Math.PI;
+  const x = p.pos.x + Math.sin(bh) * B.fxOut;
+  const z = p.pos.z + Math.cos(bh) * B.fxOut;
+  const y = p.pos.y + RIG.height * B.fxUp;
+  const k = hard ? 1 : .55;
+  spkBurst(x, y, z, Math.max(3, Math.round(B.fxN * k)), {
+    col: hard ? B.fxHot : B.fxCool, spread: B.fxV * k, up: 1.4, r: .12,
+    size: B.fxSize, life: B.fxLife });
+  hitRing(null, B.fxRing * (hard ? 1 : .6), x, z);
+  // **ONLY A DEFLECT KNOCKS THE LENS.** A shake on every guarded blow is a shake on most of a
+  // fight, and m99's own note is that this reads as ONE thump -- which it cannot, if it is
+  // going off continuously.
+  if (hard) camShake(B.shake);
+}
+
 // BEING HIT. There is no hit-reaction clip in the player's export and no death yet, so what a
 // blow IS here is a knockback, a moment of no steering and a flash -- which is the part that
 // reads, and the part `MOVE.landHard` already has the shape of.
@@ -9016,8 +9128,16 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
   // block is written under, pointed at the player. It costs him most of the damage and most of
   // the shove, and it does NOT make him untouchable: a dodge roll is the thing that does that.
   // Facing matters: a blow from behind is not blocked, whatever the thumb is doing.
-  const guard = p.block && Math.abs(wrapAngle(dirH - Math.PI - p.faceH)) < BLOCK.arc;
-  if (guard) { dmg *= BLOCK.cut; push *= BLOCK.push; stun *= BLOCK.stun; up = 0; }
+  // **AND HOW WELL HE IS SQUARED UP IS THE WHOLE OF WHAT A GUARD BUYS (m101).** One arc was a
+  // flat quarter of the blow from anywhere inside 72 degrees; two arcs make the guard a thing
+  // you can do WELL. See `BLOCK`: a blow taken on the nose is DEFLECTED and costs nothing, and
+  // holding it there is what the guard lock is for.
+  const off = Math.abs(wrapAngle(dirH - Math.PI - p.faceH));
+  const guard = p.block && off < BLOCK.arc;
+  const parry = guard && off < BLOCK.perfect;
+  if (parry) { dmg *= BLOCK.cutHard; push *= BLOCK.pushHard; stun *= BLOCK.stunHard; up = 0; }
+  else if (guard) { dmg *= BLOCK.cut; push *= BLOCK.push; stun *= BLOCK.stun; up = 0; }
+  if (guard) { blockFx(dirH, parry); p.parryT = parry ? BLOCK.show : 0; }
   p.hp = Math.max(0, p.hp - dmg);
   p.hurtT = stun; p.hurtWait = HEALTH.wait;
   // **A KNOCK-DOWN IS SET, NOT ADDED (m67).** Every other shove here is `+=` on whatever he was
@@ -9061,7 +9181,7 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
-    p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.bkHang = 0; p.hurtNm = ''; p.meleeAir = 0;
+    p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.bkHang = 0; p.hurtNm = ''; p.parryT = 0; p.meleeAir = 0;
     p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool; swapStop();
     whooshSnd(Math.hypot(bk, vy), p.pos.x, p.pos.z);
   } else {
@@ -9335,7 +9455,16 @@ function stepCam(dt) {
   // 'the aimer jumps a little' half of the complaint. `padUp` is true from the first frame the
   // thumb is up there, and its hysteresis argument keeps it true once something IS armed, so a
   // thumb rolling inward mid-aim does not suddenly get the twitchy zone back.
-  const dz = padUp(p.aim || p.charge || p.center) ? CAM.deadAim : CAM.dead;
+  // **AND THE GUARD IS A HELD THUMB TOO (m101).** m48's argument is about the residual x a HELD
+  // thumb carries, and that is the same whichever way it is being held -- so the block has been
+  // running on the NARROW zone since m37 and drifting the lens at up to 45 deg/s under a thumb
+  // asking for nothing. It matters more now the guard LOCKS: the drift fights the come-round,
+  // and the two settle at `drift / LOCK.cam` of error.
+  //     x .30 residual, dead .06   ->  0.71 rad/s  ->  the lock parks 17 deg off his nose
+  //                     deadAim .12 ->  0.53       ->  **12.7 deg**
+  // Both hold (`blockCone` is 45 and `BLOCK.perfect` 31), so this is steadiness rather than a
+  // fix for something broken -- but 17 degrees of permanent lean is half the parry window.
+  const dz = (p.block || padUp(p.aim || p.charge || p.center)) ? CAM.deadAim : CAM.dead;
   const ax = Math.abs(rx);
   if (ax > dz) { cam.az -= Math.sign(rx) * ((ax - dz) / (1 - dz)) * CAM.yawRate * dt; p.camWant = null; }
   // **AND THE MOUSE IS THE SAME WRITER, NOT A SECOND ONE (m79).** It is spent HERE rather than
@@ -9506,7 +9635,10 @@ function frame() {
     // `BX0` is the fault, any number at all is not. `gun<n>CM`'s rule, one system over.
     // A DEFENSIVE STATE YOU CANNOT SEE IS ONE NOBODY USES TWICE -- and there is no clip for it
     // yet, so this line IS the guard as far as the screen is concerned.
-    const bk = p.block ? ' · BLOCK' : p.center ? ' · SQUARE' : '';
+    // **AND A DEFLECT HAS TO NAME ITSELF (m101).** `BLOCK` and `PARRY` are two different
+    // outcomes of one thumb, and *"it didn't block"* and *"it blocked and I still took it"*
+    // are the two bugs this build could have. `· LOCK` above says whether it had anybody.
+    const bk = p.parryT > 0 ? ' · PARRY' : p.block ? ' · BLOCK' : p.center ? ' · SQUARE' : '';
     const bx = BUILDINGS.length
       ? ' · BX' + BUILDINGS.reduce((a, b) => a + (b.cols ? b.cols.length : 1), 0) : '';
     // **AND WHAT THE SIDEKICK IS DOING (m74).** "He got stuck", "he never jumped" and "he jumped
