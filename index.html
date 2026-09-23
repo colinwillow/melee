@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m87</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m88</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m87</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m88</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm87';
+const BUILD = 'm88';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -790,6 +790,23 @@ const MELEE = {
   // does not reach him now simply misses -- see `STRIKE`.
   lockAt: .58,
   carryAvg: .725,      // the `carry` profile's average speed: carry + (1 - carry) / 2
+
+  // **THE TWO NEW OPENERS (m88), AND NEITHER NEEDED A STATE.** *"That slide tackle can now be
+  // if you're running and you melee -- it becomes the first link in the melee sequence. Flying
+  // kick is if you jumped in the air and you melee."* A strike here is already just a clip, a
+  // beat and a solved velocity driven through `p.melee`, so both are those three fields with
+  // different values: the lunge, the bleed, the swept limb, the lock and the camera all come
+  // with them, and there is nothing new to keep in step.
+  slide: 'slide_kick', slideDur: .95, slideV: 9.0, slideMax: 7.5,
+  // **AND IT IS A FEW STEPS IN, NOT A DIRECTION HELD.** *"I want it to only trigger if you've
+  // actually got a little bit of like a few steps in. It's not just like if you're holding a
+  // direction."* `p.goT` is how long he has been ASKING to move, which is exactly the thing he
+  // ruled out; `p.runT` is how long he has actually BEEN above a run, which is the sentence.
+  // At 4.2 m/s a stride is about 1.3 m, so .45 s is three of them.
+  slideAt: 4.2, slideT: .45,
+  // the flying kick ends when he MEETS the ground -- `slamGo`'s rule, and the opposite of every
+  // other strike, which end when he leaves it. One per airtime, or it is a flutter kick.
+  air: 'flying_kick', airDur: .85, airV: 9.5,
   finishRange: 26,     // how far the charged swing may ACQUIRE. A little past `finishReach` on
                        // purpose, and no further: a lock it cannot deliver is worse than none.
   // and what each one is worth. The finisher and the charged swing put him down outright.
@@ -1556,7 +1573,12 @@ const FOE = {
   // own finisher at 1.0 is still the biggest thing in the game.
   hitPow: .92,
   push: 7.0, pushUp: 2.2,
-  knock: 1,          // **and his mace puts you on the floor** -- a field on the KIND, so a
+  // **A CHANCE NOW, NOT A FLAG (m88).** At 1 every mace blow put him on his back, and with the
+  // lie and the get-up that is nearly three seconds of floor per hit -- "being unable to move is
+  // the least fun state in any game" taken to its conclusion. Most swings stagger him; about a
+  // third send him flying, which is the variety he asked for and is where the big/small reads
+  // from, since there is one swing pool and no big/small in the export.
+  knock: .35,        // **and his mace puts you on the floor** -- a field on the KIND, so a
                      // weaker enemy tomorrow shoves you without one, and `HURT` is the shape
   stun: .35,         // how long you are not steering afterwards
   bar: { w: .9, h: .10, up: 1.22, fade: 4.0 },
@@ -2004,7 +2026,20 @@ const HURT = {
   back: 7.6,      // along the blow. Against `airDrag` that integrates to about four metres
   land: 1.50,     // `landing_hard`'s OWN authored length, so it plays at 1.0x and can be READ
   again: 1.1,     // he cannot be re-launched inside this -- see below
-  down: '', up: '',
+
+  // **AND THE THREE EMPTY HOOKS ARE FULL NOW (m88).** *"I want them to hit me and me to play
+  // the take damage animation... and when I get sent through the air I don't land on my feet,
+  // I always land on my back laying down and then I get up."* m67 wrote `down`/`up` as `''`
+  // because the poses were not drawn and the STATES ran regardless -- he flew, landed and got
+  // up with `landing_hard` standing in for all of it. This is what that hook was for, and it
+  // needed no new state: naming the clips is the change.
+  hits: ['take_damage_head', 'take_damage_body'],
+  stagger: .80,   // how long a reaction READS for. m37's lesson: a blow too fast to see is the
+                  // same blow every time, and these clips are 0.83 s and 1.46 s at 1x.
+  down: 'laying_down',    // ONE KEY -- a held pose, which is why `normaliseClips` keeps it
+  up: 'lay_to_get_up',
+  lie: .55,       // how long he is on his back before he starts getting up
+  upBeat: 2.20,   // and the get-up is 2.708 s authored, so x1.23 -- quick, still readable
 };
 
 // LOCKING ON. Once the trigger is held or the hammer is wound, he is committed to a target --
@@ -2174,8 +2209,14 @@ const SPLIT = {
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
 // that starts it, never by its own damped weight -- see `playOnce`.
 const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_melee_charge',
-  'melee_01', 'melee_03', 'Standing_Melee_Attack_360_High',
-  'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_finish',
+  'melee_01', 'melee_03',
+  'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_04', 'weapon_melee_finish',
+  // m87/m88: the flips, the duck, the two new openers, and the three reaction poses. `Backflip`
+  // and `front_flip` have to be here or the mixer wraps them and he flips for ever; `laying_down`
+  // is ONE KEY and the whole of what `clampWhenFinished` is for.
+  'front_flip', 'Backflip', 'backCrouch', 'slide_kick', 'flying_kick',
+  'take_damage_head', 'take_damage_body', 'take_damage_and_fall_down',
+  'laying_down', 'lay_to_get_up',
   // the split one-shots hold their last frame exactly like the clips they came from
   'shoot__up', 'weapon_melee_charge__up', 'weapon_melee_finish__up']);
 // EXPORTER RESIDUE. One frame, 0 bones moving -- measured, not guessed.
@@ -3177,7 +3218,13 @@ function normaliseClips(clips) {
     clip.resetDuration();
     // A NON-POSITIVE DURATION IS THE SIGNATURE of the bug above, so it says so rather than
     // going quiet and freezing every pose in the game.
-    if (!(clip.duration > 0)) { note('CLIP ' + clip.name + ' duration ' + clip.duration); continue; }
+    // **A NEGATIVE ONE IS THE SIGNATURE OF THE SHARED-ARRAY BUG** above, so it says so rather
+    // than going quiet and freezing every pose in the game. **ZERO IS A DIFFERENT THING AND IS
+    // LEGITIMATE (m88):** a one-key clip is a POSE -- `laying_down` is exactly that, and so is
+    // the `aimPose` this file derives for itself -- so it is kept at a small non-zero length.
+    // It has to be non-zero: a clip of duration 0 on repeat divides by its own length.
+    if (clip.duration < 0) { note('CLIP ' + clip.name + ' duration ' + clip.duration); continue; }
+    if (clip.duration === 0) clip.duration = .1;
     out.push(clip);
   }
   return out;
@@ -4429,6 +4476,8 @@ const player = {
   goT: 0,                          // how long he has been asking to move -- the gather
   jump: 0, jumps: 0, fallV: 0,
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
+  hurtNm: '', hurtClipT: 0, gotUp: 0,   // the reaction clip, and whether the get-up has started
+  runT: 0, airKick: 0, meleeAir: 0,     // how long he has actually been running, and the air kick
   bkT: 0, bkOn: 0,                  // the backflip's charge, and whether he is visibly ducked
   land: 0, landT: 0, landHard: 0,  // the landing state
   knock: 0, knockCool: 0,          // the knock-down, and how long until he can take another
@@ -4669,9 +4718,36 @@ function meleeLock(h, reachMax) {
   }
   return best;
 }
+// THE FLYING KICK. It is an ordinary strike with a different clip, beat and speed -- the lunge,
+// the bleed, the swept limb and the camera want all come from `p.melee` -- so the only thing it
+// adds is that it ENDS ON THE GROUND rather than in the air, which is `slamGo`'s own rule.
+// **IT DOES NOT TOUCH `vel.y`**: he is already ballistic, and driving the vertical would make it
+// a second slam rather than a kick thrown across the air he already has.
+function kickGo(h) {
+  const p = player, nm = MELEE.air;
+  if (h == null) h = p.faceH;
+  p.airKick = 1; p.meleeAir = 1; p.flip = '';   // the kick owns the body, so the flip is over
+  p.melee = 1; p.meleeIx = 0; p.meleeT = 0; p.meleeName = nm; p.meleeDur = MELEE.airDur;
+  p.meleeChain = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
+  p.melTgt = null; p.melV = MELEE.airV;
+  p.heading = h; p.faceH = h; p.camWant = h;
+  playOnce(nm, clipLen(nm) / p.meleeDur);
+  snd('swoosh', { r: .92, g: .86 });
+  p.vel.x = Math.sin(h) * p.melV; p.vel.z = Math.cos(h) * p.melV;
+}
+
 function meleeGo(h) {
   const p = player;
-  if (!p.grounded || p.knock) return;   // and not out of a knock-down: the get-up is not his to cancel
+  if (p.knock) return;                  // out of a knock-down: the get-up is not his to cancel
+  // **A FLICK IN THE AIR IS THE FLYING KICK (m88).** *"Flying kick is if you jumped in the air
+  // and you melee."* Until now `meleeGo` simply returned when airborne, so a flick up there did
+  // nothing at all unless it went DOWN, where m81's slam took it. ONE PER AIRTIME (`p.airKick`,
+  // cleared beside `p.jumps` on landing), or it is a flutter kick across the street.
+  if (!p.grounded) {
+    if (p.melee || p.roll || p.slam || p.airKick) return;
+    if (MELEE.air && rig.actions[MELEE.air]) kickGo(h);
+    return;
+  }
   // BUFFERED, NEVER INTERRUPTING. A flick thrown while a strike is still playing is remembered
   // and taken the moment it finishes, so the chain answers the thumb without any link being
   // cut off halfway. Dropping the input instead would make a fast chain feel unresponsive;
@@ -4683,20 +4759,25 @@ function meleeGo(h) {
   // the finisher it comes back round rather than sticking on the last one for ever.
   const cont = p.melee || p.meleeChain > 0;
   const ix = cont ? (p.meleeIx + 1) % chain.length : 0;
-  const name = chain[ix];
+  // **AND THE OPENING LINK IS THE TACKLE IF HE HAS ACTUALLY BEEN RUNNING (m88).** It is an
+  // OPENING rather than a fourth strike: running at somebody and hitting melee is one move, not
+  // two decisions. `p.meleeIx` stays 0, so the next flick takes link two and the chain reads on
+  // from it exactly as it would have.
+  const tackle = !cont && MELEE.slide && rig.actions[MELEE.slide] && p.runT >= MELEE.slideT;
+  const name = tackle ? MELEE.slide : chain[ix];
   if (!rig.actions[name]) { note('NO CLIP ' + name); return; }
-  p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name;
-  p.meleeDur = MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
+  p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name; p.meleeAir = 0;
+  p.meleeDur = tackle ? MELEE.slideDur : MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
   p.meleeChain = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
-  const base = MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
+  const base = tackle ? MELEE.slideV : MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
   // **WHAT IT CAN REACH IS WHAT IT MAY ACQUIRE INSIDE, AND THE CAP IS NOW WHAT DECIDES THAT
   // (m72).** A target further off than the lunge can deliver has to be refused, or he is aimed
   // at a man he then falls short of and swings at the air -- m20's rule (an assist's range is
   // sized for what it DELIVERS) and `chargeAim`'s `acq` one move over. Reading `maxV` here was
   // also that number doing two jobs: it is a SPEED ceiling, and it was silently setting the
   // acquire radius as well.
-  const reachMax = Math.min(MELEE.maxV * p.meleeDur * MELEE.carryAvg,
-                            MELEE.lungeMax + MELEE.arrive);
+  const maxD = tackle ? MELEE.slideMax : MELEE.lungeMax;
+  const reachMax = Math.min(MELEE.maxV * p.meleeDur * MELEE.carryAvg, maxD + MELEE.arrive);
   const L = h != null ? meleeLock(h, reachMax) : null;
   if (L) h = L.h;
   p.melTgt = L ? L.d : null;
@@ -4713,7 +4794,7 @@ function meleeGo(h) {
   // solve inverts -- applied to the free lunge too, which is what keeps one number governing
   // how far a strike carries whether or not it found anybody.
   const spend = p.meleeDur * MELEE.carryAvg;
-  const vCap = Math.min(MELEE.maxV, MELEE.lungeMax / spend);
+  const vCap = Math.min(MELEE.maxV, maxD / spend);
   p.melV = L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : Math.min(base, vCap);
   // **AND THE LENS COMES ROUND WITH HIM (m81).** `h` here is the direction he ACTUALLY strikes
   // -- after `meleeLock` has had its say -- so a locked swing turns the camera onto the man
@@ -5574,7 +5655,7 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
       // ground sounds like a man hitting the ground whichever man it is. `MOVE.landSoft` and
       // `landHard` pick the CLIP by the same speed; this is the sound of the same event.
       bumpSnd(p.fallV * BODYSND.drop.me, p.pos.x, p.pos.z);
-      p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; p.slamUsed = 0; p.flip = ''; landed = 1;
+      p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; p.slamUsed = 0; p.airKick = 0; p.flip = ''; landed = 1;
     }
   }
   p.speed = Math.hypot(p.vel.x, p.vel.z);
@@ -5672,7 +5753,10 @@ function stepPlayer(dt) {
     // A LEAP IN THE AIR KEEPS ITS SPEED -- that is what ballistic MEANS, and the whole reason
     // the arc lands where it was solved to. The `carry` bleed is for a grounded lunge, so the
     // charged swing only takes it once his feet are back down and it becomes a skid.
-    const kk = (p.chargeGo && !p.grounded) ? 1 : k;
+    // **A FLYING KICK KEEPS ITS DRIVE TOO.** `carry`'s bleed is for a lunge scrubbing against
+    // the ground and there is no ground up here; a kick that bleeds to nothing mid-flight drops
+    // straight down, which is the opposite of what it is.
+    const kk = ((p.chargeGo || p.meleeAir) && !p.grounded) ? 1 : k;
     p.vel.x = Math.sin(h) * v0 * kk; p.vel.z = Math.cos(h) * v0 * kk;
     p.faceH = h; p.heading = h;
     integrate(dt, 0, 0, 0, false);
@@ -5683,11 +5767,15 @@ function stepPlayer(dt) {
     // you spend to go somewhere and its tail is yours; a strike is a blow, and a blow that the
     // next input truncates never reads as having landed. The whole reason the beats came down
     // is that this rule is only bearable when each one is over quickly.
-    const out = p.roll ? (u >= 1 || (u > MELEE.rollFree && s.mag > .3)) : u >= 1;
+    // AND THE FLYING KICK ENDS THE MOMENT HE MEETS THE GROUND, which is the opposite test from
+    // every other strike -- they all end when he LEAVES it. `p.meleeT > .1` is what stops it
+    // cancelling on the frame it began, because he can be one frame off the floor when it fires.
+    const out = p.roll ? (u >= 1 || (u > MELEE.rollFree && s.mag > .3))
+      : p.meleeAir ? (u >= 1 || (p.grounded && p.meleeT > .1)) : u >= 1;
     if (out) {
       if (p.roll) p.roll = 0;
       else if (p.melee) {
-        p.melee = 0; p.meleeChain = MELEE.window;
+        p.melee = 0; p.meleeAir = 0; p.meleeChain = MELEE.window;
         // and the flick that arrived mid-strike is taken NOW, so a chain thrown as fast as the
         // thumb can move still lands every link
         if (p.melQ != null) { const q = p.melQ; p.melQ = null; meleeGo(q); }
@@ -5701,8 +5789,20 @@ function stepPlayer(dt) {
   if (p.meleeChain > 0) { p.meleeChain -= dt; if (p.meleeChain <= 0) p.melQ = null; }
 
   // ---- the landing states: he can move out of them, but not instantly ----
+  // the reaction clip runs on its own clock and gives way out of `rest` -- see `rigAnim`
+  if (p.hurtNm) { p.hurtClipT += dt; if (p.hurtClipT >= HURT.stagger) p.hurtNm = ''; }
+  // HOW LONG HE HAS ACTUALLY BEEN RUNNING, which is what the tackle opener is gated on. It is
+  // last frame's speed, which is the right one: what is being asked is whether he ARRIVED at
+  // this flick running, not whether the thumb is pointed somewhere.
+  if (p.grounded && p.speed > MELEE.slideAt) p.runT += dt; else p.runT = 0;
+
   if (p.land) {
     p.landT += dt;
+    // **THE GET-UP IS FIRED ON THE CROSSING, NOT EVERY FRAME PAST IT.** `p.gotUp` is the edge;
+    // without it `playOnce` rewinds the clip on every frame of the get-up and he never stands.
+    if (p.knock && !p.gotUp && p.landT >= HURT.lie && rig.actions[HURT.up]) {
+      p.gotUp = 1; playOnce(HURT.up, clipLen(HURT.up) / HURT.upBeat);
+    }
     // **A KNOCK-DOWN IS NOT CANCELLABLE.** `landFree` exists so an ordinary landing does not
     // cost you a step you were already taking; a get-up you can nudge out of is a get-up
     // nobody ever sees, which is m8's lesson about a state that cuts its own clip short.
@@ -5824,10 +5924,21 @@ function stepPlayer(dt) {
     // about falls -- and coupling them means retuning one silently changes the other.
     const hard = p.knock || p.fallV > MOVE.hardLand;
     p.landHard = hard ? 1 : 0;
-    const nm = hard ? CLIPS.landHard : CLIPS.landSoft;
-    p.land = p.knock ? HURT.land : hard ? MOVE.landHard : MOVE.landSoft; p.landT = 0;
-    // the clip is compressed to the beat the STATE lasts, so the two cannot disagree
-    playOnce(nm, clipLen(nm) / p.land);
+    p.landT = 0; p.gotUp = 0;
+    // **A KNOCK-DOWN LANDS ON HIS BACK, NOT ON HIS FEET (m88).** *"When I get sent through the
+    // air I don't land on my feet, I always land on my back laying down and then I get up."*
+    // So the state is the LIE plus the GET-UP, and one `p.land` clock carries both -- which is
+    // what keeps `wantSp = 0`, the not-cancellable rule and the chip line working unchanged.
+    // The switch between the two clips happens on `landT` crossing `lie`, in `stepPlayer`.
+    if (p.knock && rig.actions[HURT.down] && rig.actions[HURT.up]) {
+      p.land = HURT.lie + HURT.upBeat;
+      playOnce(HURT.down, 1);              // one key: there is nothing to compress
+    } else {
+      const nm = hard ? CLIPS.landHard : CLIPS.landSoft;
+      p.land = p.knock ? HURT.land : hard ? MOVE.landHard : MOVE.landSoft;
+      // the clip is compressed to the beat the STATE lasts, so the two cannot disagree
+      playOnce(nm, clipLen(nm) / p.land);
+    }
   }
 }
 
@@ -5860,9 +5971,24 @@ function rigAnim(dt) {
     // FULL WEIGHT UNTIL `landFree`, THEN IT GIVES WAY. Ramping it down from the first frame
     // put the gait at 0.55 through the whole second half, which dilutes exactly the part of a
     // hard landing worth watching -- he comes out of the roll with a run blended over it.
-    const nm = p.landHard ? CLIPS.landHard : CLIPS.landSoft;
+    // A KNOCK-DOWN IS LYING THERE AND THEN GETTING UP, and it is NOT cancellable -- so it holds
+    // full weight for the whole of both rather than giving way, which is `landFree`'s own rule
+    // pointed the other way: a get-up you can nudge out of is a get-up nobody ever sees.
+    const kn = p.knock && rig.actions[HURT.down] && rig.actions[HURT.up];
+    const nm = kn ? (p.landT < HURT.lie ? HURT.down : HURT.up)
+                  : p.landHard ? CLIPS.landHard : CLIPS.landSoft;
     const u = clamp(p.landT / p.land, 0, 1), f = MOVE.landFree;
-    t[nm] = u < f ? 1 : 1 - (u - f) / (1 - f);
+    t[nm] = kn || u < f ? 1 : 1 - (u - f) / (1 - f);
+  }
+  // THE REACTION TO A BLOW HE STAYED ON HIS FEET FOR. Same shape as the landing and out of the
+  // same budget, so the table still sums to exactly 1 -- under it bleeds the BIND pose in.
+  // **AND NOT WHILE A LANDING IS ALSO CLAIMING WEIGHT.** Two one-shot layers at full weight sum
+  // to 2 and the gait's budget goes negative, which over-applies rather than bleeding the bind
+  // pose in -- but it is the same class of fault and it is one clause to close. A landing and a
+  // stagger on the same frame is a real overlap, and the landing wins.
+  if (p.hurtNm && !p.land && rig.actions[p.hurtNm]) {
+    const u = clamp(p.hurtClipT / HURT.stagger, 0, 1), f = MOVE.landFree;
+    t[p.hurtNm] = u < f ? 1 : 1 - (u - f) / (1 - f);
   }
 
   const add = (nm, w, ref) => {
@@ -5870,7 +5996,10 @@ function rigAnim(dt) {
     t[nm] = (t[nm] || 0) + w;
     if (ref) setScale(nm, clamp(sp / ref, GAIT.tsLo, GAIT.tsHi));
   };
-  let rest = p.land ? 1 - (t[p.landHard ? CLIPS.landHard : CLIPS.landSoft] || 0) : 1;
+  // whatever the two one-shot layers above claimed comes out of the budget the gait gets, so
+  // the table sums to exactly 1 however many of them are live
+  let rest = 1; for (const k in t) rest -= t[k];
+  rest = clamp(rest, 0, 1);
 
   // ---- TURNING ON THE SPOT (m53). *"He just rotates, not moving his feet at all."*
   // **IT TAKES WEIGHT RATHER THAN ADDING IT**, which is the only safe way to put a clip on top
@@ -7784,7 +7913,13 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
   // the damage and the shove; and `again` is what stops three orcs holding him on the floor --
   // being unable to move is the least fun state in any game, and a blow inside the window still
   // hurts and still shoves, it just does not re-launch. `d.cool`'s rule, pointed at the player.
-  if (knock && !guard && p.knockCool <= 0) {
+  // **`knock` IS A CHANCE, NOT A FLAG (m88).** *"Maybe like a few swings -- I'm not sure if they
+  // have a big swing versus a small swing; if they don't, that's fine, we can just have it be
+  // random."* There is one swing pool and no big/small in the export, so the VARIETY is in what
+  // the blow does rather than in which clip threw it -- and a man on the floor after every
+  // single mace hit is the "being unable to move is the least fun state" note one step further
+  // on. `mel.hurt()` passes 1 and still always launches.
+  if (knock && Math.random() < knock && !guard && p.knockCool <= 0) {
     const vy = Math.sqrt(2 * MOVE.g * HURT.hi);
     p.vel.x = Math.sin(dirH) * HURT.back;
     p.vel.z = Math.cos(dirH) * HURT.back;
@@ -7794,7 +7929,7 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
-    p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0;
+    p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.hurtNm = ''; p.meleeAir = 0;
     whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
   } else {
     p.vel.x += Math.sin(dirH) * push;
@@ -7803,6 +7938,16 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // `again` this is the shove branch, and a get-up interrupted by a little jump reads as a
     // glitch rather than as a second hit.
     if (p.grounded && !p.knock) { p.vel.y = up; p.grounded = false; }
+    // **AND A BLOW HE STAYS ON HIS FEET FOR NOW READS AS ONE.** The stun is an input lockout and
+    // it is deliberately short; the CLIP is what says he was hit, so it runs longer and gives
+    // way out of `rest` the way a landing does rather than holding the body for its whole length.
+    if (!p.knock && !p.roll && HURT.hits.length) {
+      const nm = HURT.hits[(Math.random() * HURT.hits.length) | 0];
+      if (rig.actions[nm]) {
+        p.hurtNm = nm; p.hurtClipT = 0;
+        playOnce(nm, clipLen(nm) / HURT.stagger);
+      }
+    }
   }
   hurtEl.classList.remove('on'); void hurtEl.offsetWidth; hurtEl.classList.add('on');
   snd('thud', { g: .95, r: .8 });
@@ -8161,7 +8306,11 @@ function frame() {
     const p = player;
     // A SWING THAT CONNECTED SAYS SO. "It hit him before the swing" and "it never reached him"
     // are opposite bugs and identical from a phone, and the sweep can now produce either.
-    const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) + (p.melFired ? '!' : '')
+    const st = p.roll ? 'roll'
+      // WHICH OPENER IT TOOK. "The tackle never fires" and "it fired and reached nobody" are
+      // opposite bugs and one picture from a phone, and `runT` is the thing it is gated on.
+      : p.melee ? (p.meleeAir ? 'KICK' : p.meleeName === MELEE.slide ? 'TACKLE'
+                   : 'melee' + (p.meleeIx + 1)) + (p.melFired ? '!' : '')
       // THE SOLVED ARC, ON SCREEN. How far it leapt and how high is the whole of what he is
       // judging -- "it jumps through them" and "it falls short" are one word apart otherwise.
       : p.slam ? 'SLAM' + (p.slamDur || 0).toFixed(2) + (p.melFired ? '!' : '')

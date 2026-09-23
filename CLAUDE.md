@@ -1040,6 +1040,76 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THREE OF HIS FOUR ASKS WERE ALREADY MACHINERY WITH EMPTY HOOKS (m88).** *"That slide tackle
+  can now be if you're running and you melee -- it becomes the first link in the melee sequence,
+  but I want it to only trigger if you've actually got a few steps in, not just if you're holding
+  a direction. Flying kick is if you jumped in the air and you melee. I want the orcs to hit me
+  and me to play the take damage animation, but I also want them to be able to swing and send me
+  flying... when I get sent through the air I don't land on my feet, I always land on my back
+  laying down and then I get up."*
+  **NOT ONE OF THEM NEEDED A NEW STATE**, which is the whole return on `p.melee` being a clip, a
+  beat and a solved velocity rather than three hard-coded moves, and on m67 writing `HURT.down`
+  and `HURT.up` as `''` and running the states regardless.
+      the tackle      a strike with `slide_kick`, `slideDur` and `slideV`
+      the flying kick a strike with `flying_kick`, `airDur` and `airV`, ended by the GROUND
+      being hit       `HURT.hits` named; `down`/`up` filled
+  **"A FEW STEPS IN" IS `p.runT`, AND `p.goT` IS EXACTLY THE THING HE RULED OUT.** `goT` is how
+  long he has been ASKING to move -- a thumb held -- which is his own sentence for what must not
+  trigger it. `runT` is how long he has actually BEEN over `slideAt`, and it is read from LAST
+  frame's speed, which is the right one: the question is whether he ARRIVED at this flick
+  running. At 4.2 m/s a stride is about 1.3 m, so `slideT` .45 is three of them.
+  **AND IT IS AN OPENING, NOT A FOURTH STRIKE** -- running at somebody and hitting melee is one
+  move, not two decisions. `p.meleeIx` stays 0, so the next flick takes link two and the chain
+  reads on from it exactly as it would have. It gets its own `slideMax` 7.5 m because
+  `lungeMax` 4.6 is the cap for a standing lunge and a tackle is supposed to cross ground.
+  **THE FLYING KICK ENDS WHEN HE MEETS THE GROUND, WHICH IS THE OPPOSITE OF EVERY OTHER
+  STRIKE** -- they all end when he LEAVES it -- so that test BRANCHES rather than gaining a
+  clause, `slamGo`'s own rule. `p.meleeT > .1` is what stops it cancelling on the frame it
+  began, because he can be one frame off the floor when it fires. It keeps its drive in the air
+  for `chargeGo`'s reason (there is no ground to scrub against, and a kick that bleeds to
+  nothing mid-flight drops straight down), and **it does not touch `vel.y`**: he is already
+  ballistic, and driving the vertical would make it a second slam. One per airtime
+  (`p.airKick`, cleared beside `p.jumps`), or it is a flutter kick across the street.
+  **`FOE.knock` IS A CHANCE NOW, NOT A FLAG.** *"Maybe like a few swings -- I'm not sure if they
+  have a big swing versus a small swing; if they don't, that's fine, we can just have it be
+  random."* There is one swing pool and no big/small in the export, so **the variety is in what
+  the blow DOES rather than in which clip threw it**. At 1 every mace hit put him on his back,
+  and with the lie and the get-up that is nearly three seconds of floor per blow -- which is
+  "being unable to move is the least fun state in any game" taken to its conclusion. At .35 most
+  swings stagger and about a third launch. `mel.hurt()` passes 1 and still always launches.
+  **A ONE-KEY CLIP IS A POSE, AND `normaliseClips` WAS DROPPING IT.** `laying_down` is 1 key and
+  0 bones moving, so `resetDuration()` returns 0 and the guard threw it away with
+  `CLIP laying_down duration 0` in the chip. That guard is for a NEGATIVE duration -- the
+  shared-`times` landmine -- and zero is a different thing entirely: this file already derives
+  `aimPose` as a one-key clip at duration .1 for exactly this reason. Negative still reports and
+  drops; zero is kept at .1, which it has to be because a clip of duration 0 on repeat divides
+  by its own length.
+  **AND THE GET-UP IS FIRED ON THE CROSSING, NOT EVERY FRAME PAST IT (`p.gotUp`).** Without the
+  edge, `playOnce` rewinds the clip on every frame of the get-up and he never stands -- the same
+  shape as the `ONCE` rewind landmine, one level up.
+  **THE KNOCK-DOWN HOLDS FULL WEIGHT THROUGH BOTH HALVES**, rather than giving way at
+  `landFree` the way an ordinary landing does. That is `landFree`'s own rule pointed the other
+  way: it exists so a landing does not cost you a step you were already taking, and a get-up you
+  can nudge out of is a get-up nobody ever sees. One `p.land` clock carries the lie AND the
+  get-up, which is what keeps `wantSp = 0`, the not-cancellable test and the chip line unchanged.
+  **AND `rest` IS `1 - everything already claimed`, NOT `1 - the landing`.** There are two
+  one-shot layers now, and two at full weight sum to 2 -- the gait's budget goes negative, which
+  over-applies rather than bleeding the bind pose in, but it is the same class of fault. The
+  loop closes it in general and a stagger is skipped outright while a landing is live, because
+  that overlap is real and the landing should win.
+  **m87 SHIPPED BOTH FLIPS OUTSIDE `ONCE`, WHICH IS A BUG FIXED HERE.** They were played through
+  `playOnce` and would have LOOPED; `p.flip` clearing on its own clock hid most of it. Every new
+  one-shot is in that set now -- the flips, the duck, the two openers and the three reaction
+  poses -- and `laying_down` is the whole of what `clampWhenFinished` is for.
+  **WHAT IS NOT DONE, AND IS EACH ITS OWN BUILD:** the WALL COVER system and the LEDGE system.
+  Both need something this game has never had -- a test for "is there a wall/lip near me, and
+  which way does it face" -- which is Shredworld's `ledgeGrab`/`HANG` and its solid-box grid, and
+  neither the detection nor the state machine is a rider on an animation change. The clips are
+  all in the file and measured: `ledge_hang_idle` (2.33 s, 8 bones, a real subtle dangle),
+  `ledge_hang_hop_left/right`, `ledge_hang_to_get_up_over_ledge` and `ledge_hang_to_jump_away`,
+  all five with hips XZ 0.000 -- **in place, mantle included**, so the code drives the arc and
+  the hop distance exactly as it should.
+
 - **THE SECOND JUMP IS A FLIP, AND THE RIGHT PAD HELD AT REST IS A CHARGED BACKFLIP (m87, `AIR`,
   `flipGo`, `backGo`, `flipMarks`, `poseAt`).** *"We're gonna have a double jump. Second jump is a
   flip, a front flip. Also, if you're on the ground and you press and hold the right stick, he
