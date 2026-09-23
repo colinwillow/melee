@@ -1040,6 +1040,68 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A TAP WAS A THUMB NEAR THE MIDDLE, AND THE MIDDLE IS ELEVEN PER CENT OF THE PAD (m98,
+  `MOVE.tapMove`).** *"It feels really tough to hit the exact middle of the stick sometimes --
+  like 75 per cent of the time when I'm running and I try to jump I miss, and I don't know if
+  that's just because of the size of the sticks."* **It is not the size of the sticks.** Read
+  straight off `bindStick`:
+      if (!fired && onTap && far < MOVE.tapR && held < MOVE.tapT) onTap();
+  `far` is the high-water DEFLECTION from the pad's CENTRE, seeded on `pointerdown` and maxed on
+  every move -- so `tapR` .42 against `RAD` 52 means **a thumb landing more than 21.8 px from the
+  middle of a 132 px pad could never be a tap, however briefly it was there.**
+      the tap disc   r 21.8 px      the pad   r 66 px      -> **11.0% of its area**
+  And the 89% that was dead is exactly where a thumb reaching across from a running grip lands:
+  low and outward. His three quarters is, if anything, generous.
+  **WHERE HE LANDED SAYS NOTHING ABOUT WHETHER IT WAS A TAP -- WHAT HE DID NEXT DOES.** So the
+  test is TRAVEL from the landing point, and the radius did not change: it is the same 21.8 px,
+  measured from where the thumb arrived instead of from the middle of the pad. A drag is tens of
+  pixels and a flick is caught first (`fired` eats the tap), so nothing that already meant
+  something else becomes a tap.
+  **AND IT IS ITS OWN CONSTANT, NOT A SECOND JOB FOR `tapR`.** `far` still means "near the
+  centre" and `onRel`/`backGo` and the duck's own `R.far < tapR` still read it that way -- which
+  is correct there, because m87's duck IS a hold at rest and one sweep anywhere in the hold has
+  to kill it. Two facts, two numbers, which is this file's own rule about `chargeGoH`.
+  **THE ONE CASE THAT CHANGES BEHAVIOUR, SAID OUT LOUD:** a thumb that lands at the TOP of the
+  pad and lifts inside `tapT` .30 now also jumps. That gesture fired nothing before -- it is
+  under `armT` on the way in and under `WEAP.minChg` on the way out -- so what it buys is a jump
+  where there was silence, which is the right answer for a tap.
+  **AND THE TWO PADS CANNOT CROSS-TALK**, which was his third hypothesis (*"maybe the jump isn't
+  registering because I'm also holding the other stick"*): each pad is its own element with its
+  own listeners and its own closed-over `id`, every handler opens `if (e.pointerId !== id)
+  return`, and the window-level catcher matches by id before handing an up to a pad. **And the
+  double-tap guard cannot eat it either** -- that one cancels a `touchend`, and the pads run on
+  POINTER events, which are not the compatibility layer it fires in.
+  **WHAT IS STILL NOT DONE IS THE FLOATING PAD** -- m49 wrote it down and it is still the real
+  fix for missing a stick: *"since we don't have the whole adjusting joystick thing on, which
+  maybe we should think about in the future"*. A pad that appears where the thumb lands makes
+  this question disappear rather than widening its answer.
+
+- **A WEAPON THAT HAS NEVER BEEN DRAWN HAS NEVER BEEN COMPILED (m98).** *"There is sometimes this
+  delay in the animation between switching weapons or something -- it's subtle, but it feels like
+  there is a slight hang every so often."*
+  **THE SWAP ITSELF ALLOCATES NOTHING, WHICH IS WHAT MADE THIS WORTH LOOKING PAST.** `mountWeapon`
+  runs once at LOAD -- the clone, the bounds, `measureHue`, `hueGlow` -- and `applySlot` is three
+  assignments and `paintKit`, whose entire scene-side effect is `w.group.visible = (key === s.key)`.
+  Nothing is created, nothing is disposed, no geometry is touched.
+  **BUT THREE COMPILES AND LINKS A PROGRAM THE FIRST TIME A MATERIAL IS ACTUALLY DRAWN**, and both
+  weapons are mounted with `visible = false`. Slot 0 is unarmed, so **neither the blaster nor the
+  hammer has a program until the first swap TO it** -- a GLSL compile and link mid-frame, once per
+  weapon per session, which is 10 to 80 ms on a mobile GPU. That is "sometimes" said exactly: it
+  happens, it stops happening, and it happens again on the next reload -- and he reloads for every
+  build.
+  **`renderer.compile` TRAVERSES WITH `traverse`, NOT `traverseVisible`** -- checked in the
+  vendored source rather than assumed, because the lights half of that same function DOES use
+  `traverseVisible` and the two are one call apart. So one line at the end of `init()` warms every
+  material in the scene, the two hidden ones included.
+  **IT IS A CANDIDATE WITH A MECHANISM, NOT A DIAGNOSIS.** Nothing in this container has a GPU, so
+  whether a program compile is what he is feeling cannot be answered here. It is in a `try` and it
+  is a no-op for anything already up, so the cost of being wrong is nothing.
+  **AND THE OTHER CANDIDATE IS NOT SHIPPED WITH IT, DELIBERATELY.** `#modeRow` and `#grabRing` both
+  flip `display` between `none` and shown on a swap, which forces a layout and restarts the ring's
+  infinite keyframe animation; `visibility` + `opacity` would make that a paint. **Each toggle has
+  to move one variable** or neither can be judged, and that one has no mechanism that reaches tens
+  of milliseconds. It is the next thing to try if this changes nothing.
+
 - **THE ZIP WAS THE TACKLE, AND IT IS m93 OVER-CORRECTED (m97, `MELEE.slideThru`/`slideMin`).**
   *"There's this thing that happens when you're meleeing where he's hitting the guys and then all
   of a sudden he zips past them by a long distance and I can't figure out why."*

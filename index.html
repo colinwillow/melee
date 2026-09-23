@@ -443,10 +443,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m97</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m98</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m97</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m98</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -497,7 +497,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm97';
+const BUILD = 'm98';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -618,6 +618,11 @@ const MOVE = {
   // it as a literal and m87 needed the same radius to decide whether a hold was a camera drag,
   // so it is one number in one place rather than two that drift.
   tapR: .42,
+  // AND A TAP IS A THUMB THAT DID NOT MOVE -- WHICH IS A DIFFERENT FACT (m98). `tapR` is
+  // "near the CENTRE" and that is right for the duck, which is a HOLD at rest; it is wrong for
+  // a TAP, because where a thumb lands says nothing about whether it was a tap. The radius is
+  // the same 22 px it always was; what it is measured FROM is what moved.
+  tapMove: .42,
 };
 
 const SWAP = {
@@ -6007,7 +6012,7 @@ const STICKS = [];
 const PADS = {};
 function bindStick(el, out, onTap, onFlick, onHold, onRel) {
   const knob = el.querySelector('.knob');
-  let id = null, t0 = 0, far = 0, lx = 0, ly = 0, hist = [], pend = null, lastFlick = -1e9;
+  let id = null, t0 = 0, far = 0, trav = 0, ox = 0, oy = 0, lx = 0, ly = 0, hist = [], pend = null, lastFlick = -1e9;
   const RAD = 52;
   const set = (cx, cy) => {
     const r = el.getBoundingClientRect();
@@ -6043,11 +6048,14 @@ function bindStick(el, out, onTap, onFlick, onHold, onRel) {
     // and a delta measured from where it landed says the stick never moved.
     hist = [{ x: 0, y: 0, t: t0 }]; pend = null;
     el.classList.add('act'); set(e.clientX, e.clientY); far = Math.hypot(out.x, out.y);
+    // WHERE HE LANDED, so the tap can be measured as TRAVEL rather than as deflection (m98).
+    ox = lx; oy = ly; trav = 0;
     e.preventDefault(); e.stopPropagation();
   });
   el.addEventListener('pointermove', e => {
     if (e.pointerId !== id) return;
     set(e.clientX, e.clientY); far = Math.max(far, Math.hypot(out.x, out.y));
+    trav = Math.max(trav, Math.hypot(lx - ox, ly - oy));
     e.stopPropagation();
   });
   const end = e => {
@@ -6057,7 +6065,15 @@ function bindStick(el, out, onTap, onFlick, onHold, onRel) {
     if (pend && onFlick && now - pend.t < FLICK.let * 1000 && now - lastFlick > FLICK.gap * 1000) {
       lastFlick = now; fired = 1; onFlick(pend.x, pend.y);
     }
-    if (!fired && onTap && far < MOVE.tapR && held < MOVE.tapT) { fired = 1; onTap(); }
+    // A TAP IS A THUMB THAT LANDED AND DID NOT MOVE, WHEREVER IT LANDED (m98).
+    // *"It feels really tough to hit the exact middle of the stick -- 75 per cent of the time
+    // when I'm running and I try to jump I miss."* `far` is the high-water DEFLECTION from the
+    // pad's centre, so `far < tapR` meant a thumb landing more than 22 px from the middle of a
+    // 132 px pad could NEVER be a tap -- **eleven per cent of the pad's area**, and the eighty-
+    // nine per cent that was dead is exactly where a thumb reaching across from a running grip
+    // actually lands. `far` still means what it meant and `onRel` still gets it, because the
+    // duck genuinely is a hold AT REST; the tap is the one that wanted the other question.
+    if (!fired && onTap && trav < MOVE.tapMove && held < MOVE.tapT) { fired = 1; onTap(); }
     if (onRel) onRel(far, held, fired);
     id = null; pend = null; out.down = 0; out.x = out.y = 0; out.far = 0; hist = [];
     knob.style.transform = 'translate(0,0)'; el.classList.remove('act');
@@ -9707,6 +9723,19 @@ async function init() {
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
 
   paintKit();
+
+  // A WEAPON THAT HAS NEVER BEEN DRAWN HAS NEVER BEEN COMPILED (m98).
+  // *"There is sometimes this delay between switching weapons -- it's subtle, but it feels like
+  // a slight hang every so often."* `mountWeapon` runs once at LOAD and `paintKit` only flips
+  // `group.visible`, so the SWAP itself allocates nothing -- but three compiles and links a
+  // shader program the first time a material is actually drawn, and both weapons are mounted
+  // hidden. So the first swap TO each one pays a GLSL compile mid-frame, once per weapon per
+  // session, which is "sometimes" said exactly. **`compile` traverses with `traverse`, not
+  // `traverseVisible`**, so one call warms every material in the scene including the two that
+  // are hidden; it is the documented API for this and it is a no-op if they were already up.
+  // Stated as a CANDIDATE with a mechanism, not as a diagnosis: nothing in this container has
+  // a GPU, so whether a compile is what he is feeling is a device question.
+  try { renderer.compile(scene, camera); } catch (err) { console.warn('[melee] warm-up', err); }
 
   player.pos.y = groundAt(player.pos.x, player.pos.z, 0, MOVE.step);
   rig.ready = true;
