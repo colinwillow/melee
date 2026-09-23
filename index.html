@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m91</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m92</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m91</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m92</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm91';
+const BUILD = 'm92';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -3439,9 +3439,16 @@ function flipMarks(clip) {
   let ci = 0; for (let i = 0; i < n && t.times[i] <= dur * AIR.scan; i++) if (y(i) < y(ci)) ci = i;
   let pi = ci; for (let i = ci; i < n; i++) if (y(i) > y(pi)) pi = i;         // the APEX
   let li = pi; for (let i = pi; i < n; i++) if (y(i) < y(li)) li = i;         // the LANDING
+  // **AND THE TAKE-OFF, WHICH IS THE ONE m87 DID NOT LOOK FOR (m92).** A standing flip does not
+  // leave the ground at the bottom of its crouch -- it PUSHES first, and that push happens on
+  // the floor. The first key at or after the crouch where the hips are back to the height they
+  // were STANDING at (key 0) is where his legs have finished extending, which is when the feet
+  // go. On a clip with no wind-up the crouch IS key 0, so it comes out 0 and costs nothing --
+  // `front_flip` reads exactly that, and the air double needs none of this.
+  let oi = ci; while (oi < pi && y(oi) < y(0)) oi++;
   const from = t.times[ci], air = t.times[li] - from;
   if (!(air > .05)) return null;
-  return { from, air, peak: t.times[pi] - from, dur };
+  return { from, air, off: t.times[oi] - from, peak: t.times[pi] - from, dur };
 }
 // ONE KEY OF A CLIP AT AN ARBITRARY TIME. `deriveClips` already lifts frame zero for `aimPose`;
 // a wind-up is not at frame zero, so this samples through the track's OWN interpolant, which is
@@ -3482,7 +3489,8 @@ function deriveClips(clips) {
     if (!M) { note('NO HIPS IN ' + c.name); continue; }
     FLIP[c.name] = M;
     console.log('[melee] ' + c.name + '  dur ' + c.duration.toFixed(3) + 's  crouch ' +
-                M.from.toFixed(3) + '  apex +' + M.peak.toFixed(3) + '  air ' + M.air.toFixed(3) + 's');
+                M.from.toFixed(3) + '  push +' + M.off.toFixed(3) + '  apex +' + M.peak.toFixed(3) +
+                '  air ' + M.air.toFixed(3) + 's');
   }
   {
     const c = out.find(c => c.name === CLIPS.flipBack), M = FLIP[CLIPS.flipBack];
@@ -4621,7 +4629,8 @@ const player = {
   runT: 0, airKick: 0, meleeAir: 0,     // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   swap: 0, swapTo: 0, swapT: 0, swapDone: 0,   // the reach into the backpack
-  bkT: 0, bkOn: 0,                  // the backflip's charge, and whether he is visibly ducked
+  bkT: 0, bkOn: 0, bkHang: 0, bkVy: 0,  // the charge, the duck, and the PUSH he is held on the
+                                    // floor for before the launch
   land: 0, landT: 0, landHard: 0,  // the landing state
   knock: 0, knockCool: 0,          // the knock-down, and how long until he can take another
   roll: 0, rollT: 0, rollH: 0,
@@ -4896,7 +4905,7 @@ function meleeLock(h, reachMax) {
 function kickGo(h) {
   const p = player, nm = MELEE.air;
   if (h == null) h = p.faceH;
-  p.airKick = 1; p.meleeAir = 1; p.flip = '';   // the kick owns the body, so the flip is over
+  p.airKick = 1; p.meleeAir = 1; p.flip = ''; p.bkHang = 0;   // the kick owns the body
   p.melee = 1; p.meleeIx = 0; p.meleeT = 0; p.meleeName = nm; p.meleeDur = MELEE.airDur;
   p.meleeChain = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   p.melTgt = null; p.melV = MELEE.airV;
@@ -5112,7 +5121,9 @@ function flipGo(nm, T) {
   // ever sped UP, when the air is too short to fit it. At today's heights both come out at
   // exactly 1.00 and this term is the guard for a re-export or a retune, not a live scaling.
   const rate = Math.min(AIR.rateHi, Math.max(1, M.air / Math.max(.2, T * AIR.fill)));
-  p.flip = nm; p.flipDur = M.air / rate;
+  // **THE FLIP CLOCK COVERS THE PUSH AS WELL AS THE AIR (m92)**, because the clip runs through
+  // both -- started at the launch, the push half plays under a table not asking for it.
+  p.flip = nm; p.flipDur = (M.off + M.air) / rate;
   playOnce(nm, rate);
   // AND IT STARTS AT THE CROUCH, NOT AT FRAME ZERO. The wind-up is the pose he has been HOLDING;
   // playing it again is half a second of ducking after he has already left the ground. `from` is
@@ -5129,12 +5140,25 @@ function backGo(far, fired) {
   // a flick or a tap already answered this thumb, and one gesture may only mean one thing
   if (!on || fired || far >= MOVE.tapR || !p.grounded || p.land) return 0;
   const hi = AIR.hi0 + (AIR.hi1 - AIR.hi0) * k, vy = Math.sqrt(2 * MOVE.g * hi);
-  p.vel.y = vy; p.grounded = false; p.coyote = 0; p.airT = 0;
   // **IT SPENDS THE DOUBLE.** A front flip started out of a backflip is two rotations fighting
   // over one body, and this is already the higher jump of the two -- so the backflip IS the
   // flip for that airtime.
   p.jumps = 2;
   flipGo(CLIPS.flipBack, 2 * vy / MOVE.g);
+  // **AND HE LEAVES THE GROUND WHEN THE CLIP SAYS HE DOES, NOT ON THE FRAME OF THE RELEASE
+  // (m92).** *"The upward velocity starts way before the backflip animation gets to its jump
+  // point."* Exactly that: `Backflip` spends **0.333 s PUSHING on the floor** after the crouch,
+  // so m87 had him rising through a third of a second of leg extension -- 28% of the smallest
+  // flip's whole airtime. He is held down for it instead, and the clip and the physics then
+  // agree BY CONSTRUCTION rather than by two numbers being tuned toward each other.
+  // **IT IS NOT LATENCY, IT IS THE PUSH** -- `SLAM.hang`'s own argument, and unlike that one it
+  // is MEASURED off the clip, so a re-export moves it and a clip with no wind-up (`front_flip`,
+  // 0.000) skips it with no case of its own.
+  const M = FLIP[CLIPS.flipBack];
+  const rate = M && p.flipDur > 0 ? (M.off + M.air) / p.flipDur : 1;
+  const hang = M ? M.off / rate : 0;
+  if (hang > .02) { p.bkHang = hang; p.bkVy = vy; p.vel.x = p.vel.z = 0; p.vel.y = 0; }
+  else { p.vel.y = vy; p.grounded = false; p.coyote = 0; p.airT = 0; }
   snd('swoosh', { r: 1.05 + k * .12, g: .40 + k * .16 });
   return 1;
 }
@@ -5148,7 +5172,7 @@ function slamGo(dx, dy) {
   if (!rig.actions[nm]) { note('NO CLIP ' + nm); return 0; }
   // ONE PER AIRTIME. Without it a held thumb flicking repeatedly is a man hammering the floor
   // on the way down, which is the flutter-kick shape `p.airKick` refuses one repo over.
-  p.slam = 1; p.slamUsed = 1; p.slamT = 0; p.flip = '';
+  p.slam = 1; p.slamUsed = 1; p.slamT = 0; p.flip = ''; p.bkHang = 0;
   p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   triggerStop();                      // the same thumb, and a wound shot has nowhere to go
   p.vel.x *= SLAM.keep; p.vel.z *= SLAM.keep; p.vel.y = 0;
@@ -5962,6 +5986,19 @@ function stepPlayer(dt) {
   // COVER OWNS THE BODY, so it sits with the other states that do -- above the gait, below the
   // slam, and it returns.
   if (p.wall) { stepWall(dt); return; }
+  // THE PUSH. He is on the floor, extending, and the launch is at the end of it -- the clip is
+  // already running and `rigAnim` draws it, because the flip branch sits above the air test.
+  if (p.bkHang > 0) {
+    p.bkHang -= dt;
+    p.vel.set(0, 0, 0); p.speed = 0; p.grounded = true; p.airT = 0;
+    p.pos.y = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
+    if (p.bkHang <= 0) {
+      p.bkHang = 0;
+      p.vel.y = p.bkVy; p.grounded = false; p.coyote = 0; p.airT = 0;
+      snd('swoosh', { r: 1.05, g: .44 });
+    }
+    return;
+  }
   if (p.slam) {
     p.slamT += dt;
     if (p.slamT < SLAM.hang) { p.vel.y = 0; }      // the wind-up: he hangs
@@ -6109,7 +6146,9 @@ function stepPlayer(dt) {
   }
 
   // ---- the flip runs out on its own clock, and the flight usually outlasts it ----
-  if (p.flip) { p.flipT += dt; if (p.flipT >= p.flipDur || p.grounded) p.flip = ''; }
+  // **AND IT MAY NOT BE CLEARED BY `grounded` WHILE HE IS STILL PUSHING** -- during the hang he
+  // is deliberately on the floor with the flip clip running, which is the whole point of it.
+  if (p.flip) { p.flipT += dt; if (p.flipT >= p.flipDur || (p.grounded && p.bkHang <= 0)) p.flip = ''; }
 
   // ---- the jump ----
   if (p.jump) {
@@ -6289,11 +6328,13 @@ function rigAnim(dt) {
     const nm = p.gotUp ? HURT.up : HURT.down;
     if (rig.actions[nm]) { t[nm] = 1; setWeights(t, dt); return; }
   }
+  // A FLIP IF ONE IS RUNNING -- **and it sits ABOVE the air test (m92)**, because the backflip's
+  // first third of a second is spent ON THE FLOOR pushing off. Below it, the gait would take that
+  // half and the flip would only appear once he had already left the ground.
+  // The rotation is fitted to `AIR.fill` of the flight on purpose, so the last of the air is
+  // spent in the ordinary pose aiming the landing rather than still coming round.
+  if (p.flip && rig.actions[p.flip]) { t[p.flip] = 1; setWeights(t, dt); return; }
   if (!p.grounded) {
-    // A FLIP IF ONE IS RUNNING, and `in_air` once it has finished -- the rotation is fitted to
-    // `AIR.fill` of the flight on purpose, so the last of the air is spent in the ordinary pose
-    // aiming the landing rather than still coming round.
-    if (p.flip && rig.actions[p.flip]) { t[p.flip] = 1; setWeights(t, dt); return; }
     // `in_air` is 2.83 s of a subtle float and loops, so it reads at any airtime; a jump here
     // is about 0.84 s, so what is seen is its opening third.
     t[CLIPS.air] = 1; setWeights(t, dt); return;
@@ -8267,7 +8308,7 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
-    p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.hurtNm = ''; p.meleeAir = 0;
+    p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.bkHang = 0; p.hurtNm = ''; p.meleeAir = 0;
     p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool; swapStop();
     whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
   } else {
@@ -8667,6 +8708,7 @@ function frame() {
       // ducked and the release did nothing" and "it flipped but the rotation is wrong" are three
       // bugs with one picture from a phone, and only the number tells them apart. `FLIPback0.42`
       // is which clip and how much of it is left to run.
+      : p.bkHang > 0 ? 'PUSH' + p.bkHang.toFixed(2)
       : p.bkOn ? 'DUCK' + (p.bkT / AIR.hold).toFixed(2)
       : p.flip ? 'FLIP' + (p.flip === CLIPS.flipBack ? 'back' : 'fwd') +
           Math.max(0, p.flipDur - p.flipT).toFixed(2) : !p.grounded ? 'air'

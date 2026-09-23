@@ -1040,6 +1040,46 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE BACKFLIP LAUNCHED ON THE FRAME OF THE RELEASE AND THE CLIP LEAVES THE GROUND A THIRD OF
+  A SECOND LATER (m92, `flipMarks`'s `off`, `p.bkHang`).** *"The backflip charge is cool and works
+  mostly right. The problem is when you release to do the backflip, the upward velocity starts way
+  before the backflip animation gets to its jump point. So I'm not sure how to rectify that --
+  either speed up the backflip, or have him freeze frame later in the sequence, or something."*
+  **HE IS DESCRIBING A MEASUREMENT AND IT COMES STRAIGHT OFF THE HIPS.** m87 found three landmarks
+  in a flip clip -- the crouch, the apex and the landing -- and the one it did not look for is the
+  one that matters here: **a standing flip does not leave the ground at the bottom of its crouch,
+  it PUSHES first, and that push happens on the FLOOR.**
+      Backflip     standing hips 38.4   crouch t+0.000 (28.3)   TAKE-OFF t+0.333 (38.5)
+                                        apex   t+0.500 (45.4)   landing  t+1.125 (31.9)
+      front_flip   standing hips 33.4   crouch t+0.000          TAKE-OFF t+0.000
+  So m87 had him **rising through 0.333 s of leg extension -- 29% of the smallest flip's entire
+  airtime.** `front_flip` reads 0.000 and leaves on its first frame, which is why the air double
+  was already right and is byte-for-byte unchanged by this.
+  **THE TAKE-OFF NEEDS NO THRESHOLD EITHER**, which is what lets one function serve both clips: it
+  is the first key at or after the crouch where the hips are back to the height they were STANDING
+  at (key 0), because that is where his legs have finished extending. On a clip with no wind-up
+  the crouch IS key 0 and it comes out zero with no case of its own -- the same shape as `from`.
+  **AND OF HIS THREE SUGGESTIONS THE ANSWER IS THE FOURTH ONE: HOLD HIM DOWN FOR THE PUSH.**
+  Speeding the clip up makes the rotation wrong everywhere else; freezing later loses the push
+  entirely and snaps the held crouch straight into mid-air, which is a jump cut. Holding him on
+  the floor for exactly `off` and launching at the end of it makes **the clip and the physics
+  agree BY CONSTRUCTION** rather than by two numbers being tuned toward each other.
+  **IT IS NOT LATENCY, IT IS THE PUSH** -- `SLAM.hang`'s own argument, and unlike that one this
+  is MEASURED off the clip rather than typed, so a re-export moves it.
+      charge 0.00   apex 3.40 m   airtime 1.17s   rate x1.12   push 0.30s
+      charge 1.00   apex 6.80 m   airtime 1.65s   rate x1.00   push 0.33s
+  **THREE THINGS HAD TO MOVE WITH IT, AND EACH WOULD HAVE BEEN A BUG.**
+  1. **`rigAnim`'s flip branch moved ABOVE the air test.** The first third of a second is spent
+     ON THE FLOOR, so below it the gait takes that half and the flip only appears once he has
+     already left -- which is the fault this build exists to remove, moved one frame later.
+  2. **`p.flip`'s clear could not read `grounded` alone.** During the hang he is deliberately on
+     the floor with the flip clip running, and `|| p.grounded` kills it on the first frame.
+  3. **`flipDur` covers the push as well as the air.** Started at the launch, the clip's push
+     half plays under a table not asking for it and the rotation is cut short by exactly `off`.
+  **THE CHIP SAYS `PUSH0.28`** between `DUCK` and `FLIPback`, so the three beats of the move each
+  name themselves -- "it never launched", "it launched early" and "the rotation is wrong" are
+  three bugs and one picture from a phone.
+
 - **HE REACHES INTO HIS BACKPACK, AND IT IS AN UPPER-BODY OVERRIDE OVER THE ORDINARY GAIT (m91,
   `SWAP`, `swapGo`, `applySlot`).** *"I now have an animation where he reaches into his backpack,
   so we need to use this every time he swaps weapons or takes one out or puts one away."*
