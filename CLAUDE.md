@@ -1040,6 +1040,53 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **CLANCY HAS A VOICE, AND m62 SAID IT WOULD BE A WORD (m82, `CLANCY.voice`, `CLANCY.chirp`,
+  `bodyChirp`).** *"I think we could steal some of the creature noises from Plutopia for Clancy's
+  little noises."*
+  **HALF OF IT WAS LITERALLY ONE WORD.** m62 wrote *"it rides `K.voice` on the kind table the way
+  `K.snd` does; the drunks and the officer have no voice until he records theirs, and adding one
+  is a word"* -- and `voice: 'creature'` is that word. `dummyBlow` is the one function every blow
+  on a body reaches, so what he says when he is hit came with the bank and **no code at all**.
+  **AND THE BANK IS UNUSED IN PLUTOPIA**, which is worth knowing before borrowing: it loads the
+  seven as `beast` and nothing over there ever fires one. This is a bank finding a job rather
+  than a loan, the same way `powerup_01` was at m65.
+  **BUT A SIDEKICK WHO ONLY SPEAKS WHEN YOU SHOOT HIM IS THE WRONG HALF**, and *"little noises"*
+  is plainly the ambient one. That is the part that needed building, and it is three ideas:
+      every    re-rolled EVERY TIME, never set once -- a fixed interval is a metronome, and a
+               creature is exactly what a metronome is not (`SMOKE`'s own rule, m41)
+      per body rolled at SPAWN rather than started at zero, or every body chirps on frame one
+               and then on the same frame for ever, which is one creature drawn N times --
+               m50's staggered get-ups, on the audio side
+      r        1.18 to 1.42, because **he is LITTLE**. Plutopia's creature is not knee height on
+               a 1.25 m man, and the metal clangs' rule is that tiers are told apart by PITCH
+               and not by more recordings
+  **AND HE ONLY SPEAKS WHEN THERE IS NOTHING HAPPENING TO HIM.** `hit`, `down` and `up` are the
+  three states where he already HAS a noise, and a chirp on top of a grunt is two voices
+  describing one event -- m27's duplicate exactly. **The clock still runs through them**, so he
+  does not go silent for a minute after a fight.
+  **ONE PLACE MAKES THE NOISE (`chirp`), AND AN EVENT RE-ARMS THE CLOCK.** The ambient one and
+  the dive's yelp cannot disagree about how loud a creature is or where he is standing, and the
+  re-arm is what stops m81's two-dive scramble being two yelps with a chirp landing on top.
+  **THE YELP IS THE ONE MOMENT A SIDEKICK'S VOICE HAS SOMETHING TO BE ABOUT** -- he has just
+  thrown himself out of your line -- and it is the same voice louder and higher rather than an
+  eighth file, which is the same argument as the pitch.
+  **A KIND WITH NO `chirp` NEVER REACHES ANY OF IT**, so the two drunks, the skater, the officer
+  and the orcs are byte-for-byte what they were. m38's empty-field pattern, which is why this
+  needed no gate naming anybody -- and giving the skater one is now a word too.
+  **AND `audio/creature_noises` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not
+  recursive, so a new asset folder is a new entry there or every file in it goes stale silently.
+  **Sixth time**, after `models/buildings` (m25), `audio/plasma_sounds` (m58), `models/towers`
+  (m60), `audio/alien_orc_grunt_sounds` (m62) and Shredworld's own.
+  **NOTHING HERE PASSES `cut` OR `dec`**, which is correct and is worth saying because m59 built
+  both: those are for an IMPACT, which is a transient that has to start at its own peak. A
+  vocalisation is not one -- it plays whole, through `SFX.edge`'s ordinary onset trim, which
+  since m59 is relative to the file's own peak and so handles a natural attack for free.
+  **WHAT IS UNVERIFIED:** how often a chirp should land, and whether 1.18-1.42 reads as small or
+  as chipmunk, are look-at-it decisions and belong on the phone. `mel.CLANCY.chirp` is live
+  (`= null` silences the ambient half and leaves the hit voice), and `mel.snd('creature')` plays
+  one from the console. `npm run sfx` would print what is actually in each file if the bank ever
+  needs ranking the way the plasma one did.
+
 - **THE DIVE COULD NOT LEAVE THE WEDGE, AND PAST 7 m THAT WAS ARITHMETIC (m81, `K.dive.clear`).**
   *"The little Clancy sidekick still just constantly walks in front of my shot. His reflexes or
   anticipation are terrible. I feel like the instant I shoot or charge he should jump out of the

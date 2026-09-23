@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m81</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m82</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m81</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m82</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,9 +450,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm81';
+const BUILD = 'm82';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1799,6 +1799,19 @@ const CLANCY = {
   // he is about knee height on him, which is what "little dog sidekick" means. It is a
   // look-at-it number and `mel.CLANCY.h` wants a reload (the scale is measured at load).
   h: .62, r: .28, hp: 3, snd: 'soft',
+  // **HE HAS A VOICE (m82), AND m62 SAID ADDING ONE WOULD BE A WORD.** It was: `K.voice` is read
+  // in `dummyBlow`, the one function every blow on a body reaches, so what he says when he is
+  // hit came free with the bank and no code at all.
+  voice: 'creature',
+  // **BUT A SIDEKICK WHO ONLY SPEAKS WHEN YOU SHOOT HIM IS THE WRONG HALF**, and *"little
+  // noises"* is plainly the ambient one. So he pipes up on his own clock while he is pottering
+  // about -- rolled PER BODY and re-rolled every time, because a fixed interval is a metronome
+  // and a creature is exactly what a metronome is not (the smoke plumes' own rule, m41).
+  // **AND HE IS PITCHED UP BECAUSE HE IS LITTLE.** Plutopia's creature is not knee height on a
+  // 1.25 m man; `r` 1.18 to 1.42 is the metal clangs' rule, where three car tiers are told apart
+  // by PITCH rather than by three recordings. `yelp` is the same voice louder and higher still.
+  // `mel.CLANCY.chirp = null` silences the ambient half and leaves the hit voice.
+  chirp: { every: [3.0, 8.5], g: .34, r: [1.18, 1.42], yelp: { g: .60, r: 1.52 } },
   at: [[-3, 4]],                   // one of him, and he spawns beside you
   drop: /^CINEMA_4D/,
   ai: 1, pacifist: 1, pal: 1,
@@ -2258,6 +2271,21 @@ const SFX = {
             'audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3',
             'audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3',
             'audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3'],
+    // **CLANCY'S LITTLE NOISES (m82).** *"I think we could steal some of the creature noises from
+    // Plutopia for Clancy's little noises."* Seven of them, borrowed the way the swooshes, the
+    // clangs and `powerup_01` already were -- and they are UNUSED over there (Plutopia loads them
+    // as `beast` and nothing fires one), so this is a bank finding a job rather than a loan.
+    // **AND `audio/creature_noises` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not
+    // recursive, so a new asset folder is a new entry there or every file in it goes stale
+    // silently. **Sixth time**, after `models/buildings` (m25), `audio/plasma_sounds` (m58),
+    // `models/towers` (m60), `audio/alien_orc_grunt_sounds` (m62) and Shredworld's own.
+    creature: ['audio/creature_noises/creature_noise_01.mp3',
+               'audio/creature_noises/creature_noise_02.mp3',
+               'audio/creature_noises/creature_noise_03.mp3',
+               'audio/creature_noises/creature_noise_04.mp3',
+               'audio/creature_noises/creature_noise_05.mp3',
+               'audio/creature_noises/creature_noise_06.mp3',
+               'audio/creature_noises/creature_noise_07.mp3'],
     // **EVERY CONNECTION POINT A FLYING BODY MAKES (m63), and the m62 stand-in is discharged.**
     // *"The last two are for when they fly into the air and then they hit or run into like a
     // wall or another character or the ground -- play one of these two for every connection
@@ -6438,6 +6466,11 @@ function bodySpawn(P, K, x, z) {
     // `undefined -= dt` is NaN and a NaN clock is a body that can never hop or dive again --
     // silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time now.
     stuckT: 0, hopT: 0, diveT: 0, mark: 0, lane: 0, foe: null, foeT: 0, sfoe: null,
+    // **ROLLED AT SPAWN, NOT SET TO ZERO (m82).** Zero is every body chirping on frame one and
+    // then on the same frame for ever, which is one creature drawn N times -- m50's lesson about
+    // the get-ups, on the audio side. And it is a NUMBER rather than `undefined`, because
+    // `undefined -= dt` is NaN and a NaN clock is a body that never speaks again (m63).
+    chirpT: K.chirp ? rnd(K.chirp.every) : 0,
     spin: 0, spinW: 0, downB: 0,
     // HIS OWN NUMBERS, rolled once. None of them change what he DOES -- only how fast, how
     // close, how eager and how soon -- so three of them read as three men rather than as one
@@ -7170,6 +7203,9 @@ function foeWander(d, dt, t, dd, toP) {
       skinPlay(d, d.cur, skinLen(d, d.cur) / K.dive.dur);
       d.vx = Math.sin(h) * v; d.vz = Math.cos(h) * v; d.vy = 0;
       d.stuckT = 0;
+      // and he says so -- the one moment a sidekick's voice has something to be about, and it
+      // re-arms the ambient clock so a two-dive scramble (m81) is one yelp rather than two
+      if (K.chirp && K.chirp.yelp) chirp(d, K.chirp.yelp.g, K.chirp.yelp.r);
       return;
     }
     // **BUT YOUR LINE OF FIRE OUTRANKS THE FIGHT, AND THAT IS THE OTHER HALF OF IT (m81).**
@@ -7605,6 +7641,33 @@ function bodyFly(d, dt) {
   if (!air && Math.hypot(d.vx, d.vz) < .05) { d.vx = 0; d.vz = 0; }
 }
 
+// **HIS AMBIENT VOICE (m82).** A kind with no `chirp` never reaches the sound, so the two
+// drunks, the skater, the officer and the orcs are byte-for-byte what they were -- m38's
+// empty-field pattern, which is why this needed no gate naming anybody.
+// **AND HE ONLY SPEAKS WHEN THERE IS NOTHING HAPPENING TO HIM.** `hit`, `down` and `up` are the
+// three states where he already HAS a noise -- `K.voice` fires in `dummyBlow` -- and a chirp on
+// top of a grunt is two voices describing one event, which is m27's duplicate exactly. The
+// clock still runs through them, so he does not go quiet for a minute after a fight.
+// **THE INTERVAL IS RE-ROLLED EVERY TIME, NOT SET ONCE**, because a fixed one is a metronome.
+function bodyChirp(d, dt) {
+  const K = d.K, C = K.chirp;
+  if (!C || !K.voice) return;
+  d.chirpT -= dt;
+  if (d.chirpT > 0) return;
+  d.chirpT = rnd(C.every);
+  if (d.st === 'hit' || d.st === 'down' || d.st === 'up') return;
+  chirp(d, C.g, rnd(C.r));
+}
+// ONE PLACE MAKES THE NOISE, so the ambient one and an event one cannot disagree about how loud
+// a creature is or where he is standing -- and **an event RE-ARMS the clock**, which is what
+// stops a two-dive scramble being two yelps and a chirp landing on top of one.
+function chirp(d, g, r) {
+  const C = d.K.chirp;
+  if (!C || !d.K.voice) return;
+  d.chirpT = rnd(C.every);
+  snd(d.K.voice, { g, r, x: d.root.position.x, z: d.root.position.z });
+}
+
 function stepDummies(dt) {
   bodySep(dt);
   for (const d of DUMMIES) {
@@ -7621,6 +7684,7 @@ function stepDummies(dt) {
     if (d.cool > 0) d.cool -= dt;
     if (d.hopT > 0) d.hopT -= dt;
     if (d.diveT > 0) d.diveT -= dt;
+    bodyChirp(d, dt);
     if (d.mark > 0) d.mark -= dt;
     if (d.foeT > 0) d.foeT -= dt;
     const t = {};
