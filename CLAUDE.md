@@ -1040,6 +1040,114 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE DIVE COULD NOT LEAVE THE WEDGE, AND PAST 7 m THAT WAS ARITHMETIC (m81, `K.dive.clear`).**
+  *"The little Clancy sidekick still just constantly walks in front of my shot. His reflexes or
+  anticipation are terrible. I feel like the instant I shoot or charge he should jump out of the
+  pizza slice of direction of my aim. I should be able to shoot him but it should actually be a
+  struggle, not an accidental regular occurrence."*
+  **HIS WORD "PIZZA SLICE" IS THE DIAGNOSIS.** m74 built the dive as a FIXED 3.1 m sideways and
+  m76 sized that against the BLAST (1.35 m on a pal) and called it done -- but the thing he is
+  actually asking to leave is a WEDGE, and a wedge is a different width at every range while
+  `v * dur` is the same 3.12 m at all of them:
+      needs dd x tan(cone) to reach the edge, from dead on the line
+       3 m -> 1.34   5 m -> 2.23   7 m -> 3.13   9 m -> 4.02   11 m -> 4.91
+      dive covers 3.12   ->   **break-even 6.99 m, against a `range` of 11**
+  So over a third of the range this was defined over was range where the dive fired, played its
+  clip, cost its cooldown and **left him in the cone** -- at 11 m it ended 0.28 rad in against a
+  0.42 cone. Every previous pass tuned the trigger (m76 moved it off the latch onto `p.armT`,
+  which was real) and none of them touched the one number that could not work.
+  **SO THE DISTANCE IS SOLVED, NOT TYPED.** `off` is how far off the firing line he is as seen
+  from the PLAYER, so his perpendicular from the line is `dd*sin|off|`, the wedge edge at his own
+  along-distance is `dd*cos(off)*tan(cone*clear)`, and what is left is what he has to cover. The
+  speed falls out of it over `dur` -- m21's rule (the number is the thing you chose, the velocity
+  is derived) one move over, and this is the second time in this file a typed distance has been
+  the whole bug after the trigger was fixed twice.
+  **AND THE CAP IS HONEST RATHER THAN HIDDEN.** Clearing an 11 m wedge in one move is 11.6 m/s,
+  which is a teleport, so `vMax` 7.5 bites -- and `cool` 1.0 -> **.25** is what makes that fine:
+  the next dive re-solves from wherever he got to and finishes the job. **Two hops of a scramble
+  reads better than one impossible leap**, and it stops by itself, because a dive from outside
+  the cone never fires. Simulated over the shipped formula:
+      at  3 / 5 / 7 m      ONE dive, out at .53 to .68 rad
+      at  9 / 11 / 13 m    TWO, 1.6 s, out at .57 to .68
+      9 m already .35 off  ONE, and a shorter one -- the solve reads what he has already got
+  `cone` .42 -> .52 so he answers a shot loosely lined up rather than one already on him, and
+  `range` 11 -> 13.
+- **AND THE REFLEX WAS NEVER GOING TO BE ENOUGH, BECAUSE THE HABIT WAS SWITCHED OFF (m81).**
+  m76 wrote this gap down and left it: *"nothing stops him being in the lane while POUNCING --
+  joining the fight outranks it, which is right, but it means the one time he is deliberately
+  near an enemy you are shooting is the one time the clear is switched off."* **That is not a
+  corner case, it is THE case.** `palFoe` returns a MARKED body, a mark is a body you just hit,
+  so the pounce is live precisely while the trigger is -- and the pounce `return`s above the lane
+  clear. The loop he is describing is exactly that: dive, cooldown, pounce, walk back into the
+  line, dive again.
+  **`aimLive && clear` STANDS THE POUNCE DOWN**, and that is the whole change -- one clause, with
+  `palPost` hoisted above it so there is one call and one answer rather than two. The dive is the
+  REFLEX and the clear is the HABIT, and a build that only ever fixed the reflex could not have
+  worked however well the reflex was tuned.
+  **WHAT IS NOT DONE:** the hammer's wind-up does not make him dive. It sets `p.chargeT` rather
+  than `p.armT`, and it is a melee -- diving from it would be a sidekick flinching at something
+  that cannot reach him. His *"shoot or charge"* is the blaster's charge, which `p.armT` covers.
+  And the lane clear is still horizontal and knows nothing about the boxes (m76's other gap).
+- **A MELEE TURNS THE LENS (m81, `CAM.melEase`, `p.camWant`).** *"I want to try making it so that
+  the camera centers based on my melees -- so if I melee toward the camera, the camera will ease
+  to my new forward, and for every direction."*
+  **IT IS A WANT, NOT A WRITE, AND THAT IS THE ONLY WAY IT COULD BE BUILT HERE.** `cam.az` has
+  **exactly one writer** -- this file's oldest standing invariant, and the one that shows up every
+  single time it is broken -- so `meleeGo` states a bearing and `stepCam` is the one place that
+  spends it, sitting beside the lock's own come-round for the identical reason.
+  **AND `h` IS THE DIRECTION HE ACTUALLY STRIKES, taken AFTER `meleeLock` has had its say** -- so
+  a locked swing turns the camera onto the MAN rather than onto the thumb, which is m20's "one
+  answer" rule arriving on the camera side.
+  **THE THUMB OUTRANKS IT**, which is why both drag writers clear it outright rather than being
+  averaged with it: an auto-follow fighting a deliberate drag is the loop that never settles.
+  **AND IT COSTS NOTHING TO HIS FACING**, because `faceTgt` reads `cam.az` while aiming -- the
+  lens and his forward are the same bearing here, which is what makes this a CENTRING rather than
+  a second thing to keep in step. The charged dash sets it too; a dash is a melee.
+- **A FLICK DOWN IN THE AIR IS A SLAM (m81, `SLAM`, `slamGo`, `slamLand`).** *"If I jump and swipe
+  down on right stick he does a slam down to earth, which we can use the same melee as the charge
+  attack (minus the charge) because that is actually where that animation fits."*
+  **THE GESTURE WAS FREE AND THAT IS WHY IT FITS.** `meleeGo` returns on `!p.grounded`, so a flick
+  in the air did nothing at all -- the one unspent thing on a pad whose tap is the jump, whose
+  hold is the trigger and whose ground flick is the strike. And DOWN is free specifically: down
+  HELD is the guard (m37), and a flick is a fast move and a release, which `padUp`'s own
+  hysteresis argument already separates from a hold.
+  **THE DIRECTION TEST IS THE PAD'S RAW TRAVEL, NOT `flickH`.** That function maps a flick into
+  WORLD space through `cam.az`, which is exactly right for a strike thrown somewhere and
+  meaningless for one thrown at the floor: down-the-screen is down-the-screen whatever the camera
+  is doing. The pad's +Y is DOWN (`flickH(0, -1)` is the desktop punch and that is straight up).
+  **IT ENDS WHEN HE MEETS THE GROUND, WHICH IS THE OPPOSITE TEST FROM EVERY OTHER STRIKE** -- they
+  all end when he LEAVES it. So it is its own branch rather than a clause on that one: sharing
+  that condition would have it cancel itself on the frame it began.
+  **AND THE HANG IS WHAT MAKES IT READ.** Dropped straight from the flick it is over in a tenth of
+  a second and looks like a fall; stopped dead for `hang` .16 first, it is a wind-up and then a
+  drive. **`down` 12 is a DRIVE and not a drop**, which is the difference between slamming and
+  falling.
+  **THE CLIP IS COMPRESSED TO THE PREDICTED ARRIVAL, WHICH IS KNOWABLE.** The fall height is
+  `groundAt` under him, so `t` solves out of `h = down*t + g*t^2/2` -- m8's landmine, and this is
+  a state whose length genuinely is not a constant. **And the rate ceiling is not a taste number**:
+  the charged dash already plays this same clip over `dashDur + finishTail` = .52 s, so 3.5 is the
+  rate he is looking at on it today.
+  **A SLAM GOES IN EVERY DIRECTION, SO IT IS A RADIUS AND NOT A CONE.** Every other blow here is a
+  cone because it is thrown somewhere; this one throws each man OUTWARD from where it landed,
+  which is one bearing per body and not one for the lot -- so it is a loop over `dummyBlow` rather
+  than a `dummyHit` call. **A friend is harder to catch through `WEAP.palBlast`**, m76's own
+  number, so "how much a friend is spared" stays one dial.
+  **AND IT HANDS TO THE HARD LANDING**, because `rateMax` means a low slam plays only part of the
+  swing and ending there would snap him from mid-arc into the idle -- a jump cut, which nothing in
+  this file is allowed to be. `landing_hard` is a man hitting the ground and pushing back up off
+  it, which IS the follow-through, so this took the state that already exists.
+  **ONE PER AIRTIME (`p.slamUsed`, cleared where `p.jumps` is)**, or a thumb flicking repeatedly is
+  a man hammering the floor all the way down. And **the failsafe may not end it in mid-air**:
+  `SLAM.max` can run out before the ground arrives over a drop, and a landing state entered
+  airborne is a man lying on nothing -- the ordinary fall takes him from there, which needed no
+  case of its own.
+  **THE CHIP SAYS `SLAM<dur>` and gains `!` when it connects**, the swing's own idiom: "it never
+  fired", "it fired and reached nobody" and "it landed" are three bugs with one picture on a phone.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin, so whether
+  `weapon_melee_finish` reads as a slam at 3.5x, whether `hang` .16 is enough of a beat, and
+  whether the camera's half-second sweep is decisive or lurching are all device questions.
+  `mel.SLAM` and `mel.CAM.melEase` are live, and `melEase = 0` is the one word back to m80.
+
 - **A NEW NPC COST A TABLE AND A LOAD LINE, FOR THE FIFTH TIME (m80, `SKATER`, `buildSkaters`).**
   *"Hey I just added a alien roller skate blue model, can you add her to the game as an NPC?"*
   **THE FILE HAD ARRIVED AND WAS NOT WHERE THE OTHERS ARE.** `models/alien_rollerskate_blue.glb`,

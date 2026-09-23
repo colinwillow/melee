@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m80</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m81</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m80</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m81</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm80';
+const BUILD = 'm81';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5"};
 /* ASSETS:END */
@@ -657,6 +657,11 @@ const CAM = {
   // -- the rescale goes on costing sensitivity all the way out, so it makes the stick heavy
   // everywhere. .12.
   dead: .06, deadAim: .12,
+  // **AND A MELEE TURNS THE LENS (m81, `melEase`).** *"I want to try making it so that the
+  // camera centers based on my melees -- so if I melee toward the camera, the camera will ease
+  // to my new forward, and for every direction."* How fast it comes round; 4.0 arrives in about
+  // half a second, which is decisive without being a cut. `mel.CAM.melEase = 0` turns it off.
+  melEase: 4.0,
   fov: 58, fovRush: 7, rush0: 2.6, rushSpan: 3.2,
   // IT COMES IN WHEN SOMETHING IS IN THE WAY RATHER THAN CLIMBING OVER IT. Shortening the boom
   // keeps the SHOT -- a level three-quarter view -- while lifting the lens changes it into a
@@ -1867,10 +1872,24 @@ const CLANCY = {
   // **`falling_to_roll` IS THE DIVE HE THOUGHT HE HAD NOT DRAWN** (*"I don't think I have a dive
   // or a roll animation but if we do"*) -- it is in the export, it is a body going down into a
   // roll, and it is already his knock-down clip. 1.875 s compressed to .60 is x3.1.
-  // v 5.2 x dur .60 = **3.1 m** clear of the line, against a full charge's splash on a friend
-  // of 1.35 m (`WEAP.palBlast`) -- so a dive out of the lane now actually gets him out of range
-  // of the blast, which at m74's 2.4 m against 3.83 m it could not.
-  dive: { v: 5.2, dur: .60, cone: .42, range: 11, cool: 1.0 },
+  // **AND THE DISTANCE IS SOLVED, NOT TYPED (m81).** *"The instant I shoot or charge he should
+  // jump out of the pizza slice of direction of my aim."* A FIXED 3.1 m clears a fixed 3.1 m,
+  // and the thing he has to leave is a WEDGE that widens with range -- so past the break-even
+  // the dive provably could not work, however well it was timed:
+  //     dive covers v .60 = 3.12 m      needs dd x tan(cone) to reach the edge
+  //      3 m -> 1.34   5 m -> 2.23      7 m -> 3.13   9 m -> 4.02   11 m -> 4.91
+  //     break-even **6.99 m**, against a `range` of 11 -- so over a third of the range this was
+  //     defined over was range where it fired, played, and left him in the wedge.
+  // `need` is what it takes to reach `cone * clear` at HIS OWN distance less how far off the
+  // line he already is, and the speed falls out of it over `dur` -- m21's rule (the number is
+  // the thing you chose; the velocity is derived) one move over.
+  // **AND THE CAP IS HONEST RATHER THAN HIDDEN.** Clearing an 11 m wedge in one move is 11.6
+  // m/s, which is a teleport -- so `vMax` bites and `cool` .25 lets the NEXT dive finish the
+  // job from wherever he got to. Two hops of a scramble reads better than one impossible leap,
+  // and it stops by itself, because a dive outside the cone never fires.
+  //     at 3 / 5 / 7 m   ONE dive, out at .53 to .68 rad
+  //     at 9 / 11 / 13   TWO, 1.6 s, out at .57 to .68     (cone .52, clear edge .68)
+  dive: { vMin: 2.0, vMax: 7.5, dur: .55, cone: .52, clear: 1.30, range: 13, cool: .25 },
   // **HE PILES ON TO WHATEVER YOU ARE HITTING (m75, `mutant_punch`).** *"Let's make him attack
   // with the mutant punch."* and, from m73, *"probably only attack if you're attacking
   // something."* So there is no aggro of his own: `palFoe` only ever returns a body carrying
@@ -1980,6 +1999,44 @@ const LOCK = {
 // reported in the chip rather than failing silently -- a table naming a clip that does not
 // exist leaves a bone at zero total weight, and the mixer blends a zero-weight bone back to
 // its BIND value, which is the T-pose exactly.
+// ============================================================================================
+// THE AIR SLAM (m81) -- *"if I jump and swipe down on the right stick he does a slam down to
+// earth, which we can use the same melee as the charge attack (minus the charge) because that
+// is actually where that animation fits."*
+//
+// **THE GESTURE WAS FREE AND THAT IS WHY IT FITS.** `meleeGo` returns on `!p.grounded`, so a
+// flick in the air did nothing at all -- the one unspent thing on a pad where the tap is the
+// jump, the hold is the trigger and the ground flick is the strike. And DOWN is free
+// specifically: down-HELD is the guard (m37) and a flick is a fast move and a release, which
+// `padUp`'s own hysteresis argument already separates from a hold.
+//
+// **`weapon_melee_finish` IS A BIG OVERHEAD AND HE IS RIGHT ABOUT WHERE IT BELONGS.** No new
+// clip, no charge, no `chargeGoK` scaling -- the hold is what a charge IS and this has none.
+//
+// **AND IT ENDS WHEN HE MEETS THE GROUND, WHICH IS THE OPPOSITE TEST FROM EVERY OTHER STRIKE.**
+// A lunge, a roll and a dash all end on their own clock; this one ends on contact, so it needs
+// its own branch rather than a clause on that one -- a shared condition would have it cancel
+// itself on the frame it began. `max` is the failsafe under it, because a state whose end
+// depends on the world needs an end that does not.
+const SLAM = {
+  // **THE HANG IS WHAT MAKES IT READ.** Dropped straight from the flick it is over in a tenth
+  // of a second and looks like a fall; stopped dead for a beat first, it is a wind-up and then
+  // a drive, which is the shape of the thing he is asking for.
+  hang: .16,
+  down: 12,            // and then he is DRIVEN at the ground rather than dropped
+  keep: .25,           // how much of his horizontal survives -- a slam comes nearly straight down
+  r: 3.4,              // how wide the landing catches
+  power: .95,          // just under the charged finisher's 1.0, which stays the biggest blow
+  dmg: 3.0,            // the finisher's own
+  // **THE CLIP IS COMPRESSED TO THE PREDICTED ARRIVAL**, which is knowable: the fall height is
+  // `groundAt` under him and the drive is `down`, so `t` solves out of `h = down*t + g*t^2/2`.
+  // m8's rule -- a state whose length disagrees with the clip can only cut that clip off.
+  // **AND THE RATE CEILING IS NOT A TASTE NUMBER**: the charged dash already plays this same
+  // clip over `dashDur + finishTail` = .52 s, so this is the rate he is looking at on it today.
+  rateMax: 3.5,
+  max: 1.2,            // the failsafe, in case the ground moves out from under the prediction
+};
+
 const CLIPS = {
   idle: 'idle_01', walk: 'walk_fwd', run: 'run_fwd', sprint: 'run_fwd_fast', back: 'run_bwd',
   air: 'in_air', landSoft: 'landing_soft', landHard: 'landing_hard', roll: 'roll',
@@ -4179,6 +4236,8 @@ const player = {
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
   aim: 0, armT: 0, chg: 0, fireT: 0, autoT: 0, block: 0, blockT: 0, center: 0, centerT: 0, lock: null, melFired: 0, melV: 0, melTgt: null, melQ: null,
+  camWant: null,                   // a bearing the lens is easing onto after a strike. Spent in `stepCam`, the ONE writer.
+  slam: 0, slamT: 0, slamDur: 0, slamUsed: 0,
   comp: 0, compHold: 0, bias: null,   // the aim-pose correction, and the pose offset it is undoing
   slot: 0,
   // HIS OWN HEALTH, which until m35 did not exist -- *"make him fight back"* has no consequence
@@ -4456,7 +4515,11 @@ function meleeGo(h) {
   const spend = p.meleeDur * MELEE.carryAvg;
   const vCap = Math.min(MELEE.maxV, MELEE.lungeMax / spend);
   p.melV = L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : Math.min(base, vCap);
-  if (h != null) { p.heading = h; p.faceH = h; }
+  // **AND THE LENS COMES ROUND WITH HIM (m81).** `h` here is the direction he ACTUALLY strikes
+  // -- after `meleeLock` has had its say -- so a locked swing turns the camera onto the man
+  // rather than onto the thumb, which is the same "one answer" rule the mark and the shot live
+  // under. It is a WANT rather than a write: `cam.az` has exactly one writer and this is not it.
+  if (h != null) { p.heading = h; p.faceH = h; p.camWant = h; }
   // THE CLIP IS COMPRESSED TO THE BEAT, not the beat stretched to the clip. `melee_03` is
   // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,
   // which reads as lag rather than as a combo.
@@ -4466,6 +4529,70 @@ function meleeGo(h) {
   // averages .725 rather than .5 and is what a lunge actually looks like
   p.vel.x = Math.sin(p.faceH) * p.melV; p.vel.z = Math.cos(p.faceH) * p.melV;
 }
+// **A FLICK DOWN IN THE AIR IS A SLAM (m81).** Returns truthy when it took the gesture, so the
+// pad's one flick handler reads as a sentence and the ground strike is what is left.
+// **THE DIRECTION TEST IS THE PAD'S RAW TRAVEL, NOT `flickH`.** `flickH` maps a flick into WORLD
+// space through `cam.az`, which is exactly right for a strike thrown somewhere and meaningless
+// here: down-the-screen is down-the-screen whatever the camera is doing, and a slam has no
+// bearing to throw it along. The pad's +Y is DOWN (`flickH(0, -1)` is the desktop punch, and
+// that is straight UP), so `dy > 0` is the gesture and the dominance test is what keeps a
+// sideways flick a strike.
+function slamGo(dx, dy) {
+  const p = player;
+  if (p.grounded || p.knock || p.slam || p.slamUsed || p.roll) return 0;
+  if (!(dy > 0 && Math.abs(dy) > Math.abs(dx))) return 0;
+  const nm = CLIPS.chargeGo;
+  if (!rig.actions[nm]) { note('NO CLIP ' + nm); return 0; }
+  // ONE PER AIRTIME. Without it a held thumb flicking repeatedly is a man hammering the floor
+  // on the way down, which is the flutter-kick shape `p.airKick` refuses one repo over.
+  p.slam = 1; p.slamUsed = 1; p.slamT = 0;
+  p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
+  triggerStop();                      // the same thumb, and a wound shot has nowhere to go
+  p.vel.x *= SLAM.keep; p.vel.z *= SLAM.keep; p.vel.y = 0;
+  // SOLVE THE ARRIVAL. h = down*t + g t^2/2, so t = (sqrt(down^2 + 2 g h) - down)/g -- and the
+  // hang is on the front of it because the clip has to cover the wind-up as well as the drop.
+  const h = Math.max(.05, p.pos.y - groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step));
+  const tf = (Math.sqrt(SLAM.down * SLAM.down + 2 * MOVE.g * h) - SLAM.down) / MOVE.g;
+  p.slamDur = SLAM.hang + tf;
+  playOnce(nm, Math.min(SLAM.rateMax, clipLen(nm) / p.slamDur));
+  snd('swoosh', { r: .70, g: .95 });
+  return 1;
+}
+// **AND A SLAM GOES IN EVERY DIRECTION, SO IT IS A RADIUS AND NOT A CONE.** Every other blow in
+// this game is a cone because it is thrown somewhere; this one is thrown at the floor, and the
+// man it catches is thrown OUTWARD from where it landed -- which is one bearing per body rather
+// than one for the lot, so it is a loop over `dummyBlow` rather than a `dummyHit` call.
+// **A FRIEND IS HARDER TO CATCH, THROUGH `WEAP.palBlast`** -- the same number m76 gave the
+// blaster's splash, so "how much a friend is spared" is one dial and not two to keep in step.
+function slamLand() {
+  const p = player;
+  p.slam = 0;
+  for (const d of DUMMIES) {
+    if (d.cool > 0) continue;
+    const dx = d.root.position.x - p.pos.x, dz = d.root.position.z - p.pos.z;
+    const q = Math.hypot(dx, dz);
+    const rr = SLAM.r * (d.K.pal ? WEAP.palBlast : 1) + d.K.r;
+    if (q > rr) continue;
+    dummyBlow(d, q > 1e-3 ? Math.atan2(dx, dz) : p.faceH, SLAM.power, SLAM.dmg);
+    hitRing(d.K, 1, d.root.position.x, d.root.position.z);
+  }
+  snd('hit', { g: 1.0, r: .78, x: p.pos.x, z: p.pos.z });
+  spkBurst(p.pos.x, p.pos.y + .1, p.pos.z, 18, { col: [1, .78, .35], spread: 7, up: 3.2 });
+  // **AND IT HANDS TO THE HARD LANDING, BECAUSE THE CLIP IS CUT AT THE IMPACT.** `rateMax`
+  // means a slam from a low jump plays only part of the swing, and ending there would snap him
+  // from mid-arc into the idle -- a jump cut, which nothing in this file is allowed to be.
+  // `landing_hard` is a man hitting the ground and pushing back up off it, which IS the
+  // follow-through, so this needed the state that already exists rather than a new one.
+  // **ONLY IF HIS FEET ARE ACTUALLY DOWN.** `SLAM.max` can end the state in mid-air -- slammed
+  // off a roof over a drop, the prediction runs out before the ground arrives -- and a landing
+  // state entered while airborne is a man lying on nothing. The ordinary fall takes him from
+  // there and lands him normally, which is the right answer and needed no case of its own.
+  if (!p.grounded) return;
+  p.landHard = 1;
+  p.land = MOVE.landHard; p.landT = 0;
+  playOnce(CLIPS.landHard, clipLen(CLIPS.landHard) / p.land);
+}
+
 // **EVERYTHING THAT ENDS A HOLD COMES THROUGH ONE PLACE (m68).** The guard already spelt these
 // five assignments out inline; a roll and a knock-down want exactly the same thing, and three
 // copies of it is three places for the aim, the charge and the hum to start disagreeing about
@@ -4598,6 +4725,7 @@ function chargeRelease() {
   p.goDur = goDur;
   playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / p.goDur);
   p.vel.x = Math.sin(p.faceH) * vx; p.vel.z = Math.cos(p.faceH) * vx;
+  p.camWant = p.faceH;              // the dash is a melee, so the lens follows it too (m81)
   // A DASH STAYS ON ITS FEET. Leaving the ground is what made this a leap, and `integrate` runs
   // gravity and the ground collider on this state like any other -- so not writing `vel.y` is
   // the whole of "it does not jump any more". The hop version still lifts off.
@@ -4722,7 +4850,8 @@ PADS.L = bindStick(padL, stick.L,
   null, null);
 PADS.R = bindStick(padR, stick.R,
   () => { player.jump = 1; },                         // tap: jump
-  (dx, dy) => meleeGo(flickH(dx, dy)),                // flick: strike, in the flicked direction
+  // flick: a SLAM if he is in the air and it went down, otherwise a strike in that direction
+  (dx, dy) => { if (!slamGo(dx, dy)) meleeGo(flickH(dx, dy)); },
   null,
   // THE RELEASE IS THE SHOT, so this must NOT clear `p.aim` -- `stepKit` sees the pad is no
   // longer held and fires on that edge. Clearing it here would eat every shot in the game.
@@ -5182,7 +5311,7 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
       // ground sounds like a man hitting the ground whichever man it is. `MOVE.landSoft` and
       // `landHard` pick the CLIP by the same speed; this is the sound of the same event.
       bumpSnd(p.fallV * BODYSND.drop.me, p.pos.x, p.pos.z);
-      p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; landed = 1;
+      p.pos.y = gy; p.vel.y = 0; p.grounded = true; p.jumps = 0; p.slamUsed = 0; landed = 1;
     }
   }
   p.speed = Math.hypot(p.vel.x, p.vel.z);
@@ -5197,6 +5326,20 @@ function stepPlayer(dt) {
   if (p.lock && p.lock !== hadLock) snd('lock', { g: .3, r: 1.5 });
   const s = p.lock ? stickLocked(p.lock) : stickWorld();
 
+  // **THE SLAM ENDS WHEN HE MEETS THE GROUND (m81)**, which is the opposite of every other
+  // strike here -- they all end when he leaves it. That is why this is its own branch and not a
+  // clause on the one below: sharing that condition would have it cancel itself on the frame it
+  // began. It owns the body the way they do (its own drive, its own gravity, the real collider)
+  // and it is not cancellable, because a blow the next input truncates never reads as landing.
+  if (p.slam) {
+    p.slamT += dt;
+    if (p.slamT < SLAM.hang) { p.vel.y = 0; }      // the wind-up: he hangs
+    else p.vel.y = Math.min(p.vel.y, -SLAM.down);  // and then he is driven, not dropped
+    p.vel.x *= Math.exp(-4 * dt); p.vel.z *= Math.exp(-4 * dt);
+    const landed = integrate(dt, 0, 0, 0, false);
+    if (landed || p.grounded || p.slamT > SLAM.max) slamLand();
+    return;
+  }
   // ---- the states that OWN the body. Each bleeds its own speed off and still runs gravity
   //      and the ground collider, so the ground hands him straight back to the air code.
   if (p.roll || p.melee || p.chargeGo) {
@@ -5419,7 +5562,7 @@ function rigAnim(dt) {
 
   if (p.roll) { t[CLIPS.roll] = 1; setWeights(t, dt); return; }
   if (p.melee) { t[p.meleeName] = 1; setWeights(t, dt); return; }
-  if (p.chargeGo) { t[CLIPS.chargeGo] = 1; setWeights(t, dt); return; }
+  if (p.chargeGo || p.slam) { t[CLIPS.chargeGo] = 1; setWeights(t, dt); return; }
   // THE GUARD, WHEN THERE IS A CLIP FOR IT. An empty name falls straight through to the gait,
   // so this line costs nothing until the clip lands and needs no second branch when it does.
   if (p.block && CLIPS.block && rig.actions[CLIPS.block]) { t[CLIPS.block] = 1; setWeights(t, dt); return; }
@@ -7009,22 +7152,43 @@ function foeWander(d, dt, t, dd, toP) {
     // `p.armT > 0` is the moment the thumb ARRIVES, which is the earliest thing there is to
     // know, and the cone is what buys the rest: at .42 he is reacting to a shot lined up on him
     // rather than to one already on top of him.
+    // **AND HOW FAR HE GOES IS SOLVED FROM THE WEDGE (m81).** `off` is how far off the firing
+    // line he is AS SEEN FROM THE PLAYER, so his perpendicular distance from the line is
+    // `dd*sin|off|` and the wedge's edge at his own along-distance is `dd*cos(off)*tan(edge)`.
+    // What is left is what he has to cover, and the speed is that over `dur`. A typed distance
+    // can only ever be right at one range, and this wedge is a different width at every one.
+    const off = wrapAngle(toP + Math.PI - player.faceH);
     if (K.dive && d.diveT <= 0 && (player.aim || player.armT > 0) && dd < K.dive.range
-        && Math.abs(wrapAngle(toP + Math.PI - player.faceH)) < K.dive.cone) {
-      const side = Math.sign(wrapAngle(toP + Math.PI - player.faceH)) || 1;
+        && Math.abs(off) < K.dive.cone) {
+      const side = Math.sign(off) || 1;
       const h = player.faceH + side * Math.PI / 2;
+      const need = dd * Math.cos(off) * Math.tan(K.dive.cone * K.dive.clear)
+                 - dd * Math.sin(Math.abs(off));
+      const v = clamp(need / K.dive.dur, K.dive.vMin, K.dive.vMax);
       d.st = 'dive'; d.t = 0; d.h = h; d.diveT = K.dive.cool;
       d.cur = K.clips.dive || K.clips.idle;
       skinPlay(d, d.cur, skinLen(d, d.cur) / K.dive.dur);
-      d.vx = Math.sin(h) * K.dive.v; d.vz = Math.cos(h) * K.dive.v; d.vy = 0;
+      d.vx = Math.sin(h) * v; d.vz = Math.cos(h) * v; d.vy = 0;
       d.stuckT = 0;
       return;
     }
+    // **BUT YOUR LINE OF FIRE OUTRANKS THE FIGHT, AND THAT IS THE OTHER HALF OF IT (m81).**
+    // m76 wrote this gap down and left it: *"nothing stops him being in the lane while POUNCING
+    // -- joining the fight outranks it, which is right, but it means the one time he is
+    // deliberately near an enemy you are shooting is the one time the clear is switched off."*
+    // That is not a corner case, it is THE case: a marked body is a body you just hit, so the
+    // pounce is live precisely while the trigger is. He dived once, the cooldown ran, the
+    // pounce `return`ed above the clear, and he walked back into the line -- which is the loop
+    // behind *"he still constantly walks in front of my shot"*. The dive is the reflex and the
+    // clear is the habit, and the reflex alone was never going to be enough.
+    const aimLive = player.aim || player.armT > 0;
+    const P = palPost(K, d);
+    const clear = P.lane && dd < K.laneOut;
     // **JOINING THE FIGHT OUTRANKS THE LEASH, AND THAT IS DELIBERATE.** `hunt` 9 is further than
     // `leash` 4, so a pounce takes him off the ring -- but the range is measured from YOU, so he
     // can never be more than `hunt` away however long the fight runs, and the leash takes him
     // back the moment it ends.
-    if (K.pounce) {
+    if (K.pounce && !(aimLive && clear)) {
       const T = palFoe(d);
       if (T) {
         const h = Math.atan2(T.o.root.position.x - d.root.position.x, T.o.root.position.z - d.root.position.z);
@@ -7052,9 +7216,8 @@ function foeWander(d, dt, t, dd, toP) {
     // **STANDING IN THE LANE IS ITS OWN REASON TO MOVE, NOT ONLY A DETAIL OF COMING BACK.** He
     // can wander into it, be shoved into it, or simply have you turn onto him -- so the test is
     // WHERE HE IS rather than what he was doing, and it outranks the ring for the same reason
-    // the dive outranks everything: it is the thing that gets him shot.
-    const P = palPost(K, d);
-    const clear = P.lane && dd < K.laneOut;
+    // the dive outranks everything: it is the thing that gets him shot. (`P` and `clear` are
+    // computed above the pounce now, because the pounce has to be able to stand down on them.)
     d.lane = 0;
     if (d.catch || clear) {
       const gx = P.x - d.root.position.x, gz = P.z - d.root.position.z;
@@ -7330,7 +7493,7 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     p.knock = 1; p.knockCool = HURT.again;
     // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
     // the air with the clip that owns the body still running
-    p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0;
+    p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
     p.melFired = 0; p.melQ = null; p.land = 0;
     whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
   } else {
@@ -7561,15 +7724,30 @@ function stepCam(dt) {
   // thumb rolling inward mid-aim does not suddenly get the twitchy zone back.
   const dz = padUp(p.aim || p.charge || p.center) ? CAM.deadAim : CAM.dead;
   const ax = Math.abs(rx);
-  if (ax > dz) cam.az -= Math.sign(rx) * ((ax - dz) / (1 - dz)) * CAM.yawRate * dt;
+  if (ax > dz) { cam.az -= Math.sign(rx) * ((ax - dz) / (1 - dz)) * CAM.yawRate * dt; p.camWant = null; }
   // **AND THE MOUSE IS THE SAME WRITER, NOT A SECOND ONE (m79).** It is spent HERE rather than
   // in the listener for exactly the reason the line above it exists: `cam.az` has one writer and
   // a second one anywhere else is a loop that never settles. It is a DISPLACEMENT and not a
   // rate, so it is not multiplied by `dt` -- the pixels already happened.
-  if (DESK.yaw) { cam.az -= DESK.yaw * DESK.sens; DESK.yaw = 0; }
+  if (DESK.yaw) { cam.az -= DESK.yaw * DESK.sens; DESK.yaw = 0; p.camWant = null; }
 
   // AND IT COMES ROUND TO A LOCKED TARGET. This is inside `stepCam` on purpose -- `cam.az` has
   // exactly one writer, and a second one somewhere else is a loop that never settles.
+  // **AND A MELEE BRINGS IT ROUND TO HIS NEW FORWARD (m81, `CAM.melEase`).** *"If I melee
+  // toward the camera the camera will ease to my new forward, and for every direction."* This
+  // is inside `stepCam` for the same reason the lock's come-round is: **`cam.az` has exactly
+  // one writer** and a strike is not allowed to be a second one, so `meleeGo` states a WANT and
+  // this is the one place that spends it. `faceTgt` reads `cam.az` while aiming, so easing the
+  // lens IS easing his forward -- the two are the same bearing and that is what makes this a
+  // centring rather than a second thing to keep in step.
+  // **AND THE THUMB OUTRANKS IT, WHICH IS WHY THE TWO WRITERS ABOVE CLEAR IT.** An auto-follow
+  // that fights a deliberate drag is the loop that never settles; a drag cancels the want
+  // outright rather than being averaged with it.
+  if (p.camWant != null) {
+    const cd = wrapAngle(p.camWant - cam.az);
+    if (Math.abs(cd) < .01) p.camWant = null;
+    else cam.az += cd * Math.min(1, CAM.melEase * dt);
+  }
   if (p.lock) cam.az += wrapAngle(lockH(p.lock) - cam.az) * Math.min(1, LOCK.cam * dt);
   cam.el = CAM.el;
   cam.tgt.set(p.pos.x, p.pos.y + CAM.look, p.pos.z);
@@ -7651,6 +7829,7 @@ function frame() {
     const st = p.roll ? 'roll' : p.melee ? 'melee' + (p.meleeIx + 1) + (p.melFired ? '!' : '')
       // THE SOLVED ARC, ON SCREEN. How far it leapt and how high is the whole of what he is
       // judging -- "it jumps through them" and "it falls short" are one word apart otherwise.
+      : p.slam ? 'SLAM' + (p.slamDur || 0).toFixed(2) + (p.melFired ? '!' : '')
       : p.chargeGo ? 'swing' + (p.goGap || 0).toFixed(1) + '/' + (p.goHi || 0).toFixed(1) + (p.melFired ? '!' : '')
       // **AND THE WIND-UP SAYS WHO IT HAS (m51).** `charge0.7>4.2` is "seven tenths wound, and
       // a man 4.2 m off is marked"; no `>` at all means the ring is not up and the release will
@@ -7888,12 +8067,12 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
   DUMMY, DUMMIES, LOCK, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
-  stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, chargeRelease, groundAt,
+  stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, slamGo, chargeRelease, groundAt,
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
   BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
