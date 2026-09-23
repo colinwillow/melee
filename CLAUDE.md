@@ -1040,6 +1040,88 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE LEDGE, AND m89 HAD ALREADY BUILT HALF OF IT (m102, `LEDGE`, `ledgeFind`, `stepLedge`).**
+  *"I do want to build the ledge system, hangs on the ledge and get up, and maybe I'll design
+  buildings in a way where they always have levels so you can jump, hang, climb up, jump, hang,
+  climb up to get up to higher levels."*
+  **m88 NAMED THE MISSING PIECE AND m89 SHIPPED IT WITHOUT SAYING SO.** *"Both need something this
+  game has never had -- a test for is there a wall/lip near me, and which way does it face."*
+  `wallFind` IS that test: the closest point on a box's FOOTPRINT gives the distance to the face
+  AND its outward normal in one `clamp` per axis, right whichever side he comes at, and returning
+  nothing when he is INSIDE the footprint -- which is exactly what stops him grabbing the roof he
+  is standing on. m89's own note says the ledge build wanted that function and that is why the
+  wall went first. **So what is actually new here is a HEIGHT TEST and a MANTLE.**
+  **A LEDGE IS FOUND, NEVER AUTHORED.** It is the TOP EDGE of the same box, so every roof,
+  parapet and setback in `BOXES` is climbable the moment it is placed -- which is what makes
+  *"design buildings with levels"* a thing he does in the world builder rather than a second list
+  to keep in step. The rails' and the bars' rule, one repo over.
+  **AND WHERE HE HANGS IS MEASURED OFF THE CLIP, NOT TYPED.** Walked forward through the real rig
+  in `zap.glb` -- each bone's animated rotation where the clip keys one, its rest transform where
+  it does not -- and read at `mixamorig_Left/RightHand`:
+      ledge_hang_idle   2.375 s   hands **1.076 m above the root**, **0.212 m in front of it**,
+                                  hips 0.578, head 0.922, toes 0.415 (he is TUCKED) -- and it
+                                  HOLDS: identical to a millimetre at t 0.00 and t 1.20
+      ledge_hang_to_get_up_over_ledge  1.208 s, hips XZ **0.000** -- IN PLACE, mantle included
+      ledge_hang_to_jump_away 1.333   ledge_hang_hop_left/right 1.54 / 1.71
+  **THE TWO PLACEMENT NUMBERS ARE FRACTIONS OF `RIG.height`**, so they survive a re-export at any
+  authored size and another change to how tall he is; only a change to the POSE moves them, which
+  is the one thing that should. And **the catch band is centred on the SAME offset**, because the
+  question is not "how high is the wall" but "is the lip where his hands are" -- so the placement
+  number IS the acquire number and the two cannot drift.
+  **AND THE HANDS MEASURE TO LOCAL +Z, SO THIS CLIP CARRIES NO HALF TURN.** The wall-cover clip
+  does (m99), and that one fact is the whole reason the hop's sign comes out the OPPOSITE way
+  round: facing `-n` his right is `(nz, -nx)`, so the tangent `(-nz, nx)` the move is taken along
+  is his **LEFT** here and his RIGHT on the wall. Two surfaces, two answers, one derivation each
+  -- and this file gets handedness backwards about half the time when it argues instead.
+  **THE CONTROLS ARE THE WALL'S, DELIBERATELY.** Left pad is the BODY on both surfaces: into it
+  climbs, away lets go (harder than into, with the same grace clock), sideways hops, and the
+  right pad's tap jumps off. A man who has learnt cover has learnt this. **And the CATCH has no
+  gesture at all** -- he is airborne, his hands are level with an edge, he takes it. Catching one
+  while RISING is deliberate: jumping at a fire escape and being caught on the way up is the move.
+  **THE SHIMMY IS DISCRETE HERE, WHICH IS THE ONE PLACE IT DOES NOT COPY THE WALL** -- because
+  `ledge_hang_hop_left/right` are HOPS and the wall's are a slide. The clips decide.
+  **UP FIRST, THEN IN.** Lerping straight to the mantle target drags him diagonally THROUGH the
+  parapet he is climbing over, which is not a mantle. And the target's height is ASKED
+  (`groundAt`) rather than assumed to be the lip, because a mantle onto a stack lands on whichever
+  box is highest.
+  **HEADROOM IS CHECKED BEFORE THE GRAB, NOT AFTER.** A lip with a wall on top of it is a lip he
+  would climb INTO, and there is no graceful way out of that once he is committed.
+  **AND IF HE IS GOING TO CLEAR IT, HE LANDS ON IT.** A lip is always at least half a metre above
+  his feet (the band is centred on his HANDS), so nothing would have stopped the catch firing at
+  the bottom of a jump onto a 1.15 m box -- turning a step-up that has always worked into a hang,
+  which is m74's 40 cm cube pointed the other way. Whether this jump clears it is KNOWABLE rather
+  than a threshold: the apex from here against the lip, plus `clears` so a jump that only just
+  makes it is not a coin toss.
+  **THIS IS THE ONE PLACE IT IS CALLED, AND THAT IS THE THING TO CHECK FIRST IF IT EVER DOES
+  NOTHING.** Shredworld spent a whole build on a ledge grab that was correct and reachable only by
+  being hit by a car, because `ledgeGrab` was called from the knock-down integrator and nowhere
+  else. This sits in the ordinary air path, above the gait, where a man who has jumped passes.
+  **AND THE TEST SITE GETS SOMETHING TO CLIMB**, because a ledge system shipped with nothing in
+  the world to catch is a system he cannot judge. Four levels three metres apart, spiralling round
+  a 12 x 12 m block at (20..32, -25..-13). **Three metres is not a taste number, it is what one
+  plain jump reaches:**
+      from  0.0 -> lip  3.0   hands sweep  1.08.. 3.89   lip band  2.45.. 3.55   CATCH
+      from  3.0 -> lip  6.0                4.08.. 6.89             5.45.. 6.55   CATCH
+      from  6.0 -> lip  9.0                7.08.. 9.89             8.45.. 9.55   CATCH
+      from  9.0 -> lip 12.0               10.08..12.89            11.45..12.55   CATCH
+  The double jump and the backflip are needed for NONE of it, which is the point: the ordinary
+  jump is the climb. **Checked as rectangles** (m60's rule) against all ten boxes, both buildings
+  and all seventeen body spawns; nearest corner 24 m from the spawn.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container has a GPU or can pose a skin at
+  runtime, so whether his hands actually sit on the lip, whether the mantle reads and whether the
+  hop lands where the clip says are device questions. The arithmetic -- the hand offsets, the
+  reach table, the clearances -- is above and was measured. `mel.LEDGE` is live and
+  `mel.LEDGE.on = 0` takes the whole thing off.
+- **AND HE WAS STANDING TOO FAR OFF THE WALL (m102, `WALL.stand`).** *"The leaning on the wall
+  system is fine but he is a little bit far away from the wall."* Measured rather than eyeballed:
+  that number is his CENTRE's clearance ON TOP of his own radius, so what he is looking at is the
+  gap behind his back.
+      stand .30 * SZ = .214   centre .457 off the face  ->  **21 cm of air behind him**
+      stand .09 * SZ = .064   centre .307               ->  **6 cm**, which is a man leaning
+  It cannot go much under that: `p.r` is .243, so a standoff inside his own radius is a man whose
+  collider is in the brick -- harmless while `stepWall` owns him, and `resolveBoxes` shoves him
+  back out on the first frame after he lets go, but not a thing to lean on.
+
 - **THE GUARD TOOK THE LOCK BACK, AND EVERY LINE OF IT WAS ALREADY BUILT (m101, `LOCK.block`,
   `findLock`).** *"I think we used to have the lock where once you pushed forward it would lock on
   them and you would basically be rotating around them. We're gonna use the block as that -- if

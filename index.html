@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m101</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m102</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m101</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m102</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm101';
+const BUILD = 'm102';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -627,7 +627,16 @@ const WALL = {
                     // animates IN PLACE (hips XZ 0.000), so there is no authored travel to read
                     // the way `npm run gait` reads a walk. `mel.WALL.ref` is the dial.
   rateHi: 1.6,
-  stand: .30 * SZ,  // how far his back sits off the face, on top of his own radius
+  // **AND HE WAS STANDING TOO FAR OFF IT (m102).** *"The leaning on the wall system is fine but
+  // he is a little bit far away from the wall."* Measured rather than eyeballed -- this number
+  // is his CENTRE's clearance on top of his own radius, so what he is looking at is the gap
+  // behind his back:
+  //     stand .30 * SZ = .214   centre .457 off the face   ->  **21 cm of air behind him**
+  //     stand .09 * SZ = .064   centre .307                ->  **6 cm**, which is a man leaning
+  // It cannot go much under that: `p.r` is .243 and the shimmy re-finds the face every frame,
+  // so a standoff inside his own radius is a man whose collider is in the brick -- harmless
+  // while `stepWall` owns him and a shove on the first frame `resolveBoxes` gets him back.
+  stand: .09 * SZ,  // how far his back sits off the face, on top of his own radius
   cool: .35,        // after letting go, before he may latch again -- or the same thumb that
                     // pushed him off latches him straight back on
   jump: .95,        // and how hard a jump out pushes him away from it
@@ -648,6 +657,73 @@ const WALL = {
     L: 'wall_cover_move_left', R: '',
     aimL: 'wall_cover_move_left_rifle', aimR: 'wall_cover_move_right_rifle',
   },
+};
+
+// ============================================================================================
+// THE LEDGE (m102) -- *"I do want to build the ledge system, hangs on the ledge and get up, and
+// maybe I'll design buildings in a way where they always have levels so you can jump, hang,
+// climb up, jump, hang, climb up to get up to higher levels."*
+//
+// **m88 WROTE THIS DOWN AS THE BUILD IT WOULD TAKE AND m89 BUILT HALF OF IT WITHOUT SAYING SO.**
+// *"Both need something this game has never had -- a test for is there a wall/lip near me, and
+// which way does it face."* `wallFind` IS that test: the closest point on a box's FOOTPRINT
+// gives the distance to the face AND its outward normal in one `clamp` per axis, right
+// whichever side he comes at, and returning nothing when he is INSIDE the footprint. m89's own
+// note says the ledge build wanted the same function and that is why the wall went first.
+// **SO WHAT IS ACTUALLY NEW IS THE HEIGHT TEST AND THE MANTLE.** A ledge is the TOP EDGE of the
+// same box -- found, never authored, which is the rails' and the bars' rule one repo over: the
+// world is already a few dozen boxes in a list, so every roof, wall top, parapet and setback in
+// it is a ledge for free and there is nothing to place by hand. Design a building with levels
+// and it is climbable the moment it is in `BOXES`.
+//
+// **AND EVERY NUMBER FOR WHERE HE HANGS IS MEASURED OFF THE CLIP RATHER THAN TYPED.** Walked
+// forward through the real rig in `zap.glb` -- each bone's animated rotation where the clip
+// keys one and its rest transform where it does not -- and read at `mixamorig_Left/RightHand`:
+//     ledge_hang_idle   2.375 s   hands **1.076 m above the root** and **0.212 m in front of
+//                                 it**, hips 0.578, head 0.922, toes 0.415 (he is TUCKED)
+//                                 and it holds: the same to a millimetre at t 0.00 and t 1.20
+//     ledge_hang_to_get_up_over_ledge   1.208 s, hips XZ **0.000** -- IN PLACE, mantle included
+//     ledge_hang_to_jump_away           1.333 s   ledge_hang_hop_left/right  1.54 / 1.71 s
+// **SO THE MANTLE AND THE HOP ARE CODE, WHICH IS WHAT `dX 0.00` MEANS**, and the clip is the
+// picture over the top of them -- m89's own arrangement one surface up.
+// **THE TWO PLACEMENT NUMBERS ARE FRACTIONS OF `RIG.height`, NOT METRES**, so they survive both
+// a re-export at any authored size and another change to how tall he is: only a change to the
+// POSE moves them, which is the one thing that should. `mel.LEDGE.hang` / `.out` are the dials.
+// **AND HIS HANDS ARE AT LOCAL +Z, so the ROOT faces INTO the wall** -- the same facing the wall
+// cover has since m99, and checked the same way rather than assumed: a clip carrying its own
+// half turn would have put the hands at NEGATIVE z.
+const LEDGE = {
+  on: 1,
+  hang: .861,       // = 1.076 / 1.25. How far BELOW the lip his root hangs
+  out:  .170,       // = 0.212 / 1.25. And how far OUT from the face it sits
+  // **AND THE CATCH BAND IS CENTRED ON THAT SAME OFFSET**, because the question is not "how
+  // high is the wall" but "is the lip where his hands are" -- so the placement number IS the
+  // acquire number and the two cannot drift.
+  band: .55,        // how far above or below his hands the lip may be and still be caught
+  reach: .55 * SZ,  // how far off the face, on top of his own radius
+  tall: 1.2 * SZ,   // a kerb is not a ledge -- `WALL.tall`'s own argument one edge up
+  clear: .95 * SZ,  // **AND THE HEADROOM IS CHECKED BEFORE THE GRAB, NOT AFTER.** A lip with a
+                    // wall on top of it is a lip he would climb INTO, and a mantle that ends
+                    // inside a box is worse than a grab that never happened.
+  inset: .55 * SZ,  // how far in from the edge the mantle sets him down
+  into: .45,        // **THE SAME FOUR NUMBERS THE WALL USES, AND DELIBERATELY THE SAME.** The
+  off: .62,         // left pad is the BODY on both surfaces: into it climbs, away lets go, and
+  grace: .22,       // sideways hops. A man who has learnt the wall has learnt this.
+  grabDur: .22,     // the swing onto the lip -- short, because the CATCH is the event
+  upDur: .78,       // the mantle, which the 1.208 s clip is compressed to (x1.55)
+  upOut: .55,       // ...and the share of it spent RISING before he moves IN. **UP FIRST, THEN
+                    // IN**: lerping straight to the target drags him diagonally THROUGH the
+                    // parapet he is climbing over, which is not a mantle, it is a ghost.
+  hop: .85 * SZ, hopDur: .50,   // the shimmy is DISCRETE here, because the clips are HOPS
+  awayDur: .55,     // how long the push-off reads for after he is already in the air
+  jump: .85,        // and how hard it throws him off the face
+  cool: .30,        // before he may catch again -- or the drop re-grabs on the next frame
+  clears: .12,      // how far over the lip his apex may still be and have him catch it
+                    // anyway -- a jump that only just makes it should not be a coin toss
+  turn: 14,
+  clips: { hang: 'ledge_hang_idle', up: 'ledge_hang_to_get_up_over_ledge',
+           away: 'ledge_hang_to_jump_away',
+           L: 'ledge_hang_hop_left', R: 'ledge_hang_hop_right' },
 };
 
 // ============================================================================================
@@ -2718,6 +2794,10 @@ const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_m
   'melee_02', 'melee_04', 'melee_05', 'melee_extra', 'weapon_block_reaction',
   // the two wall TRANSITIONS are one-shots; the two shimmies are LOOPS and must not be here
   'idle_to_wall_cover_right', 'wall_cover_left_to_stand',
+  // and the LEDGE's three transitions. `ledge_hang_idle` is a HELD dangle and loops, so it
+  // is deliberately not here -- the wall's two shimmies' own distinction, one edge up.
+  'ledge_hang_to_get_up_over_ledge', 'ledge_hang_to_jump_away',
+  'ledge_hang_hop_left', 'ledge_hang_hop_right',
   // the reach, and its upper-half clone -- a split one-shot holds its last frame exactly
   // like the clip it came from
   'weapon_swap', 'weapon_swap__up',
@@ -3580,6 +3660,28 @@ scene.add(world);
   put( 16, 0,   6, 2.4, 3.4, 2.4, 0);
   put(  0, 0, -18, 14, 4.2, 1.2, 4);
   put(-16, 0,  12, 5, 1.5, 5, 2);
+  // **AND SOMETHING TO CLIMB (m102).** *"Maybe I'll design buildings in a way where they always
+  // have levels, so you can jump, hang, climb up, jump, hang, climb up to get up to higher
+  // levels."* He is going to author those; a ledge system shipped with nothing in the world to
+  // catch is a system he cannot judge, so the test site gets a worked example of exactly the
+  // shape he described -- four levels three metres apart, spiralling round a 12 x 12 m block.
+  // **THREE METRES IS NOT A TASTE NUMBER, IT IS WHAT ONE PLAIN JUMP REACHES.** His hands sweep
+  // from `hang` (1.08 m over his root) to `apex + hang`, and a lip is caught anywhere inside
+  // `band` of them -- so from any level the next one up is a single tap:
+  //     from  0.0 -> lip  3.0   hands sweep  1.08.. 3.89   lip band  2.45.. 3.55   CATCH
+  //     from  3.0 -> lip  6.0                4.08.. 6.89             5.45.. 6.55   CATCH
+  //     from  6.0 -> lip  9.0                7.08.. 9.89             8.45.. 9.55   CATCH
+  //     from  9.0 -> lip 12.0               10.08..12.89            11.45..12.55   CATCH
+  // The double jump and the backflip are not needed for any of it, which is the point: the
+  // ordinary jump is the climb, and the other two are what get you somewhere sideways.
+  // **CHECKED AS RECTANGLES, NEVER PLACED BY EYE** (m60's rule): every one of the four clears
+  // all ten boxes by at least 0.4 m, the building's plan and the tower's by over a metre, and
+  // the nearest of the seventeen body spawns by more than 1.2 m. Nearest corner 24 m from the
+  // spawn, so it is a walk rather than something you fall over on the way out of the door.
+  put( 20, 0, -16, 6,  3, 6, 2);
+  put( 26, 0, -16, 6,  6, 6, 3);
+  put( 26, 0, -22, 6,  9, 6, 4);
+  put( 20, 0, -22, 6, 12, 6, 0);
 }
 
 // The highest box top under (x,z) at or a step above `y`, else the floor at 0.
@@ -3634,6 +3736,35 @@ function wallFind(px, py, pz, R) {
     const dx = px - cx, dz = pz - cz, d = Math.hypot(dx, dz);
     if (d < 1e-4 || d > R || d >= bd) continue;
     bd = d; best = { nx: dx / d, nz: dz / d, d, cx, cz };
+  }
+  return best;
+}
+
+// A LEDGE IS THE TOP EDGE OF THE SAME BOX (m102). `wallFind` above answers "which face and how
+// far", and this is that plus a HEIGHT: the lip has to be where his hands are. Nothing is
+// authored -- every roof, parapet and setback in `BOXES` is a ledge the moment it is placed,
+// which is what makes *"design buildings with levels"* a thing he can do in the world builder
+// rather than a thing that needs a second list to keep in step.
+function ledgeFind(px, py, pz, R) {
+  const hands = py + RIG.height * LEDGE.hang;
+  let best = null, bd = 1e9;
+  for (const b of BOXES) {
+    if (b.maxy - b.miny < LEDGE.tall) continue;      // a kerb is not a ledge
+    const dy = b.maxy - hands;
+    if (dy < -LEDGE.band || dy > LEDGE.band) continue;
+    if (px + R < b.minx || px - R > b.maxx) continue;
+    if (pz + R < b.minz || pz - R > b.maxz) continue;
+    const cx = clamp(px, b.minx, b.maxx), cz = clamp(pz, b.minz, b.maxz);
+    const dx = px - cx, dz = pz - cz, d = Math.hypot(dx, dz);
+    // INSIDE the footprint returns nothing, which is what stops him grabbing the roof he is
+    // standing on -- `wallFind`'s own line, and the reason both of these are one `clamp`.
+    if (d < 1e-4 || d > R || d >= bd) continue;
+    const nx = dx / d, nz = dz / d;
+    // **HEADROOM, CHECKED BEFORE THE GRAB.** The probe is `inset` IN from the edge and half a
+    // body up, which is where the mantle would put his chest: a lip with a wall over it is a
+    // lip he would climb into, and there is no graceful way out of that once he is committed.
+    if (camHit(cx - nx * LEDGE.inset, b.maxy + LEDGE.clear * .5, cz - nz * LEDGE.inset, 0)) continue;
+    bd = d; best = { nx, nz, cx, cz, y: b.maxy };
   }
   return best;
 }
@@ -5087,6 +5218,8 @@ const player = {
   flipRate: 0, flipPush: 0,        // the AIR rate, and how long the push takes at its own (m100)
   hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0, knockDur: 0,   // the reaction clip, and the knock-down's own clock
   parryT: 0,                     // how long ago he deflected one, for the chip (m101)
+  ledge: null, ledgeSt: '', ledgeT: 0, ledgeOff: 0, ledgeSide: 0, ledgeCool: 0, ledgeAway: 0,
+  lx0: 0, ly0: 0, lz0: 0,        // and where the swing or the hop started from (m102)
   runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0,   // the reach into the backpack
@@ -5393,7 +5526,7 @@ function swapStop() {
 }
 function cycleKit() {
   const p = player;
-  if (p.swap || p.knock || p.wall) return;                        // one at a time, not out of a
+  if (p.swap || p.knock || p.wall || p.ledge) return;                        // one at a time, not out of a
                                               // knock-down, and not with his hands full
   swapGo((p.slot + 1) % WEAP.slots.length);
 }
@@ -5717,6 +5850,135 @@ function stepWall(dt) {
   p.pos.z = V.cz + V.nz * (p.r + WALL.stand);
   p.pos.y = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
   p.vel.set(0, 0, 0); p.grounded = true; p.airT = 0; p.jumps = 0;
+}
+
+// ---- THE LEDGE (m102) ---------------------------------------------------------------------
+// CATCHING ONE. He is in the air, his hands are level with a lip, and he takes it -- no button
+// and no second gesture, which is `wallGo`'s own rule one surface up. **AND CATCHING ONE WHILE
+// RISING IS DELIBERATE**, not an oversight: jumping at a fire escape and being caught by it on
+// the way up is the move, and a test for `vel.y < 0` would take it away.
+function ledgeGo(L) {
+  const p = player;
+  swapStop(); triggerStop();
+  p.ledge = L; p.ledgeSt = 'in'; p.ledgeT = 0; p.ledgeOff = 0; p.ledgeSide = 0;
+  p.lx0 = p.pos.x; p.ly0 = p.pos.y; p.lz0 = p.pos.z;
+  p.vel.set(0, 0, 0);
+  p.melee = 0; p.roll = 0; p.slam = 0; p.flip = ''; p.block = 0; p.center = 0;
+  snd('foot', { g: .14, r: .85 });
+  return 1;
+}
+// WHERE HIS ROOT GOES, FROM THE TWO MEASURED NUMBERS AND NOTHING ELSE. His hands sit on the lip
+// at the face; the root is `out` back along the normal and `hang` below it.
+function ledgeAt(L, o) {
+  o.x = L.cx + L.nx * (RIG.height * LEDGE.out);
+  o.z = L.cz + L.nz * (RIG.height * LEDGE.out);
+  o.y = L.y - RIG.height * LEDGE.hang;
+  return o;
+}
+const _lp = { x: 0, y: 0, z: 0 };
+// LETTING GO. The drop is simply the air code taking over, which is right: `in_air` IS the pose
+// for a man who has let go of something, and a get-off-the-ledge transition played while
+// falling would be two things at once -- `wallDrop`'s own argument.
+function ledgeDrop(away) {
+  const p = player;
+  p.ledge = null; p.ledgeSt = ''; p.ledgeCool = LEDGE.cool;
+  p.grounded = false; p.coyote = 0; p.airT = 0;
+  if (away) p.ledgeAway = LEDGE.awayDur;
+}
+
+function stepLedge(dt) {
+  const p = player, L = p.ledge;
+  p.ledgeT += dt;
+  // THE ROOT FACES THE WALL, and unlike the wall-cover clip this one carries no half turn of
+  // its own -- checked rather than assumed: the hands measure to local **+Z**, so they are on
+  // his forward side and his belly is already against the brick.
+  const face = Math.atan2(-L.nx, -L.nz);
+  p.faceH += wrapAngle(face - p.faceH) * Math.min(1, LEDGE.turn * dt);
+  p.heading = p.faceH;
+  p.vel.set(0, 0, 0); p.speed = 0; p.grounded = false; p.airT = 0; p.jumps = 1;
+  const H = ledgeAt(L, _lp);
+
+  // ---- the swing onto the lip
+  if (p.ledgeSt === 'in') {
+    const u = clamp(p.ledgeT / LEDGE.grabDur, 0, 1), e = u * u * (3 - 2 * u);
+    p.pos.x = lerp(p.lx0, H.x, e); p.pos.y = lerp(p.ly0, H.y, e); p.pos.z = lerp(p.lz0, H.z, e);
+    if (u >= 1) { p.ledgeSt = 'hold'; p.ledgeT = 0; }
+    return;
+  }
+
+  // ---- the mantle. **UP FIRST, THEN IN.** Lerping straight to the target drags him diagonally
+  //      THROUGH the parapet; over the top and then across is what a mantle IS.
+  if (p.ledgeSt === 'up') {
+    const u = clamp(p.ledgeT / LEDGE.upDur, 0, 1);
+    const tx = L.cx - L.nx * LEDGE.inset, tz = L.cz - L.nz * LEDGE.inset;
+    // **AND THE HEIGHT IS THE ROOF'S, NOT THE LIP'S.** A box top and the thing he ends up
+    // standing on are the same here and need not be for ever (a mantle onto a stack of boxes
+    // lands on whichever is highest), so it is asked rather than assumed.
+    const ty = groundAt(tx, tz, L.y + .05, MOVE.step);
+    if (u < LEDGE.upOut) {
+      const v = u / LEDGE.upOut, e = v * v * (3 - 2 * v);
+      p.pos.x = H.x; p.pos.z = H.z;
+      p.pos.y = lerp(H.y, ty, e);
+    } else {
+      const v = (u - LEDGE.upOut) / (1 - LEDGE.upOut), e = v * v * (3 - 2 * v);
+      p.pos.x = lerp(H.x, tx, e); p.pos.z = lerp(H.z, tz, e); p.pos.y = ty;
+    }
+    if (u >= 1) {
+      p.ledge = null; p.ledgeSt = ''; p.ledgeCool = LEDGE.cool;
+      p.pos.x = tx; p.pos.z = tz; p.pos.y = ty;
+      p.grounded = true; p.jumps = 0; p.goT = 0;
+      snd('foot', { g: .16, r: 1.0 });
+    }
+    return;
+  }
+
+  // ---- the hop. DISCRETE, because the clips are hops rather than a slide -- which is the one
+  //      place this deliberately does NOT copy the wall.
+  if (p.ledgeSt === 'hop') {
+    const u = clamp(p.ledgeT / LEDGE.hopDur, 0, 1), e = u * u * (3 - 2 * u);
+    const tx = -L.nz, tz = L.nx;
+    const nx = p.lx0 + tx * p.ledgeSide * LEDGE.hop * e;
+    const nz = p.lz0 + tz * p.ledgeSide * LEDGE.hop * e;
+    p.pos.x = nx; p.pos.z = nz; p.pos.y = p.ly0;
+    if (u >= 1) {
+      // RE-FOUND AT THE END rather than clamped to the box he left, because a building's wall
+      // is a RUN of boxes -- and a face whose normal disagrees is a DIFFERENT ledge, so running
+      // out of edge is simply nothing to find, which IS the end of it.
+      const L2 = ledgeFind(nx, p.pos.y, nz, p.r + LEDGE.reach);
+      if (L2 && L2.nx * L.nx + L2.nz * L.nz > .7) { p.ledge = L2; p.ledgeSt = 'hold'; p.ledgeT = 0; }
+      else ledgeDrop(0);
+    }
+    return;
+  }
+
+  // ---- hanging
+  p.pos.x = H.x; p.pos.y = H.y; p.pos.z = H.z;
+  // JUMPING OFF COMES FIRST, the one exit the grace period must never eat.
+  if (p.jump) {
+    p.jump = 0;
+    p.vel.y = MOVE.jump; p.vel.x = L.nx * LEDGE.jump; p.vel.z = L.nz * LEDGE.jump;
+    snd('swoosh', { r: 1.40, g: .36 });
+    ledgeDrop(1);
+    return;
+  }
+  const st = stickWorld();
+  const into = st.mag > .3 ? -(st.x * L.nx + st.z * L.nz) : 0;
+  // **INTO THE WALL IS THE CLIMB, WHICH IS THE WHOLE LOOP HE DESCRIBED** -- jump, hang, climb
+  // up, jump. One thumb held at the wall carries him all the way through it, because the same
+  // push that latched him is the one that mantles him.
+  if (into > LEDGE.into) { p.ledgeSt = 'up'; p.ledgeT = 0; p.ledgeSide = 0; return; }
+  // AND LETTING GO IS A HOLD, NOT A FRAME -- `off` harder than `into`, and the grace clock is
+  // what lets a diagonal hop overshoot it for a moment without dropping him.
+  if (into < -LEDGE.off) p.ledgeOff += dt; else p.ledgeOff = 0;
+  if (p.ledgeOff >= LEDGE.grace) { ledgeDrop(0); return; }
+  const tx = -L.nz, tz = L.nx;
+  const side = st.mag > .35 ? st.x * tx + st.z * tz : 0;
+  if (Math.abs(side) > .55) {
+    p.ledgeSide = Math.sign(side);
+    p.ledgeSt = 'hop'; p.ledgeT = 0;
+    p.lx0 = p.pos.x; p.ly0 = p.pos.y; p.lz0 = p.pos.z;
+    snd('foot', { g: .10, r: 1.15 });
+  }
 }
 
 // THE FLIP ITSELF. Started from two places -- the second jump and the backflip release -- so
@@ -6669,6 +6931,11 @@ function stepPlayer(dt) {
   // COVER OWNS THE BODY, so it sits with the other states that do -- above the gait, below the
   // slam, and it returns.
   if (p.wall) { stepWall(dt); return; }
+  // AND THE LEDGE OWNS THE BODY THE SAME WAY, so it sits with the states that do and it
+  // returns. Above the gait, below the slam, beside cover -- one place, one order.
+  if (p.ledgeCool > 0) p.ledgeCool = Math.max(0, p.ledgeCool - dt);
+  if (p.ledgeAway > 0) p.ledgeAway = Math.max(0, p.ledgeAway - dt);
+  if (p.ledge) { stepLedge(dt); return; }
   // THE PUSH. He is on the floor, extending, and the launch is at the end of it -- the clip is
   // already running and `rigAnim` draws it, because the flip branch sits above the air test.
   if (p.bkHang > 0) {
@@ -6908,6 +7175,26 @@ function stepPlayer(dt) {
     }
   }
 
+  // ---- AND A LIP CATCHES HIM IN THE AIR (m102) ----
+  //      *"Jump, hang, climb up, jump, hang, climb up to get up to higher levels."* There is no
+  //      gesture here at all: he is airborne, his hands are level with an edge, and he takes it.
+  //      **THIS IS THE ONE PLACE IT IS CALLED, WHICH IS THE THING TO CHECK FIRST IF IT EVER DOES
+  //      NOTHING.** Shredworld spent a whole build on a ledge grab that was correct and reachable
+  //      only by being hit by a car, because `ledgeGrab` was called from the knock-down
+  //      integrator and from nowhere else -- so this sits in the ordinary air path, above the
+  //      gait, where a man who has jumped actually passes through.
+  if (LEDGE.on && !p.grounded && p.ledgeCool <= 0 && !p.knock && !p.melee && !p.slam &&
+      !p.roll && !p.chargeGo && rig.actions[LEDGE.clips.hang]) {
+    const L = ledgeFind(p.pos.x, p.pos.y, p.pos.z, p.r + LEDGE.reach);
+    // **AND IF HE IS GOING TO CLEAR IT, HE LANDS ON IT.** A lip is always at least half a metre
+    // above his feet (the band is centred on his HANDS), so nothing stops the catch firing at
+    // the bottom of a jump onto a 1.15 m box -- which would turn a step-up that has always
+    // worked into a hang, the 40 cm cube's lesson (m74) pointed the other way. Whether this jump
+    // clears it is knowable rather than a threshold: the apex from here against the lip.
+    const apex = p.pos.y + (p.vel.y > 0 ? p.vel.y * p.vel.y / (2 * MOVE.g) : 0);
+    if (L && apex <= L.y + LEDGE.clears) { ledgeGo(L); return; }
+  }
+
   // ---- ordinary locomotion ----
   // AIMED, HE FACES THE SHOT AND TRAVELS WHEREVER THE THUMB SAYS -- which is a STRAFE, and it
   // is why `plant` has to go to zero here. `plant` swings the velocity onto his facing as he
@@ -7021,6 +7308,27 @@ function rigAnim(dt) {
   if (p.chargeGo || p.slam) { t[CLIPS.chargeGo] = 1; setWeights(t, dt); return; }
   // WALL COVER. The entry clip's LAST FRAME is the cover idle -- `clampWhenFinished` holds it,
   // so a pose nobody drew comes for free and the shimmy simply blends over it and back.
+  // THE LEDGE, ABOVE THE AIR TEST -- he is deliberately NOT grounded through all of it, so
+  // below the air branch `in_air` would take the hang, the mantle and the hop together.
+  if (p.ledge) {
+    // **WHICH HOP, AND THE SIGN IS DERIVED RATHER THAN GUESSED.** The tangent the move is taken
+    // along is `(-nz, nx)`; his forward is `-n`, so his right is `(-fz, fx)` = `(nz, -nx)` --
+    // and that tangent is therefore his **LEFT**. It comes out the OPPOSITE way round from the
+    // wall cover (m99) and for a reason that is in the clips: `idle_to_wall_cover_right` carries
+    // its own half turn and `ledge_hang_idle` does not, which the hand measurement is what says
+    // (hands at local +Z rather than -Z). Two surfaces, two answers, one derivation each.
+    const nm = p.ledgeSt === 'up' ? LEDGE.clips.up
+             : p.ledgeSt === 'hop' ? (p.ledgeSide > 0 ? LEDGE.clips.L : LEDGE.clips.R)
+             : LEDGE.clips.hang;
+    t[rig.actions[nm] ? nm : LEDGE.clips.hang] = 1;
+    setWeights(t, dt); return;
+  }
+  // AND THE PUSH-OFF READS FOR A MOMENT AFTER HE IS ALREADY IN THE AIR, which is what makes it
+  // a shove rather than a release. `wallDrop` has no clip for its own jump and falls straight
+  // to `in_air`; this one was drawn, so it is played.
+  if (p.ledgeAway > 0 && !p.grounded && !p.melee && !p.roll && rig.actions[LEDGE.clips.away]) {
+    t[LEDGE.clips.away] = 1; setWeights(t, dt); return;
+  }
   if (p.wall) {
     if (p.wallSt === 'out') { t[WALL.clips.out] = 1; setWeights(t, dt); return; }
     const sh = p.wallSt === 'hold' && p.wallSide ? wallShimmy(p.wallSide) : null;
@@ -9182,7 +9490,9 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
     p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.bkHang = 0; p.hurtNm = ''; p.parryT = 0; p.meleeAir = 0;
-    p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool; swapStop();
+    p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool;
+    p.ledge = null; p.ledgeSt = ''; p.ledgeCool = LEDGE.cool; p.ledgeAway = 0;
+    swapStop();
     whooshSnd(Math.hypot(bk, vy), p.pos.x, p.pos.z);
   } else {
     p.vel.x += Math.sin(dirH) * push;
@@ -9581,6 +9891,8 @@ function frame() {
     // A SWING THAT CONNECTED SAYS SO. "It hit him before the swing" and "it never reached him"
     // are opposite bugs and identical from a phone, and the sweep can now produce either.
     const st = p.swap ? 'SWAP' + (p.swapDone ? '\u2713' : p.swapT.toFixed(2))
+      : p.ledge ? 'LEDGE' + (p.ledgeSt === 'up' ? '\u2191' : p.ledgeSt === 'hop' ? '\u2194'
+          : p.ledgeSt === 'in' ? '\u21b4' : '') + (LEDGE.on ? '' : '?')
       : p.wall ? 'WALL' + (p.wallSt === 'in' ? '\u2193' : p.wallSt === 'out' ? '\u2191'
                  : p.wallSide > 0 ? '\u2192' : p.wallSide < 0 ? '\u2190' : '\u00b7')
       : p.roll ? 'roll'
@@ -9870,7 +10182,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
-  DUMMY, DUMMIES, LOCK, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
+  DUMMY, DUMMIES, LOCK, LEDGE, WALL, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, slamGo, chargeRelease, groundAt,
   MFX, camShake, palDive,
   // A LOOK AT THE SLAM WITHOUT HAVING TO BE IN THE AIR. `mel.slamfx()` fires the ring, the dust,
