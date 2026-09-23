@@ -1040,6 +1040,130 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE CLIP HAS TO HAVE HIM ON THE FLOOR BEFORE HE GETS THERE, AND IT IS ONE MEASUREMENT AND ONE
+  DIVISION (m96, `fallMark`, `HURT.mark`).** *"The thing that makes the warrior aliens look so
+  good when they fly through the air is that when I blast them full, the animation is them laying
+  on the ground BY THE TIME they hit the ground -- that's the key. The problem with mine is I
+  either don't go far enough, don't have enough hang time, or the animation plays too slow. We
+  could map the duration of the animation to the amount of hang time I get."*
+  **HIS DIAGNOSIS IS ALL THREE AT ONCE AND THE ARITHMETIC AGREES WITH EVERY PART OF IT.** Measured
+  off the Hips track of `take_damage_and_fall_down`:
+      the clip puts him on the floor at **1.458 s** of its own time  (u 0.714 of 2.042 s)
+      m90 played it at a FIXED x1.51, so the pose arrived at **0.964 s**
+      the flight was **0.56 s**
+      -> he landed **0.40 s before the animation did**, every single time
+  **SO THE RATE IS SOLVED RATHER THAN TYPED**: `mark / (air * lead)`, where `air` is `2*vy/g` --
+  the arc that was set two lines earlier -- and `lead` .92 is *"on the ground BEFORE you hit the
+  ground"* said as a number. `HURT.beat` survives only as the fallback for a clip with no hips
+  track, and nothing else reads it.
+  **AND THE LANDMARK IS FOUND, NOT TRIMMED BY HAND** -- `flipMarks`' own method one clip over, so
+  a re-export at any length moves it. **"Stays below the gate for ever" is the WRONG test** and it
+  reported nothing at any threshold: this clip bottoms out at -1.11 and then SETTLES back up to
+  +3.6, which is the body relaxing. First ARRIVAL within `gate` .08 of its own floor is the honest
+  question, and it is stable across the band (.05 -> 1.500, .12 -> 1.375).
+  **THE RATE FIX ALONE WOULD HAVE BEEN WRONG, WHICH IS THE OTHER TWO THIRDS OF HIS SENTENCE.** At
+  a 0.56 s hang the solve just plays the fall at x2.83 -- correct, and still a stumble. `hi`
+  .78 -> **1.60** and `back` 7.6 -> **12**.
+  **AND ONE ROLL DRIVES BOTH, SO A HARDER BLOW IS HIGHER *AND* FARTHER.** *"Sometimes they hit you
+  and you go farther and sometimes shorter."* Two independent rolls give a high short launch and a
+  low long one, which is nobody's idea of a harder hit -- and because the hang comes out of the
+  same number, the CLIP follows it for free with nothing to keep in step:
+      k      vy    apex    air    dist    rate    pose on the floor at
+      .85   6.80   1.16   0.68    6.4    x2.33         0.63 s   <- before 0.68
+      1.00  8.00   1.60   0.80    8.7    x1.98         0.74     <- before 0.80
+      1.20  9.60   2.30   0.96   12.3    x1.65         0.88     <- before 0.96
+      m90   5.59   0.78   0.56    4.0    x1.51         0.96     <- **0.40 LATE**
+  Grounded before impact at every power, BY CONSTRUCTION rather than by two numbers being tuned
+  toward each other. **And the whole knock-down got SHORTER** (3.08-3.44 s against 3.55) while
+  going two to three times as far, because the fall no longer has to play out after he lands.
+  **`rateMin`/`rateMax` ARE FITTED TO THE ONE HE SAYS LOOKS GOOD**, not picked: the warrior's own
+  fall runs x1.6 to x2.5 (`downBeat` 1.5 on a 3.0 s clip, times `downVary`).
+  **AND THE STATE READS THE LENGTH THE CLIP WAS SCALED BY** (`p.knockDur`), which is the m8
+  landmine and is exactly what a per-launch rate walks into.
+
+- **PUTTING A WEAPON AWAY IS THE SAME REACH, BACKWARDS (m96).** *"The animation for swapping
+  weapons, when he goes from having a weapon to no weapon -- I think it's just playing in one
+  direction for every switch, but for that one we should probably play it in reverse."* He is
+  right and it was: there is ONE `weapon_swap` and it is a hand going INTO a bag and coming out
+  with something. Forward it is a draw; backwards it is a stow.
+  **A NEGATIVE `timeScale` IS THE OTHER DIRECTION** -- m89's rule for the wall shimmy, and it
+  needs no second clip because only one direction is ever live at a time. **This is the first
+  place it is used on a ONE-SHOT, and `reset()` is why that needed a line**: it puts the action at
+  time 0, which is where a reversed clip FINISHES, so without starting it at the clip's end it
+  clamps on its first frame and nothing moves. three's `LoopOnce` handles both ends of
+  `_updateTime`, so `clampWhenFinished` holds frame 0 exactly as it holds the last one forward.
+  **AND `SWAP.at` MIRRORS WITH IT, WHICH IS THE HALF THAT IS EASY TO MISS.** Forward the weapon
+  APPEARS when the hand comes back out at u .48; reversed the hand goes IN at `1 - .48`, and that
+  is when it has to leave. Reading the same .48 either way drops the weapon out of his fist before
+  the hand has got anywhere near the bag.
+  **THE TEST IS THE TARGET, NOT THE PAIR.** `to` naming a slot with no `file` IS "to no weapon",
+  which is his sentence exactly. Blaster -> hammer is a stow AND a draw and stays forward, because
+  the reach that matters there is the one that ends holding something.
+
+- **PICK HIM UP AND THROW HIM (m96, `GRAB`, `grabScan`, `grabRide`, `tossGo`, `bodyLaunch`).**
+  *"You just pick him up by being within radius of him. The right stick -- there'll be a ring
+  around it that's the colour of Clancy, so like orange, a rotating ring, and I know you won't be
+  able to see that it's rotating unless there's pieces of it cut out. And a little icon of his
+  face on the stick so it shows that you can tap to pick him up. You pull the stick up to wind up
+  and then let go to release."*
+  **NEARLY ALL OF IT WAS ALREADY BUILT, WHICH IS `d.K`'S DIVIDEND FOR THE EIGHTH TIME.** A thrown
+  body is a body with a velocity: `bodyFly` is the integrator (the arc, the wall bounce, the
+  ground stop, the landing thump), `FLYHIT` (m63) makes him bowl over whoever he lands on, and his
+  own `falling_to_roll` / `cover_to_stand` have been wired as a knock-down since m73. **So the
+  throw is `bodyLaunch` -- the same function a mace calls -- and what is actually new is the
+  CARRY.** Every throw clears `FLYHIT.at` 6, so he is a skittle at any wind-up:
+      wind  0.00   9.0 m/s out, 3.2 up   0.32 s of air    2.4 m
+      wind  0.50  16.5          5.3      0.53             6.5
+      wind  1.00  24.0          7.5      0.75            11.9
+  **`bodyLaunch` IS AN EXTRACTION AND THAT IS THE POINT.** The tumble, the whoosh, the fall clip,
+  the per-body beat and the two get-up rolls are what a body leaving the ground IS -- they were
+  inline in `dummyBlow`, and a second caller is exactly when that stops being acceptable.
+  **AND THE GESTURE COST NOTHING, BECAUSE A PROMPT IS WHAT MAKES A TAP MEAN SOMETHING ELSE.** The
+  right pad's tap is the jump; while the ring is lit it is the pick-up instead, and that is not a
+  hidden mode because **the ring and the glyph ARE the state** (m52's own answer to m36). Carrying,
+  the up-hold is the wind-up rather than the trigger -- free, because a man with his hands full is
+  not aiming -- and it is `padUp`'s same four gates, shared rather than re-derived (m46).
+  **THE PROMPT IS DRAWN ON THE CONTROL THAT PERFORMS IT**, which is `actB`'s lesson one repo over:
+  a prompt on the pad cannot be somewhere the thumb is not, and it costs no HUD element in the
+  play area. Centred on the pad's OWN insets, the way `#modeRow` is, so it cannot drift off on a
+  notched phone; inside `#padR::after`'s radius so the aim ring and it never overlap (they cannot
+  both be live anyway). **The cut-outs are the whole point** -- a solid ring turning is a ring
+  standing still -- and the spin is a CSS keyframe, so it runs on the compositor and the loop
+  writes one class and two custom properties.
+  **THE WIND-UP IS A RING THAT CLOSES IN, NOT A BAR**, the reticle's rule: how loaded something is
+  should be a SHAPE you can read without looking away from the fight.
+  **THE CARRY IS A `SPLIT.up` POSE AND THE THROW IS TOO.** `hold_item` is 3.333 s with five
+  degrees of drift across the whole of it -- a held pose -- so it goes over the gait's `__legs`
+  and he walks about with somebody in his arms, which is `weapon_swap`'s own shape (m91). The
+  throw is the same, which keeps him mobile: being unable to move is the least fun state in any
+  game, and this file says so twice already. **Three things now want the top half, so they are ONE
+  override with a priority** rather than three branches each having to know about the other two.
+  **HE IS WRITTEN TO THE PLAYER'S HANDS EVERY FRAME, NOT PARENTED TO A BONE.** The armature is
+  scaled 0.01 and a child of it comes out at a hundredth of its size, which is m26's weapon lesson
+  -- and this needs no bone anyway, because it is a position and a facing.
+  **AND A CARRIED BODY IS OUT OF `bodySep` AND `pushBodies`.** Without that he is a solid in the
+  player's own resolver being held 32 cm in front of the player's chest, which pushes him
+  backwards every frame and reads as walking into an invisible box.
+  **`lift` AND `tint` ARE ON THE KIND**, m38's empty-field pattern: the orcs, the drunks, the
+  skater and the officer never reach any of it, and a second pal tomorrow brings his own colour
+  with nothing typed in the HUD.
+  **A FUMBLE IS NOT A THROW** (`minWind`) -- a stray brush of the top of the pad must not launch
+  him, which is `WEAP.minChg`'s argument one verb over. And the charge is BANKED at the release
+  (`p.tossK`), because the clip fires the launch `GRAB.at` of the way through and the thumb is
+  long gone by then: the picture and its consequence have to be ONE event.
+  **AND HE IS SET DOWN RATHER THAN DROPPED THROUGH THE FLOOR** wherever the carry ends for a
+  reason that is not a throw -- a knock-down, a roll, latching to a wall.
+  **STATED GAPS.** `GRAB.at` .38 is a **guess**, the taunt beats' own position (m65): a strike has
+  an authored contact frame and a throw does not, and nothing in this container can pose a skin --
+  so the chip reports `TOSS<t>` and `mel.GRAB.at` is the dial. **The face is a STAND-IN and is
+  marked as one**: there is no artwork for him in this repo, so it is a drawn mark in his colour,
+  and a PNG is what replaces it. The WEAPON MODEL is still in his hand while he carries somebody,
+  which is odd and is not fixed here. There is **no desktop binding** -- m79 spends the left
+  button on melee and right click on the kit cycle, so the pick-up wants a key and it is his call
+  which. And **no gate in this repo executes `stepGrab`**: `check:syntax` parses and `check:boot`
+  stops at `init()`, so the whole state machine is a device question. Every symbol it names was
+  checked to exist, which is reading rather than running and is not the same thing.
+
 - **A RE-EXPORT RENAMED A CLIP AND TOOK A WHOLE FEATURE WITH IT (m95, `backflip`).** *"I pushed a
   new zap model, new animations, way more melees, I put in a hold item and throw, I put in a block
   and block react."* One file, replaced in place: 45 clips to 54, and **`Backflip` came back as

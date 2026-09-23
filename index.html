@@ -221,6 +221,52 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 #padR.arm::after { opacity: 1; }
 #padR.ready::after { opacity: .38; }
+/* **THE PROMPT IS DRAWN ON THE CONTROL THAT PERFORMS IT (m96).** *"There will be a ring around
+   the right stick that's the colour of Clancy, like orange -- a rotating ring, and I know you
+   won't be able to see that it's rotating unless there's pieces of it cut out. And a little icon
+   of his face on the stick so it shows that you can tap to pick him up."* A prompt drawn ON the
+   pad cannot be somewhere the thumb is not, which is the same argument the mode row is built on
+   -- and it costs no HUD element in the play area and no new gesture.
+   **THE CUT-OUTS ARE THE WHOLE POINT**: a solid ring turning is a ring standing still. The spin
+   is a CSS keyframe, so it runs on the compositor and the frame loop writes one class and one
+   custom property -- the reticle's own argument.
+   **IT IS CENTRED ON THE PAD'S OWN CENTRE**, off the same insets `#modeRow` reads, so it cannot
+   drift off the pad on a notched phone the way two independent positions eventually would. And
+   it sits INSIDE the aim ring's radius (`#padR::after` is inset -10) so the two never overlap:
+   a weapon cannot be out while he is carrying somebody. */
+#grabRing {
+  position: fixed; z-index: 5; display: none; pointer-events: none;
+  --gr: 96px; --gc: #ff8a2b;
+  right: calc(20px + 66px - var(--gr) + env(safe-area-inset-right));
+  bottom: calc(26px + 66px - var(--gr) + env(safe-area-inset-bottom));
+  width: calc(var(--gr) * 2); height: calc(var(--gr) * 2);
+}
+#grabRing.on { display: block; }
+#grabRing i {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: repeating-conic-gradient(var(--gc) 0 13deg, #0000 13deg 30deg);
+  -webkit-mask: radial-gradient(closest-side, #0000 0 88%, #000 88%);
+          mask: radial-gradient(closest-side, #0000 0 88%, #000 88%);
+  animation: grabspin 2.6s linear infinite;
+}
+@keyframes grabspin { to { transform: rotate(360deg); } }
+/* THE WIND-UP IS A SECOND RING THAT CLOSES IN, not a bar -- `--gw` is 0 to 1 and the frame loop
+   writes only that. How loaded something is should be a SHAPE (the reticle's rule). */
+#grabRing b {
+  position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--gc);
+  opacity: calc(var(--gw, 0) * .9);
+  transform: scale(calc(1 - var(--gw, 0) * .22));
+}
+/* **AND THE FACE IS A STAND-IN, MARKED AS ONE.** There is no artwork for him in this repo, so
+   this is a drawn mark in his colour rather than his face -- an ear-to-ear head with two eyes,
+   which reads as a creature at 26 px and is honest about being a placeholder. Dropping a PNG in
+   and pointing `GRAB.art` at it is the one line that replaces it. It rides the KNOB, so it goes
+   with the thumb, which is what *"on the stick"* means. */
+#padR .face {
+  position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px;
+  display: none; pointer-events: none;
+}
+#padR.grab .face { display: block; }
 /* THE MODE BUTTONS ARE ARC SEGMENTS ROUND THE RIGHT STICK (m53).
    *"Take two rings, one smaller, one larger, and cut pizza slices out of that -- those buttons
     would be like those segments."* So they are annular sectors, not a row of chips: the pad is
@@ -397,19 +443,20 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m95</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m96</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m95</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m96</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
-<div class="pad" id="padR"><div class="knob"></div><div class="hint">look &middot; tap = jump</div></div>
+<div class="pad" id="padR"><div class="knob"><svg class="face" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c5 0 8 3.4 8 7.6 0 4.6-3.6 9.4-8 9.4S4 15.2 4 10.6C4 6.4 7 3 12 3z" fill="#0b0d12" stroke="#fff" stroke-width="1.6"/><ellipse cx="9" cy="10.4" rx="1.9" ry="2.5" fill="#fff"/><ellipse cx="15" cy="10.4" rx="1.9" ry="2.5" fill="#fff"/></svg></div><div class="hint">look &middot; tap = jump</div></div>
 
 <!-- THE BLASTER'S TWO MODES (m52). Above the right pad, because that is the thumb they are
      about -- and only while the blaster is out, so they are never a HUD element in the play
      area for a weapon that has no modes. Built from `WEAP.modes` rather than written twice:
      a third mode is a row in that table and nothing here. -->
+<div id="grabRing" aria-hidden="true"><i></i><b></b></div>
 <div id="modeRow" aria-hidden="true"></div>
 
 <!-- DESKTOP CONTROLS (m79). Built from `DESK.hint` so the one place that binds a key is the
@@ -450,7 +497,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm95';
+const BUILD = 'm96';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2123,6 +2170,11 @@ const CLANCY = {
   // in `dummyBlow`, the one function every blow on a body reaches, so what he says when he is
   // hit came free with the bank and no code at all.
   voice: 'creature',
+  // **AND HE IS THE ONE BODY YOU CAN PICK UP (m96).** `lift` is what `grabScan` reads, and
+  // `tint` is what his ring on the pad is drawn in -- *"the colour of Clancy, so like
+  // orange"*. Both on the KIND, so a second pal tomorrow brings his own and there is nothing
+  // typed in the HUD.
+  lift: 1, tint: '#ff8a2b',
   // **AND HE PIPES UP ON HIS OWN (m82, `CVOX`).** *"Little noises"* is plainly the ambient half,
   // and a sidekick who only speaks when you shoot him is the wrong one. Naming `chirp` is the
   // whole of opting in -- the moods, the pitch and the interval all live in `CVOX`, which is
@@ -2274,8 +2326,20 @@ const BLOCK = { cut: .25, push: .35, stun: .3, arc: 1.25 };
 const HURT = {
   // **THE APEX IS THE NUMBER AND `vy` IS DERIVED FROM IT**, m21's rule: a velocity picked by eye
   // is a height nobody chose. At `MOVE.g` 20 this is 5.59 m/s up and 0.56 s of air.
-  hi: .78,
-  back: 7.6,      // along the blow. Against `airDrag` that integrates to about four metres
+  // **AND BOTH ENDS WENT UP, BECAUSE A DERIVED RATE IS ONLY HALF OF WHAT HE ASKED FOR.** m67's
+  // arc was 0.78 m and 0.56 s, which is a stumble; the rate fix alone would just have played the
+  // fall at x2.83 to fit it. At `MOVE.g` 20 an apex of 1.60 is vy 8.0 and **0.80 s** of air, and
+  // `back` 12 against `airDrag` (k .25) integrates to `v(1-e^-kT)/k` = **8.7 m**.
+  hi: 1.60,
+  // **ONE ROLL DRIVES BOTH, WHICH IS WHAT MAKES A HARDER BLOW READ AS A HARDER BLOW.** *"Sometimes
+  // they hit you and you go farther and sometimes shorter."* Two independent rolls would give a
+  // high, short launch and a low, long one, which is nobody's idea of a harder hit. And because
+  // the hang comes out of the same number, the CLIP follows it for free:
+  //     k .85   vy 6.8   apex 1.16 m   air 0.68 s   6.4 m   clip x2.33
+  //     k 1.0   vy 8.0   apex 1.60     air 0.80     8.7 m   clip x1.98
+  //     k 1.20  vy 9.6   apex 2.30     air 0.96    12.3 m   clip x1.65
+  vary: [.85, 1.20],
+  back: 12,       // along the blow. Against `airDrag` that integrates to about nine metres
   // (`land` is GONE at m90: a knock-down no longer enters a landing state at all, and a
   //  constant nobody reads is indistinguishable from one that is broken.)
   again: 1.1,     // he cannot be re-launched inside this -- see below
@@ -2316,9 +2380,26 @@ const HURT = {
   // held tail is one word if the lie should ever outlast the clip.
   down: 'take_damage_and_fall_down',
   up: 'lay_to_get_up',
-  beat: 1.35,     // the fall state, FLIGHT INCLUDED. The clip is 2.042 s, so x1.51 -- and the
-                  // flight is 0.56 s, so its first 41% covers the air and the rest is the
-                  // landing, which is the warrior's own shape (3.0 s over a 1.5 s beat).
+  // **THE CLIP HAS TO HAVE HIM ON THE FLOOR BEFORE HE GETS THERE, AND THAT IS ONE MEASUREMENT
+  // AND ONE DIVISION (m96).** *"The thing that makes the warrior aliens look so good is that
+  // when I blast them, the animation is them laying on the ground BY THE TIME they hit the
+  // ground -- that's the key. Mine either doesn't go far enough, doesn't have enough hang time,
+  // or the animation plays too slow. We could map the duration of the animation to the amount of
+  // hang time I get."* Exactly right, and the arithmetic says how wrong it was:
+  //     the clip puts him on the floor at **1.458 s** of its own time (measured, see `fallMark`)
+  //     m90 played it at a FIXED x1.51, so the pose arrived at **0.964 s**
+  //     and the flight was **0.56 s** -- so he landed 0.40 s before the animation did
+  // `beat` is a FALLBACK now and nothing reads it unless the clip has no hips track to measure.
+  beat: 1.35,
+  gate: .08,      // how near the clip's own lowest hips counts as ARRIVED. .08 reads t 1.458 on
+                  // his export; .05 gives 1.500 and .12 gives 1.375, so the landmark is stable
+                  // across the whole band rather than balanced on one threshold.
+  lead: .92,      // and he is on the floor THIS fraction of the way through the flight, not at
+                  // the very end of it -- *"you should be to the point in the animation where
+                  // you're on the ground BEFORE you hit the ground"*.
+  rateMin: 1.15, rateMax: 2.60,   // the band the clip stays readable in. The warrior's own fall
+                  // runs x1.6 to x2.5 (`downBeat` 1.5 on a 3.0 s clip, x `downVary`) and that is
+                  // the one he says looks good, so this is fitted to it rather than picked.
   upBeat: 2.20,   // and the get-up is 2.708 s authored, so x1.23 -- quick, still readable
   // **AND A BODY ON THE FLOOR SCRUBS LIKE A BODY (m90).** `MOVE.drag` is a man BRAKING on his
   // feet, and at `1.9 * .25` its time constant is 2.1 s -- so landing at 6.6 m/s he had
@@ -2448,6 +2529,12 @@ const CLIPS = {
   // away."* It is an UPPER-BODY action, so it is a `SPLIT.up` pose over the ordinary gait's
   // `__legs` clones -- he keeps walking, which is what reaching into a bag while you move is.
   swap: 'weapon_swap',
+  // **THE CARRY IS A POSE AND THE THROW OWNS THE BODY (m96).** `hold_item` is 3.333 s with
+  // five degrees of drift across the whole of it -- a HELD pose, so it is a `SPLIT.up`
+  // override over the gait's `__legs` and he walks about with somebody in his arms, which is
+  // `weapon_swap`'s own shape (m91). `throw_item` moves 44 bones with the right arm leading
+  // at 487 of travel: that is a whole-body action and it takes the body for its beat.
+  hold: 'hold_item', toss: 'throw_item',
   // **NAMED AT LAST (m95).** *"I put in a block and block react etc."* m37 wrote this empty on
   // purpose -- *"I know I don't have a block animation yet, but I'll put one in"* -- and the
   // machinery has been sitting behind it ever since. It is a `SPLIT.up` pose over strafing
@@ -2504,7 +2591,7 @@ const isUpper = name => {
 };
 const UP = '__up', LEGS = '__legs';
 const SPLIT = {
-  up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo', 'swap', 'block'],
+  up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo', 'swap', 'block', 'hold', 'toss'],
   legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR'],
 };
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
@@ -2530,6 +2617,8 @@ const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_m
   // the reach, and its upper-half clone -- a split one-shot holds its last frame exactly
   // like the clip it came from
   'weapon_swap', 'weapon_swap__up',
+  // the throw is a one-shot; the CARRY is a held pose and loops, so it is deliberately not here
+  'throw_item', 'throw_item__up',
   'take_damage_head', 'take_damage_body',
   // the FALL and the GET-UP: one-shots that hold their last frame, which is what makes the
   // fall's own tail the lie and `laying_down` unnecessary
@@ -3459,6 +3548,9 @@ function pushBodies(pos, r, skip) {
   let hit = false;
   for (const d of DUMMIES) {
     if (d === skip) continue;
+    // and a man in your ARMS is not a wall to be shoved out of (m96) -- without this the carry
+    // pushes the player backwards every frame, which reads as walking into an invisible box
+    if (d.held) continue;
     if (d.st === 'down' || d.st === 'up') continue;
     const dx = pos.x - d.root.position.x, dz = pos.z - d.root.position.z;
     const rr = r + d.K.r;
@@ -3629,6 +3721,26 @@ function deDrift(clip) {
 // WHERE THE CROUCH, THE APEX AND THE LANDING ARE IN A FLIP CLIP -- read off the Hips height
 // rather than typed, so `backflip`'s half-second of wind-up is FOUND and a re-export moves it.
 const FLIP = {};
+// **WHERE IN A FALL CLIP THE BODY IS ACTUALLY ON THE FLOOR (m96).** `flipMarks`' own method one
+// clip over: the Hips translation IS the body's height off the ground, so a fall reads as a
+// topple, a plunge and a settle, and "he has arrived" is the first key within `HURT.gate` of the
+// clip's own lowest hips. Measured on `take_damage_and_fall_down`:
+//     0.00 -> 1.00 s   hips 39 -> 27, he is being hit and going over
+//     1.00 -> 1.46     the plunge, 27 -> 1.7
+//     **1.458 s**      within 8% of the floor -- ARRIVED, at u 0.714 of a 2.042 s clip
+//     1.75             the lowest point, -1.11
+//     2.04             back up to 3.6, which is the body settling and is why "stays below the
+//                      gate for ever" is the WRONG test and reported nothing at any threshold
+// Nothing is typed: a re-export at any length moves it, which is the whole reason it is measured.
+function fallMark(clip) {
+  const t = clip && clip.tracks.find(t => /Hips\.position$/.test(t.name));
+  if (!t || t.times.length < 3) return 0;
+  const y = i => t.values[i * 3 + 1], n = t.times.length;
+  let lo = y(0); for (let i = 1; i < n; i++) if (y(i) < lo) lo = y(i);
+  const gate = lo + (y(0) - lo) * HURT.gate;
+  let i = 0; while (i < n - 1 && y(i) > gate) i++;
+  return t.times[i] - t.times[0];
+}
 function flipMarks(clip) {
   const t = clip.tracks.find(t => /Hips\.position$/.test(t.name));
   if (!t || t.times.length < 3) return null;
@@ -3680,6 +3792,16 @@ function deriveClips(clips) {
   console.log('[melee] ' + CLIPS.aimPose + ' derived from the first frame of ' + WEAP.aimFrom +
               ' (' + tracks.length + ' tracks)');
 
+  // ---- and the FALL: where in the clip the body is on the floor, which is what the flight
+  //      time is fitted to. Measured once at load; `HURT.beat` is the fallback if it is not
+  //      measurable, and nothing else reads that constant any more.
+  {
+    const c = out.find(c => c.name === HURT.down);
+    HURT.mark = c ? fallMark(c) : 0;
+    if (c) console.log('[melee] ' + c.name + '  dur ' + c.duration.toFixed(3) +
+                       's  on the floor at ' + HURT.mark.toFixed(3) + 's  (u ' +
+                       (HURT.mark / c.duration).toFixed(3) + ')');
+  }
   // ---- the flips: measure both, and lift the backflip's duck out of its own wind-up ----
   for (const k of ['flipAir', 'flipBack']) {
     const c = out.find(c => c.name === CLIPS[k]);
@@ -4806,10 +4928,17 @@ function setWeights(t, dt, snapHL) { skinWeights(rig, t, dt, snapHL, CLIPS.idle)
 // left alone and wrong for one you are re-entering immediately: roll, roll again before the
 // first has faded, and the action is still PAUSED on its last frame, so it sits there applying
 // that frame -- which on a roll is a forward step. The STATE that starts a clip rewinds it.
+// **A NEGATIVE TIME SCALE STARTS AT THE END (m96).** `reset()` puts the action at time 0, which
+// is where a clip played BACKWARDS finishes -- so without this it clamps on its first frame and
+// nothing moves. three's `LoopOnce` handles both ends of `_updateTime`, so a reversed one-shot
+// stops at 0 and `clampWhenFinished` holds it exactly the way a forward one holds its last frame.
+// m89's wall shimmy is the same mechanism (one clip serving both directions); this is the first
+// place it is used on a ONE-SHOT.
 function skinPlay(skin, name, timeScale) {
   const a = skin.actions && skin.actions[name]; if (!a) return 0;
   a.reset(); a.play();
   a.setEffectiveTimeScale(timeScale || 1);
+  if (timeScale < 0) { const c = a.getClip && a.getClip(); if (c) a.time = c.duration; }
   return 1;
 }
 function playOnce(name, timeScale) { return skinPlay(rig, name, timeScale); }
@@ -4829,10 +4958,13 @@ const player = {
   goT: 0,                          // how long he has been asking to move -- the gather
   jump: 0, jumps: 0, fallV: 0,
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
-  hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0,   // the reaction clip, and the knock-down's own clock
+  hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0, knockDur: 0,   // the reaction clip, and the knock-down's own clock
   runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
-  swap: 0, swapTo: 0, swapT: 0, swapDone: 0,   // the reach into the backpack
+  swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0,   // the reach into the backpack
+  // carrying somebody, and throwing him
+  carry: null, grabNear: null, wind: 0, windOn: 0,
+  toss: 0, tossT: 0, tossDur: 0, tossDone: 0, tossK: 0,
   bkT: 0, bkOn: 0, bkHang: 0, bkVy: 0,  // the charge, the duck, and the PUSH he is held on the
                                     // floor for before the launch
   land: 0, landT: 0, landHard: 0,  // the landing state
@@ -5051,12 +5183,194 @@ function applySlot(n) {
 // back out of the bag rather than on the frame of the tap.
 // **AND IT FALLS STRAIGHT THROUGH IF THE CLIP IS NOT THERE** -- no branch to add the day it is
 // re-exported under another name, and none to remove if it goes. `CLIPS.block`'s pattern.
+// **PUTTING ONE AWAY IS THE SAME REACH, BACKWARDS (m96).** *"The animation for swapping weapons,
+// when he goes from having a weapon to no weapon -- I think it's just playing in one direction
+// for every switch, but for that one we should probably play it in reverse."* He is right: there
+// is ONE `weapon_swap` and it is a hand going INTO the bag and coming out with something. Run
+// forward it is a draw; run backwards it is a stow, and that is the whole of the difference.
+// **A NEGATIVE `timeScale` IS the other direction** -- m89's rule, and it needs no second clip
+// because only one direction is ever live at a time and there is nothing to weight against
+// itself. (The wall shimmy's own note, one system over.)
+// **AND `SWAP.at` MIRRORS WITH IT**, which is the half that is easy to miss: forward, the weapon
+// APPEARS when the hand comes back out at u .48; reversed, the hand goes IN at u `1 - .48`, and
+// that is when the weapon has to leave it. Reading the same .48 either way would drop the weapon
+// out of his fist before the hand had got anywhere near the bag.
+// **THE TEST IS THE TARGET, NOT THE PAIR.** `to` naming a slot with no `file` IS "to no weapon",
+// which is his sentence exactly; blaster -> hammer is a stow AND a draw and stays forward,
+// because the reach that matters there is the one that ends holding something.
+// ============================================================================================
+// PICK HIM UP AND THROW HIM (m96, `GRAB`, `grabScan`, `grabGo`, `grabRide`, `tossGo`)
+//
+// *"You just pick him up by being within radius of him. The right stick -- there'll be a ring
+// around it that's the colour of Clancy, so like orange, a rotating ring, and a little icon of
+// his face on the stick so it shows that you can tap to pick him up. To throw him you pull the
+// stick up to wind up and then let go to release."*
+//
+// **NEARLY ALL OF IT WAS ALREADY BUILT, WHICH IS `d.K`'S DIVIDEND FOR THE EIGHTH TIME.** A thrown
+// body is a body with a velocity: `bodyFly` is the integrator (the arc, the wall bounce, the
+// ground stop and the landing thump), `FLYHIT` makes him bowl over whoever he lands on, and his
+// own `falling_to_roll` / `cover_to_stand` are already wired as a knock-down. So the throw is
+// `bodyLaunch` -- the same function a mace uses -- and what is actually new here is the CARRY.
+//
+// **AND THE GESTURE COST NOTHING, BECAUSE A PROMPT IS WHAT MAKES A TAP MEAN SOMETHING ELSE.** The
+// right pad's tap is the jump; while the ring is lit it is the pick-up instead, and that is not
+// a hidden mode because **the ring and the glyph ARE the state**. Carrying, the up-hold is the
+// wind-up rather than the trigger -- which is free, because a man with his hands full has no
+// weapon out to aim.
+const GRAB = {
+  on: 1,
+  range: 2.0,        // centre to centre. He is knee height, so this is "standing over him".
+  // WHERE HE RIDES, and both are facts about the PLAYER's body, so both scale with him (m52).
+  up: .95 * SZ, fwd: .42 * SZ,
+  rate: 1.9,         // `throw_item` is 2.042 s -> **x1.90**, which is inside the band m95 fitted
+                     // the melee clips to (1.4 to 2.0) and is the fast end of it, because a
+                     // throw is a fast action.
+  at: .38,           // where in the clip he leaves the hand. **A GUESS, and marked as one** --
+                     // the taunt beats' rule (m65): a strike has an authored contact frame to
+                     // measure against and a throw does not, and nothing in this container can
+                     // pose a skin. `mel.GRAB.at` is the dial.
+  wind: .85,         // seconds to a full wind-up
+  // and what the wind-up buys. At CLANCY's `flyG` 20 the hang is `2*vy/g`:
+  //     no charge   9.0 m/s out, 3.2 up   ->  0.32 s,  about 2.7 m
+  //     full        24.0        7.5       ->  0.75 s,  about 14 m
+  v0: 9, v1: 24, up0: 3.2, up1: 7.5,
+  minWind: .06,      // under this the release is a fumble and he is simply set down, not thrown
+};
+// ONE DESCRIPTION OF A BODY LEAVING THE GROUND (m96). `dummyBlow` had this inline and the throw
+// wants exactly it -- the tumble, the whoosh, the fall clip, the per-body beat and the two
+// get-up rolls -- so it is a function and there is one place that says what a launch IS. What
+// the CALLER decides is the speed; everything downstream is the body's own.
+function bodyLaunch(d, dirH, vxz, vy) {
+  const K = d.K;
+  d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
+  d.st = 'down'; d.t = 0; d.hp = K.hp;
+  d.vx = Math.sin(dirH) * vxz;
+  d.vz = Math.cos(dirH) * vxz;
+  d.vy = vy;
+  // a TUMBLE, sign random, and the bottom of the range is zero on purpose: a man who simply goes
+  // over backwards is one of the ways this should read.
+  d.spinW = rnd(FLAIL.spin) * (Math.random() < .5 ? -1 : 1);
+  bodyWhoosh(d);
+  d.cur = d.back ? K.clips.downB : K.clips.downF;
+  // **AND THE BEAT IS READ BY BOTH THE CLIP AND THE STATE**, or the state cuts its own clip off
+  // part-way -- the m8 landmine, which is exactly what a per-body beat walks into.
+  d.downB = K.downBeat * rnd(K.downVary || FLAIL.downVary);
+  skinPlay(d, d.cur, skinLen(d, d.cur) / d.downB);
+  d.lie = K.out * rnd(K.outVary || [.62, 1.55]);
+  d.upB = K.upBeat * rnd(K.upVary || [.88, 1.18]);
+}
+// WHO IS IN REACH. Only a body whose kind says he can be picked up, only on his feet -- a man
+// mid-flight or lying in the road is not something you stoop and grab -- and the nearest of them,
+// never the first, so the order `DUMMIES` happens to be stored in cannot decide it (m78's rule).
+function grabScan() {
+  const p = player;
+  if (!GRAB.on || p.carry || p.knock || p.roll || p.wall || !p.grounded) return null;
+  let best = null, bd = GRAB.range * GRAB.range;
+  for (const d of DUMMIES) {
+    if (!d.K.lift || d.held) continue;
+    if (d.st === 'down' || d.st === 'up' || d.st === 'hop' || d.st === 'dive') continue;
+    const dx = d.root.position.x - p.pos.x, dz = d.root.position.z - p.pos.z;
+    const l2 = dx * dx + dz * dz;
+    if (l2 < bd) { bd = l2; best = d; }
+  }
+  return best;
+}
+function grabGo() {
+  const p = player, d = p.grabNear;
+  if (!d || p.carry || p.toss) return 0;
+  p.carry = d; p.wind = 0; p.windOn = 0;
+  d.held = 1; d.st = 'held'; d.t = 0;
+  d.vx = d.vy = d.vz = 0; d.spin = 0; d.spinW = 0;
+  d.catch = 0; d.hopT = 0; d.diveT = 0;         // his own brain is not driving him any more
+  bodyVox(d, 'alarm');                           // the one moment a sidekick has something to say
+  triggerStop(); swapStop();
+  snd('foot', { g: .16, r: .9 });
+  return 1;
+}
+// HE RIDES IN FRONT OF THE PLAYER'S CHEST. Written every frame rather than parented to a bone:
+// the armature is scaled 0.01 and a child of it comes out at a hundredth of its size (m26's own
+// weapon lesson), and this needs no bone anyway because it is a position and a facing.
+function grabRide(d) {
+  const p = player, P = d.root.position;
+  P.x = p.pos.x + Math.sin(p.faceH) * GRAB.fwd;
+  P.z = p.pos.z + Math.cos(p.faceH) * GRAB.fwd;
+  P.y = p.pos.y + GRAB.up;
+  d.h = p.faceH;
+}
+// AND THE RELEASE. The direction is where he is FACING, which while the pad is held up is where
+// the camera looks -- one writer, so the throw goes where you are looking with nothing to keep
+// in step. `tossK` is banked here because the clip fires the launch `GRAB.at` of the way through
+// and the thumb is long gone by then: the picture and its consequence have to be ONE event.
+function tossGo(k) {
+  const p = player;
+  if (!p.carry) return;
+  p.tossK = clamp(k, 0, 1); p.toss = 1; p.tossT = 0; p.tossDone = 0;
+  const nm = CLIPS.toss;
+  if (nm && rig.actions[nm]) { p.tossDur = clipLen(nm) / GRAB.rate; playOnce(nm, GRAB.rate); }
+  else { p.tossDur = .01; }                      // no clip is not a reason for no throw
+}
+function tossFire() {
+  const p = player, d = p.carry;
+  p.tossDone = 1;
+  if (!d) return;
+  const k = p.tossK;
+  d.held = 0;
+  bodyLaunch(d, p.faceH, GRAB.v0 + (GRAB.v1 - GRAB.v0) * k, GRAB.up0 + (GRAB.up1 - GRAB.up0) * k);
+  p.carry = null; p.wind = 0; p.windOn = 0;
+}
+// AND A CARRIED BODY IS SET DOWN RATHER THAN DROPPED THROUGH THE FLOOR, wherever the carry ends
+// for a reason that is not a throw -- being knocked down, rolling, latching to a wall.
+function grabDrop() {
+  const p = player, d = p.carry;
+  if (!d) return;
+  d.held = 0; d.st = 'idle'; d.t = 0;
+  d.root.position.y = groundAt(d.root.position.x, d.root.position.z, d.root.position.y, .5);
+  p.carry = null; p.wind = 0; p.windOn = 0;
+}
+// THE WHOLE STATE, ABOVE `stepKit` -- so a thumb pushed up while carrying is the wind-up and the
+// trigger never sees it. `padUp`'s own four gates, shared rather than re-derived (m46).
+function stepGrab(dt) {
+  const p = player;
+  if (p.toss) {
+    p.tossT += dt;
+    if (!p.tossDone && p.tossT >= p.tossDur * GRAB.at) tossFire();
+    if (p.tossT >= p.tossDur) { p.toss = 0; if (!p.tossDone) tossFire(); }
+  }
+  if (p.carry) {
+    p.grabNear = null;
+    if (p.knock || p.roll || p.wall || p.toss) { if (!p.toss) grabDrop(); }
+    else {
+      const up = padUp(p.windOn);
+      if (up) { p.windOn = 1; p.wind = Math.min(GRAB.wind, p.wind + dt); }
+      else if (p.windOn) {
+        p.windOn = 0;
+        // **A FUMBLE IS NOT A THROW** -- a stray brush of the top of the pad must not launch him,
+        // which is `WEAP.minChg`'s own argument one verb over.
+        if (p.wind >= GRAB.minWind) tossGo(p.wind / GRAB.wind); else p.wind = 0;
+      }
+    }
+  } else {
+    p.grabNear = p.toss ? null : grabScan();
+  }
+  // the ring, the wind and the glyph -- one place, so they cannot disagree about what is on offer
+  const near = !!p.grabNear, hold = !!p.carry;
+  const c = near || hold ? ((p.grabNear || p.carry).K.tint || '#ff8a2b') : '';
+  if (grabRingEl) {
+    grabRingEl.classList.toggle('on', near || hold);
+    if (c) grabRingEl.style.setProperty('--gc', c);
+    grabRingEl.style.setProperty('--gw', hold ? (p.wind / GRAB.wind).toFixed(3) : '0');
+  }
+  if (padR) padR.classList.toggle('grab', near);
+}
+
 function swapGo(to) {
   const p = player, nm = CLIPS.swap;
   if (!nm || !rig.actions[nm]) { applySlot(to); return 0; }
+  const rev = !(WEAP.slots[to] && WEAP.slots[to].file);
   p.swap = 1; p.swapTo = to; p.swapT = 0; p.swapDone = 0;
+  p.swapAt = rev ? 1 - SWAP.at : SWAP.at;
   triggerStop();
-  const r = clipLen(nm) / SWAP.dur;
+  const r = (clipLen(nm) / SWAP.dur) * (rev ? -1 : 1);
   playOnce(nm, r); playOnce(nm + UP, r);       // the clone is a separate action and needs starting
   snd('foot', { g: .12, r: 1.25 });
   return 1;
@@ -5071,7 +5385,8 @@ function swapStop() {
 }
 function cycleKit() {
   const p = player;
-  if (p.swap || p.knock || p.wall) return;     // one at a time, and not out of a knock-down
+  if (p.swap || p.knock || p.wall || p.carry || p.toss) return;   // one at a time, not out of a
+                                              // knock-down, and not with his hands full
   swapGo((p.slot + 1) % WEAP.slots.length);
 }
 
@@ -5729,18 +6044,23 @@ for (const t of ['blur', 'pagehide', 'visibilitychange']) addEventListener(t, ()
 // anything you can carry from one situation to the next.
 // --------------------------------------------------------------------------------------------
 const padL = document.getElementById('padL'), padR = document.getElementById('padR');
+const grabRingEl = document.getElementById('grabRing');
 PADS.L = bindStick(padL, stick.L,
   () => cycleKit(),                                   // tap
   (dx, dy) => rollGo(flickH(dx, dy)),                 // flick: dodge roll, in the flicked direction
   null, null);
 PADS.R = bindStick(padR, stick.R,
-  () => { player.jump = 1; },                         // tap: jump
+  // tap: pick him up if the ring is lit, otherwise jump. The ring IS the state, so this is
+  // not a hidden mode -- and it is the one gesture he named.
+  () => { if (!grabGo()) player.jump = 1; },
   // flick: a SLAM if he is in the air and it went down, otherwise a strike in that direction
-  (dx, dy) => { if (!slamGo(dx, dy)) meleeGo(flickH(dx, dy)); },
+  (dx, dy) => { if (player.carry || player.toss) return; if (!slamGo(dx, dy)) meleeGo(flickH(dx, dy)); },
   null,
   // THE RELEASE IS THE SHOT, so this must NOT clear `p.aim` -- `stepKit` sees the pad is no
   // longer held and fires on that edge. Clearing it here would eat every shot in the game.
-  (far, held, fired) => { backGo(far, fired); chargeRelease(); });
+  // and the duck stands down while he is carrying -- the up-hold is the wind-up there, and a
+  // rest-hold charging a backflip with somebody in his arms is two moves on one thumb.
+  (far, held, fired) => { if (player.carry || player.toss) return; backGo(far, fired); chargeRelease(); });
 
 // ============================================================================================
 // DESKTOP (m79, `DESK`)
@@ -6396,7 +6716,7 @@ function stepPlayer(dt) {
   // rather than every frame past it, which is `p.gotUp`'s own rule one state over.
   if (p.swap) {
     p.swapT += dt;
-    if (!p.swapDone && p.swapT >= SWAP.dur * SWAP.at) { p.swapDone = 1; applySlot(p.swapTo); }
+    if (!p.swapDone && p.swapT >= SWAP.dur * (p.swapAt || SWAP.at)) { p.swapDone = 1; applySlot(p.swapTo); }
     if (p.swapT >= SWAP.dur) p.swap = 0;
   }
   // HOW LONG HE HAS ACTUALLY BEEN RUNNING, which is what the tackle opener is gated on. It is
@@ -6410,12 +6730,16 @@ function stepPlayer(dt) {
   //      `playOnce` rewinds it on every frame past it and he never stands.
   if (p.knock) {
     p.knockT += dt;
-    if (!p.gotUp && p.knockT >= HURT.beat && rig.actions[HURT.up]) {
+    // **AND THE STATE READS THE SAME LENGTH THE CLIP WAS SCALED BY (m96)**, which is the m8
+    // landmine and is exactly what a per-launch rate walks into: `p.knockDur` is set where the
+    // rate is, so the fall cannot end with a third of its clip still to run.
+    const kd = p.knockDur || HURT.beat;
+    if (!p.gotUp && p.knockT >= kd && rig.actions[HURT.up]) {
       p.gotUp = 1; playOnce(HURT.up, clipLen(HURT.up) / HURT.upBeat);
     }
     // **AND IT IS NOT CANCELLABLE.** A get-up you can nudge out of is a get-up nobody ever sees,
     // which is m8's lesson about a state that cuts its own clip short.
-    if (p.knockT >= HURT.beat + HURT.upBeat) { p.knock = 0; p.goT = 0; }
+    if (p.knockT >= kd + HURT.upBeat) { p.knock = 0; p.goT = 0; }
   }
   if (p.land) {
     p.landT += dt;
@@ -6731,8 +7055,14 @@ function rigAnim(dt) {
   // bone is claimed exactly once and they COMPOSE -- he walks with his legs and reaches with his
   // arms. **The two at full `rest` summing to 2 is correct here and only here**: they are
   // disjoint. Averaging two clips that both key an arm is what m19 paid a build for.
-  const sw = p.swap && rig.actions[CLIPS.swap + UP];
-  if (sw) add(CLIPS.swap + UP, rest, 0);
+  // **AND THE CARRY AND THE THROW ARE THE SAME SLOT (m96).** Three things now want the top half
+  // over a walking pair of legs -- the reach, the hold and the throw -- and they are mutually
+  // exclusive by construction (you cannot throw what you are not carrying, and a swap is refused
+  // while carrying). One override with a priority, rather than three branches that would each
+  // have to know about the other two.
+  const upNm = p.toss ? CLIPS.toss : p.swap ? CLIPS.swap : p.carry ? CLIPS.hold : '';
+  const sw = upNm && rig.actions[upNm + UP];
+  if (sw) add(upNm + UP, rest, 0);
   const L = n => (sw && rig.actions[n + LEGS] ? n + LEGS : n);
   add(L(CLIPS.idle), wIdle * rest, 0);
   add(L(CLIPS.walk), wWalk * rest, GAIT.walkRef);
@@ -8008,8 +8338,6 @@ function dummyBlow(d, dirH, power, dmg, pal) {
   }
   // OVER HE GOES. Ballistic, and the GROUND ends the flight rather than a timer -- a timer
   // drops him through whatever he was thrown onto and leaves him hanging over a hole.
-  d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
-  d.st = 'down'; d.t = 0; d.hp = K.hp;
   // how hard he goes is graded above whichever threshold actually tripped, squared -- a linear
   // ramp spends most of its range looking the same and the top is the part worth having
   const lo = Math.min(K.hard, K.fling !== undefined ? K.fling : K.hard);
@@ -8017,32 +8345,11 @@ function dummyBlow(d, dirH, power, dmg, pal) {
   const k = K.fly0 !== undefined ? K.fly0 + (1 - K.fly0) * t * t : .55;
   // **EVERY MAN GETS HIS OWN ARC AND HIS OWN CLOCK (m78).** Rolled HERE rather than at spawn, so
   // the same three do not fly the same way twice -- m50's own rule, one event earlier.
+  // **AND THE REST OF IT IS `bodyLaunch` (m96)**, which is the same function the THROW calls: the
+  // tumble, the whoosh, the fall clip, the per-body beat and the two get-up rolls are what a body
+  // leaving the ground IS, and they belong in one place rather than in every caller.
   const fk = k * rnd(K.flyVary || FLAIL.flyVary);
-  d.vx = Math.sin(dirH) * K.flyV * fk;
-  d.vz = Math.cos(dirH) * K.flyV * fk;
-  d.vy = K.flyUp * fk;
-  // a TUMBLE, sign random, and the bottom of the range is zero on purpose: a man who simply goes
-  // over backwards is one of the ways this should read, and a street where everybody spins is as
-  // uniform as a street where nobody does.
-  d.spinW = rnd(FLAIL.spin) * (Math.random() < .5 ? -1 : 1);
-  bodyWhoosh(d);
-  d.cur = d.back ? K.clips.downB : K.clips.downF;
-  // **AND THE BEAT IS READ BY BOTH THE CLIP AND THE STATE**, or the state cuts its own clip off
-  // part-way -- the m8 landmine, which is exactly what a per-body beat walks into.
-  d.downB = K.downBeat * rnd(K.downVary || FLAIL.downVary);
-  skinPlay(d, d.cur, skinLen(d, d.cur) / d.downB);
-  // **NOBODY GETS UP ON THE SAME FRAME (m50).** *"If I shoot them all three down at the same
-  // time they all get up at the exact same time. I think we should stagger it by a different
-  // small amount so that it feels more random."* `K.out` was a CONSTANT, so three men knocked
-  // down together stood up together, in step, for ever -- which reads as one animation played
-  // three times rather than three men.
-  // **ROLLED HERE, NOT AT SPAWN**, so the same three do not stagger in the same order every
-  // fight. And it is TWO numbers, because lying there longer and standing up slower are
-  // different things and he asked for the RATE as well: `d.lie` is how long he stays down,
-  // `d.upB` is how long the get-up takes, and the state reads both off the BODY rather than
-  // off the kind.
-  d.lie = K.out * rnd(K.outVary || [.62, 1.55]);
-  d.upB = K.upBeat * rnd(K.upVary || [.88, 1.18]);
+  bodyLaunch(d, dirH, K.flyV * fk, K.flyUp * fk);
 }
 
 // ============================================================================================
@@ -8558,10 +8865,10 @@ function foeMove(d, h, sp, dt) {
 function bodySep(dt) {
   for (let i = 0; i < DUMMIES.length; i++) {
     const a = DUMMIES[i];
-    if (a.st === 'down') continue;
+    if (a.st === 'down' || a.held) continue;     // a carried body is not on the street (m96)
     for (let j = i + 1; j < DUMMIES.length; j++) {
       const b = DUMMIES[j];
-      if (b.st === 'down') continue;
+      if (b.st === 'down' || b.held) continue;
       const rr = (a.K.sep || a.K.r) + (b.K.sep || b.K.r);
       let dx = b.root.position.x - a.root.position.x, dz = b.root.position.z - a.root.position.z;
       const l2 = dx * dx + dz * dz;
@@ -8653,22 +8960,36 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
   // single mace hit is the "being unable to move is the least fun state" note one step further
   // on. `mel.hurt()` passes 1 and still always launches.
   if (knock && Math.random() < knock && !guard && p.knockCool <= 0) {
-    const vy = Math.sqrt(2 * MOVE.g * HURT.hi);
-    p.vel.x = Math.sin(dirH) * HURT.back;
-    p.vel.z = Math.cos(dirH) * HURT.back;
+    // **THE ARC IS ROLLED AND THE CLIP IS FITTED TO IT (m96).** One `k` drives the height AND the
+    // distance, so a harder blow is higher and farther rather than one or the other -- and
+    // because the hang time falls out of the same number, the fall clip's rate does too.
+    const k = rnd(HURT.vary);
+    const vy = Math.sqrt(2 * MOVE.g * HURT.hi) * k, bk = HURT.back * k;
+    p.vel.x = Math.sin(dirH) * bk;
+    p.vel.z = Math.cos(dirH) * bk;
     p.vel.y = vy;
     p.grounded = false; p.coyote = 0; p.airT = 0;
     p.knock = 1; p.knockCool = HURT.again; p.knockT = 0; p.gotUp = 0;
     // **THE FALL STARTS HERE, NOT ON THE LANDING.** That is the whole of the fix: the clip runs
     // from the blow, through the flight, into the ground, and there is nothing left to blend
     // into when he arrives because he has been going down the entire time.
-    if (rig.actions[HURT.down]) playOnce(HURT.down, clipLen(HURT.down) / HURT.beat);
+    // **AND THE RATE IS SOLVED SO THE POSE ARRIVES FIRST.** `HURT.mark` is how long the clip
+    // needs to put him on the floor and `2*vy/g` is how long he is in the air, so the rate that
+    // lands the two together is `mark / (air * lead)` -- clamped to the band a fall stays
+    // readable in, which is the warrior's own x1.6 to x2.5.
+    const dur = clipLen(HURT.down);
+    const air = 2 * vy / MOVE.g;
+    const rate = HURT.mark > 0 ? clamp(HURT.mark / Math.max(.05, air * HURT.lead),
+                                       HURT.rateMin, HURT.rateMax)
+                               : dur / HURT.beat;
+    p.knockDur = rate > 0 ? dur / rate : HURT.beat;
+    if (rig.actions[HURT.down]) playOnce(HURT.down, rate);
     // and it CANCELS what he was doing, or a man launched mid-strike goes on lunging through
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
     p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.bkHang = 0; p.hurtNm = ''; p.meleeAir = 0;
     p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool; swapStop();
-    whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
+    whooshSnd(Math.hypot(bk, vy), p.pos.x, p.pos.z);
   } else {
     p.vel.x += Math.sin(dirH) * push;
     p.vel.z += Math.cos(dirH) * push;
@@ -8879,6 +9200,12 @@ function stepDummies(dt) {
           skinPlay(d, d.cur, 1);
         }
       }
+    } else if (d.st === 'held') {
+      // **CARRIED (m96).** His brain is not driving him: he is written to the player's own hands
+      // every frame and holds his air pose, which is the nearest thing to "being carried" in his
+      // export and reads as a small body off the ground.
+      grabRide(d);
+      t[K.clips.air || K.clips.idle] = 1;
     } else if (K.ai) {
       foeAI(d, dt, t);
     } else {
@@ -9007,7 +9334,8 @@ function frame() {
 
   if (rig.ready) {
     stepAim(dt);          // one eased answer, before anything reads it
-    stepKit(dt);
+    stepGrab(dt);
+    if (!player.carry && !player.toss) stepKit(dt);
     stepPlayer(dt);
     stepDummies(dt);
     stepShe(dt);
@@ -9044,7 +9372,13 @@ function frame() {
     const p = player;
     // A SWING THAT CONNECTED SAYS SO. "It hit him before the swing" and "it never reached him"
     // are opposite bugs and identical from a phone, and the sweep can now produce either.
-    const st = p.swap ? 'SWAP' + (p.swapDone ? '\u2713' : p.swapT.toFixed(2))
+    // **AND THE CARRY SAYS WHICH OF THE THREE IT IS (m96)** -- "the ring never lit", "it lit and
+    // the tap jumped" and "he threw and nothing left his hands" are three bugs with one picture
+    // from a phone. `HOLD0.62` is wound to 62%, `TOSS0.31` is the clip running.
+    const st = p.toss ? 'TOSS' + (p.tossDone ? '\u2713' : p.tossT.toFixed(2))
+             : p.carry ? 'HOLD' + (p.wind / GRAB.wind).toFixed(2)
+             : p.grabNear ? 'GRAB'
+             : p.swap ? 'SWAP' + (p.swapDone ? '\u2713' : p.swapT.toFixed(2))
       : p.wall ? 'WALL' + (p.wallSt === 'in' ? '\u2193' : p.wallSt === 'out' ? '\u2191'
                  : p.wallSide > 0 ? '\u2192' : p.wallSide < 0 ? '\u2190' : '\u00b7')
       : p.roll ? 'roll'
