@@ -1040,6 +1040,120 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A RE-EXPORT RENAMED A CLIP AND TOOK A WHOLE FEATURE WITH IT (m95, `backflip`).** *"I pushed a
+  new zap model, new animations, way more melees, I put in a hold item and throw, I put in a block
+  and block react."* One file, replaced in place: 45 clips to 54, and **`Backflip` came back as
+  `backflip`**. It is a NAME in three places and `CLIPS.flipBack` was still spelling it the old
+  way, so the backflip, the charged duck and the whole of m87 were **gone** the moment he pushed.
+  **AND THE ONLY THING THAT WOULD HAVE SAID SO IS ONE WORD IN THE CHIP.** `NO CLIP Backflip`,
+  which is m88's table check doing its job -- and *"the backflip stopped working"* and *"the
+  backflip never worked"* are one picture from a phone. **Read the export before playing it.**
+  **AND THREE OF THE FOUR MOVES ARE RENAMES, MATCHED BY DATA RATHER THAN BY NAME** -- m86's rule,
+  per-bone rotation travel against the old file, and the second time it has paid here:
+      backflip         == old `Backflip`          cos **1.0000**  (next best .9585)
+      melee_extra      == old `melee_01`          cos **1.0000**  (next best .8499)
+      weapon_melee_02  == old `weapon_melee_01`   cos **1.0000**  (next best .8928)
+      melee_01         genuinely NEW -- best match .9496, which is nothing
+      weapon_melee_01  genuinely NEW -- best match .9301
+      the old `weapon_melee_02` (1.667 s, hips .156) is simply GONE
+  Duration, key count, moving-bone count and hips travel all agree to the digit on each pair.
+  **`MELEE.clip`'s 360 OVERRIDE STILL POINTS AT THE SAME ANIMATION** (`weapon_melee_04`, 1.0000
+  with itself), so m94's numbers survived the re-export -- checked, not assumed.
+
+- **`hurricane_kick` IS BROKEN IN THE EXPORT AND IS NOT WIRED (m95).** 62 rotation channels and
+  **61 of them have ZERO travel**: only `mixamorig_Hips` moves, 1440 degrees of it. That is a man
+  in a fixed pose rotating about his hips, not a kick. `npm run clips` flags it as **1 moving
+  bone** against 44 on every other melee, which is the tell -- and it is the one case where a
+  metric that asks *"does this track change"* is exactly the right question, because the answer
+  is no on every limb. Nothing else in the file has it. **It wants a re-export; wiring it would
+  put a spinning statue in the chain.**
+
+- **THE CHAIN IS A LENGTH AND THE CLIPS ARE DEALT OUT OF A POOL (m95, `MELEE.links`,
+  `p.meleeRoll`).** *"way more melees"* -- six unarmed now and four armed. Letting the chain BE
+  the pool is the obvious move and it is wrong twice over: six links at a readable rate is about
+  five seconds of watching, which is m36's *"a chain is not a film"*; and `power` is graded across
+  the chain, so a six-link chain puts a man over on every SIXTH blow where today it is every
+  third. **The tempo and the strength belong to the CHAIN; the clips belong to the POOL.**
+  Three links, dealt in order, advanced by a WHOLE chain each time -- so consecutive chains share
+  no clip and nothing comes round again until the pool is spent. Six unarmed clips are exactly
+  two chains; four armed ones walk round every time:
+      CHAIN 1  melee_01 melee_02 melee_03      2.93 s      ARMED 1  01 02 03
+      CHAIN 2  melee_04 melee_05 melee_extra   2.29 s      ARMED 2  04 01 02
+  **Advancing by ONE would make the second and third blows of a chain the first and second of the
+  next**, which reads as repetition rather than as variety.
+  **AND THE SEED IS NEGATIVE, SO THE DEAL IS NORMALISED.** `meleeRoll` starts at `-MELEE.links` so
+  the first fresh chain advances onto clip 0 rather than past it, and JS `%` keeps the sign -- a
+  bare `pool[(roll + ix) % len]` is `pool[-1]`, which is `undefined`, which is `NO CLIP undefined`.
+
+- **THE BEAT COMES OFF THE CLIP'S OWN LENGTH (m95, `MELEE.rate`, `melBeat`).** m94 wrote the
+  sentence -- *a beat belongs to the clip, not to a chain position* -- and typed ONE entry for the
+  360. With ten melee clips, typing ten is a constant somebody has to remember, which is not a
+  mechanism. `MELEE.clip` stays as the override; everything else is `duration / rate`.
+  **AND `rate` IS FITTED TO THE BAND THE SHIPPED CLIPS ARE ALREADY JUDGED AT, NOT PICKED.** Today
+  `melee_extra` runs at x1.55 and `melee_03` at x2.02; m36 threw out 3x as *"a blur with no pose
+  in it"*; m94 chose x1.37 for the 360 because x2.13 was *"slow that one down"*. So the honest
+  window is about 1.4 to 2.0 and 1.75 is the middle of it.
+  **THE NUMBER TO WATCH IS THE CHAIN'S LENGTH IN SECONDS, AND IT IS WHY 1.5 WAS WRONG.** My first
+  pass used 1.5 and a three-punch chain came to **3.24 s** -- longer than the 2.3 s m36 threw out
+  as watching rather than playing, because his new clips are long (2.208 s and 1.917 s against the
+  old pool's 0.958). Caught by running the arithmetic before shipping it, not by reading it.
+  **`melee_01` IS TWICE THE LENGTH OF ANYTHING ELSE IN THE POOL**, and whether it reads as an
+  OPENER is a device question -- nothing in this container can pose a skin. Moving it down the
+  pool is one edit if it turns out to be the heavy one.
+
+- **AND `power` WAS A THREE-SLOT ARRAY ON A CHAIN THAT HAD ALREADY OUTGROWN IT (m95, `melPower`).**
+  It was read `[Math.min(ix, len - 1)]` exactly as `beat` and `lunge` were before m94 -- so every
+  link past the third inherited the finisher's 1.0, and 1.0 clears every kind's `fling`, which is
+  a LAUNCH. **That was already live and nobody had looked**: the armed pool has been four long
+  since m86, so links 3 AND 4 have both been finishers for nine builds. At six unarmed it would
+  have been four of them, and the chain would never once have reached link 5.
+  **THE FINISHER IS THE LAST BLOW, WHICH IS A FACT ABOUT POSITION RELATIVE TO LENGTH**, so the
+  three entries are read as what they are -- open / build / finish -- and everything between the
+  first and the last is graded. **It is a NO-OP on a three-link chain**, which is the check that
+  says it cannot have disturbed what is already tuned:
+      n = 3   .450  .520  1.000          <- byte for byte the old array
+      n = 6   .450  .468  .485  .503  .520  1.000
+  and every real `fling` is .55 or over, so only the last one puts a man over.
+
+- **THE GUARD HAS A CLIP, AND THE LINE WRITTEN FOR IT WAS THE ONE THAT WOULD HAVE BROKEN IT
+  (m95, `CLIPS.block`).** *"I put in a block and block react."* m37 wrote `CLIPS.block: ''` as a
+  hook and this is what it was for -- `weapon_block` is a held pose (1.833 s, 20 degrees of drift)
+  and `weapon_block_reaction` is a real react (left arm and forearm absorbing, 162 and 153 of
+  travel). Naming them is nearly the whole change. **Nearly.**
+  **A LINE SAT IN `rigAnim` THAT PLAYED THE BLOCK CLIP WHOLE AND RETURNED** -- written when the
+  name was empty, so it could never fire, so it cost nothing and looked right. The moment the clip
+  landed it would have short-circuited the committed branch sixty lines down, which is the one
+  built for exactly this: a `SPLIT.up` pose over strafing `__legs`. What that gets you is a statue
+  sliding sideways, with the good path sitting right there unreachable. **m19's shape -- two
+  places answering one question, and the one that runs is the worse one.**
+  **A BRANCH THAT CANNOT FIRE YET IS NOT A BRANCH THAT WORKS**, and naming a clip is exactly when
+  it stops being free. The line is gone and `'block'` is in `SPLIT.up`, so the guard composes the
+  way every other committed pose does.
+  **`HURT.hits` IS THE REACT NOW, AND m91 SAID IT WOULD BE.** With `FOE.knock` at 1 every
+  unblocked blow launches him, so `hits` is ONLY ever reached through a raised guard -- which
+  means a guard react is literally what that field is. `stagger` .80 -> **.95**, because the clip
+  is 1.333 s and .80 is x1.67: m37's rule, a blow too fast to read is the same blow every time.
+  The two `take_damage_*` clips stay in the file and are one word from coming back.
+  **AND IT IS THE ARMED PAIR STANDING IN FOR THE UNARMED GUARD.** There is one block clip and one
+  react, and a man with his fists up is not a man with a hammer up -- but a guard that reads
+  slightly wrong beats a guard that reads as the idle, which is what he had. Drawing an unarmed
+  pair is two strings and no branch.
+
+- **THE CHIP SAYS WHICH CLIP, NOT ONLY WHICH LINK (m95).** The chain is dealt out of a pool now,
+  so the link number no longer identifies the animation -- and *"that one connects at the wrong
+  part of the swing"* is a sentence about a CLIP. `melee2/05@0.62!` is link two, playing
+  `melee_05`, blow fired at u 0.62, connected. m94's `@u` half and this half together turn a
+  report about an animation into two numbers.
+
+- **NOT DONE, AND EACH FOR A REASON (m95).** `hold_item` (3.333 s, 5 degrees of drift -- a HELD
+  pose) and `throw_item` (2.042 s, right arm leading at 487 of travel -- a real throw) are a new
+  VERB PAIR, and there is no item in this game to hold or throw: no pickup, no carried entity, no
+  slot for one. **That is a build, not a rider on this one**, and the open question is the
+  GESTURE -- the control map is full (left pad the body, right pad the verb; tap, hold, flick and
+  drag all spent), so the honest candidates are a left-pad hold-in-place, which is the one
+  unassigned thing on either pad, or a kit slot. `driving` (5.000 s, 8 bones, 13 degrees) is a
+  seated pose with no vehicle, and `hurricane_kick` is broken at source, above.
+
 - **A BLOW YOU CAN SEE LAND, AND THE SWEEP HAD KNOWN EXACTLY WHERE SINCE m20 (m94, `MFX`,
   `meleeHit`, the limb trail).** *"The sound adds a lot to the illusion of melee connection, but
   with the sound off, when I'm swinging my gun on the melee stick it doesn't feel like you're

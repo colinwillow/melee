@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m94</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m95</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m94</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m95</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,9 +450,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm94';
+const BUILD = 'm95';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -681,7 +681,7 @@ const AIR = {
   // ---- and the three landmarks in a flip clip are MEASURED, never typed ----
   // The hips carry the body's height off the ground, so a standing flip reads as a dip, a peak
   // and a second dip: the CROUCH it winds up through, the APEX, and the LANDING absorb. Taking
-  // them off the curve means `Backflip`'s wind-up is found rather than trimmed by hand, and a
+  // them off the curve means `backflip`'s wind-up is found rather than trimmed by hand, and a
   // re-export at any length lands right with no edit.
   scan: .45,          // the crouch is the lowest hips inside this much of the clip -- and on a
                       // clip with no wind-up that argmin is t=0, so it needs no threshold
@@ -813,6 +813,35 @@ const MELEE = {
   // are: readable, and still short enough that a chain is not a film. **The real fix is the
   // clips** -- see the note under `STRIKE` about the dash-and-pose set he is drawing.
   beat: [.62, .68, .82],
+  // **A CHAIN IS A LENGTH AND THE CLIPS ARE DEALT OUT OF THE POOL (m95).** *"way more melees"* --
+  // and the obvious move, letting the chain BE the pool, is wrong twice over. Six links at a
+  // readable rate is about five seconds of watching, which is m36's "a chain is not a film"; and
+  // `power` is graded across the chain, so a six-link chain means a man only goes over on every
+  // SIXTH blow where today it is every third. **The tempo and the strength belong to the chain;
+  // the clips belong to the pool.** Three links, dealt in order and advanced by a whole chain
+  // each time, so no clip comes round again until every one has been used -- six unarmed clips
+  // are exactly two chains, and four armed ones walk round every time.
+  links: 3,
+  // **AND THE BEAT COMES OFF THE CLIP'S OWN LENGTH (m95).** m94 wrote the sentence and typed one
+  // entry: a beat belongs to the clip, not to a chain position. With ten melee clips now, typing
+  // ten is a constant somebody has to remember, which is not a mechanism -- so the beat is the
+  // clip's duration at a fixed compression, and `MELEE.clip` stays as the override for anything
+  // that wants its own.
+  // **AND `rate` IS FITTED TO THE BAND THE SHIPPED CLIPS ARE ALREADY PLAYED AT, NOT PICKED.**
+  // Today `melee_extra` runs at x1.55 and `melee_03` at x2.02, m36 rejected 3x as "a blur with
+  // no pose in it", and m94 chose x1.37 for the 360 because x2.13 was "slow that one down". So
+  // the honest window is about 1.4 to 2.0 and this sits in the middle of it.
+  // **A CHAIN'S LENGTH IN SECONDS IS THE THING TO WATCH, and it is why 1.5 was wrong.** At 1.5
+  // a three-punch chain came to **3.24 s** -- longer than the 2.3 s m36 threw out as watching
+  // rather than playing, because his new clips are long (2.208 s and 1.917 s against the old
+  // pool's 0.958). At 1.75 it is 2.93 s and 2.29 s for the two hands.
+  //     melee_01 2.208s -> 1.26   melee_02 1.542 -> 0.88   melee_03 1.375 -> 0.79
+  //     melee_04 1.917  -> 1.10   melee_05 1.125 -> 0.64   melee_extra 0.958 -> 0.55 (the floor)
+  //     weapon_melee_01 1.333 -> 0.76   _02 1.167 -> 0.67   _03 1.708 -> 0.98   _04 overridden
+  // **`melee_01` IS TWICE THE LENGTH OF ANYTHING ELSE IN THE POOL** and whether it reads as an
+  // OPENER is a device question -- nothing here can pose a skin. Moving it down the pool is one
+  // edit if it turns out to be the heavy one.
+  rate: 1.75, beatMin: .55, beatMax: 1.30,
   // WHERE IN THE CLIP THE BLOW LANDS, per strike. Firing on the INPUT frame puts the
   // consequence a third of a second before the hand gets there, and a swing and its effect
   // arriving as two events is what "you cannot actually hit things" looks like from outside.
@@ -913,6 +942,18 @@ const MELEE = {
   finishRange: 26,     // how far the charged swing may ACQUIRE. A little past `finishReach` on
                        // purpose, and no further: a lock it cannot deliver is worse than none.
   // and what each one is worth. The finisher and the charged swing put him down outright.
+  // **AND THE ESCALATION IS A RAMP OVER THE CHAIN, NOT A THREE-SLOT ARRAY (m95).** `power` was
+  // read `[Math.min(ix, len - 1)]` like `beat` and `lunge` were before m94, so EVERY link past
+  // the third inherited the finisher's 1.0 -- and 1.0 clears every kind's `fling`, so it is a
+  // launch. That was already live and nobody had looked: the ARMED pool has been four long since
+  // m86, so links 3 AND 4 have both been finishers. With the unarmed pool at six it would have
+  // been four of them. **The finisher is the LAST blow, which is a fact about chain POSITION
+  // relative to LENGTH** -- so the three entries are read as what they are (open / build /
+  // finish) and everything between the first and the last is graded.
+  // It is a NO-OP on a three-link chain, which is the check that says it cannot have disturbed
+  // what is already tuned: 0 -> .45, 1 -> .52, 2 -> 1.0, exactly the old array.
+  //     n = 6   .45  .464  .478  .492  .506  1.00   -- and every real `fling` is .55 or over,
+  //                                                    so only the last one puts a man over
   power: [.45, .52, 1.0],
   // **A BEAT, A CONTACT FRAME AND A LUNGE BELONG TO THE CLIP, NOT TO A CHAIN POSITION (m94).**
   // *"There's a spinning melee, and the actual arc of the spin where he's doing the attack --
@@ -2245,9 +2286,15 @@ const HURT = {
   // because the poses were not drawn and the STATES ran regardless -- he flew, landed and got
   // up with `landing_hard` standing in for all of it. This is what that hook was for, and it
   // needed no new state: naming the clips is the change.
-  hits: ['take_damage_head', 'take_damage_body'],
-  stagger: .80,   // how long a reaction READS for. m37's lesson: a blow too fast to see is the
-                  // same blow every time, and these clips are 0.83 s and 1.46 s at 1x.
+  // **AND IT IS THE REAL BLOCK REACT NOW (m95).** *"I put in a block and block react."* m91
+  // pointed this at `take_damage_head`/`_body` as the stand-in, and said so: with `FOE.knock` at
+  // 1 every unblocked blow launches him, so `hits` is ONLY ever reached through a raised guard --
+  // which means a guard react is literally what this field is. The two `take_damage_*` clips stay
+  // in the file and are one word from coming back.
+  hits: ['weapon_block_reaction'],
+  stagger: .95,   // how long a reaction READS for. m37's lesson: a blow too fast to see is the
+                  // same blow every time -- and the clip is 1.333 s, so this is x1.40 rather than
+                  // the x1.67 the old .80 would have compressed it to.
 
   // **THE KNOCK-DOWN IS ONE CLIP FROM THE BLOW TO THE GET-UP, WHICH IS WHAT THE WARRIORS HAVE
   // ALWAYS DONE (m90).** *"The warrior aliens fly through the air and land perfectly on the
@@ -2381,24 +2428,35 @@ const CLIPS = {
   // `fist` as a borrowed third punch, and the unarmed set is `melee_01` / `melee_03` with no
   // `melee_02` drawn yet. A four-link chain needs nothing: `beat`, `lunge` and `power` are all
   // read with `Math.min(ix, len - 1)`, so the fourth link inherits the finisher's numbers.
-  fist: ['melee_01', 'melee_03'],
+  // **SIX OF THEM NOW (m95).** *"way more melees"* -- and the old `melee_01` is in here as
+  // `melee_extra`: matched by DATA rather than by its name, a per-bone rotation-travel cosine
+  // of **1.0000** against the old export (next best .8499), same 0.958 s, same 24 keys, same
+  // 0.085 of hips travel. The new `melee_01` is genuinely new (best match .9496, which is
+  // nothing). `weapon_melee_02` is the old `weapon_melee_01` the same way -- 1.0000 -- and the
+  // old `weapon_melee_02` is simply gone. **When a clip is renamed, the animation data is what
+  // says which one it is**, which is m86's rule and the second time it has paid here.
+  fist: ['melee_01', 'melee_02', 'melee_03', 'melee_04', 'melee_05', 'melee_extra'],
   weap: ['weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_04'],
   chargeUp: 'weapon_melee_charge', chargeGo: 'weapon_melee_finish',
   // THE TWO FLIPS, AND THE DUCK IS DERIVED FROM THE BACKFLIP'S OWN WIND-UP (m87). `backPose` is
-  // not in the file: it is one key lifted from the deepest frame of `Backflip`'s crouch, so the
+  // not in the file: it is one key lifted from the deepest frame of `backflip`'s crouch, so the
   // release continues from the very frame the hold was sitting on and there is no seam to blend
   // over. Same trick as `aimPose`, at a measured time rather than at frame zero.
-  flipAir: 'front_flip', flipBack: 'Backflip', backPose: 'backCrouch',
+  flipAir: 'front_flip', flipBack: 'backflip', backPose: 'backCrouch',
   // HE REACHES INTO HIS BACKPACK (m91). *"I now have an animation where he reaches into his
   // backpack, so we need to use this every time he swaps weapons or takes one out or puts one
   // away."* It is an UPPER-BODY action, so it is a `SPLIT.up` pose over the ordinary gait's
   // `__legs` clones -- he keeps walking, which is what reaching into a bag while you move is.
   swap: 'weapon_swap',
-  // **EMPTY, AND THAT IS THE HOOK.** *"I know I don't have a block animation yet, but I'll put
-  // one in."* Name it here and `rigAnim` blends it in at full weight while the guard is up; an
-  // empty name falls through to the gait with no branch to add, which is how `GAIT.sprint` and
-  // `HANG.clip` are written one repo over.
-  block: '',
+  // **NAMED AT LAST (m95).** *"I put in a block and block react etc."* m37 wrote this empty on
+  // purpose -- *"I know I don't have a block animation yet, but I'll put one in"* -- and the
+  // machinery has been sitting behind it ever since. It is a `SPLIT.up` pose over strafing
+  // legs, exactly as that note said it would be, so naming it is the whole change.
+  // **AND IT IS THE ARMED PAIR STANDING IN FOR THE UNARMED GUARD.** There is one block clip
+  // and one react, and a man with his fists up is not a man with a hammer up -- but a guard
+  // that reads slightly wrong beats a guard that reads as the idle, which is what he had.
+  // Drawing an unarmed pair is two strings here and no branch anywhere.
+  block: 'weapon_block',
   // **AND SO ARE THESE (m53).** *"I do need to add some animations for when he turns, if we
   // don't already have turn left / turn right, because he just rotates, not moving his feet at
   // all -- and that would be the time to use those."* **He does not have them**: read straight
@@ -2446,7 +2504,7 @@ const isUpper = name => {
 };
 const UP = '__up', LEGS = '__legs';
 const SPLIT = {
-  up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo', 'swap'],
+  up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo', 'swap', 'block'],
   legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR'],
 };
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
@@ -2454,10 +2512,19 @@ const SPLIT = {
 const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_melee_charge',
   'melee_01', 'melee_03',
   'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_04', 'weapon_melee_finish',
-  // m87/m88: the flips, the duck, the two new openers, and the three reaction poses. `Backflip`
+  // m87/m88: the flips, the duck, the two new openers, and the three reaction poses.
+  // **`Backflip` IS `backflip` AS OF m95** -- a pure rename in his re-export, confirmed by a
+  // per-bone rotation-travel cosine of 1.0000 against the old file with the same 2.167 s and
+  // the same 53 keys. It is a NAME in three places (`CLIPS.flipBack`, here, and `FLIP`'s key
+  // off `flipBack`), and until it was fixed the backflip, the duck and the whole of m87 were
+  // simply gone -- the chip would have said `NO CLIP Backflip` and nothing else would.
+  // `backflip`
   // and `front_flip` have to be here or the mixer wraps them and he flips for ever; `laying_down`
   // is ONE KEY and the whole of what `clampWhenFinished` is for.
-  'front_flip', 'Backflip', 'backCrouch', 'slide_kick', 'flying_kick',
+  'front_flip', 'backflip', 'backCrouch', 'slide_kick', 'flying_kick',
+  // m95: the five new unarmed melees and the block REACT. The guard itself is a HELD pose
+  // and loops, so it is deliberately not here.
+  'melee_02', 'melee_04', 'melee_05', 'melee_extra', 'weapon_block_reaction',
   // the two wall TRANSITIONS are one-shots; the two shimmies are LOOPS and must not be here
   'idle_to_wall_cover_right', 'wall_cover_left_to_stand',
   // the reach, and its upper-half clone -- a split one-shot holds its last frame exactly
@@ -3560,7 +3627,7 @@ function deDrift(clip) {
 // one function along.
 // --------------------------------------------------------------------------------------------
 // WHERE THE CROUCH, THE APEX AND THE LANDING ARE IN A FLIP CLIP -- read off the Hips height
-// rather than typed, so `Backflip`'s half-second of wind-up is FOUND and a re-export moves it.
+// rather than typed, so `backflip`'s half-second of wind-up is FOUND and a re-export moves it.
 const FLIP = {};
 function flipMarks(clip) {
   const t = clip.tracks.find(t => /Hips\.position$/.test(t.name));
@@ -4773,6 +4840,7 @@ const player = {
   roll: 0, rollT: 0, rollH: 0,
   melee: 0, meleeIx: 0, meleeT: 0, meleeDur: 0, meleeChain: 0, meleeName: '',
   charge: 0, chargeT: 0, chargeGo: 0, chargeGoT: 0, chargeGoK: 1,
+  meleeRoll: -MELEE.links, meleeLinks: MELEE.links,
   aim: 0, armT: 0, chg: 0, fireT: 0, autoT: 0, block: 0, blockT: 0, center: 0, centerT: 0, lock: null, melFired: 0, melU: 0, melV: 0, melTgt: null, melQ: null,
   camWant: null,                   // a bearing the lens is easing onto after a strike. Spent in `stepCam`, the ONE writer.
   slam: 0, slamT: 0, slamDur: 0, slamUsed: 0,
@@ -5013,6 +5081,23 @@ function meleeChain() { return CLIPS[slotNow().melee] || CLIPS.fist; }
 // travel cannot end up reading two different tables. Absent means the chain index decides, which
 // is every clip but the 360 today.
 const clipOf = nm => (MELEE.clip && MELEE.clip[nm]) || null;
+// THE BEAT A CLIP WANTS: its own length at `MELEE.rate`, or its override, or -- if the clip is
+// not loaded at all -- the chain position it is standing at. The last of those is only ever
+// reached headless, where there is no rig to ask.
+function melBeat(nm, ix) {
+  const CL = clipOf(nm); if (CL && CL.beat) return CL.beat;
+  const c = rig.clips && rig.clips[nm];
+  return c && c.duration > 0 ? clamp(c.duration / MELEE.rate, MELEE.beatMin, MELEE.beatMax)
+                             : MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
+}
+// OPEN, BUILD, FINISH -- and the finisher is the LAST link whatever the chain is long. See the
+// note on `MELEE.power`: reading it by index made every link past the third a launch.
+function melPower(ix, n) {
+  const P = MELEE.power, fin = P[P.length - 1];
+  if (n <= 1 || ix >= n - 1) return fin;
+  const open = P[0], build = P[Math.min(1, P.length - 1)];
+  return n <= 2 ? open : open + (build - open) * (ix / (n - 2));
+}
 const aimAt = d => {
   const dx = d.root.position.x - player.pos.x, dz = d.root.position.z - player.pos.z;
   return { d, dist: Math.hypot(dx, dz), h: Math.atan2(dx, dz) };
@@ -5089,24 +5174,31 @@ function meleeGo(h) {
   // cut off halfway. Dropping the input instead would make a fast chain feel unresponsive;
   // taking it immediately would make every strike a jump cut.
   if (p.melee || p.roll || p.chargeGo) { p.melQ = (h != null ? h : p.faceH); return; }
-  const chain = meleeChain();
+  const pool = meleeChain();
+  const links = Math.max(1, Math.min(MELEE.links, pool.length));
   // A CHAIN, NOT A BUTTON. Inside the window (or during a strike, which buffers) the next
   // flick takes the NEXT link; let it lapse and the next flick opens at the first again. Past
   // the finisher it comes back round rather than sticking on the last one for ever.
   const cont = p.melee || p.meleeChain > 0;
-  const ix = cont ? (p.meleeIx + 1) % chain.length : 0;
+  // **AND A FRESH CHAIN DEALS THE NEXT HAND OUT OF THE POOL (m95).** Advanced by a WHOLE chain
+  // rather than by one, so consecutive chains share no clip and nothing comes round again until
+  // the pool is exhausted -- six unarmed clips are exactly two chains. Advancing by one would
+  // make the second and third blows of a chain the first and second of the next, which reads as
+  // repetition rather than as variety.
+  if (!cont) p.meleeRoll = (p.meleeRoll + links) % pool.length;
+  const ix = cont ? (p.meleeIx + 1) % links : 0;
   // **AND THE OPENING LINK IS THE TACKLE IF HE HAS ACTUALLY BEEN RUNNING (m88).** It is an
   // OPENING rather than a fourth strike: running at somebody and hitting melee is one move, not
   // two decisions. `p.meleeIx` stays 0, so the next flick takes link two and the chain reads on
   // from it exactly as it would have.
   const tackle = !cont && MELEE.slide && rig.actions[MELEE.slide] && p.runT >= MELEE.slideT;
-  const name = tackle ? MELEE.slide : chain[ix];
+  const j = ((p.meleeRoll + ix) % pool.length + pool.length) % pool.length;
+  const name = tackle ? MELEE.slide : pool[j];
   if (!rig.actions[name]) { note('NO CLIP ' + name); return; }
-  p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name; p.meleeAir = 0;
+  p.melee = 1; p.meleeIx = ix; p.meleeLinks = links; p.meleeT = 0; p.meleeName = name; p.meleeAir = 0;
   p.meleeBody = tackle ? 1 : 0;   // see `STRIKE.bodyAt` -- the blow is him arriving
   const CL = clipOf(name);
-  p.meleeDur = tackle ? MELEE.slideDur
-             : (CL && CL.beat) || MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
+  p.meleeDur = tackle ? MELEE.slideDur : melBeat(name, ix);
   p.meleeChain = 0; p.melFired = 0; p.melU = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   const base = tackle ? MELEE.slideV
              : (CL && CL.lunge) || MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
@@ -5312,7 +5404,7 @@ function backGo(far, fired) {
   flipGo(CLIPS.flipBack, 2 * vy / MOVE.g);
   // **AND HE LEAVES THE GROUND WHEN THE CLIP SAYS HE DOES, NOT ON THE FRAME OF THE RELEASE
   // (m92).** *"The upward velocity starts way before the backflip animation gets to its jump
-  // point."* Exactly that: `Backflip` spends **0.333 s PUSHING on the floor** after the crouch,
+  // point."* Exactly that: `backflip` spends **0.333 s PUSHING on the floor** after the crouch,
   // so m87 had him rising through a third of a second of leg extension -- 28% of the smallest
   // flip's whole airtime. He is held down for it instead, and the clip and the physics then
   // agree BY CONSTRUCTION rather than by two numbers being tuned toward each other.
@@ -6203,7 +6295,7 @@ function stepPlayer(dt) {
       // places for them to disagree.
       const body = !!(p.melee && p.meleeBody);
       const pw = p.melee ? (body ? (p.meleeAir ? MELEE.airPow : MELEE.slidePow)
-                                 : MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)])
+                                 : melPower(p.meleeIx, p.meleeLinks || MELEE.links))
                          : 1.0 * (p.chargeGoK || 1);
       // THE SWEEP RUNS EVERY FRAME even while the window is shut, because the previous
       // positions it measures against have to stay one frame old -- a sweep seeded three
@@ -6497,9 +6589,15 @@ function rigAnim(dt) {
     } else t[WALL.clips.in] = 1;
     setWeights(t, dt); return;
   }
-  // THE GUARD, WHEN THERE IS A CLIP FOR IT. An empty name falls straight through to the gait,
-  // so this line costs nothing until the clip lands and needs no second branch when it does.
-  if (p.block && CLIPS.block && rig.actions[CLIPS.block]) { t[CLIPS.block] = 1; setWeights(t, dt); return; }
+  // **THE GUARD IS NOT HERE, AND THIS IS WHERE IT WOULD HAVE GONE WRONG (m95).** A line sat here
+  // that played `CLIPS.block` WHOLE at full weight and RETURNED -- written when the name was empty
+  // and it could never fire, so it cost nothing and looked right. The moment the clip landed it
+  // would have short-circuited the committed branch six dozen lines down, which is the one built
+  // for exactly this: a `SPLIT.up` pose over strafing `__legs`. What that gets you is a statue
+  // sliding sideways, with the good path sitting right there unreachable -- m19's shape, two
+  // places answering one question, and the one that runs is the worse one.
+  // **A BRANCH THAT CANNOT FIRE YET IS NOT A BRANCH THAT WORKS**, and naming a clip is exactly
+  // when it stops being free.
   // THE DUCK. One key held at full weight, so the release continues from the frame it is sitting
   // on -- and `setWeights` damps it in, so a hold that ends up being a camera drag reads as a
   // small lean rather than as a twitch.
@@ -6577,12 +6675,10 @@ function rigAnim(dt) {
   if (committed() || p.block || p.center) {
     // **THE GUARD BORROWS THE COMMITTED BRANCH, WHICH IS WHAT IT ALREADY IS**: a body facing
     // forward with its legs answering the thumb sideways. The only difference is which pose the
-    // top half holds -- and with no block clip drawn yet there is no upper pose at all, so the
-    // WHOLE strafe clips play rather than their `__legs` halves. Name `CLIPS.block` and it
-    // becomes an override like every other.
+    // top half holds -- and as of m95 the guard has one, so it IS an override like every other
+    // and the `bare` path below is now only ever the empty-handed square-up.
     // BARE MEANS THERE IS NO UPPER POSE TO PUT ON, so the WHOLE strafe clips play rather than
-    // their `__legs` halves. Empty-handed there is nothing to hold up by construction; with the
-    // guard it is because `CLIPS.block` has not been drawn yet.
+    // their `__legs` halves. Empty-handed there is nothing to hold up by construction.
     const bare = (p.center && !committed()) || (p.block && !(CLIPS.block && rig.actions[CLIPS.block]));
     const up = p.block ? CLIPS.block
              : p.fireT > 0 ? CLIPS.shoot : p.charge ? CLIPS.chargeUp : CLIPS.aimPose;
@@ -8958,7 +9054,11 @@ function frame() {
       // That is a MEASUREMENT, and the one thing that tells "the solve shortened it" from "it
       // travelled and passed through him" apart from a phone. `TACKLE6.2!` is the good one.
       : p.melee ? (p.meleeAir ? 'KICK' : p.meleeName === MELEE.slide ? 'TACKLE'
-                   : 'melee' + (p.meleeIx + 1))
+                   // **AND WHICH CLIP, NOT ONLY WHICH LINK (m95).** The chain is dealt out of a
+                   // pool now, so the link number no longer identifies the animation -- and
+                   // "that one connects at the wrong part of the swing" is a sentence about a
+                   // CLIP. `melee2/05@0.62!` is link two, playing `melee_05`, fired at u 0.62.
+                   : 'melee' + (p.meleeIx + 1) + '/' + String(p.meleeName).split('_').pop())
                   + (p.meleeBody ? (p.melGap || 0).toFixed(1) : '')
                   // **AND WHERE IN THE CLIP IT LANDED (m94).** *"We need to make sure the right
                   // part of that animation is connecting."* That is a measurement, and this is
