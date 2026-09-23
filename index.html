@@ -443,10 +443,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m96</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m97</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m96</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m97</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -497,7 +497,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm96';
+const BUILD = 'm97';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -715,9 +715,28 @@ const AIR = {
                       // a jump goes into orbit and one off the bottom of a fall does nothing;
                       // set, it is the same height whenever it is spent, which is what makes it
                       // a save you can rely on.
-  fill: .86,          // the flip has to be OVER by this much of the flight, so the last of the
-                      // air is spent aiming the landing rather than still coming round
-  rateHi: 1.6,        // and it may be sped up to get there, never slowed down
+  // **THE FLIP FILLS THE WHOLE TRIP NOW, AND THE FLOOR OF 1 WAS THE WHOLE BUG (m97).** *"The
+  // backflip finishes when he's still in the air, so we need to map the animation to the whole
+  // air trip."* m87 wrote the rate as `max(1, ...)` on the argument that stretching a clip to
+  // fill a long hang is slow motion -- which is a real concern and is not what was happening:
+  //     the clip is 1.125 s from its crouch to its landing
+  //     a FULL-charge backflip is 0.333 s of push + **1.649 s** of air = 1.982 s
+  //     the ideal rate is 1.125 / 1.649 = **0.682**, and the floor clamped it to 1.00
+  //     so the flip was over at 1.458 s and he spent the last **0.52 s** in `in_air`
+  // At `fill` 1 and a floor of .62 the rate comes out 0.97 at a bare release, 0.79 at a half
+  // charge and 0.68 at a full one -- floaty on the biggest jump, which is what a 2.3 m backflip
+  // IS, and nowhere near the slow motion the old floor was guarding against.
+  // **AND THE PUSH STRETCHES WITH IT, WHICH IS DELIBERATE RATHER THAN OVERLOOKED.** `backGo`
+  // derives the hang back out of the same rate, so a full charge winds up for 0.49 s against
+  // 0.33 -- a deeper crouch for a bigger jump. Holding the push at 1x and slowing only the air
+  // was the alternative and it is worse twice over: it needs a second rate written onto the
+  // action mid-clip, and it puts the air at 0.48x rather than 0.68x.
+  // **IT APPLIES TO THE FRONT FLIP TOO**, because it is the same fault: `front_flip`'s 0.667 s
+  // against a double jump's ~1.0 s of air was ending a third of the way early as well. He named
+  // the backflip because it is the one that hangs longest.
+  // `mel.AIR.rateLo = 1` is the one word back to m87.
+  fill: 1,
+  rateHi: 1.6, rateLo: .62,
 
   // ---- the charged backflip ----
   hold: .85,          // seconds of duck to a full charge
@@ -959,6 +978,9 @@ const MELEE = {
   // close in, and sliding THROUGH somebody is what a slide tackle IS. `hitAll` and the swept
   // limb already catch everybody he passes, which is m43's own argument one move over.
   slideFree: 1,        // `mel.MELEE.slideFree = 0` is the one word back to the m88 solve
+  // HOW FAR PAST HIM A TACKLE CARRIES, and the shortest one that still reads as a slide.
+  // See the note in `meleeGo`: without these the tackle ignored where the man was entirely.
+  slideThru: 2.2, slideMin: 3.6,
   // **AND IT TRIPS THEM.** *"I'm thinking I'm gonna maybe have it trip them and have them fall
   // over -- at very least it should deliver some damage."* It took `power[0]` .45, which is
   // under every kind's `fling` (.70 on the warrior, .55 on the rest), so it could only ever
@@ -1023,6 +1045,8 @@ const MELEE = {
   clip: {
     weapon_melee_04: { beat: 1.25, at: .55, lunge: 2.2, max: 2.6 },
   },
+  limbDir: 0,        // see `strikeSweep`: 1 launches a man along the LIMB's instantaneous
+                     // travel, which is what m20 did and is tangential to the swing
   hitAll: 1,         // a swing catches EVERY body it sweeps through, not the first one
   window: 1.05,      // how long after a strike the next flick continues the chain
   // `hold` IS DEAD AND KEPT AS A NOTE. It was the fraction of a strike after which the stick
@@ -2400,7 +2424,12 @@ const HURT = {
   rateMin: 1.15, rateMax: 2.60,   // the band the clip stays readable in. The warrior's own fall
                   // runs x1.6 to x2.5 (`downBeat` 1.5 on a 3.0 s clip, x `downVary`) and that is
                   // the one he says looks good, so this is fitted to it rather than picked.
-  upBeat: 2.20,   // and the get-up is 2.708 s authored, so x1.23 -- quick, still readable
+  // **QUICKER (m97).** *"We need to make his get up animation quicker."* 2.708 s authored, so
+  // 2.20 was x1.23 -- barely compressed, and it is the half of a knock-down you are waiting
+  // through rather than watching. x1.75 stands him up in 1.55 s and is still well inside the
+  // band m37's rule cares about; the whole knock-down comes to 2.43-2.79 s against m96's
+  // 3.08-3.44.
+  upBeat: 1.55,
   // **AND A BODY ON THE FLOOR SCRUBS LIKE A BODY (m90).** `MOVE.drag` is a man BRAKING on his
   // feet, and at `1.9 * .25` its time constant is 2.1 s -- so landing at 6.6 m/s he had
   // **13.9 m of slide** still to come, on his back. The warrior has had `knockDrag` 5.5 for
@@ -4963,6 +4992,7 @@ const player = {
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0,   // the reach into the backpack
   // carrying somebody, and throwing him
+  melH: null,                       // the bearing a strike was thrown at -- what it launches along
   carry: null, grabNear: null, wind: 0, windOn: 0,
   toss: 0, tossT: 0, tossDur: 0, tossDone: 0, tossK: 0,
   bkT: 0, bkOn: 0, bkHang: 0, bkVy: 0,  // the charge, the duck, and the PUSH he is held on the
@@ -5465,7 +5495,7 @@ function kickGo(h) {
   p.melV = Math.max(L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : 0,
                     Math.min(MELEE.airV, vCap));
   p.melGap = p.melV * spend;
-  p.heading = h; p.faceH = h; p.camWant = h;
+  p.heading = h; p.faceH = h; p.camWant = h; p.melH = h;
   playOnce(nm, clipLen(nm) / p.meleeDur);
   snd('swoosh', { r: .92, g: .86 });
   p.vel.x = Math.sin(h) * p.melV; p.vel.z = Math.cos(h) * p.melV;
@@ -5524,7 +5554,13 @@ function meleeGo(h) {
   // also that number doing two jobs: it is a SPEED ceiling, and it was silently setting the
   // acquire radius as well.
   const maxD = tackle ? MELEE.slideMax : (CL && CL.max) || MELEE.lungeMax;
-  const reachMax = Math.min(MELEE.maxV * p.meleeDur * MELEE.carryAvg, maxD + MELEE.arrive);
+  // **AND A TACKLE'S REACH IS `maxD` ITSELF, NOT `maxD + arrive` (m97).** An ordinary strike
+  // stops `arrive` SHORT of the man, so it can acquire one that much further off; a tackle
+  // goes THROUGH him, so the furthest it can deliver is exactly `slideMax`. Half a metre,
+  // and it is m20's rule -- an assist's range is sized for what it DELIVERS -- which the new
+  // aim-through shape quietly moved.
+  const reachMax = Math.min(MELEE.maxV * p.meleeDur * MELEE.carryAvg,
+                            maxD + (tackle ? 0 : MELEE.arrive));
   const L = h != null ? meleeLock(h, reachMax) : null;
   if (L) h = L.h;
   p.melTgt = L ? L.d : null;
@@ -5543,16 +5579,36 @@ function meleeGo(h) {
   const spend = p.meleeDur * MELEE.carryAvg;
   const vCap = Math.min(MELEE.maxV, maxD / spend);
   const solved = L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : Math.min(base, vCap);
-  // **AND A TACKLE'S SOLVE MAY ONLY LENGTHEN IT (m93).** See `MELEE.slideFree`: a jab thrown at
-  // a man at arm's length is a jab on the spot, and a SLIDE thrown on the spot is not a slide.
-  // So the floor is its own `slideV` and the lock is free to reach further, never nearer.
-  p.melV = tackle && MELEE.slideFree ? Math.max(solved, Math.min(base, vCap)) : solved;
+  // **AND A TACKLE AIMS THROUGH HIM RATHER THAN IGNORING HIM (m97).** *"He's hitting the guys
+  // and then all of a sudden he zips past them by a long distance and I can't figure out why."*
+  // It is the TACKLE, and it is m93 over-corrected. His m93 complaint was that the solve CUT IT
+  // SHORT (6.20 m free, 1.25 m against a man at 2 m) and `slideFree` answered it by making the
+  // solve a floor-only raise -- so the distance stopped answering to where anybody was at all,
+  // and every tackle became the full 6.20 m whether the man was six metres away or under his
+  // nose. **Nothing else in the file does that**: every ordinary strike is capped at
+  // `lungeMax` 4.6 m and solves DOWN to the man.
+  // **AND IT FIRES MID-FIGHT, WHICH IS WHY IT READS AS A GLITCH.** `tackle` needs only `!cont`
+  // and `runT >= slideT` -- so a chain that lapses (`window` 1.05 s) while he is moving turns
+  // the very next flick into a slide, and he leaves the fight he was in.
+  // **THE ANSWER IS A TARGET, NOT A FLOOR: he slides THROUGH him and out the other side.**
+  //     nobody            `slideV`'s own 6.20 m, unchanged -- the "nice long slide tackle"
+  //     a man at 1.0 m    3.60 m  (the floor -- a slide has to be a slide)
+  //     a man at 2.0 m    4.20 m  = 2.0 + `slideThru`
+  //     a man at 3.5 m    5.70 m
+  //     a man at 6.0 m    7.50 m  (`slideMax`)
+  // `hitAll` and the swept limb still catch everyone he passes, which is what m93 was right
+  // about and is untouched. `mel.MELEE.slideThru = 99` is the one word back to m93.
+  const thru = L ? Math.max(L.dist + MELEE.slideThru, MELEE.slideMin) : base * spend;
+  p.melV = tackle && MELEE.slideFree ? clamp(thru / spend, 0, vCap) : solved;
   p.melGap = p.melV * spend;          // how far this strike will actually carry him, for the chip
   // **AND THE LENS COMES ROUND WITH HIM (m81).** `h` here is the direction he ACTUALLY strikes
   // -- after `meleeLock` has had its say -- so a locked swing turns the camera onto the man
   // rather than onto the thumb, which is the same "one answer" rule the mark and the shot live
   // under. It is a WANT rather than a write: `cam.az` has exactly one writer and this is not it.
   if (h != null) { p.heading = h; p.faceH = h; p.camWant = h; }
+  // AND IT IS WHAT THE BLOW LAUNCHES ALONG (m97) -- see `strikeSweep`. Stored where it is
+  // DECIDED, so the camera, the facing and the launch are one answer rather than three.
+  p.melH = h != null ? h : p.faceH;
   // THE CLIP IS COMPRESSED TO THE BEAT, not the beat stretched to the clip. `melee_03` is
   // 1.417 s and the finisher 1.75 -- a three-hit chain at 1x is over four seconds of watching,
   // which reads as lag rather than as a combo.
@@ -5687,12 +5743,12 @@ function flipGo(nm, T) {
   const p = player, M = FLIP[nm];
   p.flip = ''; p.flipT = 0;
   if (!rig.actions[nm] || !M) return 0;
-  // **THE FLOOR IS 1, NOT A SMALL NUMBER.** Fitting the clip to the air in BOTH directions is
-  // the board-trick rule from one repo over and it is wrong here: these two are drawn at the
-  // speed a flip reads at, so stretching one to fill a long hang is slow motion. It is only
-  // ever sped UP, when the air is too short to fit it. At today's heights both come out at
-  // exactly 1.00 and this term is the guard for a re-export or a retune, not a live scaling.
-  const rate = Math.min(AIR.rateHi, Math.max(1, M.air / Math.max(.2, T * AIR.fill)));
+  // **THE CLIP IS FITTED TO THE TRIP IN BOTH DIRECTIONS NOW (m97).** See `AIR.rateLo`: the old
+  // floor of 1 meant a big backflip was over with half a second of air still to run. `M.air` is
+  // the clip's own crouch-to-landing time and `T` is the hang, so `M.air / T` is the rate that
+  // lands the two together -- and `rateLo` is what stops a re-export or a retune turning that
+  // into slow motion.
+  const rate = clamp(M.air / Math.max(.2, T * AIR.fill), AIR.rateLo, AIR.rateHi);
   // **THE FLIP CLOCK COVERS THE PUSH AS WELL AS THE AIR (m92)**, because the clip runs through
   // both -- started at the launch, the push half plays under a table not asking for it.
   p.flip = nm; p.flipDur = (M.off + M.air) / rate;
@@ -8175,11 +8231,23 @@ function strikeSweep(dt, power, live, dmg, body) {
           if (d.cool > 0) continue;
           if (!segBody(q, _sw, d.root.position.x, d.root.position.z, d.K.r + rad,
                        d.root.position.y + d.K.h, rad)) continue;
-          // the blow travels the way the LIMB was going, which is the direction already stored
-          const bh = Math.atan2(_sw.x - q.x, _sw.z - q.z);
-          // ON A BODY MOVE THE DIRECTION IS HIS TRAVEL, because that is what is hitting
-          // him -- and `bh` is already it: the limb's WORLD delta on a held pose IS the root's.
-          dummyBlow(d, Math.hypot(lx, lz) > .02 || body ? bh : p.faceH, power, dmg);
+          // **THE LAUNCH GOES WHERE THE SWING WAS AIMED, NOT WHERE THE FIST HAPPENED TO BE
+          // MOVING (m97).** *"The melees send the guys but they don't really get sent in the
+          // direction you swing -- it feels like they shoot off at an angle away from his
+          // swing."* Exactly right, and the mechanism is precise: this was
+          // `atan2(_sw - q)`, the limb's INSTANTANEOUS world delta, and **a fist travels in an
+          // ARC**. At the contact frame most of that delta is TANGENTIAL -- across his body --
+          // so a punch thrown straight ahead launched the man sideways, and a hook launched him
+          // almost perpendicular to the hook. It has been that way since m20 and only became
+          // visible once blows started launching people properly (m91, m93, m96).
+          // **WHEN A DIRECTION IS ALREADY STORED, DO NOT RECOVER IT FROM GEOMETRY** -- `copFly`'s
+          // rule one repo over, and `p.melH` is the bearing the strike was actually thrown at,
+          // after `meleeLock` has had its say. It serves the body moves with no second case,
+          // because on a tackle or a kick the direction he is travelling IS the direction he
+          // aimed. `mel.MELEE.limbDir = 1` puts the old tangent back for an A/B.
+          const bh = MELEE.limbDir ? Math.atan2(_sw.x - q.x, _sw.z - q.z)
+                                   : (p.melH != null ? p.melH : p.faceH);
+          dummyBlow(d, bh, power, dmg);
           // **AND IT IS DRAWN WHERE THE LIMB REACHED HIM (m94).** `segBody` left the point in
           // `_hitP` on the line above, so this is the collider's own answer rather than a second
           // guess at it -- a blow and the mark it leaves cannot disagree about where they were.

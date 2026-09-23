@@ -1040,6 +1040,91 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE ZIP WAS THE TACKLE, AND IT IS m93 OVER-CORRECTED (m97, `MELEE.slideThru`/`slideMin`).**
+  *"There's this thing that happens when you're meleeing where he's hitting the guys and then all
+  of a sudden he zips past them by a long distance and I can't figure out why."*
+  **EVERY ORDINARY STRIKE IS CAPPED AND SOLVES DOWN TO THE MAN**, which is what made this hard to
+  see -- tabled from the shipped constants before anything was touched:
+      link 1  melee_01  dur 1.26  v 5.03  travel **4.60 m**   (`lungeMax`)
+      link 2  melee_02  dur 0.88  v 6.50         4.15
+      link 3  melee_03  dur 0.79  v 8.08         4.60
+      locked on a man 5.6 m off -- all three end **1.05 m from him**, by construction
+      TACKLE                                     **6.20 m, whoever is in front of him**
+  **THE TACKLE IS THE ONE THING IN THE FILE WHOSE DISTANCE STOPPED ANSWERING TO ANYBODY.** m93's
+  complaint was the opposite -- the solve CUT IT SHORT (6.20 m free, 1.25 m against a man at 2 m)
+  -- and `slideFree` answered it by making the solve a floor-only raise. That is one step too far:
+  a floor that is never beaten is not a floor, it is a constant.
+  **AND IT FIRES MID-FIGHT, WHICH IS WHY IT READS AS A GLITCH RATHER THAN AS A MOVE.** `tackle`
+  needs only `!cont` and `runT >= slideT` .45, so a chain that lapses (`window` 1.05 s) while he
+  is moving turns the very next flick into a slide and he leaves the fight he was in. **He never
+  asked for a tackle at that moment and there is nothing on screen that says he is about to get
+  one**, which is the whole of *"I can't figure out why"*.
+  **THE ANSWER IS A TARGET, NOT A FLOOR: HE SLIDES THROUGH HIM AND OUT THE OTHER SIDE.**
+      nobody      6.20 m, unchanged -- the "nice long slide tackle" m93 was actually about
+      man at 1.0  3.60 m  (`slideMin`; a slide has to be a slide)   2.60 m past him
+      man at 2.0  4.20                                              2.20 past
+      man at 3.5  5.70                                              2.20 past
+      man at 6.0  7.50  (`slideMax`)                                1.50 past
+  `hitAll` and the swept limb still catch everyone he passes, which is what m93 was right about
+  and is untouched. `mel.MELEE.slideThru = 99` is the one word back.
+  **AND THE ACQUIRE RADIUS HAD TO COME DOWN WITH IT, WHICH IS THE HALF THAT IS EASY TO MISS.** An
+  ordinary strike stops `arrive` SHORT of the man, so it may acquire one that much further off; a
+  tackle goes THROUGH, so the furthest it can deliver is exactly `slideMax`. At `maxD + arrive`
+  a man at 8 m was acquired and the slide stopped **0.5 m short of him** -- m20's rule (an
+  assist's range is sized for what it DELIVERS, not for what it draws), which the aim-through
+  shape quietly moved.
+  **THE FLYING KICK KEEPS ITS FLOOR AND THAT IS A STATED GAP.** It has the same shape -- a kick at
+  a man 1 m off still carries 5.85 m -- and it is left alone because he named the ground melee and
+  because a kick thrown across the air that overshoots lands you on your feet rather than in the
+  middle of nowhere. `airMax` is the dial if it turns out to read the same way.
+
+- **A FIST TRAVELS IN AN ARC, SO ITS DELTA AT CONTACT IS ACROSS THE SWING (m97, `p.melH`).**
+  *"The melees send the guys but they don't really get sent in the direction that you swing -- it
+  feels like they shoot at an angle away from his swing, where I want them to go the direction I
+  swing."* Exactly right, and the mechanism is precise. `strikeSweep` launched him along
+      const bh = Math.atan2(_sw.x - q.x, _sw.z - q.z);
+  which is the limb's **instantaneous world delta** on the contact frame. A punch is a rotation
+  about the shoulder, so at the moment the fist arrives most of that delta is TANGENTIAL -- across
+  his body -- and a blow thrown straight ahead sent the man sideways. A hook sent him nearly
+  perpendicular to the hook. **It has been that way since m20** and only became visible once blows
+  started launching people properly (m91's always-knock, m93's tackle, m96's arc).
+  **WHEN A DIRECTION IS ALREADY STORED, DO NOT RECOVER IT FROM GEOMETRY** -- `copFly`'s rule one
+  repo over, and the second time this file has paid for it. `p.melH` is the bearing the strike was
+  actually thrown at, AFTER `meleeLock` has had its say, stored in the two places it is decided
+  (`meleeGo` and `kickGo`) beside the facing and the camera want -- so the lens, his nose and the
+  launch are ONE answer rather than three that can disagree.
+  **AND IT SERVES THE BODY MOVES WITH NO SECOND CASE**, because on a tackle or a flying kick the
+  direction he is TRAVELLING is the direction he aimed. The slam is untouched: it throws each man
+  radially OUTWARD from where it landed, which is one bearing per body and correctly not this one.
+  `mel.MELEE.limbDir = 1` puts the tangent back for an A/B.
+
+- **THE FLIP FILLS THE WHOLE TRIP, AND THE FLOOR OF 1 WAS THE WHOLE BUG (m97, `AIR.rateLo`).**
+  *"The backflip finishes when he's still in the air, so we need to map the animation to the whole
+  air trip."* m87 wrote the rate as `max(1, M.air / (T * fill))` on the argument that stretching a
+  clip to fill a long hang is slow motion -- a real concern, and not what was happening:
+      the clip is **1.125 s** from its crouch to its landing
+      a FULL-charge backflip is 0.333 s of push + **1.649 s** of air = 1.982 s
+      the ideal rate is 1.125 / 1.649 = **0.682**, and the floor clamped it to 1.00
+      so the flip was over at 1.458 s and the last **0.52 s** was `in_air`
+  At `fill` 1 and `rateLo` .62 the trip is covered exactly, at every charge:
+      charge 0.00   apex 3.40   air 1.17   rate 0.965   push 0.35   **0.00 s left over**
+      charge 0.50        5.10       1.43        0.788        0.42        0.00
+      charge 1.00        6.80       1.65        0.682        0.49        0.00
+  **AND THE PUSH STRETCHES WITH IT, WHICH IS A DECISION RATHER THAN AN OVERSIGHT.** `backGo`
+  derives the hang back out of the same rate, so a full charge winds up for 0.49 s against 0.33 --
+  a deeper crouch for a bigger jump. Holding the push at 1x and slowing only the air was the
+  alternative and it is worse twice over: it needs a second rate written onto the action mid-clip,
+  and it puts the air at **0.48x** rather than 0.68x.
+  **IT APPLIES TO THE FRONT FLIP TOO**, because it is the same fault -- `front_flip`'s 0.667 s
+  against a double jump's ~1.0 s of air was ending a third of the way early as well. He named the
+  backflip because it is the one that hangs longest. `mel.AIR.rateLo = 1` is the one word back.
+
+- **AND THE GET-UP IS QUICKER (m97, `HURT.upBeat` 2.20 -> 1.55).** *"We need to make his get up
+  animation quicker."* 2.708 s authored, so 2.20 was **x1.23** -- barely compressed, and it is the
+  half of a knock-down you wait through rather than watch. x1.75 stands him up in 1.55 s and is
+  still well inside the band m37's rule cares about. With m96's derived fall the whole knock-down
+  is now **2.43 to 2.79 s** against m96's 3.08-3.44 and m90's 3.55.
+
 - **THE CLIP HAS TO HAVE HIM ON THE FLOOR BEFORE HE GETS THERE, AND IT IS ONE MEASUREMENT AND ONE
   DIVISION (m96, `fallMark`, `HURT.mark`).** *"The thing that makes the warrior aliens look so
   good when they fly through the air is that when I blast them full, the animation is them laying
