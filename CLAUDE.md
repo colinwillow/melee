@@ -1040,6 +1040,102 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE CLIP ALREADY CONTAINED THE HALF TURN, SO THE ROOT MUST NOT (m99).** *"The wall cover is
+  backwards. The animations has the face away from wall built in, but you rotated him so now he
+  faces the wall."* Exactly that, and it is one sign. m89 pointed the root along **+normal** and
+  wrote `// belly AWAY from the wall` beside it -- true of the ROOT and false of the body, because
+  the clip turns him 180 on top of it. Two half turns compose into a man with his nose in the
+  brick. `atan2(-W.nx, -W.nz)`: the root faces the wall and the clip's own turn puts the belly out.
+  **AND THE SHIMMY'S SIGN CAME RIGHT WITH IT, which is worth writing down rather than
+  re-deriving.** `side` is measured along `(-nz, nx)`. Under m89's facing that tangent was the
+  ROOT's right and therefore the DRAWN body's LEFT, so `wallShimmy`'s `side > 0 -> R` was picking
+  the wrong clip as well -- invisible, because the facing was already wrong in the same direction.
+  Facing the wall, the drawn body's right IS that tangent and the pick is correct by construction.
+  **A COMMENT DESCRIBING AN INTENT THE CODE NO LONGER HAS IS THE TELL**, which is this file's own
+  sentence about the 40 cm cube (m74) and `blast0` (m56), for the third time.
+
+- **THE PICK-UP IS GONE, AND `bodyLaunch` IS NOT A LEFTOVER (m99).** *"We're gonna need to remove
+  the Clancy pick up because the UI button looks horrible. It's way too big. The hybrid animations
+  look like trash. The hips rotation has been stripped. He's leaning forward and the throw
+  mechanics are bad. We needs to rebuild all that."* So the whole of m96's carry goes: `#grabRing`
+  and its keyframes, the face SVG on the knob, `GRAB`, `grabScan`, `grabGo`, `grabRide`, `tossGo`,
+  `tossFire`, `grabDrop`, `stepGrab`, `p.carry`/`p.toss`/`p.wind`/`p.grabNear`, `d.held`,
+  `CLIPS.hold`/`toss`, their entries in `SPLIT.up` and `ONCE`, CLANCY's `lift`/`tint`, the guards
+  in `pushBodies`/`bodySep`/`cycleKit`, the `'held'` branch in `stepDummies` and the chip line.
+  **The right pad's tap is the jump again and nothing else.**
+  **`hold_item` AND `throw_item` COST NOTHING NOW THEY ARE UNNAMED**, which is m35's rule: the
+  mixer builds an action per clip either way and nothing plays one nobody names. They are there
+  for the rebuild.
+  **WHAT SURVIVES IS `bodyLaunch`, AND DELETING IT WOULD HAVE BEEN THE MISTAKE.** m96 EXTRACTED it
+  from `dummyBlow` -- the tumble, the whoosh, the fall clip, the per-body beat and the two get-up
+  rolls -- and `dummyBlow` is still its caller. Removing the feature that motivated an extraction
+  is not a reason to put the extraction back inline.
+  **AND THE `SPLIT.up` PRIORITY COLLAPSES BACK TO ONE ARM.** m96 made `upNm` a three-way because
+  three things wanted the top half; with two of them gone it is `p.swap ? CLIPS.swap : ''` again.
+
+- **THE DIVE WAS FINE AND IT COULD NOT BE REACHED (m99, `palDive`).** *"Clancy is still constantly
+  in my way. I feel like if I shoot or charge he need to run or dive out of the way IMMEDIATELY.
+  No long. Right stick = get the fuck out of the way."*
+  **THREE BUILDS TUNED THE TRIGGER AND THE PROBLEM WAS ITS ADDRESS.** m76 moved it onto `p.armT`
+  (the frame the thumb ARRIVES, which is the earliest thing there is to know) and m81 solved the
+  distance off the wedge -- both real and both shipped, and both sitting inside `foeWander`, which
+  `foeAI` reaches **only after three committed-state returns.** A pounce swing is `swingDur` .85 s
+  of a body that cannot dive, and the pounce is live precisely while the trigger is (m75: a mark
+  is a body you just hit). **So the one moment he is nearest the muzzle was the one moment the
+  reflex was switched off** -- which is his sentence exactly, and it is why m81's habit fix helped
+  and did not finish the job.
+  **FOURTH TIME ACROSS THESE REPOS: WHEN A FEATURE DOES NOT FIRE, CHECK WHERE IT IS CALLED BEFORE
+  WHAT IT DOES** -- after `barCatch` under the collider, `colinAnim` skipped on the bar and
+  `stepFeet` above the branch that owns the body (m70). It is the FIRST thing `foeAI` asks now, so
+  a punch is abandoned mid-arc.
+  **A HOP AND A DIVE ARE THE TWO IT MUST NOT INTERRUPT**, because both hand the body to `bodyFly`:
+  cutting a hop in mid-air drops him, and re-diving mid-dive is a stutter rather than a scramble.
+  **AND ABANDONING A SWING HAS TO LEAVE NOTHING BEHIND** -- `d.combo` would otherwise carry an
+  unfinished chain into the next fight and `d.sfoe` a target that has moved.
+  **THE NUMBERS ARE THE REST OF THE SENTENCE.** `dur` .55 -> .45 (x4.17 on a 1.875 s roll, the fast
+  end of what a clip can sell), `vMax` 7.5 -> 11.5 so one dive covers 5.18 m of wedge rather than
+  4.13, `cool` .25 -> .12 so a second may start 0.57 s after the first rather than 0.80, and
+  `cone` .52 -> .60 with `clear` 1.30 -> **1.20**. That last pair is not two independent dials:
+  they MULTIPLY into the distance he has to cover, so widening the cone without narrowing the
+  clear is a wider wedge he can no longer leave, which is m81's whole finding. Measured through
+  the shipped solve, dead on the line: 3 m -> one dive at 5.9 m/s; 5 m -> one at 9.8; 11 m -> two,
+  1.02 s in total.
+
+- **THE GROUND FEELS THE SLAM, AND THE SLASH WAS UNDER THE THRESHOLD OF BEING AN EFFECT (m99,
+  `slamFx`, `camShake`, `MFX.slam`).** *"When he does the earth slam from melees down from in the
+  air we needs to make the ground feels it like a particles effects or debris or shake or slashes
+  -- oh by the way we needs to put in the slashes for all the melees stuff."*
+  **A SHOCKWAVE IS A RING AND `spkBurst` THROWS A SPHERE**, which is right for a fist arriving at a
+  man's chest and wrong for a body arriving at the floor: everything that moves goes OUTWARD and
+  low. So it is its own loop -- an EVEN fan of bearings, jittered (a purely random set clumps and
+  reads as a spray; an exactly even one reads as a cog) -- and **two rings rather than one**: a
+  fast bright grit and a slow dim dust behind it, which is m39's "an impact is three things"
+  pointed at the ground. **It is sized off `SLAM.r`**, the radius the blow actually catches, so the
+  debris says how far it reached rather than being a number nobody can check.
+  **THE SHAKE IS A DECAYING SINE, NOT PER-FRAME NOISE.** A random offset every frame is a BUZZ and
+  its character changes with the frame rate; two out-of-phase sinusoids on a half-life read as one
+  thump and are identical at 30 Hz and at 120 -- `Math.exp(-k*dt)`'s own argument applied to a
+  picture. **AND IT LANDS ON `camera.position`, NEVER ON `cam.pos`**: that one is a DAMPED state,
+  so a wobble written into it feeds back through the damper for the rest of the session, which is
+  the Verlet constraint banking its correction as velocity one system over. The look point is
+  untouched, so the subject stays centred and the WORLD swings.
+  **AND THE SLAM HAD NO SLASH BECAUSE `strikeSweep` HAS EXACTLY ONE CALL SITE** -- inside
+  `p.roll || p.melee || p.chargeGo`, and a slam is none of the three. `slamGo` has seeded the sweep
+  (`p.swPrev = null`) since m81, which says it was always meant to run. It is called with **`live`
+  false**: the slam's damage is RADIAL and `slamLand` deals it, so a swept limb counting a second
+  blow on the way down would be two descriptions of one event.
+  **THE TRAIL ITSELF WAS REAL AND INVISIBLE.** Every strike has drawn one since m94 -- three 10 cm
+  sparks with a 0.12 s life, which is not something you can see at ten metres on a phone. 6 at
+  .155 over .19 s. **The mechanism was right and the numbers were under the threshold of being an
+  effect**, which is m71's own finding: a distance you can see and a duration you can see are the
+  same number in disguise. `mel.MFX.per = 3` is the way back.
+  **AND THE CHIP'S `!` ON A SLAM IS SET BY THE RADIAL BLOW**, because the sweep cannot answer it
+  any more -- it is not `live`. `mel.slamfx()` fires the whole thing where he stands and
+  `mel.shake(.5)` is the knock alone, so the two can be judged apart.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container has a GPU or a skin, so whether the
+  ring reads as debris, whether 0.55 m of lens knock is a thump or a lurch, and whether a six-spark
+  ribbon reads as a slash are all device questions. `mel.MFX.slam` and `mel.CAM.shake` are live.
+
 - **A TAP WAS A THUMB NEAR THE MIDDLE, AND THE MIDDLE IS ELEVEN PER CENT OF THE PAD (m98,
   `MOVE.tapMove`).** *"It feels really tough to hit the exact middle of the stick sometimes --
   like 75 per cent of the time when I'm running and I try to jump I miss, and I don't know if
