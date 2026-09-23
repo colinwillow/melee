@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m88</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m89</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m88</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m89</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm88';
+const BUILD = 'm89';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -571,6 +571,68 @@ const MOVE = {
   // it as a literal and m87 needed the same radius to decide whether a hold was a camera drag,
   // so it is one number in one place rather than two that drift.
   tapR: .42,
+};
+
+// ============================================================================================
+// WALL COVER (m89, `WALL`, `wallFind`, `wallGo`, `stepWall`)
+//
+// *"We have the animation from standing to wall. I only put in one standing-to-wall animation,
+// so he'll always land in the equivalent of wall cover right -- wall cover left and right are
+// just him with his belly facing away from the wall, so he's flipped 180 back against it. Any
+// sort of shimmy left and shimmy right. When you become close to a wall, if you're just pressing
+// and holding the locomotion stick toward the wall, he'll naturally go into cover. You can use
+// the locomotion stick to go left and go right, and then if you push away from the wall -- we'll
+// have a little bit of a grace period for the moving left and right, and you really have to
+// press directly away from the wall to get off of it. Or jump, and maybe he'll jump out of it."*
+//
+// **THE WHOLE THING RESTS ON ONE FACT THIS GAME HAS NEVER ASKED FOR: WHERE IS A WALL AND WHICH
+// WAY DOES IT FACE.** `BOXES` is axis-aligned (m24 keeps every placement on a quarter turn for
+// exactly this class of reason), so **the closest point on a box's FOOTPRINT gives the distance
+// to the face AND its outward normal in one step** -- `clamp` per axis, then the vector from
+// that point to him. No per-face tests, right whichever side he comes at, and being INSIDE the
+// footprint returns nothing, which is what stops him latching onto the roof he is standing on.
+// That is Shredworld's `ledgeGrab` rule, and the ledge build wants the same function.
+const WALL = {
+  // **THESE FOUR SCALE WITH HIM (m52's rule), BECAUSE THEY ARE FACTS ABOUT HIS BODY.** How tall
+  // a thing has to be to hide you, where your chest is, how far your back sits off a wall and
+  // how close is close enough to reach it are all his proportions -- and a typed 1.2 m is cover
+  // for a 1.75 m man and a wall a 1.25 m man cannot use. `speed` is NOT one of them: m53 is the
+  // build where he chose to keep his world speed at a smaller size.
+  reach: .55 * SZ,  // how far off the face he may be and still latch, PLUS his own radius
+  tall: 1.2 * SZ,   // and the box has to be this tall -- a kerb is cover for nobody
+  chest: .95 * SZ,  // measured at his chest rather than his ankles, so a low box is not a wall
+  into: .45,        // how hard the stick has to point INTO the face to latch
+  off: .62,         // **and how hard AWAY to let go, which is deliberately the harder of the
+                    // two** -- *"you really have to press directly away"*. The gap between them
+                    // is what lets a diagonal shimmy keep him on the wall.
+  grace: .30,       // ...and it has to be held that long, which is the grace period: a shimmy
+                    // that overshoots past `off` for one frame must not drop him.
+  speed: 1.5,       // how fast he slides along it
+  ref: 1.2,         // and the shimmy clip's rate. **A GUESS, NOT A MEASUREMENT** -- the clip
+                    // animates IN PLACE (hips XZ 0.000), so there is no authored travel to read
+                    // the way `npm run gait` reads a walk. `mel.WALL.ref` is the dial.
+  rateHi: 1.6,
+  stand: .30 * SZ,  // how far his back sits off the face, on top of his own radius
+  cool: .35,        // after letting go, before he may latch again -- or the same thumb that
+                    // pushed him off latches him straight back on
+  jump: .95,        // and how hard a jump out pushes him away from it
+  turn: 14,         // how fast he squares up to the wall, rad/s
+  inDur: .62,       // the two transitions, and the clips are COMPRESSED to them (m8's rule):
+  outDur: .50,      // 1.167 s and 1.417 s authored, so x1.9 and x2.8 -- taking cover is quick
+  clips: {
+    // ONE ENTRY, WHICH IS WHAT HE EXPORTED -- and its LAST FRAME is the cover idle, for free,
+    // because `clampWhenFinished` holds it. There is no separate cover-idle clip and none is
+    // needed.
+    in: 'idle_to_wall_cover_right',
+    out: 'wall_cover_left_to_stand',
+    // **AND THERE IS NO UNARMED `wall_cover_move_right`, SO IT IS THE LEFT ONE PLAYED
+    // BACKWARDS.** A shimmy is a symmetrical slide, so a negative `timeScale` IS the other
+    // direction -- and unlike m-era `aimBack` one repo over this needs no CLONE, because only
+    // one direction is ever live at a time and there is nothing to weight against itself.
+    // The RIFLE set has both drawn, so it uses them.
+    L: 'wall_cover_move_left', R: '',
+    aimL: 'wall_cover_move_left_rifle', aimR: 'wall_cover_move_right_rifle',
+  },
 };
 
 // ============================================================================================
@@ -2215,6 +2277,8 @@ const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_m
   // and `front_flip` have to be here or the mixer wraps them and he flips for ever; `laying_down`
   // is ONE KEY and the whole of what `clampWhenFinished` is for.
   'front_flip', 'Backflip', 'backCrouch', 'slide_kick', 'flying_kick',
+  // the two wall TRANSITIONS are one-shots; the two shimmies are LOOPS and must not be here
+  'idle_to_wall_cover_right', 'wall_cover_left_to_stand',
   'take_damage_head', 'take_damage_body', 'take_damage_and_fall_down',
   'laying_down', 'lay_to_get_up',
   // the split one-shots hold their last frame exactly like the clips they came from
@@ -3100,6 +3164,29 @@ function resolveBoxes(p, r, hh) {
   }
   return hit;
 }
+// WHERE IS A WALL AND WHICH WAY DOES IT FACE (m89). The closest point on a box's FOOTPRINT
+// gives both in one step, because these boxes are axis-aligned: clamp per axis, then the vector
+// from that point to him IS the outward normal of the face he is nearest. Returns the nearest
+// qualifying face, or null.
+// **BEING INSIDE THE FOOTPRINT RETURNS NOTHING**, which is what stops him latching onto the roof
+// he is standing on -- there is no "nearest face" from in there, and picking one would be a wall
+// chosen by rounding.
+function wallFind(px, py, pz, R) {
+  let best = null, bd = 1e9;
+  const h = py + WALL.chest;
+  for (const b of BOXES) {
+    if (b.maxy - b.miny < WALL.tall) continue;      // a kerb is cover for nobody
+    if (b.maxy < h || b.miny > h) continue;         // measured at his CHEST, not his ankles
+    if (px + R < b.minx || px - R > b.maxx) continue;
+    if (pz + R < b.minz || pz - R > b.maxz) continue;
+    const cx = clamp(px, b.minx, b.maxx), cz = clamp(pz, b.minz, b.maxz);
+    const dx = px - cx, dz = pz - cz, d = Math.hypot(dx, dz);
+    if (d < 1e-4 || d > R || d >= bd) continue;
+    bd = d; best = { nx: dx / d, nz: dz / d, d, cx, cz };
+  }
+  return best;
+}
+
 // **A MAN IS A SOLID, AND HE WAS NOT IN THE COLLIDER AT ALL.** `BOXES` is built once at load,
 // so nothing that WALKS can be in it -- which is why you ran straight through an officer. His
 // body is handed to the player's own resolver every frame instead, the way a car's is in
@@ -4478,6 +4565,7 @@ const player = {
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
   hurtNm: '', hurtClipT: 0, gotUp: 0,   // the reaction clip, and whether the get-up has started
   runT: 0, airKick: 0, meleeAir: 0,     // how long he has actually been running, and the air kick
+  wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   bkT: 0, bkOn: 0,                  // the backflip's charge, and whether he is visibly ducked
   land: 0, landT: 0, landHard: 0,  // the landing state
   knock: 0, knockCool: 0,          // the knock-down, and how long until he can take another
@@ -4818,6 +4906,111 @@ function meleeGo(h) {
 // bearing to throw it along. The pad's +Y is DOWN (`flickH(0, -1)` is the desktop punch, and
 // that is straight UP), so `dy > 0` is the gesture and the dominance test is what keeps a
 // sideways flick a strike.
+// TAKING COVER. The entry clip animates IN PLACE, so the STEP to the wall is code: he is lerped
+// from where he stood onto the pinned standoff across `inDur`, which is what makes the clip read
+// as an approach rather than as a snap plus an animation.
+function wallGo(W) {
+  const p = player, nm = WALL.clips.in;
+  p.wall = W; p.wallSt = 'in'; p.wallT = 0; p.wallOff = 0; p.wallSide = 0;
+  p.wx0 = p.pos.x; p.wz0 = p.pos.z;
+  p.vel.x = p.vel.z = 0; p.vel.y = Math.min(0, p.vel.y);
+  triggerStop();
+  if (rig.actions[nm]) playOnce(nm, clipLen(nm) / WALL.inDur);
+  snd('foot', { g: .10, r: .9 });
+  return 1;
+}
+// LETTING GO. `jumped` skips the stand-up clip entirely, because he is in the air and `in_air`
+// is the pose -- playing a get-off-the-wall transition while airborne is two things at once.
+function wallDrop(jumped) {
+  const p = player, nm = WALL.clips.out;
+  p.wallCool = WALL.cool;
+  if (jumped) { p.wall = null; p.wallSt = ''; return; }
+  p.wallSt = 'out'; p.wallT = 0;
+  if (rig.actions[nm]) playOnce(nm, clipLen(nm) / WALL.outDur);
+}
+// WHICH SHIMMY CLIP, AND WHICH WAY ROUND. `+side` is his RIGHT: he faces along the normal, and
+// his right is `(-fz, fx)`, which with `f = (nx, nz)` is `(-nz, nx)` -- the same tangent the
+// move is taken along, so the sign cannot disagree with the motion.
+function wallShimmy(side) {
+  const aim = slotNow().aim;
+  const L = (aim && WALL.clips.aimL) || WALL.clips.L;
+  const R = (aim && WALL.clips.aimR) || WALL.clips.R;
+  if (side > 0 && R && rig.actions[R]) return { nm: R, rev: 0 };
+  if (!L || !rig.actions[L]) return null;
+  return { nm: L, rev: side > 0 ? 1 : 0 };
+}
+
+function stepWall(dt) {
+  const p = player, W = p.wall;
+  p.wallT += dt;
+  const face = Math.atan2(W.nx, W.nz);            // belly AWAY from the wall
+  const d = wrapAngle(face - p.faceH);
+  p.faceH += d * Math.min(1, WALL.turn * dt); p.heading = p.faceH;
+
+  // ---- the stand-up: he is free to steer out of it, so it is short and it is not cancellable
+  if (p.wallSt === 'out') {
+    p.vel.x *= Math.exp(-6 * dt); p.vel.z *= Math.exp(-6 * dt);
+    integrate(dt, 0, 0, 0, false);
+    if (p.wallT >= WALL.outDur) { p.wall = null; p.wallSt = ''; p.goT = 0; }
+    return;
+  }
+
+  const px = W.cx + W.nx * (p.r + WALL.stand), pz = W.cz + W.nz * (p.r + WALL.stand);
+
+  // ---- the step to the wall
+  if (p.wallSt === 'in') {
+    const u = clamp(p.wallT / WALL.inDur, 0, 1), e = u * u * (3 - 2 * u);
+    p.pos.x = lerp(p.wx0, px, e); p.pos.z = lerp(p.wz0, pz, e);
+    p.pos.y = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
+    p.vel.set(0, 0, 0); p.speed = 0; p.grounded = true;
+    if (u >= 1) { p.wallSt = 'hold'; p.wallT = 0; }
+    return;
+  }
+
+  // ---- in cover
+  const st = stickWorld();
+  // JUMPING OUT COMES FIRST, because it is the one exit that must never be eaten by the grace
+  // period -- a thumb held away from the wall AND a tap is a man jumping off it, not a man
+  // walking off it.
+  if (p.jump) {
+    p.jump = 0;
+    p.vel.y = MOVE.jump; p.vel.x = W.nx * WALL.jump; p.vel.z = W.nz * WALL.jump;
+    p.grounded = false; p.coyote = 0; p.airT = 0; p.jumps = 1;
+    snd('swoosh', { r: 1.45, g: .34 });
+    wallDrop(1);
+    return;
+  }
+  // AND LETTING GO IS A HOLD, NOT A FRAME. *"You really have to press directly away."* `off` is
+  // harder than `into` on purpose, and the grace clock is what lets a diagonal shimmy overshoot
+  // it for a moment without dropping him.
+  const away = st.mag > .3 ? st.x * W.nx + st.z * W.nz : 0;
+  if (away > WALL.off) p.wallOff += dt; else p.wallOff = 0;
+  if (p.wallOff >= WALL.grace) { wallDrop(0); return; }
+
+  // ---- the shimmy. The stick's component ALONG the face, and nothing else: pushing into the
+  //      wall does nothing, which is right, and a diagonal is simply its sideways part.
+  const tx = -W.nz, tz = W.nx;
+  const side = clamp(st.mag > .18 ? st.x * tx + st.z * tz : 0, -1, 1);
+  p.wallSide = Math.abs(side) > .14 ? side : 0;
+  p.speed = Math.abs(p.wallSide) * WALL.speed;
+  if (p.wallSide) {
+    const nx = p.pos.x + tx * p.wallSide * WALL.speed * dt;
+    const nz = p.pos.z + tz * p.wallSide * WALL.speed * dt;
+    // **RE-FOUND EVERY FRAME RATHER THAN CLAMPED TO THE LATCHED BOX**, because a building's wall
+    // is a RUN of merged column boxes -- shimmying has to carry across them. And a face whose
+    // normal disagrees with the one he latched is a different wall: at the end of a run there is
+    // nothing to find and he simply stops, which IS the end of the cover.
+    const W2 = wallFind(nx, p.pos.y, nz, p.r + WALL.reach);
+    if (W2 && W2.nx * W.nx + W2.nz * W.nz > .7) p.wall = W2;
+    else p.wallSide = 0;
+  }
+  const V = p.wall;
+  p.pos.x = V.cx + V.nx * (p.r + WALL.stand);
+  p.pos.z = V.cz + V.nz * (p.r + WALL.stand);
+  p.pos.y = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
+  p.vel.set(0, 0, 0); p.grounded = true; p.airT = 0; p.jumps = 0;
+}
+
 // THE FLIP ITSELF. Started from two places -- the second jump and the backflip release -- so
 // it is a function: two copies is two things to keep in step, and the clip scaling is the part
 // that would drift. **IT IS STRETCHED TO THE AIR HE HAS LEFT**, because a clip played at 1x is
@@ -5675,6 +5868,10 @@ function stepPlayer(dt) {
   // clause on the one below: sharing that condition would have it cancel itself on the frame it
   // began. It owns the body the way they do (its own drive, its own gravity, the real collider)
   // and it is not cancellable, because a blow the next input truncates never reads as landing.
+  if (p.wallCool > 0) p.wallCool = Math.max(0, p.wallCool - dt);
+  // COVER OWNS THE BODY, so it sits with the other states that do -- above the gait, below the
+  // slam, and it returns.
+  if (p.wall) { stepWall(dt); return; }
   if (p.slam) {
     p.slamT += dt;
     if (p.slamT < SLAM.hang) { p.vel.y = 0; }      // the wind-up: he hangs
@@ -5836,6 +6033,23 @@ function stepPlayer(dt) {
     }
   }
 
+  // ---- HOLD THE LOCOMOTION STICK INTO A WALL AND HE TAKES COVER (m89) ----
+  //      *"When you become close to a wall, if you're just pressing and holding the locomotion
+  //      stick toward the wall, he'll naturally go into cover."* No button and no second
+  //      gesture: the thumb that walks him at it is the thumb that latches him to it, which is
+  //      why `into` is a DOT rather than a distance -- brushing past a wall while running along
+  //      it does not stick to it, and walking at it does.
+  {
+    const busy = p.melee || p.roll || p.chargeGo || p.slam || p.knock || p.land || p.block ||
+                 p.center || p.aim || p.charge || p.bkOn;
+    if (!busy && p.grounded && p.wallCool <= 0 && s.mag > .45) {
+      const W = wallFind(p.pos.x, p.pos.y, p.pos.z, p.r + WALL.reach);
+      if (W && -(s.x * W.nx + s.z * W.nz) > WALL.into && rig.actions[WALL.clips.in]) {
+        wallGo(W); return;
+      }
+    }
+  }
+
   // ---- ordinary locomotion ----
   // AIMED, HE FACES THE SHOT AND TRAVELS WHEREVER THE THUMB SAYS -- which is a STRAFE, and it
   // is why `plant` has to go to zero here. `plant` swings the velocity onto his facing as he
@@ -5951,6 +6165,18 @@ function rigAnim(dt) {
   if (p.roll) { t[CLIPS.roll] = 1; setWeights(t, dt); return; }
   if (p.melee) { t[p.meleeName] = 1; setWeights(t, dt); return; }
   if (p.chargeGo || p.slam) { t[CLIPS.chargeGo] = 1; setWeights(t, dt); return; }
+  // WALL COVER. The entry clip's LAST FRAME is the cover idle -- `clampWhenFinished` holds it,
+  // so a pose nobody drew comes for free and the shimmy simply blends over it and back.
+  if (p.wall) {
+    if (p.wallSt === 'out') { t[WALL.clips.out] = 1; setWeights(t, dt); return; }
+    const sh = p.wallSt === 'hold' && p.wallSide ? wallShimmy(p.wallSide) : null;
+    if (sh) {
+      const r = clamp(Math.abs(p.wallSide) * WALL.speed / WALL.ref, .4, WALL.rateHi);
+      setScale(sh.nm, sh.rev ? -r : r);
+      t[sh.nm] = 1;
+    } else t[WALL.clips.in] = 1;
+    setWeights(t, dt); return;
+  }
   // THE GUARD, WHEN THERE IS A CLIP FOR IT. An empty name falls straight through to the gait,
   // so this line costs nothing until the clip lands and needs no second branch when it does.
   if (p.block && CLIPS.block && rig.actions[CLIPS.block]) { t[CLIPS.block] = 1; setWeights(t, dt); return; }
@@ -7930,6 +8156,7 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
     p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.hurtNm = ''; p.meleeAir = 0;
+    p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool;
     whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
   } else {
     p.vel.x += Math.sin(dirH) * push;
@@ -8306,7 +8533,9 @@ function frame() {
     const p = player;
     // A SWING THAT CONNECTED SAYS SO. "It hit him before the swing" and "it never reached him"
     // are opposite bugs and identical from a phone, and the sweep can now produce either.
-    const st = p.roll ? 'roll'
+    const st = p.wall ? 'WALL' + (p.wallSt === 'in' ? '\u2193' : p.wallSt === 'out' ? '\u2191'
+                 : p.wallSide > 0 ? '\u2192' : p.wallSide < 0 ? '\u2190' : '\u00b7')
+      : p.roll ? 'roll'
       // WHICH OPENER IT TOOK. "The tackle never fires" and "it fired and reached nobody" are
       // opposite bugs and one picture from a phone, and `runT` is the thing it is gated on.
       : p.melee ? (p.meleeAir ? 'KICK' : p.meleeName === MELEE.slide ? 'TACKLE'

@@ -1040,6 +1040,70 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **WALL COVER, AND THE WHOLE THING RESTS ON A FACT THIS GAME HAD NEVER ASKED FOR (m89, `WALL`,
+  `wallFind`, `wallGo`, `stepWall`).** *"We have the animation from standing to wall. I only put
+  in one standing-to-wall animation, so he'll always land in the equivalent of wall cover right --
+  wall cover left and right are just him with his belly facing away from the wall, so he's
+  flipped 180 back against it. Any sort of shimmy left and shimmy right. When you become close to
+  a wall, if you're just pressing and holding the locomotion stick toward the wall, he'll
+  naturally go into cover. You can use the locomotion stick to go left and go right, and then if
+  you push away from the wall -- we'll have a little bit of a grace period for the moving left and
+  right, and you really have to press directly away from the wall to get off of it. Or jump."*
+  **WHERE IS A WALL AND WHICH WAY DOES IT FACE.** `resolveBoxes` pushes him OUT of things and
+  `groundAt` reads tops; nothing here has ever been able to name a FACE. `BOXES` is axis-aligned
+  -- m24 keeps every placement on a quarter turn for exactly this class of reason -- so **the
+  closest point on a box's FOOTPRINT gives the distance to the face AND its outward normal in one
+  step**: `clamp` per axis, then the vector from that point to him. No per-face tests, right
+  whichever side he comes at, and **being INSIDE the footprint returns nothing**, which is what
+  stops him latching onto the roof he is standing on. Shredworld's `ledgeGrab` rule, and **the
+  LEDGE build wants this same function** -- which is the real reason this one went first.
+  **NO BUTTON AND NO SECOND GESTURE.** The thumb that walks him at a wall is the thumb that
+  latches him to it, which is why `into` is a DOT and not a distance: running ALONG a wall does
+  not stick to it and walking AT it does.
+  **AND LETTING GO IS A HOLD, NOT A FRAME.** `off` .62 is deliberately harder than `into` .45 --
+  *"you really have to press directly away"* -- and `grace` .30 is the clock on top, which is
+  what lets a diagonal shimmy overshoot for a moment without dropping him. The jump is tested
+  FIRST, because it is the one exit that must never be eaten by the grace period.
+  **FOUR OF THE NUMBERS SCALE WITH HIM (m52's rule) AND ONE DELIBERATELY DOES NOT.** How tall a
+  thing has to be to hide you, where your chest is, how far your back sits off a wall and how
+  close is close enough are all facts about his BODY -- and a typed 1.2 m is cover for a 1.75 m
+  man and a wall a 1.25 m man cannot use. Measured over the test site, `SZ` .714:
+      tall 0.857   chest 0.679   latch 0.636 m off the face   standoff 0.457 m
+      typed        6 of 10 boxes were cover
+      x SZ         **8 of 10** -- the 1.15 m and the 1.00 m blocks come in, and both are over
+                   his chest, which is what cover MEANS. The 0.40 and 0.35 kerbs stay out.
+      the 14 x 1.2 m slab at (0,-18) is 9.3 s of shimmy end to end at `speed` 1.5
+  `speed` is NOT scaled: m53 is the build where he chose to keep his world speed at a smaller size.
+  **THE SHIMMY RE-FINDS THE FACE EVERY FRAME RATHER THAN CLAMPING TO THE LATCHED BOX**, because a
+  building's wall is a RUN of merged column boxes (m34) and sliding along it has to carry across
+  them. A face whose normal disagrees with the one he latched is a DIFFERENT wall, so at the end
+  of a run there is nothing to find and he simply stops -- which IS the end of the cover, with no
+  edge test written. And the move is the stick's component ALONG the face and nothing else, so
+  pushing into the wall does nothing and a diagonal is just its sideways part.
+  **THE ENTRY CLIP'S LAST FRAME IS THE COVER IDLE, FOR FREE.** `clampWhenFinished` holds it, so a
+  pose nobody drew costs nothing and the shimmy blends over it and back. And the entry animates
+  IN PLACE (hips XZ 0.000 on all five wall clips), so **the STEP to the wall is code** -- he is
+  lerped onto the standoff across `inDur`, which is what makes it read as an approach rather than
+  as a snap with an animation over it.
+  **AND THERE IS NO UNARMED `wall_cover_move_right`, SO IT IS THE LEFT ONE PLAYED BACKWARDS.** A
+  shimmy is a symmetrical slide, so a negative `timeScale` IS the other direction -- and unlike
+  Shredworld's `aimBack` this needs **no clone**, because only one direction is ever live at a
+  time and there is nothing to weight against itself. The RIFLE set has both drawn and uses them,
+  picked off `slotNow().aim`.
+  **`+side` IS HIS RIGHT, AND THE SIGN CANNOT DISAGREE WITH THE MOTION** because the clip picker
+  and the move read the same tangent: he faces along the normal, his right is `(-fz, fx)`, and
+  with `f = (nx, nz)` that is `(-nz, nx)`.
+  **THE TWO TRANSITIONS ARE IN `ONCE` AND THE TWO SHIMMIES MUST NOT BE** -- a looped stand-up is
+  a man getting up for ever, and a one-shot shimmy stops after one cycle.
+  **STATED GAPS.** `WALL.ref` 1.2 is a **guess, not a measurement**: the shimmy clip animates in
+  place, so there is no authored travel to read the way `npm run gait` reads a walk, and `mel.WALL
+  .ref` is the dial if his feet slide. There is **no desktop binding needed** (this is the LEFT
+  pad, which the keys already drive) but **no corner turn**: he stops at the end of a face rather
+  than rounding it, which is honest and is what the clips support. And nothing in this container
+  can build a skin, so whether the entry reads at x1.9 and whether the belly-out pose lines up
+  with the face are device questions -- `mel.WALL` is live. The chip says
+  `WALL(down/up/left/right/dot)`.
+
 - **THREE OF HIS FOUR ASKS WERE ALREADY MACHINERY WITH EMPTY HOOKS (m88).** *"That slide tackle
   can now be if you're running and you melee -- it becomes the first link in the melee sequence,
   but I want it to only trigger if you've actually got a few steps in, not just if you're holding
