@@ -1040,6 +1040,86 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A BLOW YOU CAN SEE LAND, AND THE SWEEP HAD KNOWN EXACTLY WHERE SINCE m20 (m94, `MFX`,
+  `meleeHit`, the limb trail).** *"The sound adds a lot to the illusion of melee connection, but
+  with the sound off, when I'm swinging my gun on the melee stick it doesn't feel like you're
+  connecting with them visually -- there's something missing. There needs to be something where
+  the collider connects with the character and there's a physical visual aid at the connection
+  point, because right now it just does not feel or look like you're actually hitting anything.
+  And I want the slashes on all of them no matter what you're holding: if he's punching it's the
+  fist, if it's the hammer it's the tip of the hammer, if it's the gun it's part of the gun, if
+  he's doing a kick it's his feet."*
+  **HIS LIST IS ONE MECHANISM, AND IT WAS ALREADY BUILT.** m20's sweep tests a SEGMENT from each
+  limb's last world position to this one -- both hands, both feet and the weapon's far end -- so
+  *"the fist / the hammer tip / part of the gun / his feet"* is not four cases to write: **it is
+  what the collider is already MADE of.** `segBody` solved the closest approach along that segment
+  and returned a boolean; it fills `_hitP` now, on HIS SURFACE at the limb's own height rather
+  than at the limb's centre, because a spark inside a man's chest is a glow and one on the face
+  the blow came in by is an impact. **The blow and the mark it leaves cannot disagree about where
+  they were, because there is one answer.**
+  **AND THE MARK IS THREE THINGS, WHICH IS m39'S OWN SPLIT** -- a core FLASH that GROWS as it
+  fades (one that only dims reads as a light being turned down; one that expands reads as
+  something ARRIVING), a radial BURST that says how hard, and **the body lighting up**, which is
+  what makes it something happening TO him rather than particles that happened nearby. That last
+  one is m71's own stated gap: *"a melee hit does not flash the body -- `bodyFlash` is called
+  from exactly one place, the bolt's impact swarm, so a shot lights the mesh up and a punch does
+  not. One line in `dummyBlow` would do it, and it is left out here so the kickback can be judged
+  on its own."* This is the build it belongs to, and it went where the CONTACT is rather than in
+  `dummyBlow`, so it lands with the spark instead of a frame apart from it.
+  **THE WHOLE THING SCALES WITH `power`**, so a jab sparks and the finisher is an event -- the
+  ball's own rule (m36), where one number drives the picture and the consequence together.
+- **AND THE SLASH IS THE LIMB'S OWN PATH, NOT A CARD (m94, `MFX.trail`).** Shredworld draws a
+  camera-facing sprite for this and spent **three builds** on its orientation alone -- c91 built
+  it as a `Sprite`, c153 rolled it to the blow's screen angle, c160 found that *"a billboard is
+  camera-facing BY DEFINITION, so every fix after it was choosing which way a flat sticker lay on
+  the GLASS"* and had to lay it flat in the world instead.
+  **THERE IS NOTHING TO ORIENT HERE.** Sparks dropped along `q -> _sw` with no velocity and a
+  0.12 s life ARE the arc the weapon actually swept, in the world, from whichever limb swept it
+  -- which is the bolt's own streak (m39) pointed at a fist. It is right by construction for
+  every weapon, every clip and every clip not drawn yet, it needs no per-clip constant, and **it
+  costs no second draw call because the pool is one.**
+  **IT FOLLOWS THE FASTEST LIMB AND ONLY THAT ONE.** Every bone over a threshold is four streaks
+  and a smear; a slash is ONE stroke, and the limb doing the striking is by definition the one
+  moving quickest through his own frame -- a number the sweep computes per bone anyway. **So the
+  speed test moved OUT of the window**: `MFX.swing` .8 is well under `STRIKE.swing` 2.4, because
+  a trail that only appeared once a blow could count would start half way through the swing it is
+  drawing.
+  **AND A FLASH CARRIES ITS OWN STACK NOW.** `stepFlashes` had `[2.6, 4.2, 6.4]` written into it
+  as a literal -- the BOLT's three sprites -- so a fist landing would have been drawn at the
+  plasma impact's proportions whatever size it asked for. A record names its own multipliers and
+  the bolt's are the default: **a second producer reading the first one's constants is the same
+  fault as two places answering one question**, one table down.
+- **A BEAT, A CONTACT FRAME AND A LUNGE BELONG TO THE CLIP, NOT TO A CHAIN POSITION (m94,
+  `MELEE.clip`, `clipOf`).** *"There's a spinning melee, and the actual arc of the spin where he's
+  doing the attack -- they don't usually even react to it. It's like once he's settled and he kind
+  of spins back, that's when they hit. I think we might need to slow that one down, and also we
+  need to make sure the right part of that animation is connecting."*
+  **`beat`, `at`, `lunge` AND `power` ARE ALL READ `[Math.min(ix, len - 1)]`**, which m86 wrote
+  down as costing nothing -- *"a four-link chain needs nothing: the fourth link inherits the
+  finisher's numbers"* -- and that is true of `power` and false of the other three the moment the
+  fourth clip is not a fourth punch. `weapon_melee_04` is the renamed
+  `Standing_Melee_Attack_360_High`, and a 360 is not a jab with a different index:
+      beat    .82 on a **1.750 s** clip -> **x2.13**, which is his "slow that one down" exactly
+      lunge   the finisher's 9.0, capped by `lungeMax` to **4.6 m of travel** -- a spin thrown
+              ON THE SPOT was crossing four and a half metres mid-arc, so where he IS when the
+              swing passes is different every time. That is a real candidate for the reaction
+              not lining up with the arc, and it is stated as a candidate rather than as the
+              diagnosis.
+      at      .32, a fraction authored for a punch
+  1.25 / .55 / 2.2 / 2.6, so the clip plays at **x1.40** and the spin covers about 1.6 m.
+  **`at` .55 IS A GUESS AND IS MARKED AS ONE**, the taunt beats' rule (m65): a jab has an obvious
+  contact frame and a full turn does not, and **nothing in this container can pose a skin** to
+  measure one -- every character GLB is draco and `DRACOLoader` wants a Worker.
+  **SO THE CHIP REPORTS THE `u` THE BLOW ACTUALLY FIRED AT.** `melee4@0.62!` -- `MELEE.at` says
+  where the WINDOW OPENS and the sweep says where the limb actually ARRIVED, so a swing whose arc
+  is at 0.45 and whose blow reads `@0.88` names its own fault, and *"it connects at the wrong part
+  of the animation"* stops being a sentence and becomes a number. That is the honest shape of the
+  half of this build I cannot measure from here.
+  **WHAT IS UNVERIFIED AND WHY:** whether the spark reads as a connection, whether the trail reads
+  as a slash or as fairy dust, and where in `weapon_melee_04` the arc really passes are all device
+  questions for the reason above. `mel.MFX` is live (`trail = 0` and `on = 0` are the two A/Bs),
+  and `mel.MELEE.clip` is the 360's four numbers.
+
 - **THE TACKLE WAS SOLVED SHORT AND THEN COULD NOT CONNECT, AND BOTH ARE ONE WORD: IT IS NOT A
   SWING (m93, `MELEE.slideFree`, `STRIKE.bodyAt`/`bodyR`/`bodyFrom`).** *"When I'm running and I
   melee, if you're far away from an enemy he does a nice long slide tackle -- but when I'm closer
