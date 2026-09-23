@@ -1040,6 +1040,73 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE TACKLE WAS SOLVED SHORT AND THEN COULD NOT CONNECT, AND BOTH ARE ONE WORD: IT IS NOT A
+  SWING (m93, `MELEE.slideFree`, `STRIKE.bodyAt`/`bodyR`/`bodyFrom`).** *"When I'm running and I
+  melee, if you're far away from an enemy he does a nice long slide tackle -- but when I'm closer
+  to them it seems to cut it short, and it's also not hitting them very well. I've managed to hit
+  them a little bit but most of the time I just slide a short distance to them and it doesn't even
+  hurt them. Maybe we need to put bigger collide on his hands or feet."* Three faults, and his
+  three sentences name them in order.
+  **1. THE DISTANCE WAS THE MAN'S, NOT THE MOVE'S -- WHICH IS m51 DOING EXACTLY WHAT m51 IS FOR.**
+  The lock inverts `v * dur * carryAvg` so a swing lands ON him, and that is why a man at arm's
+  length gets a JAB thrown on the spot. Read straight off the shipped line:
+      nobody in front   melV 9.00   travel **6.20 m**   <- the "nice long" one
+      a man at 3 m      melV 3.27   travel **2.25 m**
+      a man at 2 m      melV 1.81   travel **1.25 m**
+      a man at 8 m      melV 10.53  travel  7.25 m
+  **A jab on the spot is right and a SLIDE on the spot is not a slide.** So the solve may only
+  ever LENGTHEN this one: the floor is its own `slideV` and the lock reaches further, never
+  nearer. Sliding THROUGH him is what a slide tackle IS, and `hitAll` plus the swept limb already
+  catch everybody he passes -- m43's own argument about the dash, one move over.
+  **2. AND `STRIKE.swing` IS WHY IT BARELY CONNECTED.** That gate asks whether the limb is moving
+  **in HIS OWN FRAME** -- the root's travel deliberately taken back out, which is the whole test
+  for a swung arm against a carried one, and which m20 was right to build. `slide_kick` extends
+  the leg ONCE and then holds it out while the body slides, so for nearly all of the move the
+  boot's own-frame speed is near zero and **the sweep never counted at all.** `flying_kick` is the
+  same shape: a held pose thrown across the air.
+  **SO THE QUESTION BRANCHES RATHER THAN THE THRESHOLD MOVING** -- these two are the BODY
+  arriving, which is m45's own sentence about the dash. `STRIKE.bodyAt` reads the ROOT's speed
+  instead: live from u .08 to u **.87** of the tackle, which is nearly all of the travel, and it
+  shuts by itself as the bleed runs out, which is the slide ending.
+  **3. AND THE CONTACT IS HIS LEG, NOT HIS KNUCKLE**, which is the "bigger collide" he asked for.
+  `STRIKE.r` is 18.6 cm on a 1.25 m body; `bodyR` is 44 cm -- and **because the sweep is a SPHERE,
+  the same number widens the HEIGHT margin**, which is what lets a kick thrown from above reach a
+  man's head. One constant, all three axes, by construction rather than as a special case.
+  **AND A BODY MOVE'S WINDOW STAYS LIVE RATHER THAN CLOSING ON THE FIRST MAN.** `p.melFired` gates
+  an ordinary strike to one connect, which is right for a swing and wrong for a six-metre slide
+  through a line of men -- `d.cool` already stops any one of them being hit twice, so he takes
+  them one at a time as he reaches each.
+  **IT TRIPS THEM NOW (`slidePow` .78).** *"I'm thinking I'm gonna maybe have it trip them and
+  have them fall over -- at very least it should deliver some damage."* It took `power[0]` .45,
+  under every kind's `fling` (.70 on the warrior, .55 on the rest), so it could only ever stagger.
+  .78 clears all of them and `dummyBlow` grades the launch from `fly0` across `fling..1` SQUARED:
+      warrior   k .489  ->  **11.7 m/s out, 4.2 up**   against the finisher's 24 / 8.5
+      the drunks and the skater  k .594  ->  15.4 out   -- a skinny man goes further, which is right
+  **AND THE DAMAGE STAYS MODEST, WHICH IS HIS OWN SENTENCE.** *"Maybe a disarmed melee is just not
+  that strong, which it probably shouldn't be."* `slideDmg` 1.1 against a fist's .8 and the
+  finisher's 3.2 -- it costs more than a punch because you had to run at him for it.
+- **AND THE FLYING KICK HAD NO LOCK AT ALL (m93, `MELEE.airMax`).** *"I want the flying kick to
+  sort of aim assist -- even if you're up in the air and you're a little bit above them, if you
+  flick the melee stick more or less towards them I want it to target them and I want to hit
+  them."* `kickGo` set `p.melTgt = null` and never called `meleeLock`, so **the one move thrown
+  from furthest away was the one with no assist on it.**
+  **IT NEEDED NO VERTICAL TERM, WHICH IS WORTH SAYING BECAUSE IT IS THE OBVIOUS THING TO ADD.**
+  `aimAt` is purely horizontal, so being above him does not change his bearing and the cone was
+  never the problem up there. What was missing is the SWEEP's own height margin, and `bodyR`
+  widens it as a side effect of being a sphere.
+  Same reach-is-what-it-delivers rule as everything else here (m20, m72): the acquire radius is
+  `airMax + arrive`, so a man past what the kick can cover is refused rather than aimed at and
+  fallen short of -- and the solve is a FLOOR here too, doubly so, because a kick that shortens
+  itself lands him on the floor beside the man. Floor 5.85 m, out to 8.50 at the acquire edge.
+  **AND THE CHIP CARRIES THE TRAVEL** (`TACKLE6.2!`, `KICK5.9`). *"It seems to cut it short"* is a
+  MEASUREMENT, and it is the one thing that tells "the solve shortened it" from "it travelled and
+  went through him" apart from a phone. `!` is still the connect.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin, so whether a 44 cm
+  sweep radius reads as generous or as a phantom hit, and whether 6.2 m is the right floor for a
+  slide, are device questions. The arithmetic -- the travels, the windows, the launch `k` and the
+  damage -- is above and was. `mel.MELEE.slideFree = 0` is the one word back to m88, and
+  `mel.STRIKE.bodyR` / `mel.MELEE.slidePow` are the two dials.
+
 - **THE BACKFLIP LAUNCHED ON THE FRAME OF THE RELEASE AND THE CLIP LEAVES THE GROUND A THIRD OF
   A SECOND LATER (m92, `flipMarks`'s `off`, `p.bkHang`).** *"The backflip charge is cool and works
   mostly right. The problem is when you release to do the backflip, the upward velocity starts way

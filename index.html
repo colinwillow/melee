@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m92</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m93</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m92</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m93</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm92';
+const BUILD = 'm93';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -870,6 +870,29 @@ const MELEE = {
   // different values: the lunge, the bleed, the swept limb, the lock and the camera all come
   // with them, and there is nothing new to keep in step.
   slide: 'slide_kick', slideDur: .95, slideV: 9.0, slideMax: 7.5,
+  // **AND A TACKLE'S DISTANCE IS ITS OWN, NOT THE MAN'S (m93).** *"If you're far away from an
+  // enemy he does a nice long slide tackle, but when I'm closer to them it seems to cut it
+  // short."* Exactly that, and it is m51's solve doing precisely what m51 built it to do: the
+  // lock inverts `v * dur * carryAvg` so the swing lands ON him, which is why a man at arm's
+  // length gets a JAB thrown on the spot. Measured through the shipped line:
+  //     nobody in front   melV 9.00   travel 6.20 m   <- the "nice long" one
+  //     a man at 3 m      melV 3.27   travel **2.25 m**
+  //     a man at 2 m      melV 1.81   travel **1.25 m**
+  // A jab thrown on the spot is right; a SLIDE thrown on the spot is not a slide. So the solve
+  // may only ever LENGTHEN this one -- it reaches a man further out and never shortens to one
+  // close in, and sliding THROUGH somebody is what a slide tackle IS. `hitAll` and the swept
+  // limb already catch everybody he passes, which is m43's own argument one move over.
+  slideFree: 1,        // `mel.MELEE.slideFree = 0` is the one word back to the m88 solve
+  // **AND IT TRIPS THEM.** *"I'm thinking I'm gonna maybe have it trip them and have them fall
+  // over -- at very least it should deliver some damage."* It took `power[0]` .45, which is
+  // under every kind's `fling` (.70 on the warrior, .55 on the rest), so it could only ever
+  // stagger. .78 clears all of them and `dummyBlow` then grades the launch from `fly0` across
+  // `fling..1` SQUARED -- so on a warrior it is k .489, **11.7 m/s out and 4.2 up**: a man
+  // tripped and going over, and nowhere near the finisher's 24 / 8.5.
+  // **THE DAMAGE STAYS MODEST, WHICH IS HIS OWN SENTENCE.** *"Maybe a disarmed melee is just
+  // not that strong, which it probably shouldn't be."* 1.1 against a fist's .8 and the
+  // finisher's 3.2 -- it costs more than a punch because you had to run at him for it.
+  slidePow: .78, slideDmg: 1.1,
   // **AND IT IS A FEW STEPS IN, NOT A DIRECTION HELD.** *"I want it to only trigger if you've
   // actually got a little bit of like a few steps in. It's not just like if you're holding a
   // direction."* `p.goT` is how long he has been ASKING to move, which is exactly the thing he
@@ -879,6 +902,14 @@ const MELEE = {
   // the flying kick ends when he MEETS the ground -- `slamGo`'s rule, and the opposite of every
   // other strike, which end when he leaves it. One per airtime, or it is a flutter kick.
   air: 'flying_kick', airDur: .85, airV: 9.5,
+  // **AND IT AIMS (m93).** *"I wanna be able to do the flying kick too in the air, and I want
+  // the flying kick to sort of aim assist -- so even if you're up in the air and you're a
+  // little bit above them, if you flick the melee stick more or less towards them I want it to
+  // target them and I want to hit them."* `kickGo` set `p.melTgt = null` and never called
+  // `meleeLock` at all, so the one move thrown from furthest away was the one with no assist
+  // on it. It is the SAME lock the ground strikes use and it needed no vertical term:
+  // `aimAt` is purely horizontal, so being above him does not change his bearing.
+  airMax: 8.5, airPow: .78, airDmg: 1.1,
   finishRange: 26,     // how far the charged swing may ACQUIRE. A little past `finishReach` on
                        // purpose, and no further: a lock it cannot deliver is worse than none.
   // and what each one is worth. The finisher and the charged swing put him down outright.
@@ -1060,6 +1091,31 @@ const STRIKE = {
   dashFrom: .55,
   to: 1.0,           // and runs to the end of the strike
   swing: 2.4,        // m/s IN HIS OWN FRAME. Under this a limb is being carried, not swung.
+
+  // **A TACKLE AND A FLYING KICK ARE NOT SWINGS, AND `swing` IS WHY THEY BARELY CONNECTED
+  // (m93).** *"It's also not hitting them very well. I've managed to hit them a little bit but
+  // most of the time I just slide a short distance to them and it doesn't even hurt them.
+  // Maybe we need to put bigger collide on his hands or feet."*
+  // `swing` asks **is the limb moving through HIS OWN FRAME** -- the root's travel is taken
+  // back out, which is exactly right for a punch and is the whole test for whether an arm is
+  // being swung or merely carried. `slide_kick` extends the leg ONCE and then holds it out
+  // while the body slides, so for nearly all of the move the boot's own-frame speed is near
+  // zero and **the sweep never counted at all.** Same for `flying_kick`, which is a held pose
+  // thrown across the air.
+  // **SO THE QUESTION BRANCHES RATHER THAN THE THRESHOLD MOVING.** For these two the blow IS
+  // the body arriving -- m45's own sentence about the dash, one move over -- so the gate reads
+  // the ROOT's speed instead. At a tackle's 9 m/s it is plainly open, and it shuts by itself as
+  // the bleed runs out, which is the slide ending.
+  bodyAt: 2.2,       // m/s of ROOT travel under which a body move is not arriving at anybody
+  // AND THE CONTACT IS HIS WHOLE EXTENDED LEG, NOT HIS FIST. `r` is a knuckle (18.6 cm on a
+  // 1.25 m body); a man sliding legs-first presents far more than that, which is the "bigger
+  // collide" he asked for -- and because the sweep is a SPHERE of this radius, widening it
+  // widens the HEIGHT margin by the same number, which is what lets a kick thrown from above
+  // reach a man's head. Same constant, both axes, by construction.
+  bodyR: .62 * SZ,
+  // and the window is a fraction of the STATE rather than of the authored contact frame,
+  // because a body move HAS no single contact frame -- the contact is the travel.
+  bodyFrom: .08,
 };
 
 // HOW THE HAMMER SAYS IT IS LOADED. See `stepKit`'s wind-up for why it is sparks and an
@@ -4626,7 +4682,7 @@ const player = {
   jump: 0, jumps: 0, fallV: 0,
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
   hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0,   // the reaction clip, and the knock-down's own clock
-  runT: 0, airKick: 0, meleeAir: 0,     // how long he has actually been running, and the air kick
+  runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   swap: 0, swapTo: 0, swapT: 0, swapDone: 0,   // the reach into the backpack
   bkT: 0, bkOn: 0, bkHang: 0, bkVy: 0,  // the charge, the duck, and the PUSH he is held on the
@@ -4908,7 +4964,22 @@ function kickGo(h) {
   p.airKick = 1; p.meleeAir = 1; p.flip = ''; p.bkHang = 0;   // the kick owns the body
   p.melee = 1; p.meleeIx = 0; p.meleeT = 0; p.meleeName = nm; p.meleeDur = MELEE.airDur;
   p.meleeChain = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
-  p.melTgt = null; p.melV = MELEE.airV;
+  p.meleeBody = 1;                    // the blow is him arriving -- see `STRIKE.bodyAt`
+  // **IT AIMS NOW (m93).** The SAME lock the ground strikes use, on the same reach-is-what-it-
+  // delivers rule: the acquire radius is what this move can actually cover, so a man past it is
+  // refused rather than aimed at and fallen short of. And it needs no vertical term -- `aimAt`
+  // is horizontal, so being above him does not change his bearing; what was missing up there is
+  // the sweep's own height margin, which `STRIKE.bodyR` widens.
+  const spend = p.meleeDur * MELEE.carryAvg;
+  const vCap = Math.min(MELEE.maxV, MELEE.airMax / spend);
+  const L = meleeLock(h, MELEE.airMax + MELEE.arrive);
+  if (L) h = L.h;
+  p.melTgt = L ? L.d : null;
+  // the floor is its own speed, the lock may only reach FURTHER -- `MELEE.slideFree`'s rule,
+  // and doubly so here: a kick that shortens itself lands him on the floor beside the man.
+  p.melV = Math.max(L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : 0,
+                    Math.min(MELEE.airV, vCap));
+  p.melGap = p.melV * spend;
   p.heading = h; p.faceH = h; p.camWant = h;
   playOnce(nm, clipLen(nm) / p.meleeDur);
   snd('swoosh', { r: .92, g: .86 });
@@ -4947,6 +5018,7 @@ function meleeGo(h) {
   const name = tackle ? MELEE.slide : chain[ix];
   if (!rig.actions[name]) { note('NO CLIP ' + name); return; }
   p.melee = 1; p.meleeIx = ix; p.meleeT = 0; p.meleeName = name; p.meleeAir = 0;
+  p.meleeBody = tackle ? 1 : 0;   // see `STRIKE.bodyAt` -- the blow is him arriving
   p.meleeDur = tackle ? MELEE.slideDur : MELEE.beat[Math.min(ix, MELEE.beat.length - 1)];
   p.meleeChain = 0; p.melFired = 0; p.swPrev = null; p.swRootX = null; p.swRootZ = null;
   const base = tackle ? MELEE.slideV : MELEE.lunge[Math.min(ix, MELEE.lunge.length - 1)];
@@ -4975,7 +5047,12 @@ function meleeGo(h) {
   // how far a strike carries whether or not it found anybody.
   const spend = p.meleeDur * MELEE.carryAvg;
   const vCap = Math.min(MELEE.maxV, maxD / spend);
-  p.melV = L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : Math.min(base, vCap);
+  const solved = L ? clamp((L.dist - MELEE.arrive) / spend, 0, vCap) : Math.min(base, vCap);
+  // **AND A TACKLE'S SOLVE MAY ONLY LENGTHEN IT (m93).** See `MELEE.slideFree`: a jab thrown at
+  // a man at arm's length is a jab on the spot, and a SLIDE thrown on the spot is not a slide.
+  // So the floor is its own `slideV` and the lock is free to reach further, never nearer.
+  p.melV = tackle && MELEE.slideFree ? Math.max(solved, Math.min(base, vCap)) : solved;
+  p.melGap = p.melV * spend;          // how far this strike will actually carry him, for the chip
   // **AND THE LENS COMES ROUND WITH HIM (m81).** `h` here is the direction he ACTUALLY strikes
   // -- after `meleeLock` has had its say -- so a locked swing turns the camera onto the man
   // rather than onto the thumb, which is the same "one answer" rule the mark and the shot live
@@ -6029,17 +6106,31 @@ function stepPlayer(dt) {
     // it opens the window the sweep is allowed to count in, so a swing that misses misses.
     if (!p.roll) {
       const at = p.melee ? MELEE.at[Math.min(p.meleeIx, MELEE.at.length - 1)] : MELEE.finishAt;
-      const pw = p.melee ? MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)]
+      // **THE TWO OPENERS ARE BODY MOVES (m93)** -- the blow is him arriving rather than a limb
+      // swinging, so the sweep's gate, its radius and its window all branch on this one fact.
+      // `p.meleeBody` is latched where the move STARTS (`meleeGo`'s tackle branch and `kickGo`),
+      // never re-derived from the clip name here: two places deciding what a move IS is two
+      // places for them to disagree.
+      const body = !!(p.melee && p.meleeBody);
+      const pw = p.melee ? (body ? (p.meleeAir ? MELEE.airPow : MELEE.slidePow)
+                                 : MELEE.power[Math.min(p.meleeIx, MELEE.power.length - 1)])
                          : 1.0 * (p.chargeGoK || 1);
       // THE SWEEP RUNS EVERY FRAME even while the window is shut, because the previous
       // positions it measures against have to stay one frame old -- a sweep seeded three
       // frames back is a segment through half the room.
-      const dm = p.chargeGo ? FOE.dmg.finish : slotNow().charge ? FOE.dmg.weap : FOE.dmg.fist;
+      const dm = p.chargeGo ? FOE.dmg.finish
+               : body ? (p.meleeAir ? MELEE.airDmg : MELEE.slideDmg)
+               : slotNow().charge ? FOE.dmg.weap : FOE.dmg.fist;
       // A DASH IS OPEN FROM THE FIRST FRAME -- see `STRIKE.dashFrom`. At dash speed the whole
       // move is over in a few frames and the ordinary wind-up fraction puts the window behind
       // anybody standing close.
       const from = p.chargeGo && MELEE.dash ? STRIKE.dashFrom : STRIKE.from;
-      const hitB = strikeSweep(dt, pw, !p.melFired && u >= at * from && u <= STRIKE.to, dm);
+      // A BODY MOVE'S WINDOW IS A FRACTION OF THE STATE, not of the authored contact frame --
+      // there is no single contact frame on a six-metre slide, the contact IS the travel -- and
+      // it stays live rather than closing on the first man, which is what lets him take a line
+      // of them one at a time as he reaches each.
+      const open = body ? u >= STRIKE.bodyFrom : !p.melFired && u >= at * from;
+      const hitB = strikeSweep(dt, pw, open && u <= STRIKE.to, dm, body);
       if (hitB) {
         p.melFired = 1;
         // a hammer rings and a fist thuds -- the weapon decides, not the strike
@@ -7465,14 +7556,18 @@ function foeBarStep(d, dt) {
 // hit his BACK, so he goes over forwards.
 // A SWEPT SPHERE AGAINST A STANDING BODY. The body is a vertical cylinder, so the XZ problem
 // is a segment against a point and the height is one range test at the parameter it closes at.
-function segBody(a, b, cx, cz, rad, hTop) {
+function segBody(a, b, cx, cz, rad, hTop, hr) {
   const dx = b.x - a.x, dz = b.z - a.z, L2 = dx * dx + dz * dz;
   let t = L2 > 1e-9 ? ((cx - a.x) * dx + (cz - a.z) * dz) / L2 : 0;
   t = t < 0 ? 0 : t > 1 ? 1 : t;
   const ex = a.x + dx * t - cx, ez = a.z + dz * t - cz;
   if (ex * ex + ez * ez > rad * rad) return false;
   const y = a.y + (b.y - a.y) * t;
-  return y > -STRIKE.r && y < hTop + STRIKE.r;
+  // THE MARGIN IS THE SWEPT SPHERE'S OWN RADIUS, which is why a body move widens the height as
+  // well as the plan by passing one number -- a flying kick thrown from above his head reaches
+  // him for the same reason it reaches him from the side.
+  const m = hr == null ? STRIKE.r : hr;
+  return y > -m && y < hTop + m;
 }
 const _sw = new THREE.Vector3();
 // Runs every frame of a strike -- `live` only gates whether a contact COUNTS, because the
@@ -7481,7 +7576,11 @@ const _sw = new THREE.Vector3();
 // fist is the cheapest, the hammer costs more, the charged finisher costs most, and a bolt
 // carries its own. A kind with no `dmg` table -- the officer -- spends one hit point whatever
 // hit him, exactly as he always has.
-function strikeSweep(dt, power, live, dmg) {
+// **AND `body` IS WHETHER THE BLOW IS THE BODY ARRIVING RATHER THAN A LIMB SWINGING (m93).**
+// A tackle and a flying kick hold their pose and travel; a punch travels nothing and swings. So
+// the speed gate reads the ROOT for one and the LIMB's own frame for the other, and the sweep
+// radius is his leg rather than his knuckle. See `STRIKE.bodyAt` / `bodyR`.
+function strikeSweep(dt, power, live, dmg, body) {
   const p = player;
   const prev = p.swPrev || (p.swPrev = {});
   const dpx = p.pos.x - (p.swRootX == null ? p.pos.x : p.swRootX);
@@ -7496,17 +7595,26 @@ function strikeSweep(dt, power, live, dmg) {
     const key = wep ? '#weapon' : STRIKE.bones[i];
     const q = prev[key];
     if (!q) { prev[key] = _sw.clone(); continue; }
-    if (live && !hit) {
+    // A BODY MOVE CATCHES EVERY MAN IT PASSES, not the first one. `p.melFired` gates an
+    // ordinary strike to one connect, which is right for a swing and wrong for a six-metre
+    // slide through a line of men -- and `d.cool` already stops any one of them being hit
+    // twice, so the window can simply stay live for the whole travel.
+    if (live && (body || !hit)) {
       // IN HIS OWN FRAME -- the root's travel taken back out, or the lunge does the hitting.
       const lx = (_sw.x - q.x) - dpx, ly = _sw.y - q.y, lz = (_sw.z - q.z) - dpz;
-      if (Math.hypot(lx, ly, lz) / Math.max(1e-4, dt) > STRIKE.swing) {
+      const rad = body ? STRIKE.bodyR : STRIKE.r;
+      const fast = body ? Math.hypot(dpx, dpz) / Math.max(1e-4, dt) > STRIKE.bodyAt
+                        : Math.hypot(lx, ly, lz) / Math.max(1e-4, dt) > STRIKE.swing;
+      if (fast) {
         for (const d of DUMMIES) {
           if (d.cool > 0) continue;
-          if (!segBody(q, _sw, d.root.position.x, d.root.position.z, d.K.r + STRIKE.r,
-                       d.root.position.y + d.K.h)) continue;
+          if (!segBody(q, _sw, d.root.position.x, d.root.position.z, d.K.r + rad,
+                       d.root.position.y + d.K.h, rad)) continue;
           // the blow travels the way the LIMB was going, which is the direction already stored
           const bh = Math.atan2(_sw.x - q.x, _sw.z - q.z);
-          dummyBlow(d, Math.hypot(lx, lz) > .02 ? bh : p.faceH, power, dmg);
+          // ON A BODY MOVE THE DIRECTION IS HIS TRAVEL, because that is what is hitting
+          // him -- and `bh` is already it: the limb's WORLD delta on a held pose IS the root's.
+          dummyBlow(d, Math.hypot(lx, lz) > .02 || body ? bh : p.faceH, power, dmg);
           // **EVERY BODY THE LIMB PASSES THROUGH, NOT THE FIRST ONE (m36).** *"There were three
           // of them piled up and I was meleeing, but it would only ever hit one at a time."*
           // Exactly that: a `break` on the first hit, which is the right shape for a bullet and
@@ -8692,8 +8800,13 @@ function frame() {
       : p.roll ? 'roll'
       // WHICH OPENER IT TOOK. "The tackle never fires" and "it fired and reached nobody" are
       // opposite bugs and one picture from a phone, and `runT` is the thing it is gated on.
+      // **AND A BODY MOVE SAYS HOW FAR IT IS GOING (m93).** *"It seems to cut it short."*
+      // That is a MEASUREMENT, and the one thing that tells "the solve shortened it" from "it
+      // travelled and passed through him" apart from a phone. `TACKLE6.2!` is the good one.
       : p.melee ? (p.meleeAir ? 'KICK' : p.meleeName === MELEE.slide ? 'TACKLE'
-                   : 'melee' + (p.meleeIx + 1)) + (p.melFired ? '!' : '')
+                   : 'melee' + (p.meleeIx + 1))
+                  + (p.meleeBody ? (p.melGap || 0).toFixed(1) : '')
+                  + (p.melFired ? '!' : '')
       // THE SOLVED ARC, ON SCREEN. How far it leapt and how high is the whole of what he is
       // judging -- "it jumps through them" and "it falls short" are one word apart otherwise.
       : p.slam ? 'SLAM' + (p.slamDur || 0).toFixed(2) + (p.melFired ? '!' : '')
