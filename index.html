@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m99</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m100</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m99</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m100</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm99';
+const BUILD = 'm100';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -684,17 +684,44 @@ const AIR = {
   // At `fill` 1 and a floor of .62 the rate comes out 0.97 at a bare release, 0.79 at a half
   // charge and 0.68 at a full one -- floaty on the biggest jump, which is what a 2.3 m backflip
   // IS, and nowhere near the slow motion the old floor was guarding against.
-  // **AND THE PUSH STRETCHES WITH IT, WHICH IS DELIBERATE RATHER THAN OVERLOOKED.** `backGo`
-  // derives the hang back out of the same rate, so a full charge winds up for 0.49 s against
-  // 0.33 -- a deeper crouch for a bigger jump. Holding the push at 1x and slowing only the air
-  // was the alternative and it is worse twice over: it needs a second rate written onto the
-  // action mid-clip, and it puts the air at 0.48x rather than 0.68x.
   // **IT APPLIES TO THE FRONT FLIP TOO**, because it is the same fault: `front_flip`'s 0.667 s
   // against a double jump's ~1.0 s of air was ending a third of the way early as well. He named
   // the backflip because it is the one that hangs longest.
   // `mel.AIR.rateLo = 1` is the one word back to m87.
   fill: 1,
   rateHi: 1.6, rateLo: .62,
+
+  // **THE PUSH GETS ITS OWN RATE, AND m97 STRETCHED THE ONE PART OF THE CLIP NOBODY WANTED
+  // STRETCHED (m100).** *"Once you release the backflip you're just like on the ground for a
+  // bit -- the portion from being down released to then jumping is too long. Are we able to
+  // speed up just a segment of it?"* m97 fitted ONE rate to the whole clip, so slowing the air
+  // to fill a long hang slowed the leg extension with it -- and the bigger the jump, the longer
+  // he stood there before it:
+  //     charge 0.00   rate 0.965   push 0.333 / 0.965 = **0.345 s** on the floor after the lift
+  //     charge 1.00   rate 0.682   push 0.333 / 0.682 = **0.488 s**
+  // m97 wrote that up as a feature -- *"a deeper crouch for a bigger jump"* -- and named the
+  // second rate as the thing it was avoiding. It is the thing he is asking for, and half a
+  // second between a thumb leaving the pad and a body leaving the floor is not a crouch, it is
+  // **latency you can feel**, which is the one thing `SLAM.hang` gets to spend and a release
+  // does not.
+  // **AND IT IS AN ABSOLUTE RATE, NOT A MULTIPLIER ON THE AIR RATE** -- what has to be constant
+  // is the DELAY, because that is what the thumb is judging. Every charge now leaves the ground
+  // 0.151 s after the release and the AIR rate is untouched at m97's own numbers, so the
+  // rotation still fills the trip exactly as it did:
+  //     charge 0.00   push **0.151 s** (was 0.345)   air rate 0.965, unchanged
+  //     charge 0.50         0.151      (was 0.423)            0.788, unchanged
+  //     charge 1.00         0.151      (was 0.488)            0.682, unchanged
+  // **IT MAY ONLY EVER SPEED THE PUSH UP** (`max(airRate, pushRate)`): on a short hang the air
+  // rate is already over 1 and taking the push to a typed 2.2 would be the fix RE-BREAKING the
+  // case it is here for, one sign over.
+  // **AND THE SPLIT THAT LOOKS HONEST IS THE ONE m97 REJECTED.** Fitting the air SEGMENT
+  // (`air - off`, 0.792 s of clip) to the hang gives 0.792 / 1.649 = **0.48x**, which is the
+  // slow motion that note turned down -- so the air keeps reading `M.air / T`, which spans the
+  // push as well and is deliberately an approximation. The clip's landing frame therefore
+  // arrives a little before he does; the take-off frame, which is the one being complained
+  // about, now arrives exactly when he leaves.
+  // `mel.AIR.pushRate = 0` is the one word back to m97 (it floors at the air rate).
+  pushRate: 2.2,
 
   // ---- the charged backflip ----
   hold: .85,          // seconds of duck to a full charge
@@ -4984,6 +5011,7 @@ const player = {
   goT: 0,                          // how long he has been asking to move -- the gather
   jump: 0, jumps: 0, fallV: 0,
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
+  flipRate: 0, flipPush: 0,        // the AIR rate, and how long the push takes at its own (m100)
   hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0, knockDur: 0,   // the reaction clip, and the knock-down's own clock
   runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
@@ -5613,9 +5641,18 @@ function stepWall(dt) {
 // for over a second and a half, so at 1x one finishes a third of the way up and the other could
 // never be landed. The rate is clamped, because a clip played at half speed is slow motion
 // whatever the ballistics say.
+// **THE TAKE-OFF FRAME IS WHERE THE RATE DROPS (m100).** `timeScale` is read by the mixer every
+// update, so writing it here moves the clock from this frame on and leaves the clip exactly
+// where the push left it. **NEVER `reset()` or `playOnce` again** -- either rewinds the action to
+// the crouch, and playing the wind-up a second time in mid-air is the fault m92 removed.
+function flipAirRate() {
+  const p = player;
+  if (p.flip && p.flipRate > 0) setScale(p.flip, p.flipRate);
+}
+
 function flipGo(nm, T) {
   const p = player, M = FLIP[nm];
-  p.flip = ''; p.flipT = 0;
+  p.flip = ''; p.flipT = 0; p.flipRate = 0; p.flipPush = 0;
   if (!rig.actions[nm] || !M) return 0;
   // **THE CLIP IS FITTED TO THE TRIP IN BOTH DIRECTIONS NOW (m97).** See `AIR.rateLo`: the old
   // floor of 1 meant a big backflip was over with half a second of air still to run. `M.air` is
@@ -5623,10 +5660,19 @@ function flipGo(nm, T) {
   // lands the two together -- and `rateLo` is what stops a re-export or a retune turning that
   // into slow motion.
   const rate = clamp(M.air / Math.max(.2, T * AIR.fill), AIR.rateLo, AIR.rateHi);
+  // **AND THE PUSH PLAYS AT ITS OWN RATE (m100).** See `AIR.pushRate`: one rate for the whole
+  // clip meant a long hang slowed the leg extension too, so the bigger the jump the longer he
+  // stood on the floor after the release. It may only ever go FASTER than the air rate -- on a
+  // short hang that rate is already over 1, and a typed 2.2 there would be slowing the one
+  // segment this exists to shorten. A clip with no wind-up (`front_flip`, `off` 0.000) has no
+  // push to speed up and keeps one rate end to end, with no case of its own.
+  const push = M.off > .02 ? Math.max(rate, AIR.pushRate) : rate;
   // **THE FLIP CLOCK COVERS THE PUSH AS WELL AS THE AIR (m92)**, because the clip runs through
-  // both -- started at the launch, the push half plays under a table not asking for it.
-  p.flip = nm; p.flipDur = (M.off + M.air) / rate;
-  playOnce(nm, rate);
+  // both -- started at the launch, the push half plays under a table not asking for it. Each
+  // half is now measured at the rate it is actually played at.
+  p.flip = nm; p.flipRate = rate; p.flipPush = M.off / push;
+  p.flipDur = p.flipPush + M.air / rate;
+  playOnce(nm, push);
   // AND IT STARTS AT THE CROUCH, NOT AT FRAME ZERO. The wind-up is the pose he has been HOLDING;
   // playing it again is half a second of ducking after he has already left the ground. `from` is
   // 0 on a clip with no wind-up, so the front flip needs no case of its own.
@@ -5656,11 +5702,13 @@ function backGo(far, fired) {
   // **IT IS NOT LATENCY, IT IS THE PUSH** -- `SLAM.hang`'s own argument, and unlike that one it
   // is MEASURED off the clip, so a re-export moves it and a clip with no wind-up (`front_flip`,
   // 0.000) skips it with no case of its own.
-  const M = FLIP[CLIPS.flipBack];
-  const rate = M && p.flipDur > 0 ? (M.off + M.air) / p.flipDur : 1;
-  const hang = M ? M.off / rate : 0;
+  // **AND THE PUSH IS `flipGo`'s OWN ANSWER NOW, NOT ONE RE-DERIVED FROM `flipDur` (m100).**
+  // With two rates in the clip there is nothing to invert: the function that chose how fast the
+  // wind-up plays is the function that knows how long it takes, and a second derivation here is
+  // a second place for the clip and the physics to start disagreeing.
+  const hang = p.flipPush;
   if (hang > .02) { p.bkHang = hang; p.bkVy = vy; p.vel.x = p.vel.z = 0; p.vel.y = 0; }
-  else { p.vel.y = vy; p.grounded = false; p.coyote = 0; p.airT = 0; }
+  else { flipAirRate(); p.vel.y = vy; p.grounded = false; p.coyote = 0; p.airT = 0; }
   snd('swoosh', { r: 1.05 + k * .12, g: .40 + k * .16 });
   return 1;
 }
@@ -6544,6 +6592,7 @@ function stepPlayer(dt) {
     p.pos.y = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
     if (p.bkHang <= 0) {
       p.bkHang = 0;
+      flipAirRate();                      // the legs are done; the rest of the clip is the flip
       p.vel.y = p.bkVy; p.grounded = false; p.coyote = 0; p.airT = 0;
       snd('swoosh', { r: 1.05, g: .44 });
     }

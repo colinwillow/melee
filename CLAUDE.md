@@ -1040,6 +1040,48 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE PUSH GETS ITS OWN RATE, AND m97 STRETCHED THE ONE SEGMENT NOBODY WANTED STRETCHED
+  (m100, `AIR.pushRate`, `flipAirRate`).** *"Once you release the backflip it like slows, you're
+  just like on the ground for a bit -- the portion from being down released to then jumping is too
+  long. Are we able to speed up just a segment of it so that he jumps sooner after release?"*
+  **ONE RATE WAS FITTED TO THE WHOLE CLIP, SO SLOWING THE AIR SLOWED THE LEGS WITH IT.** m92 found
+  that `backflip` spends **0.333 s PUSHING on the floor** after its crouch and held him down for
+  it, which was right; m97 then fitted the rate to the hang, and because that rate divides the
+  push as well, **the bigger the jump the longer he stood there before it**:
+      charge 0.00   air rate 0.965   push 0.333 / 0.965 = **0.345 s** on the floor after the lift
+      charge 0.50             0.788                      0.423
+      charge 1.00             0.682                      **0.488 s**
+  m97 wrote that up as a feature -- *"a deeper crouch for a bigger jump"* -- and named the second
+  rate as the thing it was avoiding. **Half a second between the thumb leaving the pad and the
+  body leaving the floor is not a crouch, it is latency you can feel**, which is the one thing
+  `SLAM.hang` gets to spend and a release does not.
+  **THE DELAY IS WHAT HAS TO BE CONSTANT, WHICH IS WHY IT IS AN ABSOLUTE RATE AND NOT A
+  MULTIPLIER.** The thumb is judging the gap between its own lift and the jump, and that gap
+  should not be a function of how long it was held. Every charge now leaves the ground **0.151 s**
+  after the release and **the air rate is untouched at m97's own numbers**, so the rotation still
+  fills the trip exactly as it did -- one variable moved.
+  **IT MAY ONLY EVER SPEED THE PUSH UP** (`max(airRate, pushRate)`): on a short hang the air rate
+  is already over 1, and a typed 2.2 there would be the fix RE-BREAKING the case it is here for,
+  one sign over. A clip with no wind-up (`front_flip`, `off` 0.000) has no push to speed up and
+  keeps one rate end to end, with no case of its own.
+  **AND THE SPLIT THAT LOOKS HONEST IS THE ONE m97 ALREADY REJECTED.** Fitting the air SEGMENT
+  (`air - off`, 0.792 s of clip) to the hang gives 0.792 / 1.649 = **0.48x**, which is the slow
+  motion that note turned down. So the air keeps reading `M.air / T`, which spans the push as well
+  and is deliberately an approximation: the clip's LANDING frame arrives a little before he does,
+  and the TAKE-OFF frame -- the one being complained about -- now arrives exactly when he leaves.
+  **THE RATE IS WRITTEN WITH `timeScale`, NEVER A REPLAY.** The mixer reads it every update, so it
+  moves the clock from that frame on and leaves the clip where the push left it; `reset()` or a
+  second `playOnce` rewinds to the crouch and plays the wind-up again in mid-air, which is exactly
+  the fault m92 removed. It is written at the launch frame in `stepPlayer` and in `backGo`'s own
+  no-hang branch, so a clip that somehow has no push cannot be left running at the wrong rate.
+  **AND `backGo` STOPPED INVERTING `flipDur` TO RECOVER THE HANG.** With two rates there is
+  nothing to invert: the function that CHOSE how fast the wind-up plays is the function that knows
+  how long it takes (`p.flipPush`), and a second derivation is a second place for the clip and the
+  physics to drift apart.
+  **The chip already said `PUSH<t>`** (m92), so this is one glance to confirm: `PUSH0.15` at every
+  charge, where it used to read 0.35 to 0.49. `mel.AIR.pushRate = 0` is the one word back to m97,
+  because it floors at the air rate.
+
 - **THE CLIP ALREADY CONTAINED THE HALF TURN, SO THE ROOT MUST NOT (m99).** *"The wall cover is
   backwards. The animations has the face away from wall built in, but you rotated him so now he
   faces the wall."* Exactly that, and it is one sign. m89 pointed the root along **+normal** and
