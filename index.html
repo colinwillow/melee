@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m90</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m91</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m90</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m91</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm90';
+const BUILD = 'm91';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"a8b71c2c","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -571,6 +571,16 @@ const MOVE = {
   // it as a literal and m87 needed the same radius to decide whether a hold was a camera drag,
   // so it is one number in one place rather than two that drift.
   tapR: .42,
+};
+
+const SWAP = {
+  dur: .85,         // 1.208 s authored -> x1.42. A kit change is a beat, not a ceremony.
+  at: .48,          // **WHERE IN THE CLIP THE WEAPON ACTUALLY CHANGES** -- when his hand comes
+                    // back out of the bag. `MELEE.at`'s rule: the picture and its consequence
+                    // have to be ONE event, and a weapon that pops into his hand on the frame
+                    // of the TAP makes the reach a thing that happens afterwards for no reason.
+                    // **A GUESS, like the taunt beats (m65)**: a strike has an authored contact
+                    // frame to measure against and a reach does not. `mel.SWAP.at` is the dial.
 };
 
 // ============================================================================================
@@ -1635,12 +1645,19 @@ const FOE = {
   // own finisher at 1.0 is still the biggest thing in the game.
   hitPow: .92,
   push: 7.0, pushUp: 2.2,
-  // **A CHANCE NOW, NOT A FLAG (m88).** At 1 every mace blow put him on his back, and with the
-  // lie and the get-up that is nearly three seconds of floor per hit -- "being unable to move is
-  // the least fun state in any game" taken to its conclusion. Most swings stagger him; about a
-  // third send him flying, which is the variety he asked for and is where the big/small reads
-  // from, since there is one swing pool and no big/small in the export.
-  knock: .35,        // **and his mace puts you on the floor** -- a field on the KIND, so a
+  // **BACK TO 1 (m91), WHICH IS HIS CALL AND IS STATED AS ONE.** *"Let's just make it right now
+  // so that the warrior aliens send him flying if they hit me. Period, end of story. Unless I
+  // block it. But I don't have the animations yet, so they just send him flying. He lands on the
+  // ground and gets up."* m88 made it a chance because three seconds of floor per hit is "being
+  // unable to move is the least fun state in any game" taken to its conclusion -- that concern
+  // was real and he has answered it: the fall reads properly now (m90), and **`HURT.again` 1.1
+  // is what keeps three orcs from holding him there**, since a blow inside that window still
+  // hurts and still shoves but does not re-launch. A GUARD is the whole of the exception, which
+  // is exactly what he said.
+  // **AND `HURT.hits` IS NOW ONLY REACHED THROUGH A BLOCK**, which is right: a blocked blow is
+  // the one that leaves him on his feet, so `take_damage_head`/`_body` become the block
+  // reaction until there is a block clip drawn. `mel.FOE.knock = .35` is the one word back.
+  knock: 1,          // **and his mace puts you on the floor** -- a field on the KIND, so a
                      // weaker enemy tomorrow shoves you without one, and `HURT` is the shape
   stun: .35,         // how long you are not steering afterwards
   bar: { w: .9, h: .10, up: 1.22, fade: 4.0 },
@@ -2240,6 +2257,11 @@ const CLIPS = {
   // release continues from the very frame the hold was sitting on and there is no seam to blend
   // over. Same trick as `aimPose`, at a measured time rather than at frame zero.
   flipAir: 'front_flip', flipBack: 'Backflip', backPose: 'backCrouch',
+  // HE REACHES INTO HIS BACKPACK (m91). *"I now have an animation where he reaches into his
+  // backpack, so we need to use this every time he swaps weapons or takes one out or puts one
+  // away."* It is an UPPER-BODY action, so it is a `SPLIT.up` pose over the ordinary gait's
+  // `__legs` clones -- he keeps walking, which is what reaching into a bag while you move is.
+  swap: 'weapon_swap',
   // **EMPTY, AND THAT IS THE HOOK.** *"I know I don't have a block animation yet, but I'll put
   // one in."* Name it here and `rigAnim` blends it in at full weight while the guard is up; an
   // empty name falls through to the gait with no branch to add, which is how `GAIT.sprint` and
@@ -2292,7 +2314,7 @@ const isUpper = name => {
 };
 const UP = '__up', LEGS = '__legs';
 const SPLIT = {
-  up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo'],
+  up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo', 'swap'],
   legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR'],
 };
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
@@ -2306,6 +2328,9 @@ const ONCE = new Set(['landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_m
   'front_flip', 'Backflip', 'backCrouch', 'slide_kick', 'flying_kick',
   // the two wall TRANSITIONS are one-shots; the two shimmies are LOOPS and must not be here
   'idle_to_wall_cover_right', 'wall_cover_left_to_stand',
+  // the reach, and its upper-half clone -- a split one-shot holds its last frame exactly
+  // like the clip it came from
+  'weapon_swap', 'weapon_swap__up',
   'take_damage_head', 'take_damage_body',
   // the FALL and the GET-UP: one-shots that hold their last frame, which is what makes the
   // fall's own tail the lie and `laying_down` unnecessary
@@ -4595,6 +4620,7 @@ const player = {
   hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0,   // the reaction clip, and the knock-down's own clock
   runT: 0, airKick: 0, meleeAir: 0,     // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
+  swap: 0, swapTo: 0, swapT: 0, swapDone: 0,   // the reach into the backpack
   bkT: 0, bkOn: 0,                  // the backflip's charge, and whether he is visibly ducked
   land: 0, landT: 0, landHard: 0,  // the landing state
   knock: 0, knockCool: 0,          // the knock-down, and how long until he can take another
@@ -4802,10 +4828,37 @@ function setMode(i) {
   if (p.aim || p.chg) { p.aim = 0; p.armT = 0; p.chg = 0; p.autoT = 0; chargeStop(); }
   paintKit();
 }
-function cycleKit() {
-  player.slot = (player.slot + 1) % WEAP.slots.length;
+function applySlot(n) {
+  player.slot = n;
   player.aim = 0; player.aimT = 0; player.charge = 0; player.chargeT = 0;
   paintKit();
+}
+// THE REACH. `applySlot` is deferred to `SWAP.at`, so the weapon arrives when his hand comes
+// back out of the bag rather than on the frame of the tap.
+// **AND IT FALLS STRAIGHT THROUGH IF THE CLIP IS NOT THERE** -- no branch to add the day it is
+// re-exported under another name, and none to remove if it goes. `CLIPS.block`'s pattern.
+function swapGo(to) {
+  const p = player, nm = CLIPS.swap;
+  if (!nm || !rig.actions[nm]) { applySlot(to); return 0; }
+  p.swap = 1; p.swapTo = to; p.swapT = 0; p.swapDone = 0;
+  triggerStop();
+  const r = clipLen(nm) / SWAP.dur;
+  playOnce(nm, r); playOnce(nm + UP, r);       // the clone is a separate action and needs starting
+  snd('foot', { g: .12, r: 1.25 });
+  return 1;
+}
+// AND ANYTHING THAT OWNS THE BODY CANCELS IT, taking the weapon with it: a punch thrown mid-reach
+// is the arms doing two things, and a swap you have to wait out is a swap nobody uses in a fight.
+function swapStop() {
+  const p = player;
+  if (!p.swap) return;
+  if (!p.swapDone) applySlot(p.swapTo);
+  p.swap = 0; p.swapDone = 1;
+}
+function cycleKit() {
+  const p = player;
+  if (p.swap || p.knock || p.wall) return;     // one at a time, and not out of a knock-down
+  swapGo((p.slot + 1) % WEAP.slots.length);
 }
 
 // ---- melee ---------------------------------------------------------------------------------
@@ -4856,6 +4909,7 @@ function kickGo(h) {
 function meleeGo(h) {
   const p = player;
   if (p.knock) return;                  // out of a knock-down: the get-up is not his to cancel
+  swapStop();
   // **A FLICK IN THE AIR IS THE FLYING KICK (m88).** *"Flying kick is if you jumped in the air
   // and you melee."* Until now `meleeGo` simply returned when airborne, so a flick up there did
   // nothing at all unless it went DOWN, where m81's slam took it. ONE PER AIRTIME (`p.airKick`,
@@ -4940,6 +4994,7 @@ function meleeGo(h) {
 // as an approach rather than as a snap plus an animation.
 function wallGo(W) {
   const p = player, nm = WALL.clips.in;
+  swapStop();
   p.wall = W; p.wallSt = 'in'; p.wallT = 0; p.wallOff = 0; p.wallSide = 0;
   p.wx0 = p.pos.x; p.wz0 = p.pos.z;
   p.vel.x = p.vel.z = 0; p.vel.y = Math.min(0, p.vel.y);
@@ -5087,6 +5142,7 @@ function backGo(far, fired) {
 function slamGo(dx, dy) {
   const p = player;
   if (p.grounded || p.knock || p.slam || p.slamUsed || p.roll) return 0;
+  swapStop();
   if (!(dy > 0 && Math.abs(dy) > Math.abs(dx))) return 0;
   const nm = CLIPS.chargeGo;
   if (!rig.actions[nm]) { note('NO CLIP ' + nm); return 0; }
@@ -5152,6 +5208,7 @@ function triggerStop() {
 }
 function rollGo(h) {
   const p = player;
+  swapStop();
   if (!p.grounded || p.knock || p.roll || p.melee || p.chargeGo) return;
   p.roll = 1; p.rollT = 0; p.rollH = (h != null ? h : p.faceH);
   p.heading = p.rollH; p.melee = 0; p.meleeChain = 0;
@@ -6021,6 +6078,13 @@ function stepPlayer(dt) {
   // ---- the landing states: he can move out of them, but not instantly ----
   // the reaction clip runs on its own clock and gives way out of `rest` -- see `rigAnim`
   if (p.hurtNm) { p.hurtClipT += dt; if (p.hurtClipT >= HURT.stagger) p.hurtNm = ''; }
+  // THE REACH, and the weapon arrives PART-WAY THROUGH IT -- `SWAP.at`, fired on the crossing
+  // rather than every frame past it, which is `p.gotUp`'s own rule one state over.
+  if (p.swap) {
+    p.swapT += dt;
+    if (!p.swapDone && p.swapT >= SWAP.dur * SWAP.at) { p.swapDone = 1; applySlot(p.swapTo); }
+    if (p.swapT >= SWAP.dur) p.swap = 0;
+  }
   // HOW LONG HE HAS ACTUALLY BEEN RUNNING, which is what the tackle opener is gated on. It is
   // last frame's speed, which is the right one: what is being asked is whether he ARRIVED at
   // this flick running, not whether the thumb is pointed somewhere.
@@ -6340,10 +6404,18 @@ function rigAnim(dt) {
   const B = smooth(GAIT.walkAt, GAIT.runAt, sp);        // walk -> run
   const C = smooth(GAIT.runAt, GAIT.sprintAt, sp);      // run -> sprint
   const wIdle = 1 - A, wWalk = A * (1 - B), wRun = A * B * (1 - C), wSpr = A * B * C;
-  add(CLIPS.idle, wIdle * rest, 0);
-  add(CLIPS.walk, wWalk * rest, GAIT.walkRef);
-  add(CLIPS.run, wRun * rest, GAIT.runRef);
-  add(CLIPS.sprint, wSpr * rest, GAIT.sprintRef);
+  // **AND THE REACH IS AN UPPER-BODY OVERRIDE OVER EXACTLY THIS (m91).** `weapon_swap__up` is
+  // spine-up ONLY and the four gait clips drop to their `__legs` halves, so between them every
+  // bone is claimed exactly once and they COMPOSE -- he walks with his legs and reaches with his
+  // arms. **The two at full `rest` summing to 2 is correct here and only here**: they are
+  // disjoint. Averaging two clips that both key an arm is what m19 paid a build for.
+  const sw = p.swap && rig.actions[CLIPS.swap + UP];
+  if (sw) add(CLIPS.swap + UP, rest, 0);
+  const L = n => (sw && rig.actions[n + LEGS] ? n + LEGS : n);
+  add(L(CLIPS.idle), wIdle * rest, 0);
+  add(L(CLIPS.walk), wWalk * rest, GAIT.walkRef);
+  add(L(CLIPS.run), wRun * rest, GAIT.runRef);
+  add(L(CLIPS.sprint), wSpr * rest, GAIT.sprintRef);
   setWeights(t, dt);
 }
 
@@ -8196,7 +8268,7 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // the air with the clip that owns the body still running
     p.melee = 0; p.chargeGo = 0; p.roll = 0; p.charge = 0; p.chargeT = 0; p.slam = 0;
     p.melFired = 0; p.melQ = null; p.land = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.hurtNm = ''; p.meleeAir = 0;
-    p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool;
+    p.wall = null; p.wallSt = ''; p.wallCool = WALL.cool; swapStop();
     whooshSnd(Math.hypot(HURT.back, vy), p.pos.x, p.pos.z);
   } else {
     p.vel.x += Math.sin(dirH) * push;
@@ -8573,7 +8645,8 @@ function frame() {
     const p = player;
     // A SWING THAT CONNECTED SAYS SO. "It hit him before the swing" and "it never reached him"
     // are opposite bugs and identical from a phone, and the sweep can now produce either.
-    const st = p.wall ? 'WALL' + (p.wallSt === 'in' ? '\u2193' : p.wallSt === 'out' ? '\u2191'
+    const st = p.swap ? 'SWAP' + (p.swapDone ? '\u2713' : p.swapT.toFixed(2))
+      : p.wall ? 'WALL' + (p.wallSt === 'in' ? '\u2193' : p.wallSt === 'out' ? '\u2191'
                  : p.wallSide > 0 ? '\u2192' : p.wallSide < 0 ? '\u2190' : '\u00b7')
       : p.roll ? 'roll'
       // WHICH OPENER IT TOOK. "The tackle never fires" and "it fired and reached nobody" are

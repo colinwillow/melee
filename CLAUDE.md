@@ -1040,6 +1040,53 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **HE REACHES INTO HIS BACKPACK, AND IT IS AN UPPER-BODY OVERRIDE OVER THE ORDINARY GAIT (m91,
+  `SWAP`, `swapGo`, `applySlot`).** *"I now have an animation where he reaches into his backpack,
+  so we need to use this every time he swaps weapons or takes one out or puts one away."*
+  **A REACH IS SOMETHING YOU DO WHILE WALKING, so it must not own the body.** Every other
+  one-shot here does -- a strike, a roll, a slam -- and each of those is a move you deliberately
+  spend. A kit change is a TAP on the left pad, and half a second of not being able to move in a
+  fight because you changed weapons is the wrong trade. So `weapon_swap` goes into `SPLIT.up` and
+  the four gait clips drop to their `__legs` halves underneath it: **between them every bone is
+  claimed exactly once, so they COMPOSE rather than average.**
+  **THE TWO AT FULL `rest` SUMMING TO 2 IS CORRECT HERE AND ONLY HERE**, which is worth saying
+  out loud next to this file's standing "the table must sum to 1" rule: that rule is about clips
+  that claim the SAME bones, and these two are disjoint by construction. The committed branch has
+  done the same thing since m19 for the same reason. **Averaging two clips that both key an arm
+  gives a shrug**, and m19 is the build that paid for it.
+  **AND THE WEAPON ARRIVES PART-WAY THROUGH THE REACH, NOT ON THE FRAME OF THE TAP** (`SWAP.at`).
+  `MELEE.at`'s rule: the picture and its consequence have to be ONE event, and a weapon that pops
+  into his hand on the input frame makes the whole animation a thing that happens afterwards for
+  no reason. `applySlot` is the old `cycleKit` body, deferred -- and fired on the CROSSING rather
+  than every frame past it, which is `p.gotUp`'s own shape one state over.
+  **`.48` IS A GUESS AND IS MARKED AS ONE**, the taunt beats' own position (m65): a strike has an
+  authored contact frame to measure against and a reach does not. `mel.SWAP.at` is the dial.
+  **IT FALLS STRAIGHT THROUGH IF THE CLIP IS NOT THERE** -- `swapGo` applies the slot instantly
+  and returns 0 -- so there is no branch to add the day it is re-exported under another name and
+  none to remove if it goes. `CLIPS.block`'s pattern.
+  **AND ANYTHING THAT OWNS THE BODY CANCELS IT, TAKING THE WEAPON WITH IT** (`swapStop`): a punch
+  thrown mid-reach is the arms doing two things, and a swap you have to wait out is a swap nobody
+  uses in a fight. The five callers are `meleeGo`, `rollGo`, `slamGo`, `wallGo` and the
+  knock-down -- **and every one of them DELIVERS the slot rather than discarding it**, because the
+  input was given and losing it to a collision is a tap that did nothing.
+  **THE CHIP SAYS `SWAP0.31` THEN `SWAP✓`**, because "the reach never played", "it played and the
+  weapon was already in his hand" and "it played and the weapon never arrived" are three bugs with
+  one picture from a phone, and the tick is the half only `swapDone` knows.
+- **AND THE WARRIORS ALWAYS SEND HIM FLYING NOW (m91, `FOE.knock` .35 -> 1).** *"Let's just make
+  it right now so that the warrior aliens send him flying if they hit me. Period, end of story.
+  Unless I block it. But I don't have the animations yet, so they just send him flying. He lands
+  on the ground and gets up."*
+  **m88 MADE IT A CHANCE FOR A REAL REASON AND HE HAS ANSWERED IT.** That concern was that three
+  seconds of floor per hit is "being unable to move is the least fun state in any game" taken to
+  its conclusion -- and two things make it fine now: **the fall actually reads** (m90 put the fall
+  clip on from the blow rather than blending into a held pose), and **`HURT.again` 1.1 is what
+  keeps three orcs from holding him down**, since a blow inside that window still hurts and still
+  shoves but does not re-launch. That stays, and it is the only deviation from "period, end of
+  story" -- stated rather than quietly kept.
+  **AND `HURT.hits` IS NOW ONLY REACHED THROUGH A BLOCK**, which is right and is where those two
+  clips belong: a blocked blow is the one that leaves him on his feet, so `take_damage_head` and
+  `take_damage_body` are the block reaction until there is a block clip drawn.
+
 - **THE WARRIORS HAD THE RIGHT SEQUENCE ALL ALONG, AND IT IS ONE LINE OF `bodyAnim` (m90).**
   *"The warrior aliens fly through the air and land perfectly on the ground, and they're playing
   one of the same animations I have on Zap -- I named it something like take damage and fall
