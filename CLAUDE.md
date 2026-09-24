@@ -1220,6 +1220,53 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **A BONE COUNT IS A PROXY FOR A STRUCTURE, AND IT FAILED ON THE ONE RIG WITH NO FINGERS
+  (m121, `MORPH.needs`).** *"For some reason the animations aren't working on Clancy. I tried
+  the homeless guy, the warrior alien -- they worked on those, but they didn't work on Clancy,
+  and you can transform into Clancy."* m119 gated the borrow on `borrowMin` **30 shared bones**
+  and Clancy has **25**. Read out of his file, his 27 joints are:
+      Hips, both UpLeg/Leg/Foot/ToeBase/Toe_End, Spine, Spine1, Spine2, both
+      Shoulder/Arm/ForeArm/Hand, Neck, Head, HeadTop_End
+  **A complete body, missing nothing a locomotion clip drives** -- what he has not got is
+  FINGERS, and zap's 32 finger bones are most of the difference between 62 and 27.
+  **THE TEST IS A SPINE, TWO ARMS, TWO LEGS AND A HEAD.** Twenty named joints, matched on the
+  SUFFIX so a rig with another prefix still lands (and `LeftUpLeg` does not end with `LeftLeg`,
+  nor `LeftHandPinky1` with `LeftHand`, so each names one joint and only one). Checked against
+  every rig in the repo: **all nine carry all twenty**, Clancy at 27 joints and the female at
+  193 alike. `stripPoses`' own rule -- the test is what the thing IS, never a name or a tally --
+  and `dnaOK`'s, which is why the officer is still refused and for the right reason (no walk,
+  no run, so no animation set).
+  **AND IT NAMES WHAT IS MISSING WHEN IT REFUSES**, which the count could not: "has no
+  LeftForeArm" is a fact about an export and "only 25 shared bones, needs 30" is a fact about a
+  threshold somebody picked.
+- **THE REVERT HAD STOLEN THE ONLY GESTURE THAT CHANGES WEAPONS (m121, `paintPalRow`).** *"Since
+  you have the tap on the left stick changing the character back to the alien, I can't change my
+  weapons or anything... we need a more clever way to switch back. Maybe a dedicated button pops
+  up on the left stick -- you know you have those wheel buttons."*
+  m112 spent that tap on the revert on the argument that the kit is bare hands for the whole
+  disguise so the gesture was free. **It is not free**, because it is the ONLY way to change
+  weapons and a disguise is a state you spend real time in -- so the tap meant a different thing
+  depending on a state you were in, which is a gesture you cannot rely on. That is the
+  `KIT.on`-with-three-owners shape one control over.
+  **SO THE WAY BACK GETS A CONTROL OF ITS OWN, ON A WHEEL THAT ALREADY EXISTS.** `buildArcRow`
+  has been a function of a table since m104, so REVERT is a one-row table and the arc simply
+  divides once instead of twice -- no new geometry, no new element, nothing in the DOM written
+  a second time.
+  **IT REPLACES THE PAL ROW RATHER THAN JOINING IT.** ROAM/PACK is a two-state TOGGLE and REVERT
+  is an ACTION; a row that mixes them is a row you have to READ rather than glance at, which is
+  `optStore`'s "two rows, not a mode" pointed the other way. And while you are wearing somebody
+  else, which of the two Clancy is doing is not what needs the screen -- getting back is. It
+  comes back the moment you do, with whatever it was still set.
+  **AND IT IS BUILT IN `paintPalRow` RATHER THAN IN `buildClancy`**, which is not a tidy-up: a
+  session where his GLB never arrived would otherwise have no wheel at all, and therefore no way
+  out of a disguise but the console. The row still only shows where it MEANS something
+  (`paintKit`'s rule); it is just that "a disguise to get out of" is now one of the things it
+  can mean.
+  **AND THE TAP IS INERT WHILE DISGUISED RATHER THAN MEANING SOMETHING ELSE.** Cycling into a
+  slot `stepKit` refuses to fire would put a weapon in his hand that does nothing, so it simply
+  does not cycle -- and the gesture means exactly one thing everywhere, which is the whole point.
+  **THE WEAPON SELECTION WANTS ITS OWN BUTTON EVENTUALLY** -- *"they'll probably be a dedicated
+  button, but it's fine for now"* -- and when it lands, the left tap frees up entirely.
 - **A BODY'S ROOT IS AT ITS SOLES, SO WRITING IT TO A SEAT PUTS HIS FEET ON THE BACKPACK
   (m120, `P.hipY`).** *"This also shows how Clancy sits so far above the backpack."* -- with a
   screenshot of him riding at head height. Measured off the two files rather than nudged a third
@@ -5732,8 +5779,8 @@ means anything you can carry from one situation to the next.
 | | left | right |
 |---|---|---|
 | hold | move | **hold UP**: firing position, charge, release to fire (blaster) / wind up (hammer) |
-| arc row | **Clancy: ROAM / PACK** (m104) | the blaster's CHARGE / AUTO / **DNA** (m112) |
-| tap | next weapon, **or revert while disguised** (m112) | jump |
+| arc row | **Clancy: ROAM / PACK**, or **REVERT** while disguised (m121) | the blaster's CHARGE / AUTO / **DNA** (m112) |
+| tap | next weapon (inert while disguised -- m121) | jump |
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
 

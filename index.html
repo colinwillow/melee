@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m120</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m121</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m120</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m121</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm120';
+const BUILD = 'm121';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -3199,9 +3199,23 @@ const MORPH = {
   tall: 1,           // 1 = drawn at the KIND's own height, 0 = at his. See the note.
   // ---- HIS MOVESET, WORN BY SOMEBODY ELSE (m119). See `mphBorrow` for the whole argument.
   borrow: 1,         // 0 is m112..m118 exactly: the kind's own three clips and nothing else
-  borrowMin: 30,     // bones of zap's the skin has to carry before it is worth doing at all
+  // **A SPINE, TWO ARMS, TWO LEGS AND A HEAD -- NOT A COUNT (m121).** *"For some reason the
+  // animations aren't working on Clancy. I tried the homeless guy, the warrior alien, and they
+  // worked on those, but they didn't work on Clancy."* m119 gated the borrow on **30 shared
+  // bones** and Clancy has **25** -- because he has **no fingers**. Read out of his file: 27
+  // joints, and they are hips, both full legs with toes, all three spine bones, both shoulders,
+  // arms, forearms and hands, neck and head. A complete body missing nothing a locomotion clip
+  // drives. **A count is a proxy for a structure and it fails on exactly the rig that is lean
+  // rather than broken** -- `stripPoses`' own rule (the test is what the thing IS, never a name
+  // or a tally) and `dnaOK`'s (a pool carries idle, walk and run or it is not an animation set).
+  needs: ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck', 'Head',
+          'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand',
+          'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand',
+          'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'RightUpLeg', 'RightLeg', 'RightFoot'],
   restTol: .14,      // rad. A non-Hips bone further off zap's bind than this is a rig this
                      // borrow cannot be trusted on -- measured at load, and it SAYS SO
+  // THE WAY BACK, as a control of its own. See `paintPalRow`.
+  row: [{ key: 'revert', label: 'REVERT' }],
   // ---- THE PROXY BLOB (m113). See `mphProf` for why a real vertex morph is not available.
   blob: 1,           // 0 is m112 exactly: the flash and the swap, and no proxy mesh
   rings: 30,         // height bands the silhouette is measured into, and rows in the hull
@@ -6128,12 +6142,15 @@ function stickLocked(L) {
 WEAP.worn = {};
 function paintKit() {
   const s = slotNow(), m = modeNow(), mk = player.mphK;
+  // THE LEFT WHEEL ANSWERS TO THE SAME STATE, and one place deciding is what stops the label,
+  // the hint and the button disagreeing about what the controls currently mean.
+  paintPalRow();
   // **WHILE HE IS SOMEBODY ELSE THE LABEL IS WHO, AND THE HINT IS THE WAY BACK (m112).** The kit
   // is bare hands for the whole disguise, so the one line with room in it is the one that says
   // the tap means something else now -- which is what stops that being a hidden mode.
   if (mk) {
     wepName.textContent = mphName(mk);
-    wepHint.textContent = 'tap left pad · revert';
+    wepHint.textContent = 'REVERT · left wheel';
     paintArcRow(modeRow, 0, WEAP.mode);
     padR.classList.remove('ready');
     return;
@@ -6346,13 +6363,15 @@ function cycleKit() {
   const p = player;
   if (p.swap || p.knock || p.wall || p.ledge) return;                        // one at a time, not out of a
                                               // knock-down, and not with his hands full
-  // **AND WHILE HE IS SOMEBODY ELSE THERE IS NOTHING TO CYCLE TO, SO THE TAP IS THE WAY BACK
-  // (m112).** *"We'll just have a little button to transform back to get full functionality."*
-  // This pad's tap is already "change what you are carrying", the kit is forced to bare hands
-  // for the whole disguise, and the weapon label says `tap left pad \u00b7 revert` -- so it is a
-  // gesture that already exists doing the thing it already means, with the prompt drawn on the
-  // control that performs it. `actB`'s rule, one HUD element over.
-  if (mphOn()) { morphOff(); return; }
+  // **AND WHILE HE IS SOMEBODY ELSE THE TAP DOES NOTHING RATHER THAN MEANING SOMETHING ELSE
+  // (m121).** m112 spent it on the revert, on the argument that the kit is bare hands for the
+  // whole disguise so the gesture was free -- and it is not free, because it is the ONLY way to
+  // change weapons and a disguise is a state you spend real time in. *"I can't change my weapons
+  // or anything... we need a more clever way to switch back."* REVERT is a button on the left
+  // wheel now (`paintPalRow`), which is a control that SAYS what it is; cycling into a slot
+  // `stepKit` refuses to fire would put a weapon in his hand that does nothing, so the tap is
+  // simply inert here and means exactly one thing everywhere.
+  if (mphOn()) return;
   swapGo((p.slot + 1) % WEAP.slots.length);
 }
 
@@ -9485,7 +9504,16 @@ function mphBorrow(skin) {
   if (skin.borrow !== undefined) return skin.borrow;
   skin.borrow = 0; skin.gaitK = 1;
   const src = rig.base;
-  if (!MORPH.borrow || !src || !src.bind || !skin.bind || !skin.bones[MHIPS]) return 0;
+  if (!MORPH.borrow || !src || !src.bind || !skin.bind) return 0;
+  // MATCHED ON THE SUFFIX, so a rig whose prefix is spelt some other way still lands -- and
+  // `LeftUpLeg` does not end with `LeftLeg`, nor `LeftHandPinky1` with `LeftHand`, so each of
+  // these names one joint and only one.
+  const has = suf => { for (const n in skin.bones) if (n.endsWith(suf)) return true; return false; };
+  const lack = MORPH.needs.filter(n => !has(n));
+  if (lack.length) {
+    console.warn('[melee] borrow: ' + (skin.K && skin.K.file) + ' has no ' + lack.join(', '));
+    return 0;
+  }
   const S = src.bind, T = skin.bind;
   const D = T.pq.clone().invert().multiply(S.pq);
   const k = T.t.length() / (S.t.length() || 1);
@@ -9499,10 +9527,6 @@ function mphBorrow(skin) {
     if (!b) continue;
     const d = 2 * Math.acos(Math.min(1, Math.abs(a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3])));
     if (d > worst) { worst = d; worstN = n; }
-  }
-  if (shared < MORPH.borrowMin) {
-    console.warn('[melee] borrow: only ' + shared + ' shared bones, needs ' + MORPH.borrowMin);
-    return 0;
   }
   if (worst > MORPH.restTol) {
     console.warn('[melee] borrow: ' + worstN + ' is ' + (worst * 180 / Math.PI).toFixed(1) +
@@ -10476,8 +10500,7 @@ function buildClancy(g) {
   // the mode row: a control for a sidekick who never loaded is a HUD element in the play area
   // saying nothing. It is built and lit HERE, where the pal is confirmed, rather than at module
   // scope where it would be on screen for a character that may not arrive.
-  buildArcRow(palRow, CLANCY.modes, PALROW.mid, setPal);
-  paintArcRow(palRow, 1, CLANCY.mode);
+  paintPalRow();
 }
 
 function buildFoes(g) {
@@ -11115,6 +11138,35 @@ function packWant() { return !!(PACK.on && CLANCY.modes[CLANCY.mode] && CLANCY.m
 // knock-down threw him off and `foeWander` put him straight back on the next frame, which is a
 // man bouncing off your back rather than coming off it. Measured: `after a knock-down: st=ride`.
 function packOK() { return packWant() && !(PACK.offDrop && player.knock); }
+// **ONE ROW, ONE QUESTION -- AND WHILE HE IS SOMEBODY ELSE THE QUESTION CHANGES (m121).**
+// *"Since you have the tap on the left stick changing the character back to the alien, I can't
+//  change my weapons or anything... we need a more clever way to switch back. Maybe a dedicated
+//  button pops up on the left stick -- you know you have those wheel buttons."*
+// The tap was doing two jobs and the disguise was winning, which is the `KIT.on`-with-three-
+// owners shape one control over: **a gesture that means a different thing depending on a state
+// you are in is a gesture you cannot rely on.** So the way back gets a control of its own, on a
+// wheel that is already there, and the tap means "next weapon" always.
+// **IT REPLACES THE PAL ROW RATHER THAN JOINING IT.** ROAM/PACK is a two-state TOGGLE and REVERT
+// is an ACTION; a row that mixes them is a row you have to read rather than glance at, which is
+// `optStore`'s "two rows, not a mode" pointed the other way. And while you are wearing somebody
+// else, which of the two Clancy is doing is not the thing that needs the screen -- getting back
+// is. It comes back the moment you do, with whatever it was still set.
+// **AND IT IS BUILT HERE RATHER THAN IN `buildClancy`**, which is not a tidy-up: a session where
+// his GLB never arrived would otherwise have no wheel at all, and therefore no way out of a
+// disguise but the console. The row still only shows when it MEANS something -- `paintKit`'s own
+// rule -- it is just that "a disguise to get out of" is now one of the things it can mean.
+function paintPalRow() {
+  const dna = !!player.mphK, want = dna ? 'dna' : 'pal';
+  if (palRow._row !== want) {
+    palRow._row = want;
+    if (dna) buildArcRow(palRow, MORPH.row, PALROW.mid, () => morphOff());
+    else buildArcRow(palRow, CLANCY.modes, PALROW.mid, setPal);
+  }
+  // LIT, because a one-shot button is not a mode you are IN -- what the fill says here is "this
+  // is pressable", which is the whole reason it is on screen.
+  if (dna) paintArcRow(palRow, 1, 0);
+  else paintArcRow(palRow, DUMMIES.some(d => d.K.pal), CLANCY.mode);
+}
 function setPal(i) {
   if (i === CLANCY.mode) return;
   CLANCY.mode = i;
@@ -11123,7 +11175,7 @@ function setPal(i) {
   // reuses it -- so an ungated loop here would throw a BIKER off his bike every time the pal row
   // was pressed. Latent until there was a second thing that rides.
   if (!packWant()) for (const d of DUMMIES) if (d.K.pal && d.st === 'ride') packOff(d);
-  paintArcRow(palRow, DUMMIES.some(d => d.K.pal), CLANCY.mode);
+  paintPalRow();
 }
 // WHERE THE SEAT IS, THIS FRAME. The bone is looked up ONCE and cached -- `getObjectByName`
 // walks the whole model and this runs every frame -- and it falls back to the player's own
