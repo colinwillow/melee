@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m106</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m107</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m106</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m107</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -496,9 +496,9 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm106';
+const BUILD = 'm107';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -2609,6 +2609,180 @@ const CLANCY = {
   sep: .55,
   // NO HEALTH BAR. A gauge over your own pet reads as a thing to manage; he has hit points so a
   // stray bolt still sends him, and `foeBar` is simply not called.
+};
+
+// ============================================================================================
+// THE FAT BIKER, AND THE ONE CLIP IN HIS EXPORT THAT IS AUTHORED THE WRONG WAY ROUND (m107)
+//
+// *"I added a guy called fat biker 02 and his motorcycle. He has basic animations -- walk, run,
+// idle, take damage, in air, and fall down get up. He also has 3 driving animations, one idle
+// and turn right turn left."*
+//
+// MEASURED BEFORE A LINE WAS WRITTEN, which is m35/m80's standing exception: a reference speed
+// is a number the table cannot be written without, and eyeballing one put Shredworld's rifle run
+// 36% too fast and its walk 37% too slow in a single build, in opposite directions.
+//     1 mesh, 65 joints, draco + EXT_texture_webp + specular
+//     authored height 0.8638 m, soles at EXACTLY 0   -> x2.026 to stand 1.75 m
+//        (byte for byte the HICK's authored height -- the same base rig, one body over)
+//     toes (0.0000, 1.0000), shoulders cross-check 1.0000   -> +Z, like everyone else here
+//     NO weapon mounts, which is right -- an NPC, not a wearer
+//     16 clips, `CINEMA_4D_Main` the usual one-frame residue
+//     idle      reads 0.042 m/s  <- THE CONTROL. A gait measurement with no case that must come
+//                                   back zero is a gait measurement nobody can trust.
+//     walk_fwd  0.741 authored, feet AGREE, travel +3 deg   -> walkRef 1.50 at his scale
+//
+// **AND `run_fwd` IS AUTHORED TRAVELLING BACKWARDS, WHICH IS WHY IT IS NOT NAMED.** Its planted
+// foot slides FORWARD in the body frame: `npm run gait` reads **travel +176 deg**, with both feet
+// agreeing (no disagree flag) and a perfectly good 1.694 m/s of speed. The direction is the only
+// thing wrong with it.
+//     zap    run_fwd   +7 deg     <- the clip the whole game runs on
+//     hick   running   +1 deg
+//     biker  walk_fwd  +3 deg     <- his own walk, same rig, same tool
+//     biker  run_fwd   **+176**   <- the BACKPEDAL band (zap's `run_bwd` reads -172)
+// Three independent controls on the same tool, so it is the clip and not the measurement. Played
+// while he travels forwards it is the moonwalk this file has a whole note about, so `run` and
+// `flee` both name `walk_fwd` and `tsHi` lets it scramble -- a fat man scurrying, which is
+// honest and is not a man sliding backwards. **A re-export makes it one word**, and it is worth
+// having: `walk_fwd` at 1.5x is the fastest he can currently move.
+//
+// MY OWN FIRST TEST SAID THE SAME THING AND WAS WORTHLESS, which is worth writing down. Net toe
+// displacement while the foot is low reads "+" on **zap's own run_fwd** too (+0.121 on one foot,
+// 16 down-frames of 60): a run has so much float that a net-displacement test is noise. The
+// control is what killed it. `npm run gait`'s two-pass method is the one that survives a control.
+const BIKER = {
+  file: 'models/characters/fat_biker_02.glb',
+  h: 1.75, r: .42, hp: 5, snd: 'soft',
+  // CHECKED AS RECTANGLES against all fourteen boxes, both buildings, every one of the seventeen
+  // bodies AND the bike's own lane -- m60's rule, because a placement picked off a mental picture
+  // is one the player simply cannot walk through. Clearances 2.50 m and 3.87 m.
+  at: [[0, -8], [24, 14]],
+  drop: /^CINEMA_4D/,
+  ai: 1, pacifist: 1,
+  clips: {
+    idle: 'idle',
+    // TWO IDLES, so a man standing still is not a statue. `idle_fan_self` is 3 s and 49 moving
+    // bones -- a real flourish, which is what `look` is for; `rest` is the pool he SETTLES into.
+    look: ['idle_fan_self'],
+    walk: 'walk_fwd',
+    run: 'walk_fwd', flee: 'walk_fwd',     // see above: `run_fwd` is authored backwards
+    air: 'in_air',
+    // THREE HIT REACTIONS AND THE BIG ONE IS ITS OWN, the hobo's shape exactly.
+    hits: ['hit_take_damage_00', 'hit_take_damage_01'],
+    big: ['hit_take_dmage_02'],            // HIS spelling, left alone -- a rename here is a
+                                           // silent T-pose the next time he re-exports it
+    // ONE FALL AND ONE GET-UP, so the pair cannot disagree about which way up he ended.
+    downF: 'hit_take_damage_and_fall', downB: 'hit_take_damage_and_fall',
+    upF: 'laying_get_up', upB: 'laying_get_up',
+    // THE THREE DRIVING CLIPS. Nothing but `stepRide` names these, and a body that never gets on
+    // a bike never reaches them.
+    ride: 'driving_idle', rideL: 'driving_turn_left', rideR: 'driving_turn_right',
+  },
+  // AT HIS SCALE (x2.026). `run`/`flee` share the walk clip, so they share its reference too --
+  // which is the one case where two fields naming one clip is deliberate rather than a drift.
+  walkRef: 1.50, runRef: 1.50, fleeRef: 1.50, tsHi: 1.5, tsLo: .7,
+  walk: 1.1, run: 2.0, flee: 2.2,
+  turn: 2.6,
+  vary: { pace: [.8, 1.2], nerve: [1, 1], react: [.4, 1.3], guard: [0, 0] },
+  gait: { lane: 0, laneT: [1.2, 3.0], surge: .34, stop: .22, stopT: [.7, 2.4] },
+  roam: 8, roamWait: [2.5, 6.5], roamAt: .9,
+  flee0: 4.5, fleeAdd: 2.0, fleeMax: 10,
+  // NEAR THEIR OWN LENGTHS (m37): these run 1.17 to 3.00 s, and a reaction too fast to read is
+  // the same reaction every time.
+  hitBeat: 1.3, bigBeat: 1.1, downBeat: 2.2, upBeat: 2.0,
+  out: 1.8,
+  // HE IS HEAVY, so he goes less far than the skinny ones and lands harder.
+  flyV: 19.0, flyUp: 7.4, flyG: 20, flyDrag: 1.35,
+  knock: 3.4, knockUp: .5, knockDrag: 5.5, shoveDrag: 2.2,
+  hard: 1.01,
+  fling: .62,
+  fly0: .45,
+  dmg: { bolt: 1.5, fist: .8, weap: 1.3, finish: 2.8 },
+  cool: .16,
+  sep: .95,
+  bar: { w: .8, h: .09, up: 1.20, fade: 4.0 },
+};
+
+// ============================================================================================
+// THE MOTORCYCLE (m107, `MOTO`, `buildMoto`, `motoBones`, `stepMoto`)
+//
+// *"The motorcycle has its wheels rigged to a bone each and can be driven procedurally, and its
+// handlebars rigged to 'turn' I think, and it needs to procedurally have its turn driven to 20
+// degrees each direction."*
+//
+// **HE BUILT THE HARD PART INTO THE EXPORT AND IT IS BETTER THAN HE REMEMBERED.** Read through
+// the real file: 8 nodes, one skinned mesh, one skin, and the joints are
+//     root
+//       steering        t(1.685, 23.087, 34.204)  rest PITCHED -28.5 deg about X
+//         front_wheel   t(-1.685, -28.282, 3.199) rest +28.5 about X -- CANCELLING the rake
+//       back_wheel      t(0, -0.235, -28.774)
+//       mixamorig_hips  t(0, 18.439, 0)           <- A RIDER SEAT MARKER, already in the file
+// The steering joint is called `steering`, not `turn`; **found by PATTERN so either spelling
+// lands** (`weapFit`'s rule -- a named joint IS the placement and the export stops being
+// something this code has an opinion about).
+//
+// **THE 28.5 DEGREES IS THE FORK RAKE, AND IT IS ALSO THE ANSWER TO HIS C4D QUESTION.** *"When I
+// rotate the blue axis it changes R.B, the red axis changes R.P, but the green axis -- the one
+// that turns the steering -- changes ALL THREE. It makes no sense."* It makes sense and the rig
+// is fine. C4D's HPB is H about Y, then P about X, then B about Z, applied in that order; the
+// steering joint's rest carries **P = -28.5**, so its own local Y is tilted 28.5 degrees back
+// from the parent's Y. A turn about the fork is therefore NOT a pure H in the parent's frame and
+// the solver has to spread it across all three fields. **It is a property of the Euler DISPLAY
+// and nothing else: glTF stores quaternions**, so none of it survives the export and the game
+// never reads a Euler at all.
+//
+// **AND THE STEERING AXIS IS MEASURED RATHER THAN TYPED.** `front_wheel` hangs off `steering` at
+// local (-1.7, -28.3, +3.2) -- almost entirely **-Y** -- so the fork runs down the joint's own
+// local Y and that is the axis to turn about. Nothing about the rake is typed here; the rest
+// quaternion is captured at build time and the turn is composed ON TOP of it, which is
+// `barPlace`'s rule: read the rest pose, never restate it.
+//
+// **THE SCALE IS THE BIKER'S OWN, AND A REAL-WORLD FACT IS WHAT SAYS SO.** Both exports came out
+// of the same scene: the bike is 1.088 m long as authored and the seat marker sits 0.322 m above
+// its lowest geometry, so at the biker's x2.026 that is **a 2.20 m bike with a 0.65 m seat** --
+// and a Harley Fat Boy's seat is 0.66 m, which is the check that says the two share units. The
+// scale is still DERIVED from the geometry (`MOTO.len` over the measured Z span, which comes out
+// at x2.021 against the biker's own x2.026), so a re-export
+// at any size lands right with no edit -- the skateboard's rule, one vehicle over.
+//
+// **THE STEER ANGLE FALLS OUT OF THE WHEELBASE, WHICH IS ALSO MEASURED.** A single-track vehicle
+// turning at yaw rate w while doing v has a turn radius v/w, and `delta = atan(L * w / v)` with L
+// the distance between the two wheel bones. So the handlebars answer the corner rather than a
+// mapping somebody invented, and `lock` is what he asked for: a CLAMP at 20 degrees, reached on a
+// tight enough turn and never exceeded.
+//
+// **AND THE WHEEL SPIN IS DISTANCE OVER THE MEASURED RADIUS**, about each wheel bone's own local
+// X -- the axle, because the mesh is 1.09 long in Z against 0.65 in X, so Z is the length and X
+// is the width. Both wheel bones' local frames are `root`'s (the front one's +28.5 cancels the
+// fork's -28.5 exactly), so one axis serves both.
+//
+// **THE CIRCUIT IS THE ONE THAT FITS, AND THAT WAS SWEPT RATHER THAN CHOSEN.** A circuit through
+// the test site has to clear fourteen boxes, two buildings and seventeen bodies: the largest
+// clear ring within reach of the spawn is **14 m at (-29, -3)**, worst clearance 2.02 m, nearest
+// point 15 m from where he stands. A bigger oval exists and is 64 m across with its nearest point
+// 37 m away, which is a motorcycle you cannot see. **The path is PARAMETERISED by angle rather
+// than integrated**, so it cannot drift into anything however long it runs.
+// Measured through the shipped arithmetic on the real file: wheelbase 1.602 m, wheel radius
+// 0.275 m (a Fat Boy's front tyre is 0.28), seat 0.652 m.
+//     at MOTO.speed 6 m/s: 0.43 rad/s, a 14.7 s lap, the wheels at 21.8 rad/s and the
+//                          steering holding 6.5 degrees
+//     `mel.MOTO.ring.r = 6` laps tighter and takes it to 15.0; at 4.4 m it reaches the 20
+const MOTO = {
+  tag: 'MOTO',
+  file: 'models/vehicles/motorcycle_fatboy.glb',
+  len: 2.20,            // metres nose to tail. The ONE typed number; the scale is derived.
+  // FOUND BY PATTERN, so a re-export that renames `steering` to `turn` -- which is what he
+  // thought he had called it -- lands with no code change.
+  mark: { steer: /steer|turn|fork|handle/i, front: /front.*wheel|wheel.*front/i,
+          back: /back.*wheel|rear.*wheel|wheel.*back/i, seat: /hips|seat|rider|driver/i },
+  lock: 20 * Math.PI / 180,     // *"20 degree each direction"*, as a clamp
+  ring: { cx: -29, cz: -3, r: 14 },
+  speed: 6.0,
+  lean: .26,            // how far it heels into the corner, radians at full lock
+  // A HALF-LIFE, NOT A RATE -- `damp(cur, tgt, half, dt)` takes the time to close half the gap,
+  // and reading it as a rate is a three-second steering response that reads as a broken joint.
+  ease: .12,            // how fast the steering and the lean follow the corner
+  lift: .02,            // it sits this far off the ground, so the tyres are not buried in it
+  on: 1,
 };
 
 // HIS HEALTH, WHICH UNTIL NOW DID NOT EXIST. *"Maybe he has like a health bar or something."*
@@ -8733,6 +8907,9 @@ function bodyLoops(K) {
   // the REST pool is idles and they are held, so they loop like the one in `idle` does. `look`
   // is deliberately not here: it is a one-shot flourish and looping one is a tic.
   for (const n of K.clips.rest || []) L.add(n);
+  // AND THE DRIVING SET, which is three HELD poses: a one-shot here clamps on its last frame
+  // and the rider freezes half way through a lean (m106's landmine, one table over).
+  for (const k of ['ride', 'rideL', 'rideR']) if (K.clips[k]) L.add(K.clips[k]);
   // the circling clips live beside the table rather than in it, and they loop like any gait
   if (K.strafe) L.add(K.strafe);
   if (K.strafeR) L.add(K.strafeR);
@@ -8769,6 +8946,166 @@ function buildSkaters(g) {
   const P = bodyProto(g, SKATER);
   SKATER.up = 0;
   for (const [x, z] of SKATER.at) { const d = bodySpawn(P, SKATER, x, z); foeBar(d); SKATER.up++; }
+}
+
+// THE FAT BIKER. The shared pair and a different table, which is m35's claim collected on for
+// the sixth time -- and then ONE of him is put on the motorcycle, which costs a state that
+// already exists rather than a second brain.
+function buildBikers(g) {
+  BIKER.loops = bodyLoops(BIKER);
+  const P = bodyProto(g, BIKER);
+  BIKER.up = 0;
+  for (const [x, z] of BIKER.at) { const d = bodySpawn(P, BIKER, x, z); foeBar(d); BIKER.up++; }
+  // AND THE RIDER, only if there is something to ride. A man sitting on nothing is worse than
+  // no rider at all, and `MOTO.up` is the one thing that says whether the bike arrived.
+  if (MOTO.up) {
+    const d = bodySpawn(P, BIKER, MOTO.ring.cx + MOTO.ring.r, MOTO.ring.cz);
+    foeBar(d);
+    d.ride = MOTO; d.st = 'ride'; d.t = 0;
+    d.cur = BIKER.clips.ride;
+    skinPlay(d, d.cur, 1);
+    MOTO.rider = d;
+    BIKER.up++;
+  }
+}
+
+// ---- the motorcycle -------------------------------------------------------------------------
+const _mv = new THREE.Vector3(), _mq = new THREE.Quaternion();
+const AX_X = new THREE.Vector3(1, 0, 0), AX_Y = new THREE.Vector3(0, 1, 0), AX_Z = new THREE.Vector3(0, 0, 1);
+
+// FOUND BY PATTERN, NEVER BY INDEX. He thought he had called the steering joint `turn` and it is
+// exported as `steering`; both match, and so does whatever the next export calls it.
+function motoBones(model) {
+  const B = {};
+  model.traverse(o => {
+    if (!o.isBone) return;
+    for (const k in MOTO.mark) if (!B[k] && MOTO.mark[k].test(o.name)) B[k] = o;
+  });
+  return B;
+}
+
+function buildMoto(g) {
+  const model = g.scene;
+  model.updateMatrixWorld(true);
+  // THE SCALE IS MEASURED OFF THE GEOMETRY, the skateboard's rule: a re-export at any size lands
+  // right with no edit. GLTFLoader binds every skin with the IDENTITY matrix, so at rest a
+  // vertex's geometry position IS its world position and these bounds are already metres.
+  let lo = null, hi = null;
+  model.traverse(o => {
+    if (!o.isMesh && !o.isSkinnedMesh || !o.geometry) return;
+    o.geometry.computeBoundingBox();
+    const b = o.geometry.boundingBox;
+    lo = lo ? lo.min(b.min) : b.min.clone(); hi = hi ? hi.max(b.max) : b.max.clone();
+  });
+  if (!lo) throw new Error('motorcycle has no geometry');
+  const authored = hi.z - lo.z;                       // Z is the LENGTH: 1.088 against 0.65 wide
+  const k = authored > .01 ? MOTO.len / authored : 1;
+  const B = motoBones(model);
+  MOTO.bones = B;
+  // the rest pose is READ, never restated -- the turn and the spin ride ON TOP of whatever the
+  // file authored, so the 28.5 degrees of fork rake is the export's business and not this code's
+  for (const key of ['steer', 'front', 'back']) if (B[key]) B[key].userData.rest = B[key].quaternion.clone();
+  // MEASURED IN AUTHORED METRES, BEFORE THE SCALE GOES ON, then taken to world metres. The wheel
+  // bones sit at the axle, so the radius is how far that is above the lowest geometry -- which
+  // comes out at 0.28 m, and a Fat Boy's front tyre is 0.28 m.
+  let wb = .8, rad = .14;
+  if (B.front && B.back) {
+    const f = B.front.getWorldPosition(new THREE.Vector3()), b2 = B.back.getWorldPosition(new THREE.Vector3());
+    wb = f.distanceTo(b2);
+    rad = Math.max(.02, f.y - lo.y);
+  }
+  MOTO.wb = wb * k; MOTO.rad = rad * k;
+  model.scale.setScalar(k);
+  model.traverse(o => {
+    if (o.isMesh || o.isSkinnedMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; }
+    const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+    for (const m of mats) {
+      if (!m.isMeshStandardMaterial) continue;
+      // Tripo writes doubleSided on everything and on a closed shell that is pure wasted fill
+      m.side = THREE.FrontSide;
+      if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffffff); }
+      m.emissiveIntensity = RIG.emissive;
+    }
+  });
+  const root = new THREE.Group();
+  root.add(model);
+  scene.add(root);
+  MOTO.root = root; MOTO.model = model; MOTO.scale = k;
+  MOTO.a = 0; MOTO.steer = 0; MOTO.spin = 0; MOTO.h = 0; MOTO.lean0 = 0;
+  MOTO.up = 1;
+  console.log('[melee] motorcycle: ' + authored.toFixed(3) + ' m authored -> x' + k.toFixed(3) +
+              ', wheelbase ' + MOTO.wb.toFixed(3) + ' m, wheel radius ' + MOTO.rad.toFixed(3) + ' m, bones ' +
+              Object.keys(B).join(' '));
+  if (!B.steer) note('MOTO NO STEER');
+  if (!B.front || !B.back) note('MOTO NO WHEEL');
+  if (!B.seat) note('MOTO NO SEAT');
+  stepMoto(0);
+}
+
+// THE PATH IS PARAMETERISED BY ANGLE, NOT INTEGRATED, so it cannot drift into anything however
+// long it runs -- which matters, because the ring it drives was swept against every box, both
+// buildings and every body and has 2.02 m of clearance at its worst point.
+function stepMoto(dt) {
+  if (!MOTO.up || !MOTO.on) return;
+  const R = MOTO.ring, r = Math.max(1, R.r), v = MOTO.speed;
+  const w = v / r;                                   // rad/s: a circle of radius r at speed v
+  MOTO.a += w * dt;
+  const x = R.cx + Math.cos(MOTO.a) * r, z = R.cz + Math.sin(MOTO.a) * r;
+  // the tangent, which is the way it is pointing. Forward here is (sin h, cos h), so the heading
+  // that matches the tangent (-sin a, cos a) * r ... is read straight off the velocity.
+  const vx = -Math.sin(MOTO.a), vz = Math.cos(MOTO.a);
+  MOTO.h = Math.atan2(vx, vz);
+  const y = groundAt(x, z, 0, .5) + MOTO.lift;
+  MOTO.root.position.set(x, y, z);
+  // **THE STEER ANGLE FALLS OUT OF THE WHEELBASE.** A single-track vehicle turning at yaw rate w
+  // while doing v has a turn radius v/w, so `delta = atan(L*w/v)` -- the handlebars answer the
+  // corner rather than a mapping somebody invented. `lock` is his 20 degrees, as a CLAMP.
+  const want = clamp(Math.atan2(MOTO.wb * w, Math.max(.1, v)), -MOTO.lock, MOTO.lock);
+  MOTO.steer = damp(MOTO.steer, want, MOTO.ease, dt);
+  // AND IT LEANS INTO THE CORNER. Derived rather than argued, and stated because this file gets
+  // handedness backwards about half the time when it argues: a rotation about the bike's own +Z
+  // takes its top toward -X, and +X is LEFT here, so leaning INTO a left turn (a positive steer)
+  // is a NEGATIVE roll. `mel.MOTO.lean = -.26` is the one word if it heels the wrong way.
+  const lean = -(MOTO.steer / MOTO.lock) * MOTO.lean;
+  MOTO.root.quaternion.setFromAxisAngle(AX_Y, MOTO.h).multiply(_mq.setFromAxisAngle(AX_Z, lean));
+  const B = MOTO.bones;
+  // **THE WHEELS SPIN AT DISTANCE OVER THE MEASURED RADIUS, about each bone's own local X** --
+  // the axle, because the mesh is 1.09 long in Z against 0.65 wide in X. Both wheel bones share
+  // `root`'s frame (the front one's +28.5 cancels the fork's -28.5 exactly), so one axis serves
+  // both, and the front wheel inherits the steering for free by being its CHILD in the file.
+  MOTO.spin += (v * dt) / Math.max(.02, MOTO.rad);
+  for (const key of ['front', 'back']) {
+    const b = B[key]; if (!b || !b.userData.rest) continue;
+    b.quaternion.copy(b.userData.rest).multiply(_mq.setFromAxisAngle(AX_X, MOTO.spin));
+  }
+  // **AND THE FORK TURNS ABOUT ITS OWN LOCAL Y.** `rest * Ry(d)` is a rotation about the axis the
+  // REST pose puts Y on -- `(rest * Ry * rest^-1) * rest` collapses to exactly that -- which is
+  // the fork, because `front_wheel` hangs off this joint at almost pure local -Y.
+  if (B.steer && B.steer.userData.rest)
+    B.steer.quaternion.copy(B.steer.userData.rest).multiply(_mq.setFromAxisAngle(AX_Y, MOTO.steer));
+  MOTO.root.updateMatrixWorld(true);
+}
+
+// THE RIDER. It runs ABOVE the brain, `stepPack`'s own rule one vehicle over: a man on a
+// motorcycle has no gait, no roam and nothing to be separated from -- and `'ride'` is the state
+// `pushBodies` and `bodySep` already skip, so reusing it is what makes that true for free.
+function stepRide(d, dt, t) {
+  if (d.st !== 'ride' || !d.ride) return 0;
+  const M = d.ride, K = d.K;
+  if (!M.up || !M.bones.seat) return 0;
+  // A NAMED SEAT IS THE PLACEMENT AND TAKES NO OFFSET -- `packSeat`'s rule, and this export
+  // answered it: `mixamorig_hips` is in the bike's own skin, 0.65 m over its lowest geometry,
+  // which is a Harley Fat Boy's seat height to the centimetre.
+  M.bones.seat.getWorldPosition(_mv);
+  d.root.position.set(_mv.x, _mv.y, _mv.z);
+  d.h = M.h;
+  // THE TURN CLIPS BLEND BY HOW HARD IT IS STEERING, and the three sum to exactly 1 -- a table
+  // that dips below 1 bleeds the BIND pose in, which is the T-pose exactly.
+  const s = clamp(M.steer / M.lock, -1, 1), a = Math.abs(s);
+  const turn = s > 0 ? K.clips.rideL : K.clips.rideR;
+  t[K.clips.ride] = 1 - a;
+  if (turn && a > 0) t[turn] = a;
+  return 1;
 }
 
 // CLANCY IS m38'S PACIFIST WITH THE RING MOVED, and that is the whole build. `foeWander`
@@ -9424,7 +9761,11 @@ function packOK() { return packWant() && !(PACK.offDrop && player.knock); }
 function setPal(i) {
   if (i === CLANCY.mode) return;
   CLANCY.mode = i;
-  if (!packWant()) for (const d of DUMMIES) if (d.st === 'ride') packOff(d);
+  // **`packOff` BELONGS TO THE PAL AND THIS LOOP DID NOT SAY SO (m107).** `'ride'` is a shared
+  // state -- `pushBodies` and `bodySep` both skip it, which is exactly why the motorcycle's rider
+  // reuses it -- so an ungated loop here would throw a BIKER off his bike every time the pal row
+  // was pressed. Latent until there was a second thing that rides.
+  if (!packWant()) for (const d of DUMMIES) if (d.K.pal && d.st === 'ride') packOff(d);
   paintArcRow(palRow, DUMMIES.some(d => d.K.pal), CLANCY.mode);
 }
 // WHERE THE SEAT IS, THIS FRAME. The bone is looked up ONCE and cached -- `getObjectByName`
@@ -10158,7 +10499,9 @@ function stepDummies(dt) {
     // riding somebody else's back has no gait, no dive, no target and nothing to be separated
     // from -- and putting it here rather than inside `foeAI` is what keeps all of that true
     // without a gate in each of them.
-    if (K.pal && stepPack(d, dt, t)) {
+    // AND THE MOTORCYCLE'S RIDER IS THE SAME SHAPE ONE VEHICLE OVER (m107) -- above the brain,
+    // for the same reason: a man on a bike has no gait, no roam and nothing to be separated from.
+    if ((K.pal && stepPack(d, dt, t)) || stepRide(d, dt, t)) {
       skinWeights(d, t, dt, .06, K.clips.idle);
       d.mixer.update(dt);
       d.root.rotation.y = d.h + d.faceOff + (d.spin || 0);
@@ -10354,6 +10697,10 @@ function frame() {
     stepAim(dt);          // one eased answer, before anything reads it
     stepKit(dt);
     stepPlayer(dt);
+    // **ABOVE `stepDummies`, AND THAT ORDER IS LOAD-BEARING.** The rider reads the seat BONE's
+    // world position, so a bike stepped after him leaves him a frame behind it -- which at 6 m/s
+    // is 10 cm of a man sliding along beside his own seat. `stepShip`'s ordering rule one repo over.
+    stepMoto(dt);
     stepDummies(dt);
     stepShe(dt);
     rigAnim(dt);
@@ -10456,6 +10803,13 @@ function frame() {
     // and it did nothing" are three different bugs and one picture from a phone -- and the
     // STUCK CLOCK is the one that tells them apart, because it is the thing both the hop and the
     // give-up are triggered off. Silent while he is simply pottering about, `rollREC`'s rule.
+    // **THE BIKE SAYS WHAT IT IS DOING, AND THE STEER ANGLE IS THE DIAGNOSIS (m107).** "the
+    // wheels don't turn", "the handlebars don't turn" and "it never loaded" are three bugs with
+    // one picture from a phone -- and there is no console on one. `MOTO NO STEER` / `NO WHEEL` /
+    // `NO SEAT` come out of `buildMoto` if a re-export renames a joint; `MOTO12` is the steer
+    // angle in degrees, which is the number every part of this is derived from.
+    const mo = !MOTO.up ? '' : ' · MOTO' + Math.round(MOTO.steer * 180 / Math.PI) +
+      (MOTO.rider && MOTO.rider.st === 'ride' ? '' : '!');
     const pal = DUMMIES.find(d => d.K.pal);
     // `PACK?` is the seat being GUESSED off the spine rather than read off a named joint --
     // "he floats above the backpack" and "the joint never arrived" are one picture otherwise.
@@ -10474,7 +10828,7 @@ function frame() {
     // pads plainly say so by being where they always are -- `rollREC`'s rule, one control over.
     const fl = STICK.dyn ? ' · FLOAT' : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + fl +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
@@ -10659,6 +11013,10 @@ async function init() {
   await side(HICK.file, 'loading the locals', { name: 'HICK', build: buildHicks });
   await side(HOBO.file, 'loading the locals', { name: 'HOBO', build: buildHobos });
   await side(SKATER.file, 'loading the locals', { name: 'SKATER', build: buildSkaters });
+  // THE BIKE BEFORE THE BIKER, because `buildBikers` seats one of him on it -- and a rider with
+  // no bike is the one thing worse than no rider, so `MOTO.up` is what that decision reads.
+  await side(MOTO.file, 'loading a motorcycle', { name: 'MOTO', build: buildMoto });
+  await side(BIKER.file, 'loading the locals', { name: 'BIKER', build: buildBikers });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
 
   paintKit();
@@ -10696,6 +11054,10 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // `mel.pack(1)` sends the sidekick to your back from the console, which is the same call the
   // left row's segment makes, so the button and the handle cannot disagree.
   STICK, PACK, CLANCY, setDyn, setPal, packWant,
+  // THE BIKE, LIVE. `mel.MOTO.ring.r = 6` laps tighter and takes the steering to 15 degrees;
+  // under 4.4 m it reaches the 20 he asked for. `mel.MOTO.lean = -.26` flips which way it heels,
+  // and `mel.MOTO.on = 0` parks it where it stands with the rider still on it.
+  MOTO, BIKER, stepMoto,
   dyn: on => { setDyn(on == null ? !STICK.dyn : on); return STICK.dyn ? 'floating' : 'fixed'; },
   pack: on => { setPal(on == null ? (CLANCY.mode ? 0 : 1) : (on ? 1 : 0)); return CLANCY.modes[CLANCY.mode].key; },
   // A LOOK AT THE SLAM WITHOUT HAVING TO BE IN THE AIR. `mel.slamfx()` fires the ring, the dust,

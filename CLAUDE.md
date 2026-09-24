@@ -1155,6 +1155,95 @@ same picture from a phone.
   **AND THE ROW IS ON THE LEFT STICK**, which is what the sentence opens with -- *"the equivalent
   of those on the left stick"* -- rather than the "above the right stick" it ends with. Stated
   because it is a reading, not a measurement.
+- **THE FAT BIKER AND HIS MOTORCYCLE, AND HIS C4D QUESTION IS GIMBAL LOCK IN THE DISPLAY (m107,
+  `BIKER`, `MOTO`, `buildMoto`, `stepMoto`, `stepRide`).** *"I added a guy called fat biker 02 and
+  his motorcycle... the motorcycle has its wheels rigged to a bone each and can be driven
+  procedurally, and its handlebars rigged to 'turn' I think, and it needs to procedurally have its
+  turn driven to 20 degrees each direction. The weird thing about the joint is that when I rotate
+  the blue axis it changes R.B, when I rotate the red axis it changes R.P, but when I spin the
+  green axis -- the one that turns the steering -- ALL THREE change. It makes no sense?"*
+  **THE RIG IS FINE AND THE DISPLAY IS WHAT IS LYING.** C4D's HPB applies H about Y, then P about
+  X, then B about Z, in that order -- and the `steering` joint's rest carries **P = -28.5 deg**,
+  which is the fork RAKE he modelled. So the joint's own local Y is tilted 28.5 degrees back from
+  the parent's Y, a turn about the fork is not a pure H in the parent's frame, and the solver has
+  to spread it across all three fields. It is the degenerate case of an Euler triple, not a broken
+  joint. **And none of it survives the export: glTF stores QUATERNIONS**, so the game never reads
+  a Euler at all and there is nothing here to work around.
+  **AND THE STEERING AXIS IS MEASURED RATHER THAN TYPED, WHICH IS WHY THE RAKE COSTS NOTHING.**
+  `front_wheel` hangs off `steering` at local (-1.7, -28.3, +3.2) -- almost pure **-Y** -- so the
+  fork runs down that joint's own local Y and that is the axis. The rest quaternion is captured at
+  build time and the turn rides ON TOP of it (`rest * Ry(d)`, which is exactly a rotation about
+  the axis the rest pose puts Y on), so the 28.5 degrees is the export's business. `barPlace`'s
+  rule: read the rest pose, never restate it.
+  **HE BUILT MORE INTO IT THAN HE REMEMBERED.** 8 nodes, one skin: `root > steering > front_wheel`,
+  `back_wheel`, and **`mixamorig_hips` -- a rider SEAT MARKER already in the file.** The steering
+  joint is called `steering` and not `turn`, so every joint is found BY PATTERN and either
+  spelling lands with no code change -- `weapFit`'s rule.
+  **EVERY NUMBER IS DERIVED, AND A REAL-WORLD FACT IS THE CHECK THAT THEY ARE RIGHT.** The bike
+  and the biker came out of the same scene, so at `MOTO.len` 2.20 m the geometry gives x2.021
+  against the biker's own x2.026 -- and then:
+      wheelbase   0.793 authored -> **1.602 m**
+      wheel r     0.136           -> **0.275 m**   a Fat Boy's front tyre is 0.28
+      seat        0.323           -> **0.652 m**   a Fat Boy's seat is 0.66
+  Two independent real-world facts land within a centimetre, which is what says the scale is right
+  rather than plausible.
+  **THE STEER ANGLE FALLS OUT OF THE WHEELBASE.** A single-track vehicle turning at yaw rate w
+  while doing v has a turn radius v/w, so `delta = atan(L*w/v)` -- the handlebars answer the corner
+  rather than a mapping somebody invented, and **`lock` is his 20 degrees as a CLAMP** rather than
+  as a target. At the shipped ring that is 6.5 deg; `mel.MOTO.ring.r = 6` takes it to 15.0 and at
+  4.4 m it reaches the lock. The wheels are distance over the measured radius about each bone's
+  own local X -- the axle, because the mesh is 1.089 long in Z against 0.648 wide in X -- and the
+  front wheel inherits the steering for free by being its CHILD in the file.
+  **THE CIRCUIT WAS SWEPT, NOT CHOSEN, AND THE ANSWER WAS NEARLY "THERE IS NO ROOM".** A path here
+  has to clear fourteen boxes, two buildings and seventeen bodies. The largest clear ring within
+  reach of the spawn is **14 m at (-29, -3)**, worst clearance 2.02 m, nearest point 15 m from
+  where he stands; the only clear OVAL is 64 m across with its nearest point 37 m away, which is a
+  motorcycle you cannot see. **The path is parameterised by angle rather than integrated**, so it
+  cannot drift into anything however long it runs.
+  **AND THE RIDER IS `stepPack` ONE VEHICLE OVER.** `'ride'` is a state `pushBodies` and `bodySep`
+  ALREADY skip, so reusing it is what makes a passenger weightless for free; he is written to the
+  seat BONE every frame with no offset, and the three driving clips blend by how hard it is
+  steering, summing to exactly 1. **`stepMoto` runs ABOVE `stepDummies`**, because the rider reads
+  the seat bone's world position and a bike stepped after him leaves him a frame behind it --
+  `stepShip`'s ordering rule.
+  **AND `packOff`'s LOOP WAS NOT GATED ON THE PAL, WHICH THIS EXPOSED.** `if (!packWant()) for
+  (const d of DUMMIES) if (d.st === 'ride') packOff(d)` walks EVERY body, so pressing the pal row
+  would have thrown a biker off his bike. Latent until there was a second thing that rides.
+  **WHAT IS UNVERIFIED AND WHY:** the motorcycle is draco and nothing in this container can decode
+  a mesh or build a skin, so `buildMoto` has never run outside a browser -- whether it stands the
+  right way up, whether the wheels spin about the axis the arithmetic says, and which way it heels
+  are device questions. The arithmetic that CAN be checked -- the scale, the wheelbase, the radius,
+  the seat, the steer angles and the ring's clearances -- is above and was. The chip carries
+  `MOTO<deg>` plus `MOTO NO STEER` / `NO WHEEL` / `NO SEAT` if a re-export renames a joint, because
+  "the wheels don't turn", "the bars don't turn" and "it never loaded" are one picture from a phone.
+  **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
+  new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
+
+- **AND HIS `run_fwd` IS AUTHORED TRAVELLING BACKWARDS, WHICH THE CONTROL IS WHAT PROVED (m107).**
+  Its planted foot slides FORWARD in the body frame: `npm run gait` reads **travel +176 deg**, with
+  both feet agreeing (no disagree flag) and a perfectly good 1.694 m/s of speed -- the direction is
+  the only thing wrong with it. Against the same tool:
+      zap    run_fwd   +7 deg     <- the clip the whole game runs on
+      hick   running   +1 deg
+      biker  walk_fwd  +3 deg     <- his own walk, same rig, same tool, same run
+      biker  run_fwd   **+176**   <- the BACKPEDAL band (zap's own `run_bwd` reads -172)
+  Played while he travels forwards that is the moonwalk this file has a whole note about, so `run`
+  and `flee` both name `walk_fwd` and `tsHi` lets it scramble. **A re-export makes it one word**,
+  and it is worth having: a walk at 1.5x is the fastest he can currently move.
+  **MY OWN FIRST TEST AGREED WITH THE CONCLUSION AND WAS WORTHLESS.** Net toe displacement while
+  the foot is low reads "+" on **zap's own run_fwd** too (+0.121 on one foot, 16 down-frames of
+  60) -- a run has so much float that a net-displacement test is noise, and it would have shipped
+  a true claim backed by a measurement that proves nothing. **The control is what killed it**, and
+  a measurement with no case that must come back the other way is a measurement nobody can trust.
+
+- **AND THE FILES WERE IN THE REPO THE WHOLE TIME -- MY CLONE WAS STALE (m107).** `git log` showed
+  only my own three commits and `ls models/` had no biker and no bike, which is m80's *"the file is
+  somewhere else"* and m58's *"four of his five pushes never left his machine"* wearing one face.
+  It was neither: `git fetch` brought down `e3d365c added fat biker 02` and `7dbd65a added vehicles
+  folder and motorcycle`, both sitting on `origin/main`. **`git log` answers a question about the
+  LOCAL clone**, and after a push of my own the local head is exactly as far behind as it was
+  before. Fetch before concluding a file never arrived.
+
 - **THE LEDGE HOP WAS THE ONE STATE THAT ENTERED A `ONCE` CLIP WITHOUT `playOnce` (m106).**
   *"When you're hanging on the side of a ledge and you push left or right it plays the side hop
   animation only once -- it doesn't do it for every movement. It needs to be segmented, so when
