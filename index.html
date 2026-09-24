@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m104</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m105</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m104</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m105</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -496,7 +496,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm104';
+const BUILD = 'm105';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2136,8 +2136,23 @@ const PACK = {
   // so a change to how big the player is moves the seat with him rather than leaving a small
   // man hovering -- m52's rule, and the reason nothing here is typed in metres.
   seat: { up: .30, back: .17 },
+  // **THE EXPORT DECIDES WHERE HE SITS, THE MOMENT IT SAYS SO (m105).** *"I'm wondering if it
+  // would be helpful for me to put in a root or a joint where Clancy should go, because he just
+  // sort of looks like he's standing floating slightly above the backpack."* It is, and it is
+  // the weapon mounts' own rule: name a joint on the player's rig and the seat IS that joint --
+  // no offsets, nothing typed here, and a re-export that moves it moves him. `mark` is tried
+  // first and `bone` is the fallback, so this needs no code change on the day it lands.
+  // **It has to be IN THE SKIN to arrive as a Bone** -- `buildRig` collects `o.isBone`, which is
+  // what GLTFLoader makes of a node listed in a skin's joints. That is how `weapon_root` gets
+  // here, so exporting it the same way he exported those is the whole of it.
+  mark: /pack_?root|pack_?seat|seat|backpack|clancy/i,
   bone: /Spine2$|Spine1$|Spine$/,
-  clips: { leap: 'jumping_up', ride: 'stand_to_cover' },
+  // **AND THE RIDE POSE IS AN ORDERED LIST, FIRST ONE HE HAS (m105).** *"I need to put in a
+  // custom animation for him."* `stand_to_cover` is a STAND-IN and it is the reason he reads as
+  // standing: it is a man taking cover, not a man holding on. Drawing one and exporting it under
+  // any of the names ahead of it is the whole change -- `CLIPS.block`'s pattern, and the same
+  // reason `BAR.mark` is a list one repo over.
+  clips: { leap: 'jumping_up', ride: ['pack_ride', 'hold_on', 'ride', 'stand_to_cover'] },
   // AND HE COMES OFF IF YOU ARE PUT ON THE FLOOR. A knock-down is a body going over; a passenger
   // welded to the spine through it is the one thing that would read as a bug rather than a ride.
   offDrop: 1,
@@ -2619,6 +2634,15 @@ const BLOCK = {
   fxN: 16, fxV: 5.5, fxSize: .12, fxLife: .34, fxRing: .85,
   fxHot: [1, .90, .55], fxCool: [.62, .74, .90],
   shake: .22,
+  // **A BLOCK HAS ITS OWN VOICE (m105).** *"When we do a block animation it needs to make a
+  // different noise than the noise that it makes when you're hit -- like a clang or clink or
+  // something, a parry noise."* It was playing `thud` (the box break, which is HIM being hit)
+  // plus the ring, so a guard sounded like a blow that landed and the two tiers sounded alike.
+  // The thud is gone on any guard and the tiers are two recordings: a dull clang absorbed, and
+  // `metal_ping_01` on top of it turned aside. **The ping is played from its own PEAK** (`cut`),
+  // which is what makes a bright short file read as an arrival rather than as a swell -- m59's
+  // mechanism, and `HCHG.snd`'s own trick one event over.
+  ping: { key: 'lock', g: .62, r: 1.16, cut: 1 },
 };
 // **BEING KNOCKED DOWN (m67).** *"When the orcs hit you, you fly through the air a little bit
 // and land on the ground and then get up."* That is three beats and the game already has two of
@@ -6503,6 +6527,14 @@ function chargeRelease() {
   playOnce(CLIPS.chargeGo, clipLen(CLIPS.chargeGo) / p.goDur);
   p.vel.x = Math.sin(p.faceH) * vx; p.vel.z = Math.cos(p.faceH) * vx;
   p.camWant = p.faceH;              // the dash is a melee, so the lens follows it too (m81)
+  // **AND IT IS WHAT THE BLOW LAUNCHES ALONG (m105).** `strikeSweep` reads `p.melH` and this
+  // function was the one strike in the file that never wrote it -- so a charged dash launched
+  // its man along whatever bearing the LAST ORDINARY PUNCH was thrown at, which is stale for
+  // ever after the first one. That is the m97 bug wearing its other face: there the bearing was
+  // recovered from geometry, here it was simply not stored, and both come out as "they go off
+  // to the side". Written where `faceH` is decided, so the lens, his nose and the launch are
+  // one answer rather than three.
+  p.melH = p.faceH;
   // A DASH STAYS ON ITS FEET. Leaving the ground is what made this a leap, and `integrate` runs
   // gravity and the ground collider on this state like any other -- so not writing `vel.y` is
   // the whole of "it does not jump any more". The hop version still lifts off.
@@ -7388,7 +7420,14 @@ function stepPlayer(dt) {
   // HOW LONG HE HAS ACTUALLY BEEN RUNNING, which is what the tackle opener is gated on. It is
   // last frame's speed, which is the right one: what is being asked is whether he ARRIVED at
   // this flick running, not whether the thumb is pointed somewhere.
-  if (p.grounded && p.speed > MELEE.slideAt) p.runT += dt; else p.runT = 0;
+  // **AND SPEED A MOVE GAVE HIM IS NOT RUNNING (m105).** `stepMelee` rewrites the velocity from
+  // `melV` every frame, so a strike's own lunge counted here: the finisher launches at 9.0 m/s
+  // and stays over `slideAt` 4.2 for **0.61 s** against a `slideT` of .45, so throwing it was by
+  // itself enough to arm the tackle. Swipe, let the chain lapse, swipe again -- and the next
+  // flick is a six-metre slide out of a fight he was standing still in. It is HELD rather than
+  // cleared, so a man genuinely sprinting who throws one punch on the way in still has it.
+  const own = !p.melee && !p.chargeGo && !p.roll;
+  if (own) { if (p.grounded && p.speed > MELEE.slideAt) p.runT += dt; else p.runT = 0; }
 
   // ---- THE KNOCK-DOWN RUNS ON ITS OWN CLOCK, FROM THE BLOW (m90). Not on `p.land`: the fall
   //      begins in the air, so a clock that starts at the landing is a clock that starts after
@@ -9356,10 +9395,15 @@ const _pk = new THREE.Vector3();
 function packSeat(o) {
   const p = player;
   if (PACK._b === undefined) {
-    PACK._b = null;
-    for (const n in rig.bones) if (PACK.bone.test(n)) { PACK._b = rig.bones[n]; break; }
+    PACK._b = null; PACK._exact = 0;
+    for (const n in rig.bones) if (PACK.mark.test(n)) { PACK._b = rig.bones[n]; PACK._exact = 1; break; }
+    if (!PACK._b) for (const n in rig.bones) if (PACK.bone.test(n)) { PACK._b = rig.bones[n]; break; }
   }
   if (PACK._b) PACK._b.getWorldPosition(_pk); else _pk.set(p.pos.x, p.pos.y + RIG.height * .6, p.pos.z);
+  // A NAMED SEAT IS THE PLACEMENT AND TAKES NO OFFSET. The fractions below exist only because
+  // nothing in the file knows where his back is; a joint knows, so applying them on top would be
+  // this code having an opinion about an export that has already answered.
+  if (PACK._exact) { o.x = _pk.x; o.y = _pk.y; o.z = _pk.z; return o; }
   const fx = Math.sin(p.faceH), fz = Math.cos(p.faceH);
   o.x = _pk.x - fx * (RIG.height * PACK.seat.back);
   o.z = _pk.z - fz * (RIG.height * PACK.seat.back);
@@ -9387,7 +9431,8 @@ function packGo(d) {
 }
 function packSit(d) {
   d.st = 'ride'; d.t = 0; d.vx = d.vy = d.vz = 0;
-  d.cur = PACK.clips.ride;
+  const pool = PACK.clips.ride;
+  d.cur = (Array.isArray(pool) ? pool.find(n => d.actions[n]) || pool[pool.length - 1] : pool);
   skinPlay(d, d.cur, skinLen(d, d.cur) / Math.max(.2, PACK.leap * 1.6));
 }
 // AND COMING OFF IS A DROP, NOT A TELEPORT. He keeps the seat's height and falls out of it
@@ -9809,7 +9854,11 @@ function blockFx(dirH, hard) {
   spkBurst(x, y, z, Math.max(3, Math.round(B.fxN * k)), {
     col: hard ? B.fxHot : B.fxCool, spread: B.fxV * k, up: 1.4, r: .12,
     size: B.fxSize, life: B.fxLife });
+  // THE RING IS THE STEEL, AND THE PING IS THE DEFLECT ON TOP OF IT. Two layers, one event --
+  // m64's own argument, and it is what makes a parry audibly a different thing from a guard
+  // rather than the same clang slightly louder.
   hitRing(null, B.fxRing * (hard ? 1 : .6), x, z);
+  if (hard && B.ping) snd(B.ping.key, { g: B.ping.g, r: B.ping.r * (1 + (Math.random() - .5) * .08), cut: B.ping.cut });
   // **ONLY A DEFLECT KNOCKS THE LENS.** A shake on every guarded blow is a shake on most of a
   // fight, and m99's own note is that this reads as ONE thump -- which it cannot, if it is
   // going off continuously.
@@ -9907,8 +9956,12 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
       }
     }
   }
-  hurtEl.classList.remove('on'); void hurtEl.offsetWidth; hurtEl.classList.add('on');
-  snd('thud', { g: .95, r: .8 });
+  // **AND A BLOCK IS NOT A HIT (m105).** `thud` is the sound of HIM being hit, so a guarded blow
+  // played it under the block's own ring and the two events were one noise; `blockFx` owns what
+  // a guard sounds like. The red flash goes with the damage rather than with the contact, so a
+  // deflect (`cutHard` 0) does not tell him he was hurt when he was not.
+  if (dmg > 0) { hurtEl.classList.remove('on'); void hurtEl.offsetWidth; hurtEl.classList.add('on'); }
+  if (!guard) snd('thud', { g: .95, r: .8 });
 }
 // **WHERE A BODY CARRIES MOMENTUM, WHATEVER STATE IT IS IN (m37).** This used to live inside
 // the `down` branch, so a knock-down flew and a landed punch did nothing at all -- and adding a
@@ -10364,7 +10417,9 @@ function frame() {
     // STUCK CLOCK is the one that tells them apart, because it is the thing both the hop and the
     // give-up are triggered off. Silent while he is simply pottering about, `rollREC`'s rule.
     const pal = DUMMIES.find(d => d.K.pal);
-    const cl = !pal ? '' : pal.st === 'ride' ? ' · PACK'
+    // `PACK?` is the seat being GUESSED off the spine rather than read off a named joint --
+    // "he floats above the backpack" and "the joint never arrived" are one picture otherwise.
+    const cl = !pal ? '' : pal.st === 'ride' ? (PACK._exact ? ' · PACK' : ' · PACK?')
       : pal.st === 'leap' ? ' · PACK↑'
       : pal.st === 'down' || pal.st === 'up' ? ' · PALDOWN'
       : pal.st === 'swing' ? ' · PUNCH'

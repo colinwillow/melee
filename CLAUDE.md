@@ -1155,6 +1155,93 @@ same picture from a phone.
   **AND THE ROW IS ON THE LEFT STICK**, which is what the sentence opens with -- *"the equivalent
   of those on the left stick"* -- rather than the "above the right stick" it ends with. Stated
   because it is a reading, not a measurement.
+- **THE CHARGED DASH WAS THE ONE STRIKE IN THE FILE THAT NEVER STORED ITS OWN BEARING (m105,
+  `chargeRelease`).** *"Sometimes I'll have my weapon out and I'll swing at them, I'll launch and
+  hit them, and they go off like to the side -- the trajectory doesn't look right, it feels like
+  they should go the direction of my body vector."*
+  **m97 FIXED THIS AND THIS FUNCTION WAS NOT IN THE FIX.** `strikeSweep` launches along `p.melH`,
+  and `meleeGo` and `kickGo` both write it beside `p.faceH`; `chargeRelease` writes `p.faceH`,
+  `p.heading` and `p.camWant` and **not `p.melH`** -- so a charged dash launched its man along
+  whatever bearing the LAST ORDINARY PUNCH was thrown at, and that value is never cleared, so it
+  is stale for the rest of the session after the first flick. Aimed at one man, launched toward
+  another, every time.
+  **IT IS THE m97 BUG WEARING ITS OTHER FACE.** There the bearing was RECOVERED FROM GEOMETRY
+  (the limb's instantaneous delta, which at the contact frame is mostly tangential); here it was
+  simply NOT STORED, and both come out as *"they go off to the side"*. **When a direction is
+  already decided, store it where it is decided** -- `p.melH` is written on the same line as
+  `p.faceH` in all three places now, so the lens, his nose and the launch are one answer rather
+  than three that can disagree.
+  **AND THE SLAM IS CORRECTLY NOT THIS.** `slamLand` throws each man radially OUTWARD from where
+  it landed, which is one bearing PER BODY -- a single `melH` would be the wrong answer for it.
+
+- **THE LUNGE WAS FEEDING THE TACKLE GATE, AND THE FINISHER ALONE ARMED IT (m105, `p.runT`).**
+  *"I'll just be swiping melee melee melee and then all of a sudden he launches past the
+  character quite a distance... it's almost like when there's a guy in front of you he only goes
+  a short distance, which I like, but then if you melee and it doesn't clock that there's a guy
+  in his trajectory it launches far."* His reading of the symptom is exactly right and the cause
+  is one line:
+      if (p.grounded && p.speed > MELEE.slideAt) p.runT += dt; else p.runT = 0;
+  **`stepMelee` REWRITES THE VELOCITY FROM `melV` EVERY FRAME**, so a strike's own lunge is
+  counted here as running. Tabled against the shipped constants, time spent over `slideAt` 4.2
+  against a `slideT` of .45:
+      link 1  lunge 7.0  beat .62  free travel 3.15 m   over 4.2 for 0.42 s   no
+      link 2        6.5       .68               3.20            0.44          no
+      link 3        9.0       .82               4.60            **0.61 s**    **YES**
+  **So throwing the finisher was by itself enough to arm the tackle** -- and a three-punch chain
+  ENDS on the finisher, so the very next fresh flick after any completed chain was a slide.
+  Against a locked jab at a man 2 m off (1.25 m of travel) a 6.20 m free tackle is **five times**
+  the distance, which is his "two or three times" if anything understated.
+  **AND IT IS WHY HE COULD NOT SEE A PATTERN**: nothing about the second flick is different --
+  the difference was made by the strike BEFORE it.
+  **THE GATE MEANS "DID HE ARRIVE AT THIS FLICK RUNNING", AND A MAN ARRIVING OUT OF HIS OWN LAST
+  PUNCH IS NOT RUNNING, HE IS FIGHTING.** So the clock does not tick while a move owns the body
+  (`p.melee || p.chargeGo || p.roll`). **HELD, NOT CLEARED**: a man genuinely sprinting who
+  throws one punch on the way in still has his run time when it ends, and between strikes in a
+  standing fight he is under 4.2 anyway so it resets by itself.
+  **THIS IS `p.rHold` ONE REPO OVER** -- a shared quantity accumulated in a state where it does
+  not mean what its name says. m88 wrote the gate, m97 fixed the DISTANCE half of the same
+  complaint and explicitly left the trigger; this is the trigger.
+  **THE DISTANCES ARE UNTOUCHED, DELIBERATELY.** With the trigger honest, a tackle only happens
+  when he really did run at somebody, which is when a long slide is wanted -- and moving two
+  variables at once means neither can be judged. `mel.MELEE.slideT` is the dial.
+
+- **A BLOCK IS NOT A HIT, AND IT WAS PLAYING THE SOUND OF BEING ONE (m105, `BLOCK.ping`).**
+  *"When we do a block animation it needs to make a different noise than the noise that it makes
+  when you're hit -- so like the clang or clink or something, like a parry noise."* `playerHurt`
+  ends with `snd('thud')` unconditionally, and `thud` is `box_break_01` -- **HIS being hit**. So a
+  guarded blow played the hit sound with the block's own ring under it, which is m27's duplicate
+  with the two halves describing different events.
+      guard    the ring alone, `fxRing * .6` -- steel absorbing it
+      deflect  the ring at full, plus `metal_ping_01` on top -- turned aside
+  **THE PING IS PLAYED FROM ITS OWN PEAK (`cut`)**, which is what makes a bright short file read
+  as an ARRIVAL rather than as a swell -- m59's mechanism, and `HCHG.snd`'s own trick one event
+  over. Two layers and one event, which is m64's argument: the ring is what the blow lands ON.
+  **AND THE RED FLASH GOES WITH THE DAMAGE, NOT WITH THE CONTACT.** A deflect is `cutHard` 0, so
+  flashing the screen told him he was hurt when he was not. A partial guard still costs him a
+  quarter and still flashes.
+
+- **CLANCY FLOATS BECAUSE NOTHING IN THE FILE KNOWS WHERE HIS BACK IS (m105, `PACK.mark`).**
+  *"I'm wondering if it would be helpful for me to put in a root or a joint where Clancy should
+  go, because he just sort of looks like he's standing floating slightly above the backpack. I
+  want him to be holding onto the backpack, and I need to put in a custom animation for him."*
+  **BOTH HALVES ARE HIS AND BOTH ARE THE RIGHT CALL**, and the code is written to take each the
+  moment it exists rather than waiting for a build.
+  **THE SEAT.** m104 found the spine by pattern and hung him off it by two fractions of
+  `RIG.height` -- which is the honest answer when there is no marker, and is a GUESS by
+  construction: nothing about the geometry of a backpack is in this file. `PACK.mark` is tried
+  first, and **a named joint IS the placement: no offset, no rotation, nothing typed.** That is
+  `weapFit`'s rule, and it is why the weapon mounts needed no code change when his export grew
+  them. **It has to be IN THE SKIN to arrive as a Bone** -- `buildRig` collects `o.isBone`, which
+  is what GLTFLoader makes of a node a skin lists as a joint -- so exporting it the way he
+  exported `weapon_root` is the whole of it.
+  **THE POSE.** `stand_to_cover` is a stand-in and it is exactly why he reads as standing: it is
+  a man taking COVER, not a man holding on. `PACK.clips.ride` is an ordered list now and the
+  first name the body actually has wins, so drawing one and calling it `pack_ride` needs no code
+  change -- `CLIPS.block`'s pattern and `BAR.mark`'s.
+  **AND THE CHIP SAYS WHICH SEAT IT IS USING.** `· PACK` is the joint and `· PACK?` is the guess,
+  because *"he floats above the backpack"* and *"the joint never arrived"* are one picture from a
+  phone. Silent about it once the joint is there, `rollREC`'s rule.
+
 - **THE GUARD ARMED PERFECTLY AND HE WAS FACING THE WRONG WAY (m103, `findLock`'s guard hold).**
   *"When I'm blocking and the Warriors hit me it doesn't block their attack -- I think I'm still
   just getting hit. And you should be able to block in any of the three modes: disarmed, with the
