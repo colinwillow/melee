@@ -72,7 +72,7 @@ console.error = quiet; console.warn = qw;
 
 const M = globalThis.melee;
 if (!M || !M.stepPlayer) { console.error('the module did not expose its steps'); process.exit(1); }
-const { player: p, stick, cam, MOVE } = M;
+const { player: p, stick, cam, MOVE, WEAP } = M;
 const DT = 1 / 60;
 
 function reset(x = 0, z = 0) {
@@ -81,6 +81,18 @@ function reset(x = 0, z = 0) {
   p.heading = p.faceH = 0; p.speed = 0; p.grounded = true;
   p.roll = p.melee = p.chargeGo = p.charge = p.aim = p.fire = p.land = p.jump = 0;
   p.meleeChain = 0; p.goT = 0; p.airT = 0; p.coyote = 0;
+  // **AND IT HAS TO CLEAR THE LATCHES, OR EVERY CASE AFTER A WALL MEASURES THE WALL (m103).**
+  // Case 5 drives him into the 5 m tower with the stick held INTO it, which is exactly how
+  // `wallGo` latches -- and nothing here let go of it, so cases 6 and 7 rolled and lunged a man
+  // in wall cover and reported his position from the case before. Both read `-11.85, -4.59`,
+  // which is where case 5 leaves him, and both had been red since m89 shipped the cover.
+  // A harness that carries state between cases is measuring the previous case.
+  p.wall = null; p.wallSt = ''; p.wallCool = 0; p.wallOff = 0;
+  p.ledge = null; p.ledgeSt = ''; p.ledgeCool = 0; p.ledgeAway = 0;
+  p.knock = 0; p.knockT = 0; p.knockCool = 0; p.gotUp = 0; p.hurtT = 0;
+  p.block = 0; p.blockT = 0; p.center = 0; p.centerT = 0; p.lock = null;
+  p.slam = 0; p.flip = ''; p.bkT = 0; p.bkOn = 0; p.bkHang = 0; p.parryT = 0;
+  p.slot = 0;
   stick.L.x = stick.L.y = stick.L.down = 0;
   stick.R.x = stick.R.y = stick.R.down = 0;
 }
@@ -114,6 +126,8 @@ function run(secs, fn) {
 }
 
 const MELEE_BEAT = k => M.MELEE.beat[Math.min(k, M.MELEE.beat.length - 1)];
+// THE HAMMER'S SLOT IS FOUND, NEVER TYPED -- see the dash case for what a typed 3 cost.
+const HAMMER = WEAP.slots.findIndex(s => s.charge);
 const fin = v => Number.isFinite(v);
 let fails = 0;
 const ok = (name, cond, detail) => {
@@ -153,15 +167,19 @@ ok('reaches MOVE.max holding the stick', Math.abs(p.speed - MOVE.max) < .15,
    `${p.speed.toFixed(2)} m/s vs MOVE.max ${MOVE.max}`);
 
 console.log('\n-- 4. THE STEP-UP AND THE JUMP --');
-// the 0.40 m box is under MOVE.step, so it is WALKED onto; the 1.15 m one is not
 // A HARNESS THAT KEEPS DRIVING AFTER THE THING UNDER TEST HAS FINISHED IS MEASURING ITS OWN
 // INPUT. The first version held the stick for 2.5 s and read the END state -- by which point he
 // had walked onto the box, across it, and off the far side, so it reported y 0.00 and called a
 // working step-up a failure. What is under test is whether he ever GOT up there.
-reset(6, 2); cam.az = Math.PI;                  // facing -Z, toward the short box at (6,-3)
+// **AND IT WAS ASKING FOR A RULE THE GAME NO LONGER HAS (m103).** It walked at the 0.40 m box,
+// which stopped being walkable at m57: `MOVE.step` is `.5 * SZ` and scaled down with him to
+// **0.357 m**, so that box has been a WALL for forty builds and this row has been red for forty
+// builds. m74 corrected the comment in `index.html` and nobody corrected the suite. The 0.35 m
+// platform at (2, 12) is the one that IS under the step -- by seven millimetres.
+reset(2, 16); cam.az = Math.PI;                 // facing -Z, toward the 0.35 m platform at (2,12)
 let topY = 0;
 run(2.5, () => { hold(0, -1); if (p.grounded) topY = Math.max(topY, p.pos.y); });
-ok('walks up onto the 0.40 m box', topY > .35, `highest ground he stood on: ${topY.toFixed(2)} m`);
+ok('walks up onto the 0.35 m platform', topY > .30, `highest ground he stood on: ${topY.toFixed(2)} m`);
 reset(0, 0); cam.az = 0;
 const y0 = p.pos.y; let apex = 0;
 p.jump = 1;
@@ -321,7 +339,13 @@ console.log('\n-- 13. THE CHARGED SWING IS A GROUND DASH, AND THE HOLD DECIDES H
 // m36's flat hop solved from the hold, and m37's ground dash that never leaves the floor at all.
 // Each time it went red while the code was right until it was moved, which is a suite nobody
 // reads. **When a rule changes, its case changes in the same commit.**
-reset(40, 0); cam.az = 0; p.slot = 3;            // hammer
+// **AND THE SLOT IS FOUND, NOT TYPED -- WHICH IS WHY NOTHING PAST HERE HAD RUN SINCE m52
+// (m103).** This said `p.slot = HAMMER` from when rapid fire was its own slot; m52 made it a MODE
+// and the roster came down to three, so `slotNow()` returned `undefined` and the next
+// `stepKit` threw `Cannot read properties of undefined (reading 'aim')` -- **the suite died
+// here and every case below it has been silently unrun for fifty builds.** A crash is not a
+// red row; nothing reports it and the output simply stops.
+reset(40, 0); cam.az = 0; p.slot = HAMMER;
 p.charge = 1; p.chargeT = M.MELEE.charge;       // fully wound
 M.chargeRelease();
 ok('it never leaves the ground', p.vel.y === 0 && p.grounded, `vy ${p.vel.y.toFixed(2)}, grounded ${p.grounded}`);
@@ -339,29 +363,32 @@ ok('a full hold covers what it solved for', Math.abs((p.pos.z - zGo) - farFull) 
 ok('and the clamp does not eat it', farFull > M.MELEE.flatFar * .9,
    `${farFull.toFixed(2)} m of a ${M.MELEE.flatFar} m ask`);
 // a half charge goes less far -- and that is the ONLY thing the hold changes now
-reset(40, 0); cam.az = 0; p.slot = 3;
+reset(40, 0); cam.az = 0; p.slot = HAMMER;
 p.charge = 1; p.chargeT = M.MELEE.charge * .5;
 M.chargeRelease();
 ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2)} m against ${farFull.toFixed(2)}`);
-// and a man in front still shortens it, so it lands ON him rather than through him
+// and a man in front still shortens it, so it lands at arm's length rather than through him
 {
   const K = M.FOE;
   M.DUMMIES.length = 0;
   M.DUMMIES.push({ K, root: { position: { x: 40, y: 0, z: 5 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
                    hpMax: K.hp, cool: 0, h: 0, actions: {}, clips: {}, cw: {}, bar: null });
-  reset(40, 0); cam.az = 0; p.slot = 3;
+  reset(40, 0); cam.az = 0; p.slot = HAMMER;
   p.charge = 1; p.chargeT = M.MELEE.charge;
   M.chargeRelease();
-  // **THIS CASE USED TO ASSERT THE OPPOSITE, AND IT WAS PINNING THE BUG (m43).** m21 solved the
-  // launch to land ON the man, which is right for a LEAP and is what made the hold meaningless
-  // in a populated street -- the nearest body decided the distance and the charge did not. The
-  // dash goes through him now and `hitAll` catches him on the way past.
-  ok('a man in the way does NOT shorten it', Math.abs(p.goGap - farFull) < .01,
+  // **THIS CASE HAS ASSERTED ALL THREE OF THIS RULE'S SHAPES AND WAS A BUILD BEHIND EACH TIME.**
+  // m21 solved the launch to land ON him; m43 made it go THROUGH him, because the nearest body
+  // was deciding the distance and the charge was not; **m51 put the shortening back** on a
+  // better argument -- *"the hold is the CAP and the man is the DISTANCE"* -- and this row went
+  // on asserting m43 for fifty builds because the whole case was unreachable (see `HAMMER`).
+  // **When a rule changes, its case changes in the same commit**, which is the sentence at the
+  // top of this block and is exactly what nobody did.
+  ok('a man inside the reach SETS the distance', p.goGap > 1 && p.goGap < farFull - 1,
      `${p.goGap.toFixed(2)} m for a man at 5, free is ${farFull.toFixed(2)}`);
   ok('but he still turns to face him', Math.abs(p.faceH) < .05, `${(p.faceH * 180 / Math.PI).toFixed(1)} deg`);
   const z1 = p.pos.z;
   run(1.2);
-  ok('and he carries past him', (p.pos.z - z1) > 5 && Math.abs((p.pos.z - z1) - p.goGap) < 1.5,
+  ok('and he covers what he solved for', (p.pos.z - z1) > 2 && Math.abs((p.pos.z - z1) - p.goGap) < 1.5,
      `travelled ${(p.pos.z - z1).toFixed(2)} m for a ${p.goGap.toFixed(2)} m solve`);
   M.DUMMIES.length = 0;
 }
@@ -372,10 +399,10 @@ ok('a half hold carries less far', p.goGap < farFull * .85, `${p.goGap.toFixed(2
     const f = { K, root: { position: { x: 40, y: 0, z: 3 }, rotation: { y: 0 } }, st: 'idle', hp: K.hp,
                 hpMax: K.hp, cool: 0, h: 0, vx: 0, vy: 0, vz: 0, actions: {}, clips: {}, cw: {}, bar: null };
     M.DUMMIES.push(f); return f; };
-  reset(40, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge;
+  reset(40, 0); p.slot = HAMMER; p.charge = 1; p.chargeT = M.MELEE.charge;
   M.chargeRelease();
   const powFull = 1.0 * p.chargeGoK;
-  reset(40, 0); p.slot = 3; p.charge = 1; p.chargeT = M.MELEE.charge * .5;
+  reset(40, 0); p.slot = HAMMER; p.charge = 1; p.chargeT = M.MELEE.charge * .5;
   M.chargeRelease();
   const powHalf = 1.0 * p.chargeGoK;
   let f = mk(); M.dummyBlow(f, 0, powFull, K.dmg.weap);
@@ -392,7 +419,7 @@ console.log('\n-- 13b. THE GUARD IS A STRAFE STANCE, ON EVERY WEAPON --');
 // right -- that's his guard. Same with the melee, same with the blaster."*
 {
   const hold = (x, y) => { stick.R.down = 1; stick.R.x = x; stick.R.y = y; };
-  for (const slot of [0, 1, 3]) {
+  for (let slot = 0; slot < WEAP.slots.length; slot++) {          // every slot, not a typed list
     reset(40, 0); cam.az = 0; p.slot = slot;
     hold(0, .9);                                  // straight DOWN on the pad (+y is down)
     run(.4);
@@ -504,15 +531,25 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
   // **WHAT "NOT REPETITIVE" MEANS IS MEASURABLE**: over a long fight he uses more than one
   // state and more than one swing clip. *"They only ever do one swing, they don't try to block
   // at all, there's no variation."* Counting swings alone cannot see any of that.
+  // **AND IT MEASURES A ROSTER, NOT ONE ROLL (m103).** `foeRoll` gives each body its own
+  // `guard` out of `.22 x [.4, 1.5]`, so the chance of ONE man never guarding across a fight is
+  // about one in four -- which makes "he blocks and circles too" a coin flip on a seeded stream
+  // rather than a fact about the code. It passed while the seed happened to land right and went
+  // red the moment an earlier case consumed a different number of draws. A row whose answer
+  // depends on the seed is the randomly-red row this harness was seeded to remove, wearing a
+  // different hat: four bodies, and what is measured is the SPREAD.
   const seenSt = {}, seenSwing = {};
   let swings = 0;
-  for (let i = 0; i < 60 * 40; i++) {
-    const s0 = d.st, c0 = d.cur;
-    M.stepDummies(DT);
-    seenSt[d.st] = (seenSt[d.st] || 0) + 1;
-    if (d.st === 'swing') { seenSwing[d.cur] = (seenSwing[d.cur] || 0) + 1; if (s0 !== 'swing' || c0 !== d.cur) swings++; }
+  for (let n = 0; n < 4; n++) {
+    if (n) { clear(); reset(0, 0); p.hp = M.HEALTH.max; d = mkFoe(0, 2.2); d.aggro = 1; d.h = Math.PI; }
+    for (let i = 0; i < 60 * 20; i++) {
+      const s0 = d.st, c0 = d.cur;
+      M.stepDummies(DT);
+      seenSt[d.st] = (seenSt[d.st] || 0) + 1;
+      if (d.st === 'swing') { seenSwing[d.cur] = (seenSwing[d.cur] || 0) + 1; if (s0 !== 'swing' || c0 !== d.cur) swings++; }
+    }
   }
-  ok('he swings at you, repeatedly', swings >= 3, `${swings} swings in 40 s`);
+  ok('he swings at you, repeatedly', swings >= 3, `${swings} swings over four 20 s fights`);
   ok('and it costs you health', p.hp < M.HEALTH.max, `HP ${p.hp.toFixed(0)} of ${M.HEALTH.max}`);
   ok('he uses more than one swing clip', Object.keys(seenSwing).length >= 2,
      Object.keys(seenSwing).length + ' of ' + K.clips.swings.length + ': ' + Object.keys(seenSwing).join(', '));
@@ -529,7 +566,16 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
   for (let i = 0; i < 60; i++) M.stepDummies(DT);
   const moved = d.root.position.z - z0k;
   ok('and he actually travels', moved > .2 && moved < 3, `${moved.toFixed(2)} m in a second`);
-  ok('and it stops', Math.hypot(d.vx, d.vz) < .1, `${Math.hypot(d.vx, d.vz).toFixed(3)} m/s left`);
+  // **AND "IT STOPS" IS A TIME CONSTANT, NOT A SECOND (m103).** m71 took `shoveDrag` from 5.5
+  // to 2.2 precisely so a shove LASTS -- *"even if they're not flying through the air, I want a
+  // subtle kickback so it feels like a more dramatic effect"* -- and at 2.2 the time constant is
+  // 0.45 s, so one second leaves 11% of the launch by construction. The row was still asking for
+  // m37's drag. What it should pin is that it is DYING, and that the reaction ending cuts the
+  // tail (m71's other half), not that it is over inside an arbitrary second.
+  ok('and it is dying rather than drifting', Math.hypot(d.vx, d.vz) < 1.89 * .2,
+     `${Math.hypot(d.vx, d.vz).toFixed(3)} m/s left of ${(K.knock * .45).toFixed(2)} after 1 s`);
+  for (let i = 0; i < 90; i++) M.stepDummies(DT);
+  ok('and it has stopped', Math.hypot(d.vx, d.vz) < .1, `${Math.hypot(d.vx, d.vz).toFixed(3)} m/s at 2.5 s`);
 
   // --- and being hit does not look the same every time
   clear(); reset(0, 0);
@@ -814,7 +860,7 @@ console.log('\n-- 18. THE CHARGE THROUGH THE REAL PAD --');
       M.DUMMIES.push({ K: M.FOE, root: { position: { x, y: 0, z }, rotation: { y: 0 } }, st: 'idle',
                        hp: M.FOE.hp, hpMax: M.FOE.hp, cool: 0, h: 0, actions: {}, clips: {}, cw: {}, bar: null });
     }
-    reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0;
+    reset(40, 0); cam.az = 0; P.slot = HAMMER; heldT = 0;
     stick.R.down = 1; stick.R.x = 0; stick.R.y = -1;
     for (let i = 0; i < Math.round(secs / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
     const wound = P.chargeT;
@@ -831,10 +877,13 @@ console.log('\n-- 18. THE CHARGE THROUGH THE REAL PAD --');
 
   // THE CASE HE IS ACTUALLY PLAYING: a street with people in it.
   const b = wind(1.4, [[40, 6]]);
-  ok('and a man six metres ahead does NOT shorten it', b.gap > MEL.flatFar * .9,
+  // **m51's RULE, NOT m43's** -- the same pair as case 13, and stale for the same reason. The
+  // hold is the CAP; a man inside the reach is the DISTANCE, and the dash lands `MELEE.arrive`
+  // short of him rather than carrying through him.
+  ok('and a man six metres ahead SETS the distance', b.gap > 1 && b.gap < a.gap - 1,
      `${b.gap.toFixed(2)} m with a man at 6; free is ${a.gap.toFixed(2)}`);
   const c = wind(1.4, [[40, 4], [46, 20], [34, 15]]);
-  ok('nor does a street full of them', c.gap > MEL.flatFar * .9,
+  ok('and so does the nearest of a street full of them', c.gap > 1 && c.gap < a.gap - 1,
      `${c.gap.toFixed(2)} m with three of them about`);
 
   M.PADS.R.hold = realHold;
@@ -866,7 +915,7 @@ console.log('\n-- 19. DOES THE DASH ACTUALLY LAND, AND HOW HARD --');
                 hp: K.hp, hpMax: K.hp, cool: 0, h: Math.PI, actions: {}, clips: {}, cw: {}, bar: null,
                 vx: 0, vy: 0, vz: 0, t: 0, cur: '' };
     M.DUMMIES.push(d);
-    reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0; swing = 0;
+    reset(40, 0); cam.az = 0; P.slot = HAMMER; heldT = 0; swing = 0;
     stick.R.down = 1; stick.R.x = 0; stick.R.y = -1;
     for (let i = 0; i < Math.round(secs / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
     stick.R.down = 0; stick.R.x = stick.R.y = 0; heldT = 0;
@@ -901,7 +950,7 @@ console.log('\n-- 20. THE WIND-UP IS A PUSH UP, NOT ANY DIRECTION --');
   M.PADS.R.hold = () => heldT;
   const push = (x, y, secs) => {
     M.DUMMIES.length = 0;
-    reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0;
+    reset(40, 0); cam.az = 0; P.slot = HAMMER; heldT = 0;
     stick.R.down = 1; stick.R.x = x; stick.R.y = y;
     for (let i = 0; i < Math.round(secs / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
     const wound = P.chargeT;
@@ -920,7 +969,7 @@ console.log('\n-- 20. THE WIND-UP IS A PUSH UP, NOT ANY DIRECTION --');
   }
   // and the hysteresis: a thumb that rolls inward as it lifts must not lose the swing
   {
-    M.DUMMIES.length = 0; reset(40, 0); cam.az = 0; P.slot = 3; heldT = 0;
+    M.DUMMIES.length = 0; reset(40, 0); cam.az = 0; P.slot = HAMMER; heldT = 0;
     stick.R.down = 1; stick.R.x = 0; stick.R.y = -1;
     for (let i = 0; i < Math.round(1.4 / DT); i++) { heldT += DT; M.stepKit(DT); M.stepPlayer(DT); }
     // rolled back to between `keepAt` and `fireAt` -- still held, by design
@@ -952,10 +1001,24 @@ console.log('\n-- 21. A THUMB HELD UP DOES NOT WANDER THE AIM --');
     return { deg: Math.abs(cam.az) * 180 / Math.PI, aimed };
   };
   // -y is UP. A thumb at the top of the pad leaning a little to one side.
-  for (const x of [.12, .25, .32]) {
+  // **AND THE PASS MARK COMES OFF `CAM.deadAim`, NOT OFF A TYPED PERCENTAGE (m103).** This
+  // asserted "does not turn" at 12, 25 and 32 per cent, which were m48's numbers at `deadAim`
+  // .34 -- and **m50 narrowed it to .20 on purpose**, in those words: *"the dead zone now is
+  // like too strong, it's kinda hard to aim left and right"*, and *"a third of a pad spent on
+  // nothing is not a dead zone, it is a deliberate lean that does nothing."* So two of these
+  // three rows have been asserting the thing m50 removed. What the rule actually says is that
+  // the slack is the WOBBLE and everything past it is a turn being asked for -- derived here
+  // rather than typed, so retuning `deadAim` moves the case with it.
+  const dz = C.deadAim;
+  for (const x of [dz * .6, dz * .9]) {
     const r = drift(x, -.95, 2.0);
-    ok(`aiming, ${(x * 100) | 0}% off centre, does not turn`, r.aimed && r.deg < 1,
+    ok(`aiming, ${(x * 100) | 0}% off centre (dz ${(dz * 100) | 0}%), does not turn`, r.aimed && r.deg < 1,
        `${r.deg.toFixed(1)} deg over 2 s${r.aimed ? '' : '  -- NOT AIMING, the case is wrong'}`);
+  }
+  for (const x of [dz * 1.3, dz * 1.6]) {
+    const r = drift(x, -.95, 2.0);
+    ok(`aiming, ${(x * 100) | 0}% off centre, IS a lean and turns`, r.aimed && r.deg > 2,
+       `${r.deg.toFixed(1)} deg over 2 s`);
   }
   // but a deliberate sideways push still turns, and full deflection is untouched
   {

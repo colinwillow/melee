@@ -1040,6 +1040,111 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE GUARD ARMED PERFECTLY AND HE WAS FACING THE WRONG WAY (m103, `findLock`'s guard hold).**
+  *"When I'm blocking and the Warriors hit me it doesn't block their attack -- I think I'm still
+  just getting hit. And you should be able to block in any of the three modes: disarmed, with the
+  weapon or with the blaster."*
+  **THE SECOND HALF WAS ALREADY TRUE AND THE FIRST WAS NOT THE BLOCK.** Driven through the shipped
+  `stepKit`, `p.block` arms on a down-hold in **all three slots** (m37 never gated it on one and
+  m39's `bare` handling covers the unarmed pose), and `playerHurt`'s tiers fire correctly against a
+  blow from dead ahead. What the probe found instead, against a REAL warrior over 25 s with the
+  guard held the whole time:
+      block=1 on every blow, and **off 2.30 and 2.67 radians** -- 132 and 153 degrees off
+      so `BLOCK.arc` 1.25 could never once apply, and every mace landed in full
+  **THE CONE IS MEASURED OFF `cam.az` AND THE GUARD THUMB CANNOT MOVE THE CAMERA.** Acquiring
+  inside 45 degrees of 12 o'clock is his own spec and is right; KEEPING it there is not, because
+  `foePlan` circles -- and the right pad is held DOWN, so there is no way to turn the lens after
+  him. The man leaves the cone, the lock drops, `faceTgt` falls back to a frozen `cam.az`, and the
+  guard is pointed at nothing while he is hit from behind.
+  **SO THE GUARD LOCK IS A COMMITMENT: in range and on his feet, he stays yours.** Nothing steals
+  him, so there is nothing to flicker -- and it is what *"it locks on them and then you can kind of
+  rotate around them"* asks for literally. The cost is that you cannot switch targets without
+  letting go of the guard; that is the trade rather than an oversight.
+  **AND A BLOCKED BLOW WAS KNOCKING THE GUARD OFF, WHICH IS THE FIX BREAKING ITSELF.** The shove
+  branch ran `if (p.grounded && !p.knock) { p.vel.y = up; p.grounded = false; }` -- and a guard
+  sets `up` to ZERO, so it took his feet off the floor with no velocity to show for it. The
+  guard's own `busy` reads that as airborne: `p.block` to 0, `p.lock` with it, and the NEXT swing
+  arrived with him facing wherever the frozen camera pointed. One clause (`up > 0`), and the probe
+  reads the difference exactly:
+      before the commitment   guard held, 3 parried and the 4th full at off 2.30
+      commitment only         3 parried, the 4th full at off 3.07 with `lock=n`
+      and with `up > 0`       **7 swings, 7 parried, off 0.00 on every one**
+      no guard, same fight    3 swings, 3 full hits, 12 damage each
+- **THE MACE REACHED A METRE OF THIN AIR AND ARRIVED 108 ms LATE (m103, `FOE.swingAt`, `hitR`).**
+  *"He did this uppercut swing and the swing didn't hit me, but then when he brought his bat back
+  down to rest, then it hit me -- it just looked wrong, the swing needs to hit me."* Both halves
+  are real, both were numbers nobody had ever measured, and forward kinematics over the real
+  samplers answers both in a second (the tip is `weapon_root` + its own local (0, 0, 36.1845), the
+  pair `npm run rig` already reads; 120 samples per clip):
+      horizontal  tip furthest forward **u 0.39**, **1.64 m** from the root   peak speed u 0.41
+      downward                          u 0.38      1.64                      u 0.38
+      backhand                          u 0.34      1.48                      u 0.33
+      360_low                           u 0.40      1.44                      u 0.40
+  **THE BLOW FIRED AT u 0.45**, which on a 1.35 s beat is up to 108 ms after the arc had gone
+  past -- his sentence exactly. **AND `hitR` 2.6 plus your own .24 is a hit out to 2.84 m** against
+  a tip that gets to 1.64, with `reach` 2.0 as the distance he stops at to throw it: **the mace
+  stopped a third of a metre short of you on every swing and connected anyway.** That is the m56
+  phantom one body over -- a number that was never taken off the model.
+  `swingAt` **.37**, `hitR` **1.9**, and `reach`/`hold` down to 1.45/1.7 with it, because
+  `foePlan` clamps both inside `hitR` and **a distance he cannot attack from is not a distance to
+  stand at**. He fights from about a metre now, which is what a mace fight is.
+- **THE BOLT DIED ON THE SIDEKICK (m103, `WEAP.palThru`).** *"We'll keep it so that the blaster
+  still shoots Clancy, but instead of the bullet stopping -- that's the biggest hangup. He still
+  goes flying, he gets zapped, whatever, but it doesn't stop the bullet."* The flight test kills
+  the bolt on whoever it catches, and the one body in this game you did not aim at is the one
+  walking in front of you. **It is the BOLT that changes, not the blow**: he goes through the same
+  `dummyHit` as everybody, and what he stops doing is ENDING the shot. `d.cool` is what makes that
+  safe with no second test -- he is skipped for the rest of the flight, so one round cannot hit him
+  twice on the way past -- and he does not spend `b.onMan` either, or the impact bank, the ring and
+  the blast budget would all be spent on somebody the shot was never for.
+- **THE KNOCK-DOWN GOES FLATTER AND FURTHER (m103, `HURT.hi`, `HURT.back`).** *"I want when I go
+  flying in the air to go in the direction they hit me, and I wanna go kind of horizontal."* The
+  DIRECTION was already his -- `dirH` is the way the blow travels and the launch has been built on
+  it since m67 -- so what was missing is the SHAPE: 1.60 m of apex against 8.7 m of travel is 5:1,
+  which is a lob. **And it cannot be bought by lowering the apex**, because the hang time is what
+  the fall clip's rate is solved against (m96): at an apex of 1.0 the flight is 0.63 s and the rate
+  wants x2.51 at k 1 and **x2.95 at the bottom of `vary`**, which runs off `rateMax` and puts the
+  pose back where m96 found it. So the apex comes down a little and `back` does the work:
+      k .85   vy 6.25   apex 0.98 m   air 0.62 s    9.0 m   clip x2.54
+      k 1.0   vy 7.35   apex 1.35     air 0.74     12.1 m   clip x2.16
+      k 1.20  vy 8.82   apex 1.94     air 0.88     17.1 m   clip x1.80
+  Nine to one rather than five, every rate still inside the band, and the hang untouched.
+- **`npm run sim` HAD BEEN DYING AT CASE 13 SINCE m52, AND EVERYTHING BELOW IT WAS UNRUN (m103).**
+  The charged-dash case set `p.slot = 3` from when rapid fire was its own slot; m52 made it a MODE
+  and the roster came down to three, so `slotNow()` returned `undefined` and the next `stepKit`
+  threw `Cannot read properties of undefined (reading 'aim')`. **A crash is not a red row** --
+  nothing reports it and the output simply stops, so eight whole cases have been invisible for
+  fifty builds. The slot is FOUND now (`WEAP.slots.findIndex(s => s.charge)`), in all six places
+  that typed it.
+  **AND IT WAS HIDING TWO SHIPPED BUGS, WHICH IS WHAT A SUITE IS FOR:**
+  1. **`FOE` HAD TWO KEYS CALLED `knock` AND THE LAST ONE WON.** `knock: 4.2` is how hard a blow
+     SHOVES a warrior (m37/m71); m91 added `knock: 1` forty lines below it for the chance his mace
+     puts YOU on the floor. A duplicate key in an object literal is silent in every gate there is,
+     and **every blow on a warrior has shoved him at 1 rather than 4.2 since m91**: a fist reads
+     0.45 m/s and 0.18 m where m71 sized it at 1.89 and 0.86 -- back under the threshold of being
+     an effect, which is the whole of what m71 was about. It is `hitKnock` now.
+  2. **AND `chargeRelease` THREW THE HOLD AWAY BEFORE ASKING WHAT IT WAS WORTH.** `p.chargeT` is
+     zeroed four lines above the `chargeAim()` call, and that function defaults to reading it --
+     so since m51 every charged hammer swing has been aimed and solved at `chg01` **0**: `want`
+     5.75 m whatever the thumb did, and `acq` with it. Measured through the shipped function, a
+     FULL hold and a HALF hold both read `goGap 5.75, melV 36.31` -- identical to the hundredth,
+     with `chargeGoK` correctly 1.000 against .725 beside them, which is the tell. `chargeAim(t0)`.
+     After: 11.00 m full, 8.38 half, and a man inside the reach sets the distance.
+  **AND FIVE ROWS WERE ASSERTING RULES THE GAME NO LONGER HAS**, every one of them a build that
+  changed a rule and could not change its case because the case was unreachable: the step-up asked
+  for the 0.40 m box that stopped being walkable at m57 (`MOVE.step` is `.5 * SZ` and came down to
+  0.357 with him); two dash rows asked for m43's "goes through him" that m51 deliberately replaced;
+  two aim rows asked for m48's .34 dead zone that m50 deliberately narrowed to .20. **When a rule
+  changes, its case changes in the same commit** is the sentence at the top of that very block.
+  **`reset()` ALSO CARRIED STATE BETWEEN CASES.** The solid-boxes case drives him into a tower with
+  the stick held INTO it, which is exactly how `wallGo` latches -- and nothing let go, so the roll
+  and the lunge cases were measuring a man in wall cover and reported the previous case's position
+  to the centimetre. It clears the wall, the ledge, the knock-down, the guard and the slot now.
+  **AND ONE ROW WAS A COIN FLIP ON A SEEDED STREAM.** "He blocks and circles too" reads ONE body,
+  and `foeRoll` gives each his own `guard` out of `.22 x [.4, 1.5]` -- so about one man in four
+  never guards across a fight, and the row passed only while the seed happened to land right. It
+  measures four bodies now, which is what the seeded harness was for: **the spread, not the draw.**
+  `npm run sim` is green end to end for the first time since m52.
 - **THE LEDGE, AND m89 HAD ALREADY BUILT HALF OF IT (m102, `LEDGE`, `ledgeFind`, `stepLedge`).**
   *"I do want to build the ledge system, hangs on the ledge and get up, and maybe I'll design
   buildings in a way where they always have levels so you can jump, hang, climb up, jump, hang,

@@ -397,10 +397,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m102</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m103</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m102</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m103</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -450,7 +450,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm102';
+const BUILD = 'm103';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -1492,6 +1492,20 @@ const WEAP = {
   ball0: .45, ball1: 1.90,          // metres across, fumble to full. *"Still isn't big enough."*
   palBlast: .30,                    // ...but a FRIEND catches only this much of it (m76). The
                                     // DIRECT hit is unscaled: aiming at him still hits him.
+  // **AND A FRIEND DOES NOT STOP THE ROUND (m103).** *"I think we'll keep it so that the blaster
+  // still shoots Clancy, but instead of the bullet stopping -- that's the biggest hangup, if I'm
+  // trying to shoot one of the Warriors and he's in the way it stops my bullet and that
+  // interrupts gameplay. He still goes flying, he gets zapped, whatever, but it doesn't stop the
+  // bullet."* Exactly what it did: the flight test kills the bolt on whoever it catches, and the
+  // one body in this game you did not aim at is the one walking in front of you.
+  // **IT IS THE BOLT THAT CHANGES, NOT THE BLOW.** He is still zapped and still launched through
+  // the same `dummyHit` every other body goes through -- what he stops doing is ENDING the shot,
+  // so the warrior behind him takes it a fraction of a second later. `d.cool` is what makes that
+  // safe with no second test: the pal is skipped for the rest of the flight, so one round cannot
+  // hit him twice on the way past.
+  // **AND HE DOES NOT SPEND `b.onMan` EITHER**, or the impact bank, the ring and the blast budget
+  // would all be spent on somebody the shot was never for.
+  palThru: 1,
   // **A BOLT ACCOUNTS FOR ONE BODY (m78).** *"I shoot it and it hits all three orc warrior
   // aliens at the same time and it's just cheap. Maybe the blast should only be able to hit one
   // thing at a time?"* m36 asked for the opposite and he is right to take it back: three men
@@ -1902,10 +1916,20 @@ const FOE = {
   // player standing still was thrown at air a foot in front of him -- which from where he is
   // standing is a man doing one animation over and over for no reason. He closes to `reach`
   // now and `hold` is only how far he may drift before closing again.
-  reach: 2.0,        // how close he closes before swinging -- inside `hitR`, by construction
-  hold: 2.6,         // and the slack on it, so he is not stepping in and out on the boundary
+  reach: 1.45,       // how close he closes before swinging -- inside `hitR`, by construction
+  hold: 1.7,         // and the slack on it, so he is not stepping in and out on the boundary
   swingDur: 1.35,    // the clips run 2.3-3.0 s at 1x; at .95 it was a blur with no pose in it
-  swingAt: .45,      // where in that beat the mace arrives
+  // **AND THE CONTACT FRAME IS MEASURED NOW, NOT TYPED (m103).** *"He did this uppercut swing
+  // and the swing didn't hit me, but then when he brought his bat back down to rest, then it hit
+  // me -- it just looked wrong, the swing needs to hit me."* Both halves were real and both were
+  // numbers nobody had measured. Forward kinematics over the real samplers (the tip is
+  // `weapon_root` + its own local (0, 0, 36.18), the same pair `npm run rig` reads), sampled 120
+  // times across each of his four swings:
+  //     horizontal  fwdMax u=0.39   downward u=0.38   backhand u=0.34   360_low u=0.40
+  //     peak tip speed  u 0.41 / 0.38 / 0.33 / 0.40
+  // So the mace ARRIVES between u 0.34 and 0.40 and the blow was fired at **0.45** -- up to 0.08
+  // of a 1.35 s beat, **108 ms after the arc had gone past**, which is his sentence exactly.
+  swingAt: .37,      // where in that beat the mace arrives -- MEASURED, see above
   swingGap: .85,     // and the pause between swings
   block: .22,        // the BASE chance of a guard instead of a swing -- `vary.guard` moves it
   blockDur: 1.1,
@@ -1967,7 +1991,16 @@ const FOE = {
   // either weapon and leaves .70..1.0 for the launch to be graded across.
   fling: .70,
   sep: 1.0,          // and how much room two of them take up between themselves
-  hitR: 2.6,         // how far his mace reaches
+  // **AND THE REACH WAS A METRE OF THIN AIR (m103).** The same measurement says how far the tip
+  // actually gets from his root at full extension: **1.64 m** on the two big swings, 1.48 on the
+  // backhand, 1.44 on the 360. `hitR` 2.6 plus your own .24 is a hit out to **2.84 m**, and
+  // `reach` 2.0 is where he stops to throw it -- so the mace stopped a third of a metre short of
+  // you on every single swing and connected anyway. That is the *"the swing like didn't hit me"*
+  // half, and it is the m56 phantom one body over: a number that was never taken off the model.
+  // 1.9 + your .24 is 2.14, against a tip at 1.88 with the walk-in during the first 60% of the
+  // swing closing the rest. **`reach` and `hold` had to come down with it** -- a distance he
+  // cannot attack from is not a distance to stand at, and `foePlan` clamps both inside `hitR`.
+  hitR: 1.9,         // how far his mace reaches -- MEASURED off the tip, see `swingAt`
   hitArc: 1.15,      // and how far off his nose you may be and still be in it
   hitDmg: 12,
   // **AND A PAL IS A BODY HE WILL SWING AT (m77).** *"Let's have the warrior orcs also swing at
@@ -1996,8 +2029,16 @@ const FOE = {
   // is exactly what he said.
   // **AND `HURT.hits` IS NOW ONLY REACHED THROUGH A BLOCK**, which is right: a blocked blow is
   // the one that leaves him on his feet, so `take_damage_head`/`_body` become the block
-  // reaction until there is a block clip drawn. `mel.FOE.knock = .35` is the one word back.
-  knock: 1,          // **and his mace puts you on the floor** -- a field on the KIND, so a
+  // reaction until there is a block clip drawn. `mel.FOE.hitKnock = .35` is the one word back.
+  // **AND IT HAD TO STOP BEING CALLED `knock`, BECAUSE THIS OBJECT ALREADY HAD ONE (m103).**
+  // `knock: 4.2` is how hard a blow SHOVES HIM and sits forty lines up in this same literal --
+  // so m91's `knock: 1` was a duplicate key, the last one won, and **every blow on a warrior
+  // has shoved him at 1 rather than 4.2 since m91**. Measured through the shipped `dummyBlow`:
+  // a fist reads `0.45 m/s` and travels `0.18 m` where m71 sized it at 1.89 m/s and 0.86 m --
+  // which is back under the threshold of being an effect, and is the whole of what m71 was
+  // about. **A duplicate key in an object literal is silent in every gate there is**; what
+  // found it is `npm run sim`, which could not reach the row until today (see below).
+  hitKnock: 1,       // **and his mace puts you on the floor** -- a field on the KIND, so a
                      // weaker enemy tomorrow shoves you without one, and `HURT` is the shape
   stun: .35,         // how long you are not steering afterwards
   bar: { w: .9, h: .10, up: 1.22, fade: 4.0 },
@@ -2447,7 +2488,7 @@ const HEALTH = { max: 100, regen: 4.0, wait: 5.0 };
 // **AND IT ACTUALLY BLOCKS NOW, WHICH IS A SECOND ARC AND NOT A BIGGER NUMBER (m101).** *"We
 // need to make the block actually block and deflect or parry or whatever... and if they swing
 // it blocks, and we have an animation for block react."* The react has played since m95
-// (`HURT.hits` is `weapon_block_reaction`, and with `FOE.knock` at 1 a raised guard is the only
+// (`HURT.hits` is `weapon_block_reaction`, and with `FOE.hitKnock` at 1 a raised guard is the only
 // way to reach it) -- what was missing is that a guard cost him a quarter of the blow WHEREVER
 // it came from inside 72 degrees, so there was nothing to do well and nothing to do badly.
 // **THE PAYOFF IS AN ARC, WHICH IS WHAT MAKES THE LOCK WORTH HAVING.** A blow arriving inside
@@ -2486,7 +2527,19 @@ const HURT = {
   // arc was 0.78 m and 0.56 s, which is a stumble; the rate fix alone would just have played the
   // fall at x2.83 to fit it. At `MOVE.g` 20 an apex of 1.60 is vy 8.0 and **0.80 s** of air, and
   // `back` 12 against `airDrag` (k .25) integrates to `v(1-e^-kT)/k` = **8.7 m**.
-  hi: 1.60,
+  // **FLATTER AND FURTHER (m103).** *"I want when I go flying in the air to go in the direction
+  // they hit me, and I wanna go kind of horizontal."* The DIRECTION was already his -- `dirH` is
+  // the way the blow travels and the launch is built on it -- so what was missing is the SHAPE:
+  // 1.60 m of apex against 8.7 m of travel is 5:1, which is a lob. **And it cannot be bought by
+  // lowering the apex alone**, because the hang time is what the fall clip's rate is solved
+  // against: at an apex of 1.0 the flight is 0.63 s and the rate wants x2.51 at k 1 and x2.95 at
+  // the bottom of `vary`, which runs off the end of `rateMax` and puts the pose back where m96
+  // found it. So the apex comes down a little and `back` does the work:
+  //     k .85   vy 6.25   apex 0.98 m   air 0.62 s    9.0 m   clip x2.54
+  //     k 1.0   vy 7.35   apex 1.35     air 0.74     12.1 m   clip x2.16
+  //     k 1.20  vy 8.82   apex 1.94     air 0.88     17.1 m   clip x1.80
+  // -- nine to one rather than five, every rate still inside the band, and the hang untouched.
+  hi: 1.35,
   // **ONE ROLL DRIVES BOTH, WHICH IS WHAT MAKES A HARDER BLOW READ AS A HARDER BLOW.** *"Sometimes
   // they hit you and you go farther and sometimes shorter."* Two independent rolls would give a
   // high, short launch and a low, long one, which is nobody's idea of a harder hit. And because
@@ -2495,7 +2548,7 @@ const HURT = {
   //     k 1.0   vy 8.0   apex 1.60     air 0.80     8.7 m   clip x1.98
   //     k 1.20  vy 9.6   apex 2.30     air 0.96    12.3 m   clip x1.65
   vary: [.85, 1.20],
-  back: 12,       // along the blow. Against `airDrag` that integrates to about nine metres
+  back: 18,       // along the blow. Against `airDrag` that integrates to about twelve metres
   // (`land` is GONE at m90: a knock-down no longer enters a landing state at all, and a
   //  constant nobody reads is indistinguishable from one that is broken.)
   again: 1.1,     // he cannot be re-launched inside this -- see below
@@ -2507,7 +2560,7 @@ const HURT = {
   // up with `landing_hard` standing in for all of it. This is what that hook was for, and it
   // needed no new state: naming the clips is the change.
   // **AND IT IS THE REAL BLOCK REACT NOW (m95).** *"I put in a block and block react."* m91
-  // pointed this at `take_damage_head`/`_body` as the stand-in, and said so: with `FOE.knock` at
+  // pointed this at `take_damage_head`/`_body` as the stand-in, and said so: with `FOE.hitKnock` at
   // 1 every unblocked blow launches him, so `hits` is ONLY ever reached through a raised guard --
   // which means a guard react is literally what this field is. The two `take_damage_*` clips stay
   // in the file and are one word from coming back.
@@ -5006,7 +5059,8 @@ function stepBolts(dt) {
         const got = dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                              WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
                              b.auto ? WEAP.autoR : b.size * .5, FOE.dmg.bolt, 0, WEAP.blastMax);
-        if (got) { dead = true; b.onMan = got; }
+        // A PAL IS ZAPPED AND PASSED THROUGH -- see `WEAP.palThru`.
+        if (got && !(WEAP.palThru && got.K.pal)) { dead = true; b.onMan = got; }
       }
       if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
     }
@@ -5310,6 +5364,24 @@ function findLock() {
   const cone = guard ? LOCK.blockCone : p.aim ? lerp(LOCK.cone, LOCK.coneTight, p.chg) : LOCK.cone;
   const keep = guard ? LOCK.blockKeep : LOCK.keep;
   const range = guard ? LOCK.blockRange : LOCK.range;
+  // **AND A GUARD LOCK HOLDS THROUGH THE CIRCLE (m103).** *"When I'm blocking and the Warriors
+  // hit me it doesn't block their attack -- I'm still just getting hit."* Measured through the
+  // shipped `stepDummies` against a real warrior, guard held the whole time: `block=1` on every
+  // blow and **`off` 2.30 and 2.67 radians** -- he was facing 132 and 153 degrees away from the
+  // man hitting him, so `BLOCK.arc` 1.25 could never once have applied and every mace landed in
+  // full. The guard armed perfectly and the FACING was the bug.
+  // **THE CONE WAS MEASURED OFF `cam.az` AND THE THUMB CANNOT MOVE THE CAMERA.** Acquiring
+  // inside 45 degrees of 12 o'clock is his own spec and is right; keeping it there is not, because
+  // `foePlan` CIRCLES -- and the right pad is held DOWN for the guard, so there is no way to turn
+  // the lens after him. The man walks out of the cone, the lock drops, `faceTgt` falls back to a
+  // frozen `cam.az`, and the guard is pointed at nothing.
+  // **SO IT IS A COMMITMENT: in range and on his feet, he stays yours.** Nothing steals him and
+  // there is nothing to flicker -- which is also what *"it locks on them and then you can kind of
+  // rotate around them"* asks for literally. The cost is that you cannot switch targets without
+  // letting go of the guard, and that is the trade rather than an oversight.
+  if (guard && p.lock && DUMMIES.indexOf(p.lock) >= 0 &&
+      p.lock.st !== 'down' && p.lock.st !== 'up' &&
+      Math.hypot(p.lock.root.position.x - p.pos.x, p.lock.root.position.z - p.pos.z) <= range * keep) return p.lock;
   let best = null, bestS = -Infinity;
   for (const d of DUMMIES) {
     // **A MAN ON THE FLOOR IS NOT SOMETHING TO GUARD AGAINST**, which is `palFoe`'s own rule
@@ -6226,7 +6298,16 @@ function chargeRelease() {
   // him to. `chargeAim` is the ONE answer to "who is the target" -- the ring under his feet is
   // drawn from the same call every frame the hammer is winding, so the mark and the dash
   // cannot disagree about who is being promised. That is m20's invariant, one weapon over.
-  const A = chargeAim();
+  // **AND IT IS HANDED THE HOLD, BECAUSE THE HOLD HAS ALREADY BEEN THROWN AWAY (m103).**
+  // `p.chargeT` is zeroed four lines up and `chargeAim()` defaults to reading it -- so every
+  // charged swing since m51 has been aimed and solved at `chg01` **0**: `want` 5.75 m whatever
+  // the thumb did, and `acq` with it, so the one thing this move is about could not vary.
+  // Measured through the shipped function: a FULL hold and a HALF hold both read
+  // `goGap 5.75, melV 36.31` -- identical to the hundredth, with `chargeGoK` correctly 1.000
+  // against .725 beside them, which is the tell.
+  // **AND NOTHING COULD SEE IT**: `npm run sim`'s own dash case has been dead since m52 (see
+  // below), so the three rows that measure exactly this have not run for fifty builds.
+  const A = chargeAim(t0);
   const CL = A.t, wantD = A.want;
   if (CL) { p.faceH = p.heading = CL.h; p.melTgt = CL.d; }
   else p.melTgt = null;
@@ -9398,7 +9479,7 @@ function foeStrike(d) {
   // **AND HE PASSES HIMSELF AS THE AUTHOR**, so the pal is never MARKED: `d.mark` is YOUR
   // interest in a body and an orc hitting the sidekick is not something you did.
   if (T) { dummyBlow(T, to, K.hitPow, T.K.dmg ? T.K.dmg.weap : 0, d); return; }
-  playerHurt(K.hitDmg, to, K.push, K.pushUp, K.stun, K.knock);
+  playerHurt(K.hitDmg, to, K.push, K.pushUp, K.stun, K.hitKnock);
 }
 
 // **A BLOCK THAT MAKES NO NOISE IS A NUMBER (m101).** "It blocked" and "it took the hit" are
@@ -9500,7 +9581,13 @@ function playerHurt(dmg, dirH, push, up, stun, knock) {
     // and a blow taken while he is already ON THE FLOOR does not hop him back off it: inside
     // `again` this is the shove branch, and a get-up interrupted by a little jump reads as a
     // glitch rather than as a second hit.
-    if (p.grounded && !p.knock) { p.vel.y = up; p.grounded = false; }
+    // **AND A BLOW WITH NO VERTICAL KICK MUST NOT UN-GROUND HIM (m103).** A guard sets `up` to
+    // zero, and this line then took his feet off the floor with no velocity to show for it --
+    // which the guard's own `busy` reads as airborne, so `p.block` went to 0, `p.lock` went with
+    // it, and the NEXT swing arrived with him facing wherever the frozen camera pointed. The
+    // probe read it as one full hit in four: **three parried at off 0.00 and the fourth at off
+    // 3.07 with `lock=n`.** A blocked blow knocking the guard off is the fix breaking itself.
+    if (p.grounded && !p.knock && up > 0) { p.vel.y = up; p.grounded = false; }
     // **AND A BLOW HE STAYS ON HIS FEET FOR NOW READS AS ONE.** The stun is an input lockout and
     // it is deliberately short; the CLIP is what says he was hit, so it runs longer and gives
     // way out of `rest` the way a landing does rather than holding the body for its whole length.
