@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m122</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m123</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m122</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m123</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm122';
+const BUILD = 'm123';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -10147,6 +10147,26 @@ function stepMorph(dt) {
       cur.model.visible = true;                        // and is never left hidden for next time
       const to = p.mphNext ? mphSkin(p.mphNext) : null;
       mphWear(to);
+      // **AND HE COMES OUT OF IT HOLDING THE GUN, IN A MODE THAT DOES NOT TRANSFORM HIM AGAIN
+      // (m123).** *"It puts you into a mode as though you're disarmed and yet it shows it like
+      // you're holding the weapon... and rather than putting you in DNA, the tendency would be
+      // that you're just gonna shoot somebody right away and then transform into them even
+      // though you just transformed into somebody else."*
+      // **THE DNA HALF IS THE ONE THAT IS ACTUALLY WRONG**, and it is wrong for the reason he
+      // gives: the gun that put you in this body is still the gun in your hand, so the very next
+      // release puts you in a different one. The mode a transform ENDS in has to be one you can
+      // fire. Only DNA moves -- **AUTO is left exactly where it is**, because rapid fire is a
+      // perfectly good thing to be holding and nothing about it undoes the transform.
+      // **AND THE SLOT IS FOUND, NOT TYPED** (`s.aim` / `!m.dna && !m.auto`), which is m52's own
+      // rule: a fourth weapon or a fourth mode is a row in a table and this line still reads.
+      // On every path a player can take it is a NO-OP -- you cannot fire the DNA gun without the
+      // blaster already out -- so what it actually covers is `mel.dna('hobo')` from the console
+      // and whatever a future sample path does.
+      if (p.mphNext) {
+        const gs = WEAP.slots.findIndex(q => q.aim);
+        if (gs >= 0 && p.slot !== gs) applySlot(gs);
+        if (dnaNow()) { const ch = WEAP.modes.findIndex(q => !q.dna && !q.auto); if (ch >= 0) setMode(ch); }
+      }
       mphTint((to || rig.base).mats, 1);
       p.mphSt = 'in'; p.mphT = 0;
       // the swap is the EVENT, so it is where the noise and the debris are -- not the release
@@ -10167,6 +10187,18 @@ function stepMorph(dt) {
       mphTint(cur.mats, 0);
       p.mphSt = ''; p.mphNext = null; p.mphU = 0; p.mphPA = null; p.mphPB = null;
       mphBlobOff();
+      // **AND THE KIT HUD COMES BACK, WHICH IS THE OTHER HALF OF HIS REPORT (m123).** *"Your gun
+      // is out but it thinks you're in disarmed mode, and then you have to take out your gun even
+      // though you already have it out."* Exactly that, and it is the m122 blank branch with
+      // nobody to close it: `paintKit` is called from `mphWear`, which runs AT THE SWAP while
+      // `p.mphSt` is still set -- so it took the transform's own branch, which blanks the label,
+      // dims the mode row, drops `ready` and **returns before the visibility loop**. Nothing
+      // called it again when the flash ended, so the weapon stayed drawn (its visibility was
+      // never touched) while every readout beside it said he was carrying nothing, for the whole
+      // disguise, until a tap happened to repaint it. **A branch that returns early needs
+      // somebody to call the function again once its condition is false** -- and this is the one
+      // place that knows the transform is over.
+      paintKit();
       return;
     }
   }

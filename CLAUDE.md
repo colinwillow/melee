@@ -1220,6 +1220,41 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **AN EARLY-RETURN BRANCH NEEDS SOMEBODY TO CALL THE FUNCTION AGAIN (m123, `stepMorph`).** *"It
+  puts you into a mode as though you're disarmed and yet it shows it like you're holding the
+  weapon... your gun is out but it thinks you're in disarmed mode, and then you have to take out
+  your gun even though you already have it out."* Both halves of that are one call that never
+  happened.
+  **`paintKit` IS CALLED FROM `mphWear`, WHICH RUNS AT THE SWAP -- WITH `p.mphSt` STILL SET.** So
+  it took m122's transform branch, which blanks the label, blanks the hint, dims the mode row,
+  drops `ready` from the pad and **returns before the visibility loop**. That return is why the
+  gun stayed drawn: its `visible` was never touched, so the model kept whatever it had while every
+  readout beside it said he was carrying nothing. And **nothing called `paintKit` again when the
+  flash ended** -- `p.mphSt = ''` sits in a branch that clears five fields, disposes the blob and
+  returns -- so the HUD stayed in the transform's state for the WHOLE disguise, until a tap
+  happened to repaint it. *"You have to take out your gun even though you already have it out"* is
+  that tap, described exactly.
+  **THE BRANCH IS RIGHT AND THE GAP IS STRUCTURAL.** A state that suppresses a repaint is only
+  half a rule; the other half is repainting when it stops, and the one place that knows the
+  transform is over is where it ends. This is the class to check whenever a `paintKit`-shaped
+  function grows a guard: **who calls it when the guard goes false.**
+- **AND A TRANSFORM ENDS IN A MODE YOU CAN FIRE (m123).** *"Rather than putting you in DNA -- the
+  tendency would be, if it shoots you into DNA gun then you're just gonna shoot somebody right
+  away and then transform into them even though you just transformed into somebody else."*
+  He is describing a loop and it is real: the gun that put you in this body is still the gun in
+  your hand, so the very next release puts you in a different one. **The mode a transform lands in
+  has to be one whose trigger does not undo the transform**, which is the DNA mode and nothing
+  else -- so **AUTO is deliberately left alone**: rapid fire is a perfectly good thing to be
+  holding and firing it changes nobody's body.
+  **THE SLOT AND THE MODE ARE BOTH FOUND, NEVER TYPED** (`q.aim`, `!q.dna && !q.auto`), which is
+  m52's own rule that a fourth weapon or a fourth mode is a row in a table and the line still
+  reads. **The slot half is a no-op on every path a player can take** -- you cannot fire the DNA
+  gun without the blaster already out, and `cycleKit` refuses while `p.mphSt` is set -- so what it
+  actually covers is `mel.dna('hobo')` from the console and whatever a future sample-and-return
+  path does. Stated as such rather than dressed up as a fix.
+  **AND IT IS GATED ON `p.mphNext`, so only putting a disguise ON moves anything.** A REVERT keeps
+  whatever you were carrying, which is what the same rule says pointed the other way: nothing about
+  taking a body off is a reason to change the kit.
 - **THE LEDGE HANG WAS MEASURED ON ZAP AND DRAWN ON SOMEBODY ELSE (m122, `bodyK`).** *"For some
   reason, all of the characters do the ledge hang too high, like from their hips it seems."*
   Exactly that, and it is one ratio. `LEDGE.hang` .861 and `LEDGE.out` .170 are fractions of
