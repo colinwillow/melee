@@ -1040,6 +1040,121 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A THUMB LIFTING OFF THE GLASS IS NOT A SWIPE, AND NO WINDOW CAN SAY OTHERWISE (m104, `FLICK`).**
+  *"I'll press and hold in one direction and then when I release it thinks I've done a swipe
+  gesture -- he keeps rolling out of the way when I'm not meaning to. It needs to be both the press
+  forward AND the release within a certain timing to make sure that it's a swipe."*
+  **THE ARM-THEN-LIFT SHAPE WAS RIGHT AND THE NUMBERS WERE NOT.** A finger leaving the screen drags
+  its contact centroid as the patch shrinks -- twenty to forty pixels of it, routinely -- and on a
+  52 px radius that is up to **.77 of the pad, arriving fast and followed immediately by the up**.
+  That is geometrically the SAME EVENT as a flick: a quick move and then a lift. **So no timing
+  window separates them**, however tight, and the two he asked for (`within` for the sweep, `let`
+  for the lift) already existed and were never going to be enough on their own.
+  **WHAT IS LEFT IS MAGNITUDE.** `at` .70 is 36 px of travel, which a lift-off produces; .95 is
+  49 px, a deliberate sweep across most of the pad, which it does not. The two windows come down
+  with it (`within` .28 -> .16, `let` .26 -> .14) so the gesture as a whole has to be quick, which
+  is his sentence -- but the number that does the work is the distance.
+  **A FLICK STILL FIRES OUT OF A HELD POSITION**, which is the thing that must not be lost: the
+  delta is measured over a moving window rather than from the pad's centre, so a thumb four seconds
+  into a steering hold still flicks. What it now has to do is cross the pad to do it.
+  **AND THE COST IS STATED**: a roll in the direction you are ALREADY holding has less pad left to
+  sweep across, so it is harder to ask for than a roll to one side. `mel.FLICK.at` is the dial and
+  this is a device question -- nothing in this container has a touchscreen.
+- **THE PADS FLOAT, OPTIONALLY -- AND WHEN THEY DO NOT THEY ARE BIGGER (m104, `STICK`, the zones).**
+  *"Did we make it so you can have the option of the dynamic stick control, so they move around --
+  so you don't have to be super precise with where you're pressing and swiping. And when they're
+  not dynamic I think they should be a little bit bigger."* **m49 and m98 both wrote the floating
+  pad down as the real fix for missing one and both shipped something else**; m98's own note ends
+  *"a pad that appears where the thumb lands makes this question disappear rather than widening its
+  answer."*
+  **THE ZONE IS THE TARGET AND THE PAD IS THE PICTURE.** Half the screen each, and the pad is moved
+  to the touch on the way down -- so `set()` measures the same rect it always did and **every
+  gesture below it is unchanged**. The zone is not an ancestor of the arc rows, the chip or any
+  key, so a press on one of those never reaches it; and the move/up handlers are registered on the
+  zone as well as the pad, because the floating pad is `pointer-events: none` and capture is not a
+  guarantee.
+  **THE FLICK HISTORY IS SEEDED DIFFERENTLY ON A FLOATING PAD**, which is the one thing that could
+  not be shared. On an absolute pad a thumb slammed onto the top edge genuinely IS a flick (m49)
+  and the centre seed is what catches it; on a floating pad the thumb IS the centre, and seeding
+  from the centre would arm a flick out of the edge clamp on every touch near a screen edge.
+  **AND `RAD` IS MEASURED NOW RATHER THAN TYPED.** It was 52 against a 132 px pad, so `--pad` could
+  not move without every gesture threshold quietly meaning something else -- which is the whole
+  point of making the fixed pads bigger. One ratio, read off the element, and `--pad` 148 fixed /
+  132 floating is the only number.
+  **AND IT IS A TAP ON THE BUILD BADGE**, because there is no settings panel in this game and a
+  phone has no console -- *"the option"* is a look-at-it decision and those belong on the phone
+  (`city.opt`'s rule). Only the NUMBER takes the tap, so the state line beside it cannot eat a
+  thumb, and it is out of the play area. **It is not a hidden mode**: the pads say which one it is
+  in by floating or not, and the chip carries `· FLOAT`.
+  **CHECKED AS GEOMETRY, NOT BY EYE (m184's rule).** At `--pad` 148 on a 390 px phone the two pads
+  span x 20..168 and 222..370 -- **54 px between them** -- and everything downstream reads
+  `--padr`, so the arc rows move with the pad rather than being positioned a second time.
+- **ONE ARC-ROW BUILDER, TWO ROWS -- AND CENTRING THEM IS WHAT STOPPED THEM COLLIDING (m104,
+  `buildArcRow`, `PALROW`).** *"In the same way that we have the buttons above the right stick, I
+  wanna make the equivalent of those on the left stick."* m53's whole geometry was already a
+  function of `MODES` and a table, so the left row is the same call with a mirrored bearing and a
+  THIRD row tomorrow is another one.
+  **AND `MODES.mid` 115 HAD TO GO, WHICH WAS A MEASUREMENT AND NOT A PREFERENCE.** It was up and a
+  little INWARD because at `--pad` 132 the right pad's centre sits 86 px from the edge of a 390 px
+  phone and a set centred on vertical put its outer tip 2.5 px inside it. The pad is 148 now, that
+  centre is at 296, and the same tip lands 11 px clear -- **and the lean is what made the two rows
+  meet**, because both of them leant toward the middle:
+      mid 115 / 65   right row's inner tip x **194**, left row's **196** -- OVERLAPPING, at the
+                     same height, by two pixels
+      mid 90 both    right's inner tip 212.5, left's 177.5 -- **35 px of air**
+  with the outer tips at 379 and 10.5, both on screen at 132 as well as at 148. The left row is
+  written as `180 - MODES.mid` rather than as 90, so moving one moves the other and they can never
+  lean toward each other again.
+  **AND A ROW WEARS ITS OWN STICK'S HUE**, for the reason the pads do (m49): they are different
+  controls, and a row in the other pad's colour reads as belonging to the other pad.
+- **CLANCY RIDES THE BACKPACK (m104, `PACK`, `packGo`, `stepPack`).** *"One of them is gonna be to
+  control Clancy -- I want to push a button and he's gonna run and jump onto my backpack and just
+  sit on it. One for him roaming and one that's like a backpack."*
+  **NEARLY ALL OF IT WAS ALREADY BUILT, WHICH IS `d.K`'S DIVIDEND AGAIN.** The run over is the
+  leash's own catch-up with the ring's centre moved from "beside you" to "you"; the leap is
+  `bodyFly`, the integrator every hop and knock-down already uses; the pose is one clip name; and
+  the two modes are a table the arc row builds itself off. What is actually new is where he SITS
+  and the state that holds him there.
+  **HE RIDES A BONE, NOT A POINT BESIDE THE PLAYER.** `rig.bones` is already a name map (the aim
+  pose reads Spine1/Spine2 out of it), so hanging him off the spine means he takes the walk's bob,
+  the turn and every crouch for free -- where an offset from `player.pos` is a small man sliding
+  along in the air behind a body moving under him. Found by PATTERN, the jetpack's rule one repo
+  over. **And he is WRITTEN, never parented**: the armature is scaled 0.01 and a child of it comes
+  out at a hundredth of its size (m26), and this needs no parent anyway because it is a position
+  and a facing. `seat.up`/`seat.back` are fractions of `RIG.height`, so a change to how big the
+  player is moves the seat with him (m52).
+  **THE LEAP IS SOLVED FOR THE SEAT, NOT FOR AN APEX SOMEBODY TYPED.** At `leap` .30 s and g 20,
+  `vy = (dy + g T^2 / 2) / T` puts him at the seat's height exactly at T -- which on these numbers
+  is also the top of his arc, so he arrives at the top of his own leap, which is what landing on a
+  back is. `leapDrag` 0 is what keeps the horizontal exact (m74).
+  **AND ONE PREDICATE ANSWERS BOTH HALVES (`packOK`).** The ride reads it to decide whether to HOLD
+  him and the approach reads it to decide whether to GO -- so without `player.knock` in the SAME
+  test the knock-down threw him off and `foeWander` put him straight back on the next frame, which
+  is a man bouncing off your back rather than coming off it. The probe read it exactly:
+  `after a knock-down: st=ride`.
+  **A PASSENGER HAS NO BRAIN**, so the pack runs above every other state rather than inside
+  `foeAI`: no gait, no dive, no target, and nothing to be separated from. And he is out of
+  `pushBodies` and `bodySep` while he rides -- without that he is a solid held 21 cm in front of
+  your own chest shoving you backwards every frame, which reads as walking into an invisible box
+  and is the same thing m96's carry had to skip.
+  **A BLOW STILL TAKES HIM OFF AND THAT NEEDED NO CASE**: `dummyBlow` sets `st` to `hit` or `down`
+  and the ride only holds on `ride`, so shooting the passenger drops him.
+  Driven through the shipped `stepDummies` over the real collider:
+      PACK from 6 m    runs in, leaps, **aboard at 2.50 s**, y 1.13 against a seat of 1.13,
+                       0.21 m behind you in plan
+      you walk 12 m    he is at 11.77 with dy 1.13 -- still seated, still behind
+      ROAM             down on the ground, y 0.35 against a ground of 0.35
+      PACK again       aboard
+      a knock-down     **off**, and he re-boards once you are up
+  **THE THROW IS DELIBERATELY NOT HERE.** *"And then I'll be able to like throw him -- but for now
+  one for roaming and one that's like a backpack."* m99 deleted the whole carry because *"the
+  hybrid animations look like trash, the hips rotation has been stripped, he's leaning forward and
+  the throw mechanics are bad -- we need to rebuild all that"*, and none of that has been redrawn.
+  `hold_item` and `throw_item` are still in the player's export and still cost nothing unnamed
+  (m35's rule), so the throw is a build on top of this one.
+  **AND THE ROW IS ON THE LEFT STICK**, which is what the sentence opens with -- *"the equivalent
+  of those on the left stick"* -- rather than the "above the right stick" it ends with. Stated
+  because it is a reading, not a measurement.
 - **THE GUARD ARMED PERFECTLY AND HE WAS FACING THE WRONG WAY (m103, `findLock`'s guard hold).**
   *"When I'm blocking and the Warriors hit me it doesn't block their attack -- I think I'm still
   just getting hit. And you should be able to block in any of the three modes: disarmed, with the
@@ -4723,6 +4838,7 @@ means anything you can carry from one situation to the next.
 | | left | right |
 |---|---|---|
 | hold | move | **hold UP**: firing position, charge, release to fire (blaster) / wind up (hammer) |
+| arc row | **Clancy: ROAM / PACK** (m104) | the blaster's CHARGE / AUTO |
 | tap | next weapon | jump |
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
@@ -4749,6 +4865,13 @@ means anything you can carry from one situation to the next.
 - **THE GESTURE VOCABULARY IS DELIBERATELY NOT FULL.** Left-pad press-and-hold-in-place is
   unassigned, and so is anything on a second tap. Those are the slots to spend next; do not
   spend one on something the gait blend already handles for free.
+- **AND A FLICK IS A SWEEP ACROSS THE PAD, NOT MERELY A FAST MOVE (m104).** A thumb coming off the
+  glass produces a fast move and an immediate lift, which is geometrically the same event -- so
+  what separates them is DISTANCE (`FLICK.at` .95 of the pad's radius) and no timing window ever
+  could. See the landmine.
+- **THE PADS CAN FLOAT (`STICK.dyn`, tap the build number).** Fixed they are 148 px; floating they
+  are 132 and appear where the thumb lands. Everything downstream reads the pad's own rect, so a
+  gesture means the same thing in both.
 
 ## Still open
 

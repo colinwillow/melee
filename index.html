@@ -155,7 +155,13 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 }
 #build { top: calc(12px + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left));
   max-width: calc(100vw - 140px); }
-#build b { font-family: var(--disp); font-size: 26px; color: var(--sky); display: block; line-height: 1; }
+/* THE BUILD NUMBER IS THE ONE THING ON SCREEN THAT TAKES A TAP (m104). There is no settings
+   panel in this game -- every dial is a `mel.` handle and a phone has no console -- and
+   *"I want the sticks the option to have dynamic"* is a look-at-it decision, which belongs on
+   the phone rather than in a commit. Only the NUMBER is a target, so the state line beside it
+   cannot eat a thumb, and it is out of the play area in the corner. */
+#build b { font-family: var(--disp); font-size: 26px; color: var(--sky); display: block; line-height: 1;
+  pointer-events: auto; cursor: pointer; }
 #build i { font-style: normal; opacity: .8; font-size: 12px; }
 #wep { top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right));
   font-family: var(--disp); font-size: 15px; color: var(--sun); text-align: right; }
@@ -181,15 +187,37 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
    nothing to tell it so. `--pc` is the only thing that differs, so a pad cannot end up half
    recoloured, and `mel.pads({ left, right })` moves both live -- a look-at-it decision. */
 .pad {
-  position: fixed; z-index: 5; width: 132px; height: 132px; border-radius: 50%;
+  position: fixed; z-index: 5; width: var(--pad); height: var(--pad); border-radius: 50%;
   touch-action: none; bottom: calc(26px + env(safe-area-inset-bottom));
   --pc: var(--sky);
   background: none;
   border: 3px solid var(--pc);
-  transition: border-color .12s ease;
+  transition: border-color .12s ease, opacity .12s ease;
 }
 #padL { left: calc(20px + env(safe-area-inset-left)); --pc: var(--hot); }
 #padR { right: calc(20px + env(safe-area-inset-right)); --pc: var(--sky); }
+/* ---- THE PADS FLOAT, OPTIONALLY (m104, `STICK.dyn`) ---------------------------------------
+   *"Did we make it so you can have the option of the dynamic stick control, so they move
+    around -- so you don't have to be super precise with where you're pressing and swiping."*
+   Not until now: m49 and m98 both wrote it down as the real fix for missing a pad and both
+   shipped something else. A pad that APPEARS where the thumb lands cannot be missed, which is
+   a different thing from making it easier to hit.
+   **THE ZONE IS THE TARGET AND THE PAD IS THE PICTURE.** Half the screen each, and the pad is
+   moved to the touch on the way down -- so `set()` measures the same rect it always did and
+   every gesture below it is unchanged. The zone is NOT an ancestor of anything that takes a
+   tap (the arc rows, the chip, the keys), so a press on one of those never reaches it.
+   **AND WHEN THEY ARE FIXED THEY ARE BIGGER** -- *"when they're not dynamic I think they should
+   be a little bit bigger"* -- which is `--pad`, one number, read by the rows' own geometry and
+   by `RAD` so nothing can drift out of step with it. */
+body { --pad: 148px; --padr: calc(var(--pad) / 2); }
+body.dyn { --pad: 132px; }
+body.dyn .pad { opacity: 0; pointer-events: none; }
+body.dyn .pad.act { opacity: 1; }
+.zone { position: fixed; z-index: 4; display: none; touch-action: none; bottom: 0; height: 74%; }
+body.dyn .zone { display: block; }
+body.dyn.desk .zone { display: none; }
+#zoneL { left: 0; width: 50%; }
+#zoneR { right: 0; width: 50%; }
 .pad.act { border-color: #fff; }
 /* EIGHT TICKS ROUND THE RIM -- the whole of the styling, and deliberately static.
    *"A cool stylized thing kind of similar to how we did the radical, but not as complex."*
@@ -238,11 +266,23 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
                                                  a default here means an unset var can never
                                                  collapse the whole element to nothing */
   pointer-events: none;                       /* only the segments are targets */
-  right: calc(20px + 66px - var(--mr) + env(safe-area-inset-right));
-  bottom: calc(26px + 66px - var(--mr) + env(safe-area-inset-bottom));
+  right: calc(20px + var(--padr) - var(--mr) + env(safe-area-inset-right));
+  bottom: calc(26px + var(--padr) - var(--mr) + env(safe-area-inset-bottom));
   width: calc(var(--mr) * 2); height: calc(var(--mr) * 2);
 }
 #modeRow.on { display: block; }
+/* THE SAME ROW ON THE LEFT STICK, MIRRORED (m104). *"In the same way that we have the buttons
+   above the right stick, I wanna make the equivalent of those on the left stick."* Same builder,
+   same geometry, one bearing mirrored -- so a row is a TABLE and not a second control. */
+#palRow {
+  position: fixed; z-index: 6; display: none;
+  --mr: 106px;
+  pointer-events: none;
+  left: calc(20px + var(--padr) - var(--mr) + env(safe-area-inset-left));
+  bottom: calc(26px + var(--padr) - var(--mr) + env(safe-area-inset-bottom));
+  width: calc(var(--mr) * 2); height: calc(var(--mr) * 2);
+}
+#palRow.on { display: block; }
 /* ---- DESKTOP (m79) -------------------------------------------------------------------
    THE PADS ARE THE ONE THING A MOUSE REPLACES, and everything else on screen stays: the
    chip, the mode row and the reticle are all still the right pictures. `body.desk` is set
@@ -263,17 +303,21 @@ body.desk.free #deskHint { display: block; }
 #deskHint b { color: var(--ink); background: var(--sky); border-radius: 3px; padding: 0 4px; }
 /* `pointer-events: all` is what gives an UNFILLED path a hit area -- the alternative is a
    translucent fill, and m50's whole finding is that nothing on these pads should be a tint. */
-#modeRow path {
-  fill: none; stroke: var(--sky); stroke-width: 2;
+/* AND A ROW WEARS ITS OWN STICK'S HUE, for the reason the pads do (m49): they are different
+   controls, and a row in the other pad's colour reads as belonging to the other pad. */
+#modeRow { --rc: var(--sky); }
+#palRow  { --rc: var(--hot); }
+#modeRow path, #palRow path {
+  fill: none; stroke: var(--rc); stroke-width: 2;
   pointer-events: all; cursor: pointer;
 }
-#modeRow path.sel { fill: var(--sky); }
-#modeRow text {
+#modeRow path.sel, #palRow path.sel { fill: var(--rc); }
+#modeRow text, #palRow text {
   font-family: var(--ui); font-size: 10px; font-weight: 600; letter-spacing: .10em;
-  fill: var(--sky); text-anchor: middle; dominant-baseline: central;
+  fill: var(--rc); text-anchor: middle; dominant-baseline: central;
   pointer-events: none; user-select: none;
 }
-#modeRow text.sel { fill: var(--ink); }
+#modeRow text.sel, #palRow text.sel { fill: var(--ink); }
 /* ---- the reticle: a geometric portal ----
    IT WAS BIG AND THICK AND THE COLOURS WERE A GUESS. Size, stroke weight and both hues are
    custom properties now, so `mel.retic({...})` moves all of it live on the phone -- how a mark
@@ -397,12 +441,13 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m103</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m104</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m103</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m104</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
+<div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
 <div class="pad" id="padR"><div class="knob"></div><div class="hint">look &middot; tap = jump</div></div>
 
@@ -411,6 +456,7 @@ body.desk.free #deskHint { display: block; }
      area for a weapon that has no modes. Built from `WEAP.modes` rather than written twice:
      a third mode is a row in that table and nothing here. -->
 <div id="modeRow" aria-hidden="true"></div>
+<div id="palRow" aria-hidden="true"></div>
 
 <!-- DESKTOP CONTROLS (m79). Built from `DESK.hint` so the one place that binds a key is the
      one place that names it -- a printed map and a binding that disagree is worse than none. -->
@@ -450,7 +496,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm103';
+const BUILD = 'm104';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -937,7 +983,23 @@ const CAM = {
 // So the TRAVEL arms it and the LIFT fires it, if the lift comes inside `let` OF THE TRAVEL --
 // never of the pointerdown. A thumb four seconds into a hold still flicks; a thumb that sweeps
 // and then stays down never does, however fast the sweep was.
-const FLICK = { at: .70, within: .28, let: .26, gap: .10 };
+// **AND A THUMB LIFTING OFF IS NOT A SWIPE (m104).** *"I'll press and hold in one direction and
+// then when I release it thinks I've done a swipe gesture -- he keeps rolling out of the way when
+// I'm not meaning to. It needs to be both the press forward AND the release within a certain
+// timing to make sure that it's a swipe."*
+// **THE ARM-THEN-LIFT SHAPE IS RIGHT AND THE NUMBERS WERE NOT.** A thumb coming off the glass
+// drags its contact centroid as the patch shrinks -- twenty to forty pixels of it, routinely --
+// and on a 52 px radius that is up to **.77 of the pad, arriving fast and followed immediately by
+// the up**, which is geometrically the same event as a flick. No window can separate those two,
+// because the wobble IS a fast move and then a lift: **the only honest discriminator left is
+// MAGNITUDE**, and `at` .70 (36 px) sat inside what a lift-off produces.
+// `at` .95 is 49 px of travel -- a deliberate sweep across most of the pad, which a finger
+// leaving the glass does not do -- and the two windows come down with it so the gesture as a
+// whole has to be quick, which is what he asked for in those words.
+// **A FLICK STILL FIRES OUT OF A HELD POSITION**, which is the thing that must not be lost: the
+// delta is measured over a moving window rather than from the pad's centre, so a thumb four
+// seconds into a steering hold still flicks. What it now has to do is cross the pad to do it.
+const FLICK = { at: .95, within: .16, let: .14, gap: .10 };
 
 // THE MELEE CHAIN. Each link is a fixed BEAT and the clip is compressed to it: the authored
 // clips run 1.0 to 1.75 s, so a three-hit chain played at 1x is over four seconds of watching,
@@ -2043,6 +2105,44 @@ const FOE = {
   stun: .35,         // how long you are not steering afterwards
   bar: { w: .9, h: .10, up: 1.22, fade: 4.0 },
 };
+// ---- RIDING THE BACKPACK (m104, `PACK`, `packGo`, `stepPack`) -------------------------------
+// *"I want to push a button and he's gonna run and jump onto my backpack and just sit on it."*
+//
+// **NEARLY ALL OF IT WAS ALREADY BUILT, WHICH IS `d.K`'S DIVIDEND AGAIN.** The run over is the
+// leash's own catch-up with the ring's centre moved from "beside you" to "you"; the leap is
+// `bodyFly`, the integrator every hop and every knock-down already uses; and the pose is one
+// clip name. What is new is where he SITS and the state that holds him there.
+//
+// **HE RIDES A BONE, NOT A POINT BESIDE THE PLAYER.** `rig.bones` is already a name map (the aim
+// pose reads Spine1/Spine2 out of it), so hanging him off the spine means he takes the walk's
+// bob, the turn and every crouch for free -- where an offset from `player.pos` would be a small
+// man sliding along in the air behind a body that is moving under him. Found by PATTERN, the
+// jetpack's rule one repo over, so an export that spells the spine differently still lands.
+// **AND HE IS WRITTEN, NEVER PARENTED.** The armature is scaled 0.01 and a child of it comes out
+// at a hundredth of its size -- m26's weapon lesson, and this needs no parent anyway because it
+// is a position and a facing.
+//
+// **THE THROW IS DELIBERATELY NOT HERE.** *"And then I'll be able to like throw him -- but for
+// now one of them is gonna be roaming and one that's like a backpack."* m99 deleted the whole
+// carry because *"the hybrid animations look like trash, the hips rotation has been stripped,
+// he's leaning forward and the throw mechanics are bad -- we need to rebuild all that"*, and
+// none of that has been redrawn. `hold_item` and `throw_item` are still in the player's export
+// and still cost nothing unnamed (m35's rule), so the throw is a build on top of this one.
+const PACK = {
+  on: 1,
+  near: 1.25,       // how close he gets before he leaps -- a bit over his own radius plus yours
+  leap: .30,        // and how long the leap takes. `bodyFly` does the arc; this is the clock
+  // WHERE HE SITS, relative to the spine bone. `up` and `back` are fractions of `RIG.height`,
+  // so a change to how big the player is moves the seat with him rather than leaving a small
+  // man hovering -- m52's rule, and the reason nothing here is typed in metres.
+  seat: { up: .30, back: .17 },
+  bone: /Spine2$|Spine1$|Spine$/,
+  clips: { leap: 'jumping_up', ride: 'stand_to_cover' },
+  // AND HE COMES OFF IF YOU ARE PUT ON THE FLOOR. A knock-down is a body going over; a passenger
+  // welded to the spine through it is the one thing that would read as a bug rather than a ride.
+  offDrop: 1,
+};
+
 // THE HICK -- A BODY THAT DOES NOT FIGHT BACK (m38).
 //
 // *"He's basically just an NPC, so he doesn't have attacks. He doesn't attack you -- if
@@ -2339,6 +2439,12 @@ const CLANCY = {
   at: [[-3, 4]],                   // one of him, and he spawns beside you
   drop: /^CINEMA_4D/,
   ai: 1, pacifist: 1, pal: 1,
+  // **THE LEFT STICK GETS A ROW, AND THE FIRST THING ON IT IS HIM (m104).** *"One of them is
+  // gonna be to control Clancy -- I want to push a button and he's gonna run and jump onto my
+  // backpack and just sit on it. So one for him roaming and one that's like a backpack."*
+  // Two modes, a table, and the arc row builds itself off it exactly as the blaster's does.
+  modes: [{ key: 'roam', label: 'ROAM' }, { key: 'pack', label: 'PACK' }],
+  mode: 0,
   clips: {
     // **THE TWO MAINS ARE A POOL AND THE FOUR EXTRAS ARE THE FLOURISH.** *"I got some idles
     // titled clancy_idle_01 and clancy_idle_02, those are the main ones -- but I have four more
@@ -3842,6 +3948,10 @@ function pushBodies(pos, r, skip) {
   for (const d of DUMMIES) {
     if (d === skip) continue;
     if (d.st === 'down' || d.st === 'up') continue;
+    // A MAN ON YOUR BACK IS NOT A MAN IN YOUR WAY (m104). Without this he is a solid held
+    // `PACK.seat.back` in front of your own chest, shoving you backwards every frame -- which
+    // reads as walking into an invisible box, and is the same thing m96's carry had to skip.
+    if (d.st === 'ride' || d.st === 'leap') continue;
     const dx = pos.x - d.root.position.x, dz = pos.z - d.root.position.z;
     const rr = r + d.K.r;
     const l2 = dx * dx + dz * dz;
@@ -5436,11 +5546,7 @@ function paintKit() {
   // THE ROW EXISTS ONLY WHERE IT MEANS SOMETHING. A mode row for a weapon with no modes is a
   // HUD element sitting in the play area saying nothing, which is the `actB` lesson one game
   // over: a prompt that is always on screen is a prompt nobody reads.
-  modeRow.classList.toggle('on', !!m);
-  // one path and one label per mode, in order, so the index IS the mode
-  const kids = modeRow.firstChild ? modeRow.firstChild.childNodes : [];
-  for (let i = 0; i < kids.length; i++)
-    kids[i].classList.toggle('sel', (i >> 1) === WEAP.mode);
+  paintArcRow(modeRow, !!m, WEAP.mode);
   // EXACTLY ONE SLOT IS VISIBLE, decided in one place, so the label, the ring and the thing in
   // his hand cannot disagree about what he is carrying.
   for (const key in WEAP.worn) {
@@ -5456,15 +5562,35 @@ function paintKit() {
 // nothing in the DOM is written twice.
 const MODES = {
   r0: 74, r1: 106,   // the two rings. The pad is 66 + a 3 px rim, so r0 leaves a 5 px gap.
-  mid: 115,          // degrees, the bearing the SET is centred on -- up and a little inward,
-                     // because straight up puts the outer segment off the right edge of a phone
+  // **STRAIGHT UP, AND THE REASON IT WAS NOT IS GONE (m104).** 115 was up and a little INWARD,
+  // because at `--pad` 132 the right pad's centre sits 86 px from the edge of a 390 px phone and
+  // a set centred on vertical put its outer tip at 387.5 -- two and a half pixels of clearance.
+  // The pad is 148 fixed now, so that centre is at 296 and the same tip lands at 379, eleven
+  // pixels clear; and **the lean is what made the two rows collide.** Checked as geometry rather
+  // than by eye, at `--pad` 148 on a 390 px phone:
+  //     mid 115 / 65   right row's inner tip x **194**, left row's **196** -- they OVERLAP,
+  //                    at the same height, by two pixels
+  //     mid 90 both    right's inner tip 212.5, left's 177.5 -- **35 px of air**
+  // and the outer tips land at 379 and 10.5, both on screen, at 132 as well as at 148.
+  mid: 90,           // degrees, the bearing the SET is centred on
   span: 104,         // how much of the circle the whole set occupies
   gap: 4,            // degrees of air between two segments, so they read as two and not as a ring
 };
+// AND THE LEFT ROW IS THE SAME SET MIRRORED ABOUT VERTICAL, which at `MODES.mid` 90 is the
+// same bearing -- written as the mirror rather than as 90 so that moving one row moves the other
+// and the two can never lean toward each other again (see `MODES.mid` for what that cost).
+const PALROW = { mid: 180 - MODES.mid };
 const modeRow = document.getElementById('modeRow');
+const palRow = document.getElementById('palRow');
 const SVGNS = 'http://www.w3.org/2000/svg';
-{
-  modeRow.style.setProperty('--mr', MODES.r1 + 'px');
+// **ONE BUILDER, TWO ROWS (m104).** *"In the same way that we have the buttons above the right
+// stick, I wanna make the equivalent of those on the left stick."* The whole of m53's geometry
+// was already a function of `MODES` and a table -- so the left row is the same call with a
+// mirrored bearing, and a THIRD row tomorrow is another one. Two copies of this would be two
+// places for an arc to drift.
+function buildArcRow(el, items, mid, onPick) {
+  el.style.setProperty('--mr', MODES.r1 + 'px');
+  while (el.firstChild) el.removeChild(el.firstChild);
   const svg = document.createElementNS(SVGNS, 'svg');
   const D = MODES.r1 * 2;
   svg.setAttribute('viewBox', '0 0 ' + D + ' ' + D);
@@ -5474,11 +5600,11 @@ const SVGNS = 'http://www.w3.org/2000/svg';
   // whole set mirrors below the pad, which is the one place it must not be.
   const px = (r, a) => (c + r * Math.cos(a * Math.PI / 180)).toFixed(2);
   const py = (r, a) => (c - r * Math.sin(a * Math.PI / 180)).toFixed(2);
-  const n = WEAP.modes.length;
+  const n = items.length;
   const each = MODES.span / n;
-  WEAP.modes.forEach((m, i) => {
+  items.forEach((m, i) => {
     // LEFT TO RIGHT ON SCREEN IS DESCENDING ANGLE, so the table reads the way it is drawn.
-    const hi = MODES.mid + MODES.span / 2 - i * each - MODES.gap / 2;
+    const hi = mid + MODES.span / 2 - i * each - MODES.gap / 2;
     const lo = hi - each + MODES.gap;
     const big = (hi - lo) > 180 ? 1 : 0;
     // out along the far ring from `lo` to `hi` (counter-clockwise on screen, sweep 0), across,
@@ -5492,7 +5618,7 @@ const SVGNS = 'http://www.w3.org/2000/svg';
     path.setAttribute('d', d);
     // **`pointerdown`, NOT `click`.** A click is synthesised after the touch has ended, and the
     // one thing that must never happen here is a tap that also reaches the pad behind it.
-    path.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); setMode(i); });
+    path.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); onPick(i); });
     svg.appendChild(path);
     // THE LABEL IS HORIZONTAL, not set on the arc. At a 32 px band and ten-pixel type, text
     // bent round a curve is decoration that costs legibility -- and legibility is the whole
@@ -5503,8 +5629,16 @@ const SVGNS = 'http://www.w3.org/2000/svg';
     t.textContent = m.label;
     svg.appendChild(t);
   });
-  modeRow.appendChild(svg);
+  el.appendChild(svg);
 }
+// AND ONE PLACE LIGHTS ONE, because the row is two nodes per item (a path and its label) and
+// that stride is the builder's business rather than every painter's.
+function paintArcRow(el, on, sel) {
+  el.classList.toggle('on', !!on);
+  const kids = el.firstChild ? el.firstChild.childNodes : [];
+  for (let i = 0; i < kids.length; i++) kids[i].classList.toggle('sel', (i >> 1) === sel);
+}
+buildArcRow(modeRow, WEAP.modes, MODES.mid, setMode);
 // ONE PLACE SETS IT, so the lit button, the hint and what the trigger actually does cannot
 // disagree -- and switching mid-hold STANDS THE TRIGGER DOWN rather than handing a wound-up
 // charge to a weapon that does not bank one. A press on the mode you are already in is a
@@ -6392,12 +6526,35 @@ function chargeRelease() {
 // ============================================================================================
 const STICKS = [];
 const PADS = {};
-function bindStick(el, out, onTap, onFlick, onHold, onRel) {
+// ---- THE PADS FLOAT, OPTIONALLY (m104) ------------------------------------------------------
+// `dyn` is the switch; `mel.dyn(1)` and `mel.dyn(0)` are the A/B, and the body class is what the
+// CSS reads so there is ONE fact about which mode it is in.
+// **THE PAD IS CENTRED ON THE THUMB, so the thumb defines the origin** -- which is also why the
+// flick history is seeded at the LANDING value rather than at the pad's centre here. On an
+// absolute pad a thumb slammed onto the top edge genuinely IS a flick (m49) and the centre seed
+// is what catches it; on a floating pad there is no such thing as landing off-centre, and seeding
+// from the centre would arm a flick out of the clamp on every touch near a screen edge.
+const STICK = {
+  dyn: 0,
+  edge: 8,            // the pad may not go further off the viewport than this
+};
+function setDyn(on) {
+  STICK.dyn = on ? 1 : 0;
+  document.body.classList.toggle('dyn', !!STICK.dyn);
+  for (const s of STICKS) { s.release(); s.home(); }
+}
+function bindStick(el, out, onTap, onFlick, onHold, onRel, zone) {
   const knob = el.querySelector('.knob');
   let id = null, t0 = 0, far = 0, trav = 0, ox = 0, oy = 0, lx = 0, ly = 0, hist = [], pend = null, lastFlick = -1e9;
-  const RAD = 52;
+  // **`RAD` IS MEASURED, NOT TYPED (m104).** It was 52 against a 132 px pad, so `--pad` could not
+  // be changed without every gesture threshold quietly meaning something else -- and the whole
+  // point of *"when they're not dynamic they should be a little bit bigger"* is that the pad's
+  // size moves. One ratio, read off the element, so a CSS change lands right with no edit here.
+  const K = 52 / 132;
+  const rad = r => Math.max(8, r.width * K);
   const set = (cx, cy) => {
     const r = el.getBoundingClientRect();
+    const RAD = rad(r);
     let dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
     const d = Math.hypot(dx, dy);
     if (d > RAD) { dx *= RAD / d; dy *= RAD / d; }
@@ -6415,31 +6572,53 @@ function bindStick(el, out, onTap, onFlick, onHold, onRel) {
     // clock, so the flick that counts is always the last one before the thumb came off.
     if (Math.hypot(ddx, ddy) > FLICK.at) { pend = { x: ddx, y: ddy, t: now }; hist = [{ x: lx, y: ly, t: now }]; }
   };
-  el.addEventListener('pointerdown', e => {
+  // WHERE IT SITS WHEN IT IS NOT BEING HELD. A floating pad is moved to the thumb on the way
+  // down and put back here on the way up, so a mode change can never leave one stranded.
+  const home = () => { el.style.left = el.style.top = ''; };
+  // AND IT IS CENTRED ON THE TOUCH, clamped only enough to stay on the glass -- `STICK.edge` is
+  // how far it may hang off, not a margin, because the thumb IS the origin and pulling the pad
+  // inward from it is a deflection nobody asked for.
+  const place = (cx, cy) => {
+    const r = el.getBoundingClientRect(), w = r.width, h = r.height;
+    const e = STICK.edge;
+    const x = clamp(cx - w / 2, -e, innerWidth - w + e);
+    const y = clamp(cy - h / 2, -e, innerHeight - h + e);
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+  };
+  const down = e => {
     // 1. ONE THUMB PER PAD. A second finger landing on the same pad used to overwrite `id`,
     //    after which the FIRST finger's up no longer matched and was thrown away. A stick has
     //    one thumb by definition; a second touch on it is simply not ours.
     if (id !== null) { e.preventDefault(); e.stopPropagation(); return; }
     id = e.pointerId; t0 = performance.now();
+    if (STICK.dyn) place(e.clientX, e.clientY);
     // 2. GUARDED, because it THROWS if the pointer has already gone -- and it used to be
     //    called after `id` was set, so the throw left the pad tracking an id whose up had
     //    already been and gone.
+    //    **AND IT CAPTURES ONTO THE PAD EVEN WHEN THE ZONE TOOK THE PRESS**, which is what lets
+    //    the move and up handlers below stay exactly as they were: capture retargets them.
     try { el.setPointerCapture(id); } catch (err) {}
     out.down = 1; out.far = 0;
-    // seeded at the CENTRE: on an absolute pad a thumb slammed onto the top edge IS a flick,
-    // and a delta measured from where it landed says the stick never moved.
-    hist = [{ x: 0, y: 0, t: t0 }]; pend = null;
     el.classList.add('act'); set(e.clientX, e.clientY); far = Math.hypot(out.x, out.y);
+    // Seeded at the CENTRE on a FIXED pad -- a thumb slammed onto the top edge IS a flick there,
+    // and a delta measured from where it landed says the stick never moved. On a FLOATING pad
+    // the thumb is the centre, so it is seeded where it landed instead (see `STICK`).
+    hist = [{ x: STICK.dyn ? lx : 0, y: STICK.dyn ? ly : 0, t: t0 }]; pend = null;
     // WHERE HE LANDED, so the tap can be measured as TRAVEL rather than as deflection (m98).
     ox = lx; oy = ly; trav = 0;
     e.preventDefault(); e.stopPropagation();
-  });
-  el.addEventListener('pointermove', e => {
+  };
+  el.addEventListener('pointerdown', down);
+  // THE ZONE IS HALF THE SCREEN AND IT IS ONLY EVER THE WAY IN. It is not an ancestor of the
+  // pad, the arc rows or any key, so a press on one of those is not a press on this.
+  if (zone) zone.addEventListener('pointerdown', e => { if (STICK.dyn) down(e); });
+  const move = e => {
     if (e.pointerId !== id) return;
     set(e.clientX, e.clientY); far = Math.max(far, Math.hypot(out.x, out.y));
     trav = Math.max(trav, Math.hypot(lx - ox, ly - oy));
     e.stopPropagation();
-  });
+  };
+  el.addEventListener('pointermove', move);
   const end = e => {
     if (e.pointerId !== id) return;
     const now = performance.now(), held = (now - t0) / 1000;
@@ -6459,16 +6638,28 @@ function bindStick(el, out, onTap, onFlick, onHold, onRel) {
     if (onRel) onRel(far, held, fired);
     id = null; pend = null; out.down = 0; out.x = out.y = 0; out.far = 0; hist = [];
     knob.style.transform = 'translate(0,0)'; el.classList.remove('act');
+    if (STICK.dyn) home();
     e.stopPropagation();
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
   el.addEventListener('lostpointercapture', end);
-  const h = { el, out, end, id: () => id, hold: () => (id !== null ? (performance.now() - t0) / 1000 : 0),
+  // **AND THE ZONE CARRIES THE SAME THREE, BECAUSE CAPTURE IS NOT A GUARANTEE (m104).** The pad
+  // is `pointer-events: none` while it floats -- it is the picture, not the target -- so if
+  // `setPointerCapture` on it is ever refused or lost, the moves go to whatever is under the
+  // thumb, which is the zone. Every handler opens `if (e.pointerId !== id) return`, so two
+  // listeners for one pointer is not two reads: exactly one of them is ever delivered.
+  if (zone) {
+    zone.addEventListener('pointermove', move);
+    zone.addEventListener('pointerup', end);
+    zone.addEventListener('pointercancel', end);
+  }
+  const h = { el, out, end, home, id: () => id, hold: () => (id !== null ? (performance.now() - t0) / 1000 : 0),
     release: () => {
       if (id === null && !out.down) return;
       id = null; pend = null; out.down = 0; out.x = out.y = 0; out.far = 0; hist = [];
       knob.style.transform = 'translate(0,0)'; el.classList.remove('act');
+      if (STICK.dyn) home();
       // RELEASING IS NOT A TAP AND NOT A FLICK. Letting go because the thumb is gone must not
       // fire a gesture nobody asked for.
     } };
@@ -6498,10 +6689,11 @@ for (const t of ['blur', 'pagehide', 'visibilitychange']) addEventListener(t, ()
 // anything you can carry from one situation to the next.
 // --------------------------------------------------------------------------------------------
 const padL = document.getElementById('padL'), padR = document.getElementById('padR');
+const zoneL = document.getElementById('zoneL'), zoneR = document.getElementById('zoneR');
 PADS.L = bindStick(padL, stick.L,
   () => cycleKit(),                                   // tap
   (dx, dy) => rollGo(flickH(dx, dy)),                 // flick: dodge roll, in the flicked direction
-  null, null);
+  null, null, zoneL);
 PADS.R = bindStick(padR, stick.R,
   () => { player.jump = 1; },                         // tap: jump
   // flick: a SLAM if he is in the air and it went down, otherwise a strike in that direction
@@ -6509,7 +6701,15 @@ PADS.R = bindStick(padR, stick.R,
   null,
   // THE RELEASE IS THE SHOT, so this must NOT clear `p.aim` -- `stepKit` sees the pad is no
   // longer held and fires on that edge. Clearing it here would eat every shot in the game.
-  (far, held, fired) => { backGo(far, fired); chargeRelease(); });
+  (far, held, fired) => { backGo(far, fired); chargeRelease(); }, zoneR);
+
+// AND THE BADGE TOGGLES THE PADS. One tap, no menu, and the pads themselves say which mode it
+// is in by floating or not -- so this is not a mode you can be in without knowing it, which is
+// the argument that killed every hidden gesture in this file.
+document.getElementById('buildN').addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation();
+  setDyn(!STICK.dyn);
+});
 
 // ============================================================================================
 // DESKTOP (m79, `DESK`)
@@ -8499,6 +8699,12 @@ function buildClancy(g) {
   CLANCY.loops = bodyLoops(CLANCY);
   const P = bodyProto(g, CLANCY);
   for (const [x, z] of CLANCY.at) bodySpawn(P, CLANCY, x, z);
+  // **AND THE ROW EXISTS ONLY WHERE IT MEANS SOMETHING**, which is `paintKit`'s own rule for
+  // the mode row: a control for a sidekick who never loaded is a HUD element in the play area
+  // saying nothing. It is built and lit HERE, where the pal is confirmed, rather than at module
+  // scope where it would be on screen for a character that may not arrive.
+  buildArcRow(palRow, CLANCY.modes, PALROW.mid, setPal);
+  paintArcRow(palRow, 1, CLANCY.mode);
 }
 
 function buildFoes(g) {
@@ -9127,6 +9333,89 @@ function foeAI(d, dt, t) {
 
 // A BODY THAT DOES NOT FIGHT: he ambles about where he spawned, and he runs when somebody hits
 // him. *"He doesn't attack you -- if anything he'll run away."*
+// ---- THE PACK (m104) ------------------------------------------------------------------------
+// WHICH MODE HE IS IN, IN ONE PLACE, so the lit segment and what he actually does cannot
+// disagree -- `setMode`'s own rule, one control over.
+function packWant() { return !!(PACK.on && CLANCY.modes[CLANCY.mode] && CLANCY.modes[CLANCY.mode].key === 'pack'); }
+// **AND ONE PREDICATE ANSWERS BOTH HALVES.** The ride reads it to decide whether to HOLD him and
+// the approach reads it to decide whether to GO -- so without `player.knock` in the same test the
+// knock-down threw him off and `foeWander` put him straight back on the next frame, which is a
+// man bouncing off your back rather than coming off it. Measured: `after a knock-down: st=ride`.
+function packOK() { return packWant() && !(PACK.offDrop && player.knock); }
+function setPal(i) {
+  if (i === CLANCY.mode) return;
+  CLANCY.mode = i;
+  if (!packWant()) for (const d of DUMMIES) if (d.st === 'ride') packOff(d);
+  paintArcRow(palRow, DUMMIES.some(d => d.K.pal), CLANCY.mode);
+}
+// WHERE THE SEAT IS, THIS FRAME. The bone is looked up ONCE and cached -- `getObjectByName`
+// walks the whole model and this runs every frame -- and it falls back to the player's own
+// position, so a rig with no spine at all still carries him rather than dropping him at the
+// origin.
+const _pk = new THREE.Vector3();
+function packSeat(o) {
+  const p = player;
+  if (PACK._b === undefined) {
+    PACK._b = null;
+    for (const n in rig.bones) if (PACK.bone.test(n)) { PACK._b = rig.bones[n]; break; }
+  }
+  if (PACK._b) PACK._b.getWorldPosition(_pk); else _pk.set(p.pos.x, p.pos.y + RIG.height * .6, p.pos.z);
+  const fx = Math.sin(p.faceH), fz = Math.cos(p.faceH);
+  o.x = _pk.x - fx * (RIG.height * PACK.seat.back);
+  o.z = _pk.z - fz * (RIG.height * PACK.seat.back);
+  o.y = _pk.y + RIG.height * PACK.seat.up;
+  return o;
+}
+const _ps = { x: 0, y: 0, z: 0 };
+// THE LEAP IS `bodyFly`'s, SOLVED FOR THE GAP -- m21's rule: the apex is the number somebody
+// chose and the velocity falls out of it, so he arrives ON the seat rather than near it.
+function packGo(d) {
+  const S = packSeat(_ps);
+  const T = Math.max(.08, PACK.leap);
+  const g = d.K.flyG || 20;
+  // **THE SEAT IS THE TARGET, SO `vy` IS SOLVED FOR IT** rather than for an apex somebody typed:
+  // at `T` he is exactly at the seat's height, which on these numbers puts the top of the arc
+  // there too -- a body arriving at the top of its own leap, which is what landing on a back is.
+  // `leapDrag` 0 is what makes the horizontal exact, the hop's own rule (m74): a drag on top of
+  // a solved arc makes the arithmetic a lie.
+  d.vy = ((S.y - d.root.position.y) + .5 * g * T * T) / T;
+  d.vx = (S.x - d.root.position.x) / T;
+  d.vz = (S.z - d.root.position.z) / T;
+  d.st = 'leap'; d.t = 0; d.cur = PACK.clips.leap;
+  skinPlay(d, d.cur, skinLen(d, d.cur) / T);
+  d.stuckT = 0;
+}
+function packSit(d) {
+  d.st = 'ride'; d.t = 0; d.vx = d.vy = d.vz = 0;
+  d.cur = PACK.clips.ride;
+  skinPlay(d, d.cur, skinLen(d, d.cur) / Math.max(.2, PACK.leap * 1.6));
+}
+// AND COMING OFF IS A DROP, NOT A TELEPORT. He keeps the seat's height and falls out of it
+// through the same integrator he arrived by, so there is one description of a body in the air.
+function packOff(d) {
+  if (d.st !== 'ride') return;
+  d.st = 'idle'; d.t = 0; d.vy = 0;
+  d.root.position.y = Math.max(d.root.position.y, groundAt(d.root.position.x, d.root.position.z, d.root.position.y, .5));
+}
+// THE STATE ITSELF. It runs ABOVE everything else a body does, because a passenger has no brain,
+// no gait, no dive and nothing to separate him from -- he is furniture on somebody else's back.
+function stepPack(d, dt, t) {
+  if (d.st === 'leap') {
+    t[d.cur] = 1;
+    const S = packSeat(_ps);
+    if (d.t >= PACK.leap || (d.vy <= 0 && d.root.position.y >= S.y - .25)) packSit(d);
+    return 1;
+  }
+  if (d.st !== 'ride') return 0;
+  if (!packOK()) { packOff(d); return 0; }
+  const S = packSeat(_ps);
+  // component writes, the way `foeMove` does it -- a body's root is a plain position everywhere
+  d.root.position.x = S.x; d.root.position.y = S.y; d.root.position.z = S.z;
+  d.h = player.faceH;
+  t[d.cur] = 1;
+  return 1;
+}
+
 function foeWander(d, dt, t, dd, toP) {
   const K = d.K, V = d.v;
   if (d.fleeT > 0) {
@@ -9171,6 +9460,25 @@ function foeWander(d, dt, t, dd, toP) {
   // every frame, which is the m36 `hold`/`reach` lesson one body over.
   if (K.pal) {
     const cx = player.pos.x, cz = player.pos.z;
+    // **PACK MODE IS THE LEASH WITH THE RING COLLAPSED TO NOTHING (m104).** He comes straight at
+    // you at a run and leaps the moment he is close enough -- which needed no new travel code,
+    // because "come back at a run" is what the catch-up already is. The lane clear and the ring
+    // are deliberately skipped: getting out of your line of fire is a rule about a man standing
+    // near you, and this one is on his way to your back.
+    if (packOK() && d.st !== 'ride' && d.st !== 'leap' && d.fleeT <= 0) {
+      const gap = Math.hypot(cx - d.root.position.x, cz - d.root.position.z);
+      faceTo(d, toP, dt);
+      if (gap <= PACK.near && d.root.position.y <= groundAt(d.root.position.x, d.root.position.z, d.root.position.y, .5) + .2) {
+        packGo(d);
+        return;
+      }
+      const sp = K.run * V.pace;
+      foeMove(d, d.h, sp, dt);
+      const nm = K.clips.run;
+      t[nm] = 1;
+      setSkinScale(d, nm, clamp(sp / K.runRef, K.tsLo, K.tsHi));
+      return;
+    }
     // **OUT OF THE LINE OF FIRE.** The cone is off `player.faceH`, which IS where the shot goes;
     // `p.aim` is true for the charge AND for rapid fire, so one test covers both triggers. He
     // dives PERPENDICULAR -- away from the line rather than away from you, which is the whole
@@ -9414,10 +9722,10 @@ function foeMove(d, h, sp, dt) {
 function bodySep(dt) {
   for (let i = 0; i < DUMMIES.length; i++) {
     const a = DUMMIES[i];
-    if (a.st === 'down') continue;
+    if (a.st === 'down' || a.st === 'ride' || a.st === 'leap') continue;
     for (let j = i + 1; j < DUMMIES.length; j++) {
       const b = DUMMIES[j];
-      if (b.st === 'down') continue;
+      if (b.st === 'down' || b.st === 'ride' || b.st === 'leap') continue;
       const rr = (a.K.sep || a.K.r) + (b.K.sep || b.K.r);
       let dx = b.root.position.x - a.root.position.x, dz = b.root.position.z - a.root.position.z;
       const l2 = dx * dx + dz * dz;
@@ -9636,7 +9944,7 @@ function bodyFly(d, dt) {
   // arithmetic a lie and lands him short of the thing he jumped at. `flyDrag` is right for a
   // body that was THROWN and wrong for one that jumped. A kind with no `leapDrag` is untouched.
   const shove = d.st === 'hit' || d.st === 'block';
-  const leap = (d.st === 'hop' || d.st === 'dive') && K.leapDrag != null;
+  const leap = (d.st === 'hop' || d.st === 'dive' || d.st === 'leap') && K.leapDrag != null;
   const gDrag = shove ? (K.shoveDrag || K.knockDrag || K.flyDrag) : (K.knockDrag || K.flyDrag);
   const k = Math.exp(-(leap ? K.leapDrag : air ? K.flyDrag : gDrag) * dt);
   d.vx *= k; d.vz *= k;
@@ -9753,6 +10061,17 @@ function stepDummies(dt) {
     if (d.mark > 0) d.mark -= dt;
     if (d.foeT > 0) d.foeT -= dt;
     const t = {};
+    // **A PASSENGER HAS NO BRAIN (m104).** The pack runs above every other state, because a man
+    // riding somebody else's back has no gait, no dive, no target and nothing to be separated
+    // from -- and putting it here rather than inside `foeAI` is what keeps all of that true
+    // without a gate in each of them.
+    if (K.pal && stepPack(d, dt, t)) {
+      skinWeights(d, t, dt, .06, K.clips.idle);
+      d.mixer.update(dt);
+      d.root.rotation.y = d.h + d.faceOff + (d.spin || 0);
+      stepFlash(d, dt);
+      continue;
+    }
     if (d.st === 'hit') {
       t[d.cur] = 1;
       if (d.t >= (d.beat || K.hitBeat)) { d.st = 'idle'; d.t = 0; }
@@ -10045,7 +10364,9 @@ function frame() {
     // STUCK CLOCK is the one that tells them apart, because it is the thing both the hop and the
     // give-up are triggered off. Silent while he is simply pottering about, `rollREC`'s rule.
     const pal = DUMMIES.find(d => d.K.pal);
-    const cl = !pal ? '' : pal.st === 'down' || pal.st === 'up' ? ' · PALDOWN'
+    const cl = !pal ? '' : pal.st === 'ride' ? ' · PACK'
+      : pal.st === 'leap' ? ' · PACK↑'
+      : pal.st === 'down' || pal.st === 'up' ? ' · PALDOWN'
       : pal.st === 'swing' ? ' · PUNCH'
       : pal.st === 'hop' ? ' · HOP' : pal.st === 'dive' ? ' · DIVE'
       : pal.lane ? ' · LANE'
@@ -10054,8 +10375,11 @@ function frame() {
     // picture from a phone, and the pal's own state cannot answer it -- `PALDOWN` is equally
     // what a stray bolt looks like.
     const vs = pal && DUMMIES.some(d => d.foe === pal) ? ' · vsPAL' : '';
+    // WHICH PAD MODE IT IS IN. Silent when they are fixed, because that is the default and the
+    // pads plainly say so by being where they always are -- `rollREC`'s rule, one control over.
+    const fl = STICK.dyn ? ' · FLOAT' : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + fl +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
@@ -10272,6 +10596,13 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   DUMMY, DUMMIES, LOCK, LEDGE, WALL, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, slamGo, chargeRelease, groundAt,
   MFX, camShake, palDive,
+  // THE PADS AND THE PACK, LIVE (m104). `mel.dyn(1)` floats the sticks and `mel.dyn(0)` puts
+  // them back bigger and fixed -- one switch, the body class, and nothing else to keep in step.
+  // `mel.pack(1)` sends the sidekick to your back from the console, which is the same call the
+  // left row's segment makes, so the button and the handle cannot disagree.
+  STICK, PACK, CLANCY, setDyn, setPal, packWant,
+  dyn: on => { setDyn(on == null ? !STICK.dyn : on); return STICK.dyn ? 'floating' : 'fixed'; },
+  pack: on => { setPal(on == null ? (CLANCY.mode ? 0 : 1) : (on ? 1 : 0)); return CLANCY.modes[CLANCY.mode].key; },
   // A LOOK AT THE SLAM WITHOUT HAVING TO BE IN THE AIR. `mel.slamfx()` fires the ring, the dust,
   // the flash and the knock where he stands; `mel.shake(.5)` is the knock on its own, so the two
   // can be judged apart -- each toggle has to move one variable.
