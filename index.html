@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m110</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m111</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m110</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m111</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm110';
+const BUILD = 'm111';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -627,12 +627,29 @@ const MOVE = {
 
 const SWAP = {
   dur: .85,         // 1.208 s authored -> x1.42. A kit change is a beat, not a ceremony.
-  at: .48,          // **WHERE IN THE CLIP THE WEAPON ACTUALLY CHANGES** -- when his hand comes
-                    // back out of the bag. `MELEE.at`'s rule: the picture and its consequence
-                    // have to be ONE event, and a weapon that pops into his hand on the frame
-                    // of the TAP makes the reach a thing that happens afterwards for no reason.
-                    // **A GUESS, like the taunt beats (m65)**: a strike has an authored contact
-                    // frame to measure against and a reach does not. `mel.SWAP.at` is the dial.
+  // **TWO EVENTS, NOT ONE -- AND THEY ARE MEASURED NOW RATHER THAN GUESSED (m111).** *"The
+  // weapon switches before the first one goes into the backpack. The first one needs to go away
+  // when he goes into the backpack and the second one needs to come [out]."* m91 wrote `at` .48
+  // and said outright it was a GUESS, because a strike has an authored contact frame and a reach
+  // does not. It is measurable: forward kinematics over the real samplers, reading `weapon_root_
+  // right` -- the mount the weapon is actually parented to -- in the HIPS' own frame, where +Z is
+  // forward because he faces +Z.
+  //     u .00 .. .31   the hand swings up and FORWARD, mount z +5 -> +17
+  //     u .313         it crosses BEHIND the plane of his hips        <- `hide`
+  //     u .508         deepest, z -12.5: the hand is over his shoulder, in the bag
+  //     u .576         it comes back out in front                     <- `show`
+  //     u .58 .. 1.0   presented out in front at z +24, then down to rest
+  // So `at` .48 was not WRONG -- it sat inside that window -- it was one event where the clip
+  // supports two, and one event means whichever weapon is in his fist is drawn for the whole of
+  // the first half of the reach. Hiding at the way in and showing at the way out means **you
+  // never see a weapon change at all**: one goes away behind his back and another comes out,
+  // which is his sentence exactly and is the only version a single crossing cannot produce.
+  hide: .31,
+  show: .58,
+  // **AND THE WINDOW IS 0.22 s AT `dur` .85**, about six frames on a 30 fps phone. That is the
+  // dial if two events still read as one: the reach does not own the body (it is an upper-half
+  // override, he keeps walking), so the only thing a longer one costs is how fast the kit can be
+  // tapped through. `mel.SWAP.dur` -- and the clip's own authored length is 1.208.
 };
 
 // ============================================================================================
@@ -5766,7 +5783,7 @@ const player = {
   ledgeDur: 0,                   // and how long THIS hop takes -- the clip's own length (m106)
   runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
-  swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0,   // the reach into the backpack
+  swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0, swapHideAt: 0, swapHid: 0,  // the reach into the backpack
   melH: null,                       // the bearing a strike was thrown at -- what it launches along
   bkT: 0, bkOn: 0, bkHang: 0, bkVy: 0,  // the charge, the duck, and the PUSH he is held on the
                                     // floor for before the launch
@@ -5929,9 +5946,12 @@ function paintKit() {
   paintArcRow(modeRow, !!m, WEAP.mode);
   // EXACTLY ONE SLOT IS VISIBLE, decided in one place, so the label, the ring and the thing in
   // his hand cannot disagree about what he is carrying.
+  // **AND MID-REACH HE IS HOLDING NOTHING (m111).** `p.swapHid` is true only between the two
+  // crossings, so this stays the ONE place that decides what is in his hand -- the label, the
+  // ring and the model cannot disagree, which is what that loop was for.
   for (const key in WEAP.worn) {
     const w = WEAP.worn[key];
-    if (w && w.group) w.group.visible = (key === s.key);
+    if (w && w.group) w.group.visible = (key === s.key) && !player.swapHid;
   }
   padR.classList.toggle('ready', !!(s.aim || s.charge));
 }
@@ -6094,8 +6114,12 @@ function swapGo(to) {
   const p = player, nm = CLIPS.swap;
   if (!nm || !rig.actions[nm]) { applySlot(to); return 0; }
   const rev = !(WEAP.slots[to] && WEAP.slots[to].file);
-  p.swap = 1; p.swapTo = to; p.swapT = 0; p.swapDone = 0;
-  p.swapAt = rev ? 1 - SWAP.at : SWAP.at;
+  p.swap = 1; p.swapTo = to; p.swapT = 0; p.swapDone = 0; p.swapHid = 0;
+  // REVERSED, THE CLIP RUNS BACKWARDS, SO BOTH CROSSINGS MIRROR **AND SWAP ROLES** -- the hand
+  // enters the bag at `1 - show` and leaves it at `1 - hide`. Mirroring one of them and not the
+  // other, or mirroring them without exchanging them, puts the hide after the show.
+  p.swapHideAt = rev ? 1 - SWAP.show : SWAP.hide;
+  p.swapAt     = rev ? 1 - SWAP.hide : SWAP.show;
   triggerStop();
   const r = (clipLen(nm) / SWAP.dur) * (rev ? -1 : 1);
   playOnce(nm, r); playOnce(nm + UP, r);       // the clone is a separate action and needs starting
@@ -6107,7 +6131,11 @@ function swapGo(to) {
 function swapStop() {
   const p = player;
   if (!p.swap) return;
-  if (!p.swapDone) applySlot(p.swapTo);
+  // **CLEARED BEFORE `applySlot`, OR A CANCELLED SWAP LEAVES HIM EMPTY-HANDED FOR EVER.** The
+  // hide is the one piece of state here that is not a clock, so it is the one a cancel can strand
+  // -- and `paintKit` reads it, so the repaint has to happen after it is down.
+  p.swapHid = 0;
+  if (!p.swapDone) applySlot(p.swapTo); else paintKit();
   p.swap = 0; p.swapDone = 1;
 }
 function cycleKit() {
@@ -7794,7 +7822,11 @@ function stepPlayer(dt) {
   // rather than every frame past it, which is `p.gotUp`'s own rule one state over.
   if (p.swap) {
     p.swapT += dt;
-    if (!p.swapDone && p.swapT >= SWAP.dur * (p.swapAt || SWAP.at)) { p.swapDone = 1; applySlot(p.swapTo); }
+    const su = p.swapT / SWAP.dur;
+    // HIS HANDS ARE EMPTY WHILE THEY ARE IN THE BAG. Both are crossings rather than tests on
+    // "is it past", which is `p.gotUp`'s own rule one state over.
+    if (!p.swapHid && !p.swapDone && su >= p.swapHideAt) { p.swapHid = 1; paintKit(); }
+    if (!p.swapDone && su >= p.swapAt) { p.swapDone = 1; p.swapHid = 0; applySlot(p.swapTo); }
     if (p.swapT >= SWAP.dur) p.swap = 0;
   }
   // HOW LONG HE HAS ACTUALLY BEEN RUNNING, which is what the tackle opener is gated on. It is

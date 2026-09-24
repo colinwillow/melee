@@ -1219,6 +1219,46 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **THE SWAP IS TWO EVENTS NOW, AND BOTH CROSSINGS ARE MEASURED (m111, `SWAP.hide`/`SWAP.show`).**
+  *"The weapon switches before he looks like the first weapon goes into the backpack -- his arm
+  reaches into the backpack and then comes back to rest out of it. The weapon needs to switch like
+  halfway through, or the first one needs to go away when he goes into the backpack and the second
+  one needs to come."*
+  **HIS SECOND SENTENCE IS THE BETTER DESIGN AND IT IS WHAT SHIPPED.** "Switch halfway" is ONE
+  event -- a weapon visibly turning into another weapon, at a better moment. Two crossings mean
+  **you never see a weapon change at all**: one goes away behind his back, his hands are empty in
+  the bag, and a different one comes out. m91 wrote `SWAP.at` as a single fraction and said out
+  loud that **.48 was a guess** (*"a strike has an authored contact frame to measure against and a
+  reach does not"*); this is that guess replaced by a measurement, and the fraction was never the
+  thing that was wrong.
+  **THE BAG IS WHERE THE MOUNT GOES BEHIND HIM, AND THAT IS READABLE OFF THE SAMPLERS.** Forward
+  kinematics over `weapon_swap`'s real tracks, reading `weapon_root_right` in the HIPS' frame --
+  animation samplers are never draco compressed, so the clip is measurable here even though the
+  mesh is not:
+      u .00 .. .31   the hand swings up and FORWARD, mount z +5 -> +17
+      u .313         it crosses BEHIND the plane of his hips          <- `hide`
+      u .508         deepest, z -12.5 -- the hand is over his shoulder, in the bag
+      u .576         it comes back out in front                       <- `show`
+      u .58 .. 1.0   presented out in front at z +24, then down to rest
+  **AND `.48` WAS ALREADY INSIDE THAT WINDOW**, at 0.408 s of a 0.85 s state -- which is why
+  *"almost immediately"* could not be reproduced by reading the code, and that is stated rather
+  than dressed up as a found bug. What a single event at mid-reach looks like is the weapon
+  changing in a fist that is out of sight, so the NEXT thing you see is the new one already in
+  hand; the first one never visibly went anywhere. Two crossings are what fixes that whether or
+  not the old number was late.
+  **REVERSED, THE CROSSINGS MIRROR *AND EXCHANGE ROLES*.** A stow plays the clip backwards (m96),
+  so the hand ENTERS the bag at `1 - show` and LEAVES it at `1 - hide`. Mirroring one and not the
+  other, or mirroring both without swapping them, puts the hide AFTER the show -- which is a
+  weapon that appears and then vanishes.
+  **AND `swapStop` HAS TO CLEAR `p.swapHid` BEFORE `applySlot`, OR A CANCELLED SWAP STRANDS HIM
+  EMPTY-HANDED FOR EVER.** Five things cancel a reach (`meleeGo`, `rollGo`, `slamGo`, `wallGo`, the
+  knock-down) and every one of them still DELIVERS the slot -- m91's own rule, that an input given
+  must not be lost to a collision -- so the one new way to get it wrong is to deliver a slot whose
+  model is still hidden. `paintKit` reads the flag, so clearing it first is the whole fix.
+  **THE HANDS-EMPTY WINDOW IS 0.223 s AT `dur` .85**, about six frames at 30 fps. That is the dial
+  if two events still read as one: widening it means lengthening `dur`, which is the beat of the
+  whole reach and is deliberately NOT moved here, so this build changes one variable.
+  `mel.SWAP.hide = 0; mel.SWAP.show = .48` is m110 exactly.
 - **THE STREETS ARE THE LAYOUT, AND THEY ARE PAINT (m110, `STREET`, `buildStreets`).** *"Yes I
   think you should try to build some procedural streets, I'll make some more buildings and we
   can populate it."* What he needs first is the ARMATURE -- where a road runs and where a
