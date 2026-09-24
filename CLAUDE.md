@@ -1219,6 +1219,61 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **TWO SKINS HAVE NO CORRESPONDENCE TO INTERPOLATE, BUT THEIR SILHOUETTES DO (m113, `mphProf`,
+  `mphMesh`, `mphFill`, `mphBlob`).** *"Some sort of blob that makes the transition look like the
+  collider actually transforming to each other -- a proxy mesh that morphs and wraps from one mesh
+  to the other, and some weird kind of particle effect swirling and glowing around it. Not super
+  long, but something so it's not just like a jump."*
+  **A REAL VERTEX MORPH IS NOT AVAILABLE HERE AND NEVER WILL BE**, which is the whole reason m112
+  was a model SWAP: two characters share no topology, no vertex count and no skeleton, so there is
+  no pair of vertices to lerp between. **What every body DOES have, and has the same number of, is
+  a RADIUS PER HEIGHT BAND** -- so the blob is a lathe of `rings` rows whose radii travel from one
+  body's profile to the other's, and at its two ends it genuinely IS the two shapes.
+  **AND THE PROFILE IS MEASURED OFF THE MESH, NOT AUTHORED.** GLTFLoader binds every skin with the
+  IDENTITY matrix, so at rest a skinned vertex's GEOMETRY position is its position in the model's
+  own space -- the same fact `measureHeight` is built on, and what makes a silhouette readable at
+  runtime with no tool and nothing typed. Once per kind, cached on the skin beside its clips, and
+  a re-export at any size lands right because the model's own scale is what it is multiplied by.
+  **THE BODY IS NOT DRAWN WHILE THE BLOB HAS IT (`MORPH.hide`), AND THAT IS THE FIX.** m112 drew
+  one body and then the other with a white flash over the seam -- and **a flash over a cut is
+  still a cut**, which is his sentence exactly. Hidden through the middle, the only thing on
+  screen at the swap is a shape travelling from one silhouette to the other.
+  **`visible = false` RATHER THAN A FADE**, because a transparent skin sorts against itself (m30,
+  m31) and because it costs nothing: no program recompile, no sorting, no second path. It is set
+  in ONE place and restored in one (`mphBlobOff`, plus the outgoing model at the swap) -- **a skin
+  left invisible is a skin that is invisible the next time it is worn**, and every exit goes
+  through there.
+  **ONE `u` ACROSS THE WHOLE THING, so the blob runs continuously THROUGH the swap** rather than
+  restarting at it. The phases still own the white tint; `u` owns everything drawn, and the
+  windows are its own fractions rather than being tied to a phase boundary:
+      fade .30-.70   the blob at full weight, ramped either side
+      hide .27-.73   the body not drawn -- strictly INSIDE the blob's own full window
+      wrap .14-.86   the silhouette travelling, so it is settled on the right shape at both ends
+      the swap lands at u .62, by which point the blob is 74% of the way to the new body
+  **A FRESNEL RIM IS WHAT MAKES A SILHOUETTE READ AS A VOLUME.** Flat, an additive lathe is a
+  green cut-out of a man; hot at the grazing angle it has an inside. **And the normal is the
+  lathe's own** -- two subtractions and a normalise per ROW -- rather than `computeVertexNormals`
+  over every triangle, which is the only thing reading it anyway. 18 rows x 16 segments is 288
+  vertices and 576 triangles, rebuilt each frame, in **one draw call**.
+  **THE SWIRL IS THE EXISTING SPARK POOL**, one more draw call and no second system: m39's
+  `follow` so the sparks ride him rather than being left behind, and **ONE SIGN of spin, because
+  a random sign per spark is a scramble and not a swirl.** `spk` gained an optional 11th argument
+  for that; absent, it is the random tumble every impact has always had, so no caller moved.
+  **AND THEY ARE EMITTED AROUND `rig.root`, NOT AROUND `player.pos`.** `spk` stores the offset
+  against the root it is handed, and `stepMorph` runs BEFORE `rig.root.position.copy(player.pos)`
+  -- so taking the centre from the root is what makes the offset exactly the one intended, and
+  `stepSparks` then draws them at the current position with no lag at all.
+  **THE RATE RIDES THE WEIGHT**, so the swirl thickens into the wrap and thins out of it -- the
+  jetpack's own rule (`JET.every`), that a run of particles coming faster is a machine winding up.
+  **AND THE TIMING BARELY MOVED, because he said "not super long".** .42/.10/.40 -> .34/.22/.34,
+  which is 0.92 s to **0.90 s** -- what changed is that the middle is now long enough for a wrap
+  to happen in rather than being a seam.
+  **WHAT IS UNVERIFIED AND WHY:** every character GLB is draco and `DRACOLoader` wants a Worker,
+  so **nothing in this container can build a skin** -- the profile has never been measured off a
+  real mesh outside a browser, and whether the blob reads as a morph, whether `swell` 1.18 plainly
+  encloses him, and whether the boil reads as weird or as broken are device questions. The gates
+  cover the throw class and nothing else here can. `mel.MORPH.blob = 0` is the one word back to
+  m112, and `swell` / `wob` / `rim` / `fade` / `hide` / `wrap` / `spin` / `every` are all live.
 - **THE DNA GUN, AND THE TRANSFORM IS A MODEL SWAP INSIDE `rig.root` (m112, `MORPH`, `morphGo`,
   `mphWear`, `morphAnim`).** *"The alien has some sort of DNA gun -- you shoot one of the NPCs and
   the character transforms into them. How about we do a third gun mode which is the DNA thing. We
