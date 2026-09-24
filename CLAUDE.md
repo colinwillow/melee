@@ -1155,6 +1155,43 @@ same picture from a phone.
   **AND THE ROW IS ON THE LEFT STICK**, which is what the sentence opens with -- *"the equivalent
   of those on the left stick"* -- rather than the "above the right stick" it ends with. Stated
   because it is a reading, not a measurement.
+- **THE LEDGE HOP WAS THE ONE STATE THAT ENTERED A `ONCE` CLIP WITHOUT `playOnce` (m106).**
+  *"When you're hanging on the side of a ledge and you push left or right it plays the side hop
+  animation only once -- it doesn't do it for every movement. It needs to be segmented, so when
+  you push over to the side he hops over to the side to match the animation, and it goes once,
+  some distance over per animation."*
+  **THE MECHANIC WAS ALREADY DISCRETE AND THE ANIMATION WAS NOT.** m102 built the shimmy as one
+  hop per press on purpose (*"the shimmy is DISCRETE here, because the clips are HOPS"*), and
+  the state machine really does fire a fresh hop on every frame the thumb is still held. What
+  did not happen is the CLIP: both hops are in `ONCE` and **nothing in the file ever called
+  `playOnce` for them** -- the weight table merely named one, and `skinWeights` rewinds an action
+  only once its damped weight has decayed. So the first hop played, the second arrived with the
+  action still PAUSED on its last frame, and he slid sideways holding that pose. **This file's
+  oldest landmine, written down twice, in the one state that entered a one-shot without the
+  function written for it** -- `wallGo` does it correctly one surface down, which is what makes
+  this an omission rather than a design.
+  **AND THE DURATION WAS TYPED WITH NO REFERENCE TO THE EXPORT.** Measured off the samplers:
+      ledge_hang_hop_left   1.542 s   hips XZ **0.000** -- in place; the CODE drives the travel
+      ledge_hang_hop_right  1.708 s   hips XZ  0.000     y range 21.5 / 23.5 armature units,
+                                                         which is 0.30 m of real vertical arc:
+                                                         he pulls up, moves, and drops back on
+      ledge_hang_to_get_up_over_ledge  1.208 s   ledge_hang_to_jump_away 1.333 s
+  `hopDur` .50 played those at **x3.08 and x3.42** -- a blur with no pose in it, and two
+  DIFFERENT blurs, because one number cannot fit two clips. The duration is the clip's own over
+  `hopRate`, which is **1.75 = `MELEE.rate`**: m95 fitted that to the band this file already
+  judges a one-shot readable at, over clips of exactly this length. 0.88 s and 0.98 s.
+  **AND THE DISTANCE GOES UP WITH THE TIME, or matching the clip just halves his traversal.**
+  `hop` .85 -> 1.05 of `SZ` is 0.75 m, about six tenths of his own height -- *"a little bit over
+  to the side"* -- and it keeps him crossing a ledge at 0.85 m/s against m102's intended 1.21,
+  with every hop now a whole animation.
+  **AND TWO MORE CLIPS WERE PLAYING AT 1.0 IN STATES THAT ARE NOT THEIR LENGTH.** m102's own note
+  says the mantle *"is the 1.208 s clip compressed to (x1.55)"* and **nothing ever set a rate**,
+  so it ran at 1.0 over a 0.78 s state and **the last 0.43 s of the climb was never shown** --
+  the m8 landmine, live and written up as though it had been done. The push-off is the same:
+  1.333 s over `awayDur` .55, so 41% of it. Both are compressed where the state is entered.
+  **A NOTE THAT DESCRIBES A RATE IS NOT A RATE**, which is this file's own sentence about a
+  comment describing an intent the code does not have, for the fourth time.
+
 - **THE CHARGED DASH WAS THE ONE STRIKE IN THE FILE THAT NEVER STORED ITS OWN BEARING (m105,
   `chargeRelease`).** *"Sometimes I'll have my weapon out and I'll swing at them, I'll launch and
   hit them, and they go off like to the side -- the trajectory doesn't look right, it feels like

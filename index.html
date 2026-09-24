@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m105</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m106</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m105</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m106</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -496,7 +496,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm105';
+const BUILD = 'm106';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -760,7 +760,22 @@ const LEDGE = {
   upOut: .55,       // ...and the share of it spent RISING before he moves IN. **UP FIRST, THEN
                     // IN**: lerping straight to the target drags him diagonally THROUGH the
                     // parapet he is climbing over, which is not a mantle, it is a ghost.
-  hop: .85 * SZ, hopDur: .50,   // the shimmy is DISCRETE here, because the clips are HOPS
+  // **THE HOP LASTS AS LONG AS THE HOP CLIP DOES (m106).** `hopDur` .50 was typed with no
+  // reference to the export, and the two clips are 1.542 s and 1.708 s -- so one number played
+  // them at **x3.08 and x3.42**, which is a blur with no pose in it and two different blurs at
+  // that. The duration is the CLIP's own, divided by a rate in the band this file already
+  // judges a readable one-shot at (m36/m95: about 1.4 to 2.0), so each side takes its own time
+  // and a re-export of either moves with it. `hopDur` survives only as the fallback for a body
+  // with no hop clip at all.
+  // **1.75 IS `MELEE.rate`, AND THAT IS NOT A COINCIDENCE** -- m95 fitted that number to the
+  // band the shipped one-shots are already judged readable at, over clips of exactly this
+  // length (1.0 to 1.75 s). Left 1.542 s -> 0.88 s, right 1.708 -> 0.98.
+  hopRate: 1.75, hopDur: .50,
+  // AND THE DISTANCE GOES UP WITH THE TIME, or matching the clip simply halves how fast he
+  // crosses a ledge. .85 -> 1.05 of `SZ` is 0.75 m, about six tenths of his own height -- "a
+  // little bit over to the side", and it keeps the traversal near what m102 intended (0.85 m/s
+  // against 1.21) while every hop is now a whole animation.
+  hop: 1.05 * SZ,               // the shimmy is DISCRETE here, because the clips are HOPS
   awayDur: .55,     // how long the push-off reads for after he is already in the air
   jump: .85,        // and how hard it throws him off the face
   cool: .30,        // before he may catch again -- or the drop re-grabs on the next frame
@@ -5408,6 +5423,7 @@ const player = {
   parryT: 0,                     // how long ago he deflected one, for the chip (m101)
   ledge: null, ledgeSt: '', ledgeT: 0, ledgeOff: 0, ledgeSide: 0, ledgeCool: 0, ledgeAway: 0,
   lx0: 0, ly0: 0, lz0: 0,        // and where the swing or the hop started from (m102)
+  ledgeDur: 0,                   // and how long THIS hop takes -- the clip's own length (m106)
   runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0,   // the reach into the backpack
@@ -6113,7 +6129,11 @@ function ledgeDrop(away) {
   const p = player;
   p.ledge = null; p.ledgeSt = ''; p.ledgeCool = LEDGE.cool;
   p.grounded = false; p.coyote = 0; p.airT = 0;
-  if (away) p.ledgeAway = LEDGE.awayDur;
+  if (away) {
+    p.ledgeAway = LEDGE.awayDur;
+    const cl = clipLen(LEDGE.clips.away);
+    if (cl > .05) playOnce(LEDGE.clips.away, cl / LEDGE.awayDur);
+  }
 }
 
 function stepLedge(dt) {
@@ -6165,7 +6185,7 @@ function stepLedge(dt) {
   // ---- the hop. DISCRETE, because the clips are hops rather than a slide -- which is the one
   //      place this deliberately does NOT copy the wall.
   if (p.ledgeSt === 'hop') {
-    const u = clamp(p.ledgeT / LEDGE.hopDur, 0, 1), e = u * u * (3 - 2 * u);
+    const u = clamp(p.ledgeT / (p.ledgeDur || LEDGE.hopDur), 0, 1), e = u * u * (3 - 2 * u);
     const tx = -L.nz, tz = L.nx;
     const nx = p.lx0 + tx * p.ledgeSide * LEDGE.hop * e;
     const nz = p.lz0 + tz * p.ledgeSide * LEDGE.hop * e;
@@ -6196,7 +6216,16 @@ function stepLedge(dt) {
   // **INTO THE WALL IS THE CLIMB, WHICH IS THE WHOLE LOOP HE DESCRIBED** -- jump, hang, climb
   // up, jump. One thumb held at the wall carries him all the way through it, because the same
   // push that latched him is the one that mantles him.
-  if (into > LEDGE.into) { p.ledgeSt = 'up'; p.ledgeT = 0; p.ledgeSide = 0; return; }
+  // **AND THE MANTLE IS COMPRESSED TO ITS STATE, WHICH m102 WROTE DOWN AND NEVER DID (m106).**
+  // That note says "the 1.208 s clip is compressed to (x1.55)" and nothing set a rate, so it
+  // played at 1.0 over a 0.78 s state and **the last 0.43 s of the climb was never shown** --
+  // the m8 landmine, live. Same for the push-off in `ledgeDrop`.
+  if (into > LEDGE.into) {
+    p.ledgeSt = 'up'; p.ledgeT = 0; p.ledgeSide = 0;
+    const cl = clipLen(LEDGE.clips.up);
+    if (cl > .05) playOnce(LEDGE.clips.up, cl / LEDGE.upDur);
+    return;
+  }
   // AND LETTING GO IS A HOLD, NOT A FRAME -- `off` harder than `into`, and the grace clock is
   // what lets a diagonal hop overshoot it for a moment without dropping him.
   if (into < -LEDGE.off) p.ledgeOff += dt; else p.ledgeOff = 0;
@@ -6207,6 +6236,17 @@ function stepLedge(dt) {
     p.ledgeSide = Math.sign(side);
     p.ledgeSt = 'hop'; p.ledgeT = 0;
     p.lx0 = p.pos.x; p.ly0 = p.pos.y; p.lz0 = p.pos.z;
+    // **AND THE STATE THAT STARTS A `ONCE` CLIP IS WHAT REWINDS IT (m106).** Both hops are in
+    // `ONCE` and NOTHING ever called `playOnce` for them -- the weight table merely named one,
+    // and `skinWeights` only rewinds an action once its damped weight has decayed. So the first
+    // hop played and the second, fired the moment the first ended with the thumb still held,
+    // found it PAUSED on its last frame and simply held that pose for the whole slide. **That
+    // is this file's oldest landmine, in the one state that entered a one-shot without the
+    // function written for it** -- `wallGo` does it correctly one surface down.
+    const hn = p.ledgeSide > 0 ? LEDGE.clips.L : LEDGE.clips.R;
+    const cl = clipLen(hn);
+    p.ledgeDur = cl > .05 ? cl / LEDGE.hopRate : LEDGE.hopDur;
+    if (cl > .05) playOnce(hn, LEDGE.hopRate);
     snd('foot', { g: .10, r: 1.15 });
   }
 }
