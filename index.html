@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m107</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m108</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m107</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m108</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -496,7 +496,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm107';
+const BUILD = 'm108';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2631,24 +2631,23 @@ const CLANCY = {
 //                                   back zero is a gait measurement nobody can trust.
 //     walk_fwd  0.741 authored, feet AGREE, travel +3 deg   -> walkRef 1.50 at his scale
 //
-// **AND `run_fwd` IS AUTHORED TRAVELLING BACKWARDS, WHICH IS WHY IT IS NOT NAMED.** Its planted
-// foot slides FORWARD in the body frame: `npm run gait` reads **travel +176 deg**, with both feet
-// agreeing (no disagree flag) and a perfectly good 1.694 m/s of speed. The direction is the only
-// thing wrong with it.
-//     zap    run_fwd   +7 deg     <- the clip the whole game runs on
-//     hick   running   +1 deg
-//     biker  walk_fwd  +3 deg     <- his own walk, same rig, same tool
-//     biker  run_fwd   **+176**   <- the BACKPEDAL band (zap's `run_bwd` reads -172)
-// Three independent controls on the same tool, so it is the clip and not the measurement. Played
-// while he travels forwards it is the moonwalk this file has a whole note about, so `run` and
-// `flee` both name `walk_fwd` and `tsHi` lets it scramble -- a fat man scurrying, which is
-// honest and is not a man sliding backwards. **A re-export makes it one word**, and it is worth
-// having: `walk_fwd` at 1.5x is the fastest he can currently move.
-//
-// MY OWN FIRST TEST SAID THE SAME THING AND WAS WORTHLESS, which is worth writing down. Net toe
-// displacement while the foot is low reads "+" on **zap's own run_fwd** too (+0.121 on one foot,
-// 16 down-frames of 60): a run has so much float that a net-displacement test is noise. The
-// control is what killed it. `npm run gait`'s two-pass method is the one that survives a control.
+// **AND I CLAIMED HIS `run_fwd` WAS AUTHORED BACKWARDS. IT IS NOT (m108).** *"What are you
+// talking about, I just checked the file, it looks normal."* It does, and the measurement I
+// leaned on cannot answer the question I asked it.
+// `npm run gait`'s `travel` column derives its direction by SUMMING the raw per-frame
+// displacement over the frames where the toe is in the lower half of its range -- which on a
+// run is the stance phase PLUS most of the swing, and the swing travels forward fast. That is
+// the identical net-displacement-over-low-frames measure my own first test had already been
+// proven worthless by a control on zap's own `run_fwd`; I found the reason and then quoted a
+// second tool doing the same thing. **The speed it reports is a MEDIAN and is sound** -- it is
+// the only thing that column was ever fit to answer.
+// **AND "BOTH FEET AGREED" WAS A MISREADING OF THE FLAG.** `spread` compares `per[0]` against
+// `per[1]`, which are the two feet's SPEEDS; the two directions are summed into one bearing and
+// never compared to each other at all. There is no direction agreement check in that tool.
+// The tell was sitting in the same row: his run has **5 and 6 stance frames of 18** against
+// zap's 8/9 and the hick's 8/8 -- the fewest of any run in the repo, so the most float, so the
+// least reliable sum. A derived direction with fewer samples behind it than every control is
+// not a finding.
 const BIKER = {
   file: 'models/characters/fat_biker_02.glb',
   h: 1.75, r: .42, hp: 5, snd: 'soft',
@@ -2663,8 +2662,7 @@ const BIKER = {
     // TWO IDLES, so a man standing still is not a statue. `idle_fan_self` is 3 s and 49 moving
     // bones -- a real flourish, which is what `look` is for; `rest` is the pool he SETTLES into.
     look: ['idle_fan_self'],
-    walk: 'walk_fwd',
-    run: 'walk_fwd', flee: 'walk_fwd',     // see above: `run_fwd` is authored backwards
+    walk: 'walk_fwd', run: 'run_fwd', flee: 'run_fwd',
     air: 'in_air',
     // THREE HIT REACTIONS AND THE BIG ONE IS ITS OWN, the hobo's shape exactly.
     hits: ['hit_take_damage_00', 'hit_take_damage_01'],
@@ -2677,10 +2675,11 @@ const BIKER = {
     // a bike never reaches them.
     ride: 'driving_idle', rideL: 'driving_turn_left', rideR: 'driving_turn_right',
   },
-  // AT HIS SCALE (x2.026). `run`/`flee` share the walk clip, so they share its reference too --
-  // which is the one case where two fields naming one clip is deliberate rather than a drift.
-  walkRef: 1.50, runRef: 1.50, fleeRef: 1.50, tsHi: 1.5, tsLo: .7,
-  walk: 1.1, run: 2.0, flee: 2.2,
+  // AT HIS SCALE (x2.026), measured off the planted foot. He is heavy, so his speeds sit a
+  // little UNDER each clip's own reference rather than over it -- ts .73 walking and .82
+  // running, both inside the band, so nothing scrambles and nothing slides.
+  walkRef: 1.50, runRef: 3.43, fleeRef: 3.43, tsHi: 1.5, tsLo: .7,
+  walk: 1.1, run: 2.8, flee: 3.2,
   turn: 2.6,
   vary: { pace: [.8, 1.2], nerve: [1, 1], react: [.4, 1.3], guard: [0, 0] },
   gait: { lane: 0, laneT: [1.2, 3.0], surge: .34, stop: .22, stopT: [.7, 2.4] },

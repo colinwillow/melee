@@ -1219,22 +1219,31 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
-- **AND HIS `run_fwd` IS AUTHORED TRAVELLING BACKWARDS, WHICH THE CONTROL IS WHAT PROVED (m107).**
-  Its planted foot slides FORWARD in the body frame: `npm run gait` reads **travel +176 deg**, with
-  both feet agreeing (no disagree flag) and a perfectly good 1.694 m/s of speed -- the direction is
-  the only thing wrong with it. Against the same tool:
-      zap    run_fwd   +7 deg     <- the clip the whole game runs on
-      hick   running   +1 deg
-      biker  walk_fwd  +3 deg     <- his own walk, same rig, same tool, same run
-      biker  run_fwd   **+176**   <- the BACKPEDAL band (zap's own `run_bwd` reads -172)
-  Played while he travels forwards that is the moonwalk this file has a whole note about, so `run`
-  and `flee` both name `walk_fwd` and `tsHi` lets it scramble. **A re-export makes it one word**,
-  and it is worth having: a walk at 1.5x is the fastest he can currently move.
-  **MY OWN FIRST TEST AGREED WITH THE CONCLUSION AND WAS WORTHLESS.** Net toe displacement while
-  the foot is low reads "+" on **zap's own run_fwd** too (+0.121 on one foot, 16 down-frames of
-  60) -- a run has so much float that a net-displacement test is noise, and it would have shipped
-  a true claim backed by a measurement that proves nothing. **The control is what killed it**, and
-  a measurement with no case that must come back the other way is a measurement nobody can trust.
+- **I CLAIMED HIS `run_fwd` WAS AUTHORED BACKWARDS AND IT IS NOT (m108).** *"What are you
+  talking about, I just checked the file, it looks normal."* He is right, and the fault is that
+  **I asked a measurement a question it was never fitted to answer.**
+  `npm run gait`'s `travel` column derives its bearing by SUMMING the raw per-frame displacement
+  over every frame where the toe sits in the lower half of its range -- which on a run is the
+  stance phase plus most of the swing, and the swing travels forward fast. **That is the exact
+  net-displacement-over-low-frames measure a control had already killed one hour earlier**, on
+  zap's own `run_fwd`, and I wrote that lesson down and then quoted a second tool doing the same
+  arithmetic. The SPEED beside it is a median over frames within 60 degrees of that bearing and
+  is sound; the speed is the only thing that column was fitted for.
+  **AND "BOTH FEET AGREEING" WAS A MISREADING OF THE FLAG.** `spread` compares `per[0]` against
+  `per[1]` -- the two feet's SPEEDS. The two DIRECTIONS are summed into a single bearing and
+  never compared to each other, so there is no direction agreement check in that tool at all. I
+  cited the absence of a flag as corroboration for the one thing the flag says nothing about.
+  **THE TELL WAS IN THE SAME ROW I READ THE CLAIM OFF.** 5 and 6 stance frames of 18, against
+  zap's 8/9 and the hick's 8/8 -- the fewest of any run clip in the repo, so the most float, so
+  the least reliable sum. **A derived quantity with fewer samples behind it than every control
+  is not a finding**, and the control that disagrees with it is the one to believe.
+  So `run` and `flee` name `run_fwd` with its own measured reference (1.694 authored, **3.43 m/s**
+  at his x2.026) and he runs at 2.8 and flees at 3.2 -- a little under the reference, because he
+  is heavy, which puts the clip at ts .82 rather than scrambling it.
+  **AND THE LESSON IS NOT "THAT TOOL IS BAD".** It is that a column fitted for one quantity can
+  print a second one beside it that nothing ever validated -- `travel` was added at m35 to tell a
+  strafe from a backpedal, where the stance phase dominates and it works. **Ask what a column was
+  fitted to answer before quoting it about something else.**
 
 - **AND THE FILES WERE IN THE REPO THE WHOLE TIME -- MY CLONE WAS STALE (m107).** `git log` showed
   only my own three commits and `ls models/` had no biker and no bike, which is m80's *"the file is
