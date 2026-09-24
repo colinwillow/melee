@@ -58,6 +58,7 @@ npm run gait       # the measured reference speed of every locomotion clip
 npm run rig        # height, facing, and whether the weapon mounts still agree
 npm run icons      # rebuild the home-screen icon set from one square artwork
 npm run sfx        # what is in each sound file, and how hard it hits (needs mpg123-decoder)
+npm run hull       # does the DNA morph's proxy come out shaped like a body
 ```
 
 **These exist because of what they FOUND, and that is what they are for now — a record, not a
@@ -1219,7 +1220,49 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **A LATHE IS A BODY OF REVOLUTION AND A PERSON IS NOT (m114, `npm run hull`).** *"It's sort of
+  just like random, it doesn't look great. We could probably fake it better."* He is right and
+  the cause is structural rather than a matter of taste: m113 measured ONE radius per height
+  band, so a shoulder became a BARREL and both ends of the wrap were a lumpy pillar rather than
+  the two people. **A body of revolution pins the widest sector of a row to its narrowest at
+  exactly 1.00, by construction** -- which is a number, and it is the one the tool now prints.
+  **THE SAME MEASUREMENT PASS GIVES A 2D FIELD FOR NOTHING.** Bucket by ANGLE as well as height
+  and what comes out is a star-shaped hull -- arms out to the sides are two spikes at +/-90
+  rather than a drum. Measured through the shipped `mphProf` over a synthetic body:
+      ARM ROW   widest sector at **270 deg**, where the arms are, ratio **3.81**
+      LEG ROW   ratio 1.99 -- two legs and the air between them, not a post
+      the lathe 1.00 at every row, and the widest sector wherever the loop happened to start
+  **AND THE RAW MAX IS ONE STRAY VERTEX PER SECTOR** -- an antenna, a fingertip, a hair chain --
+  so the field is hole-filled from whatever neighbours have geometry and then smoothed, wrapping
+  in angle and clamped in height. A hull built off raw maxima is spiky in exactly the way that
+  reads as noise rather than as a body, which was the other half of "random".
+  **THE WOBBLE WAS THE REST OF IT.** .17 at about 1 Hz on an 18-row lathe is a boil, and a boil
+  on a shape whose whole job is to be recognisable IS the word he used. .07, and low frequency
+  in both axes, so it breathes.
+  **AND IT HAS TO BE TURNED WITH HIM NOW**, which a lathe never did: an arm is at an ANGLE, so
+  the profile is measured with the skin's own `faceOff` baked in (one canonical frame for every
+  body) and the blob carries `drawnYaw - faceOff`.
+  **THE NORMAL COMES OFF THE GRID** -- the two tangents along the row and the column, crossed --
+  rather than the lathe's closed form. The material is double sided and the rim reads `abs(dot)`,
+  so which way round it comes out cannot show; what WOULD show is the zero at the poles, where
+  the row tangent is nothing, and that is the one case guarded.
+  **`npm run hull` IS THE GATE AND IT NEEDS NO ASSET AND NO GPU, WHICH IS THE WHOLE POINT.**
+  Every character GLB is draco and `DRACOLoader` decodes on a Worker built from a Blob URL,
+  which node has not got -- **but the question here is not about the export.** It is whether the
+  measurement, the hole fill, the smoothing and the wrap turn a cloud of vertices into a
+  recognisable silhouette, and a SYNTHETIC body answers that exactly and in 80 ms. It lifts the
+  shipped text between the `PROF:` markers and reads `MORPH` out of `index.html`, because a tool
+  with its own copy of the rule is this account's oldest mistake.
+  **VERIFIED BY PUTTING THE LATHE BACK IN A COPY** -- `widest at 0 deg, ratio 1.00`, three rows
+  red -- which is the only thing that proves a gate is a gate.
+  **AND NO, A WORKER IS NOT THE ANSWER TO THE DECODE EITHER.** Shredworld already solved it a
+  better way: decompress the GLB ONCE offline with gltf-transform and serve the plain copy in
+  its place -- same geometry, same names, same graph, and no Worker to fake. Worth doing the day
+  a measurement on the REAL mesh would settle something; it would not have settled this, and it
+  cannot settle how anything looks, because there is no GPU here either.
+
 - **TWO SKINS HAVE NO CORRESPONDENCE TO INTERPOLATE, BUT THEIR SILHOUETTES DO (m113, `mphProf`,
+
   `mphMesh`, `mphFill`, `mphBlob`).** *"Some sort of blob that makes the transition look like the
   collider actually transforming to each other -- a proxy mesh that morphs and wraps from one mesh
   to the other, and some weird kind of particle effect swirling and glowing around it. Not super
@@ -1227,8 +1270,8 @@ same picture from a phone.
   **A REAL VERTEX MORPH IS NOT AVAILABLE HERE AND NEVER WILL BE**, which is the whole reason m112
   was a model SWAP: two characters share no topology, no vertex count and no skeleton, so there is
   no pair of vertices to lerp between. **What every body DOES have, and has the same number of, is
-  a RADIUS PER HEIGHT BAND** -- so the blob is a lathe of `rings` rows whose radii travel from one
-  body's profile to the other's, and at its two ends it genuinely IS the two shapes.
+  a RADIUS PER HEIGHT BAND** -- so the blob is a hull of `rings` x `seg` cells whose radii travel from one
+  body's field to the other's, and at its two ends it genuinely IS the two shapes.
   **AND THE PROFILE IS MEASURED OFF THE MESH, NOT AUTHORED.** GLTFLoader binds every skin with the
   IDENTITY matrix, so at rest a skinned vertex's GEOMETRY position is its position in the model's
   own space -- the same fact `measureHeight` is built on, and what makes a silhouette readable at
@@ -1251,10 +1294,8 @@ same picture from a phone.
       wrap .14-.86   the silhouette travelling, so it is settled on the right shape at both ends
       the swap lands at u .62, by which point the blob is 74% of the way to the new body
   **A FRESNEL RIM IS WHAT MAKES A SILHOUETTE READ AS A VOLUME.** Flat, an additive lathe is a
-  green cut-out of a man; hot at the grazing angle it has an inside. **And the normal is the
-  lathe's own** -- two subtractions and a normalise per ROW -- rather than `computeVertexNormals`
-  over every triangle, which is the only thing reading it anyway. 18 rows x 16 segments is 288
-  vertices and 576 triangles, rebuilt each frame, in **one draw call**.
+  green cut-out of a man; hot at the grazing angle it has an inside. 21 rows x 24 segments is 504
+  vertices and 960 triangles, rebuilt each frame, in **one draw call**.
   **THE SWIRL IS THE EXISTING SPARK POOL**, one more draw call and no second system: m39's
   `follow` so the sparks ride him rather than being left behind, and **ONE SIGN of spin, because
   a random sign per spark is a scramble and not a swirl.** `spk` gained an optional 11th argument
@@ -1273,7 +1314,8 @@ same picture from a phone.
   real mesh outside a browser, and whether the blob reads as a morph, whether `swell` 1.18 plainly
   encloses him, and whether the boil reads as weird or as broken are device questions. The gates
   cover the throw class and nothing else here can. `mel.MORPH.blob = 0` is the one word back to
-  m112, and `swell` / `wob` / `rim` / `fade` / `hide` / `wrap` / `spin` / `every` are all live.
+  m112, and `swell` / `pad` / `wob` / `rim` / `fade` / `hide` / `wrap` / `spin` / `every` are
+  all live.
 - **THE DNA GUN, AND THE TRANSFORM IS A MODEL SWAP INSIDE `rig.root` (m112, `MORPH`, `morphGo`,
   `mphWear`, `morphAnim`).** *"The alien has some sort of DNA gun -- you shoot one of the NPCs and
   the character transforms into them. How about we do a third gun mode which is the DNA thing. We

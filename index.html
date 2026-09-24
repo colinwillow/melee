@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m113</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m114</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m113</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m114</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm113';
+const BUILD = 'm114';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -3194,10 +3194,11 @@ const MORPH = {
   tall: 1,           // 1 = drawn at the KIND's own height, 0 = at his. See the note.
   // ---- THE PROXY BLOB (m113). See `mphProf` for why a real vertex morph is not available.
   blob: 1,           // 0 is m112 exactly: the flash and the swap, and no proxy mesh
-  rings: 18,         // slices the silhouette is measured into, and rows in the lathe
-  seg: 16,           // and segments around it
-  swell: 1.18,       // how far outside the body it sits, so it plainly ENCLOSES him
-  wob: .17,          // how hard it boils, at the middle of the wrap
+  rings: 20,         // height bands the silhouette is measured into, and rows in the hull
+  seg: 24,           // angular sectors, and segments around it
+  swell: 1.10,       // how far outside the body it sits, so it plainly ENCLOSES him
+  pad: .035,         // plus a flat one, so an arm is not paper thin
+  wob: .07,          // how hard it breathes, at the middle of the wrap
   wrap: [.14, .86],  // the window of `u` the silhouette actually travels across
   hide: [.27, .73],  // and the window the BODY is not drawn in -- strictly inside `fade`
   fade: [.30, .70],  // the blob is at full weight over this, ramped either side
@@ -9394,9 +9395,11 @@ const morphOff = () => morphGo(null);
 const MPH = { blob: null, geo: null, mat: null, pos: null, nrm: null, rows: 0, seg: 0,
               _r: null, H: 1, t: 0, e: 0 };
 
+// PROF:START -- `npm run hull` lifts this text and runs it. One copy, not two.
 function mphProf(s) {
   if (s.prof !== undefined) return s.prof;
-  const N = MORPH.rings, r = new Float32Array(N + 1), k = s.model.scale.x || 1;
+  const N = MORPH.rings, S = MORPH.seg, k = s.model.scale.x || 1, off = s.faceOff || 0;
+  const g = new Float32Array((N + 1) * S);
   let lo = Infinity, hi = -Infinity;
   const geos = [];
   s.model.traverse(o => {
@@ -9407,24 +9410,46 @@ function mphProf(s) {
     geos.push(o.geometry.attributes.position);
   });
   if (!geos.length || !(hi > lo)) { s.prof = null; return null; }
-  const H = (hi - lo) * k;
+  const H = (hi - lo) * k, TAU = Math.PI * 2;
+  // **THE ANGLE IS BAKED IN THE BODY'S OWN FORWARD FRAME.** `rig.root` carries `faceOff` to
+  // cancel whatever way the export happens to point, so adding it here puts every profile in
+  // one frame and the blob can be turned by `drawnYaw - faceOff` whichever skin is drawn.
   for (const a of geos) for (let i = 0, n = a.count; i < n; i++) {
+    const x = a.getX(i) * k, z = a.getZ(i) * k;
     let b = Math.round((a.getY(i) - lo) * k / H * N);
     if (b < 0) b = 0; else if (b > N) b = N;
-    const rr = Math.hypot(a.getX(i) * k, a.getZ(i) * k);
-    if (rr > r[b]) r[b] = rr;
+    let j = Math.round((Math.atan2(x, z) + off) / TAU * S) % S;
+    if (j < 0) j += S;
+    const rr = Math.hypot(x, z);
+    if (rr > g[b * S + j]) g[b * S + j] = rr;
   }
-  // A GAP IS A HEIGHT WITH NO VERTICES AT IT -- between the ankles and a hem, say -- and a zero
-  // there is a pinch in the blob rather than a silhouette. Carried across from its neighbours.
-  for (let i = 1; i < N; i++) if (r[i] <= 0) {
-    let b = i + 1; while (b < N && r[b] <= 0) b++;
-    r[i] = r[b] > 0 ? lerp(r[i - 1], r[b], 1 / (b - i + 1)) : r[i - 1];
+  const at = (i, j) => g[Math.max(0, Math.min(N, i)) * S + ((j % S) + S) % S];
+  // A HOLE IS A SECTOR WITH NO VERTICES IN IT -- the air between the legs, the gap under an arm
+  // -- and a zero there is a spike of nothing rather than a silhouette. Filled from whatever
+  // neighbours DO have geometry, which is the only honest thing to put in it.
+  for (let pass = 0; pass < 4; pass++) for (let i = 0; i <= N; i++) for (let j = 0; j < S; j++) {
+    if (g[i * S + j] > 0) continue;
+    let sum = 0, n = 0;
+    for (const [di, dj] of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
+      const v = at(i + di, j + dj); if (v > 0) { sum += v; n++; }
+    }
+    if (n) g[i * S + j] = sum / n;
   }
-  // AND IT CLOSES AT BOTH ENDS, because a lathe with open poles is a tube. The soles and the
-  // crown are a few centimetres wide, so nothing you could see is lost by pinching them shut.
-  r[0] = 0; r[N] = 0;
-  s.prof = r; s.profH = H;
-  return r;
+  // AND IT IS SMOOTHED, because the raw max is one stray vertex per sector -- an antenna, a
+  // fingertip, a hair chain -- and a hull built off those is spiky in exactly the way that
+  // reads as noise rather than as a body. Wrapping in angle, clamped in height.
+  const t = new Float32Array(g.length);
+  for (let pass = 0; pass < 2; pass++) {
+    for (let i = 0; i <= N; i++) for (let j = 0; j < S; j++)
+      t[i * S + j] = at(i, j) * .44 +
+        (at(i, j - 1) + at(i, j + 1) + at(i - 1, j) + at(i + 1, j)) * .14;
+    g.set(t);
+  }
+  // AND IT CLOSES AT BOTH ENDS, because an open pole is a tube. The soles and the crown are a
+  // few centimetres across, so nothing anybody could see is lost by pinching them shut.
+  for (let j = 0; j < S; j++) { g[j] = 0; g[N * S + j] = 0; }
+  s.prof = g; s.profH = H;
+  return g;
 }
 
 function mphMesh() {
@@ -9469,34 +9494,46 @@ function mphMesh() {
   m.frustumCulled = false; m.renderOrder = 2; m.visible = false;
   scene.add(m);
   MPH.blob = m; MPH.geo = g; MPH.mat = mat; MPH.pos = pos; MPH.nrm = nrm;
-  MPH.rows = rows; MPH.seg = seg; MPH._r = new Float32Array(rows);
+  MPH.rows = rows; MPH.seg = seg; MPH._r = new Float32Array(rows * seg);
   return m;
 }
 
-// THE NORMAL IS THE LATHE'S OWN, not `computeVertexNormals` -- for a surface of revolution it
-// is two subtractions and a normalise per ROW rather than a pass over every triangle, and the
-// rim term is the only thing reading it.
+// **THE NORMAL COMES OFF THE GRID, not a lathe formula** -- the surface is no longer one of
+// revolution, so the two tangents are the neighbours along the row and along the column and the
+// normal is their cross product. The rim reads `abs(dot)` and the material is double sided, so
+// which way round it comes out cannot show; what WOULD show is a zero at the poles, where the
+// row tangent is nothing, and that is the one case guarded.
 function mphFill(A, B, hA, hB, a, w, t) {
   const rows = MPH.rows, seg = MPH.seg, P = MPH.pos, N = MPH.nrm, R = MPH._r;
-  const H = MPH.H = lerp(hA, hB, a), step = H / (rows - 1);
-  for (let i = 0; i < rows; i++)
-    R[i] = Math.max(0, lerp(A[i], B[i], a) * MORPH.swell * (1 + w * Math.sin(i * 1.9 + t * 6.1)));
-  R[0] = 0; R[rows - 1] = 0;
-  for (let i = 0; i < rows; i++) {
-    const i0 = i > 0 ? i - 1 : i, i1 = i < rows - 1 ? i + 1 : i;
-    let nr = step * (i1 - i0), ny = R[i0] - R[i1];
-    const nl = Math.hypot(nr, ny) || 1; nr /= nl; ny /= nl;
-    const y = step * i;
-    for (let j = 0; j < seg; j++) {
-      const th = j / seg * Math.PI * 2, c = Math.cos(th), sn = Math.sin(th);
-      const r = R[i] * (1 + w * .7 * Math.sin(th * 3 + t * 5.3 + i * .8)), k = (i * seg + j) * 3;
-      P[k] = c * r; P[k + 1] = y; P[k + 2] = sn * r;
-      N[k] = c * nr; N[k + 1] = ny; N[k + 2] = sn * nr;
-    }
+  const H = MPH.H = lerp(hA, hB, a), step = H / (rows - 1), TAU = Math.PI * 2;
+  // A SLOW, LOW-FREQUENCY BREATH RATHER THAN A BOIL. A per-cell wobble on a 2D hull is noise,
+  // and noise on a shape whose whole job is to be recognisable is what reads as random.
+  for (let i = 0; i < rows; i++) for (let j = 0; j < seg; j++) {
+    const k = i * seg + j;
+    const r = lerp(A[k], B[k], a) * MORPH.swell + MORPH.pad;
+    R[k] = Math.max(0, r * (1 + w * Math.sin(i * .9 + t * 3.1) * Math.cos(j * .7 - t * 2.3)));
+  }
+  for (let j = 0; j < seg; j++) { R[j] = 0; R[(rows - 1) * seg + j] = 0; }
+  const px = (i, j) => { const k = Math.max(0, Math.min(rows - 1, i)) * seg + ((j % seg) + seg) % seg;
+                         const th = (((j % seg) + seg) % seg) / seg * TAU;
+                         return [Math.sin(th) * R[k], step * Math.max(0, Math.min(rows - 1, i)),
+                                 Math.cos(th) * R[k]]; };
+  for (let i = 0; i < rows; i++) for (let j = 0; j < seg; j++) {
+    const th = j / seg * TAU, k = (i * seg + j) * 3, r = R[i * seg + j];
+    P[k] = Math.sin(th) * r; P[k + 1] = step * i; P[k + 2] = Math.cos(th) * r;
+    const a0 = px(i, j - 1), a1 = px(i, j + 1), b0 = px(i - 1, j), b1 = px(i + 1, j);
+    const ux = a1[0] - a0[0], uy = a1[1] - a0[1], uz = a1[2] - a0[2];
+    const vx = b1[0] - b0[0], vy = b1[1] - b0[1], vz = b1[2] - b0[2];
+    let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    const nl = Math.hypot(nx, ny, nz);
+    if (nl < 1e-6) { nx = 0; ny = i === 0 ? -1 : 1; nz = 0; }
+    else { nx /= nl; ny /= nl; nz /= nl; }
+    N[k] = nx; N[k + 1] = ny; N[k + 2] = nz;
   }
   MPH.geo.attributes.position.needsUpdate = true;
   MPH.geo.attributes.normal.needsUpdate = true;
 }
+// PROF:END
 
 // EMITTED AROUND `rig.root`, NOT AROUND `player.pos`. `spk` stores the offset against the root
 // it is handed, and this runs before the root is moved to the player this frame -- so taking
@@ -9505,7 +9542,8 @@ function mphSwirl() {
   const C = rig.root.position, R = MPH._r, hy = Math.random();
   const a = Math.random() * Math.PI * 2;
   const i = Math.min(MPH.rows - 1, Math.round(hy * (MPH.rows - 1)));
-  const rr = (R[i] || .18) * (1.1 + Math.random() * .6) + .06;
+  const j = Math.min(MPH.seg - 1, Math.floor(a / (Math.PI * 2) * MPH.seg));
+  const rr = (R[i * MPH.seg + j] || .18) * (1.1 + Math.random() * .6) + .06;
   spk(C.x + Math.cos(a) * rr, C.y + hy * MPH.H, C.z + Math.sin(a) * rr,
       0, MORPH.rise * (.5 + Math.random()), 0,
       MORPH.spkSize * (.6 + Math.random() * .8), MORPH.spkLife * (.7 + Math.random() * .7),
@@ -9521,6 +9559,11 @@ function mphBlob(u, dt) {
   mphFill(p.mphPA, p.mphPB, p.mphHA, p.mphHB,
           smooth(MORPH.wrap[0], MORPH.wrap[1], u), MORPH.wob * w, MPH.t);
   M.position.copy(p.pos);
+  // **AND IT IS TURNED WITH HIM.** The hull is not a body of revolution any more, so an arm is
+  // at an ANGLE and the blob has to carry the same yaw the body is drawn at. `faceOff` is
+  // already baked into the profile, so it comes back off here -- and `drawnYaw` is last
+  // frame's, which on a yaw is a lag nobody can see.
+  M.rotation.y = (rig.drawnYaw || 0) - (rig.faceOff || 0);
   M.visible = w > .01;
   MPH.mat.uniforms.uA.value = w;
   MPH.mat.uniforms.uRim.value = MORPH.rim;

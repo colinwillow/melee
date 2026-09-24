@@ -15,7 +15,8 @@
     "glsl": "node tools/glsl.mjs",
     "bld": "node tools/bld.mjs",
     "icons": "node tools/icons.mjs",
-    "sfx": "node tools/sfx.mjs"
+    "sfx": "node tools/sfx.mjs",
+    "hull": "node tools/hull.mjs"
   },
   "type": "module",
   "devDependencies": {
