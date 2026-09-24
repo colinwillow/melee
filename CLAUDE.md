@@ -1220,6 +1220,45 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **A SMOOTH GLOWING LUMP IS THE THING THAT READS AS NOTHING (m115).** *"I still would just love
+  like a better particle effect. It just doesn't look that great -- I just wanna do a few passes
+  to make the transition look way cooler."* m113 and m114 were both about the SHAPE being right,
+  and the shape being right is not the same as the effect being good. What it had was one colour,
+  one smooth surface, one population of particles all doing the same thing, and **no moment in
+  it** -- a continuous ramp from nothing to nothing.
+  **THE BEAM IS THE BIGGEST SINGLE THING.** One pass up the body across the whole effect, with a
+  DIFFERENT COLOUR behind it from in front -- deep violet ahead, green behind -- so the shot
+  literally travels across him turning one man into the other. It is the same `u` the wrap runs
+  on, so the beam and the shape change are one event rather than two.
+  **AND THE CONTOUR RINGS SAY WHAT THE THING IS MADE OF.** Thin bright rings at the hull's OWN
+  slice spacing (`uLines` takes `MORPH.rings`), so it reads as something constructed out of
+  measurements rather than as a blob. That is the honest picture as well as the better one.
+  **THREE SPARK POPULATIONS, BECAUSE ONE IS A DRIFT.** Motes hang about him throughout, STREAKS
+  rush IN over the first half, EMBERS blow OUT at the swap -- and the only new idea underneath
+  all three is **`rv`, a rate on a follower's own radius**. `spark.rad` had been computed and
+  never read since m39; a radius that can close is what turns an orbit into a GATHER, which is
+  the one thing a transformation effect cannot do without. **`rv` defaults to 0, so every caller
+  before this one is byte-for-byte the orbit it always had**, and it stays one pool and one
+  draw call.
+  **IT CONVERGES ON A FLOOR RATHER THAN THROUGH ZERO**, or a spark rushing in turns round and
+  comes back out the far side, which reads as a bug and not as a gather.
+  **AND THE RUSH IS THE FIRST HALF ONLY.** Past the swap there is nothing left to gather, and
+  streaks still closing on a body that has already changed read as the effect running on.
+  **THE SWAP IS THE ONE BEAT IN HERE, SO IT IS WHERE ALL THE PUNCTUATION GOES** -- the sound, a
+  lens knock (`camShake`, m99's), a shockwave ring on the floor, the embers and the old burst,
+  four things on one frame. **A ground ring is what gives an event a place and a size**, and it
+  is its OWN mesh rather than `markRing`, which belongs to the guard lock: one owner per object.
+  **AND IT OUTLIVES THE TRANSFORM**, so it is stepped from the frame loop rather than from
+  `stepMorph`, which has returned by then.
+  `SPK.n` went 260 -> 360, because three populations over 0.9 s would otherwise recycle the
+  pool out from under every other effect on screen.
+  **WHAT IS STILL UNVERIFIED IS EVERYTHING THAT MATTERS HERE**, and it is worth saying plainly:
+  there is no GPU in this container, so no tool in this repo can say whether any of it looks
+  good. `npm run hull` says the SHAPE is a body; nothing says the picture is worth watching.
+  **THE ANSWER TO THAT IS NOT A WORKER** (see m114) -- it is a headless Chromium, which is
+  installed here and which has a Worker of its own, so draco and the whole game just run. That
+  is the thing to build the next time a look has to be judged more than once.
+
 - **A LATHE IS A BODY OF REVOLUTION AND A PERSON IS NOT (m114, `npm run hull`).** *"It's sort of
   just like random, it doesn't look great. We could probably fake it better."* He is right and
   the cause is structural rather than a matter of taste: m113 measured ONE radius per height

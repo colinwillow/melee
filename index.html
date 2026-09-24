@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m114</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m115</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m114</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m115</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm114';
+const BUILD = 'm115';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -3203,12 +3203,30 @@ const MORPH = {
   hide: [.27, .73],  // and the window the BODY is not drawn in -- strictly inside `fade`
   fade: [.30, .70],  // the blob is at full weight over this, ramped either side
   rim: 2.4,          // edge falloff. Bigger is a thinner, hotter rim
-  col: [.10, .62, .32],   // the body of it
-  hot: [.62, 1.0, .80],   // and the rim, which is also the swirl
-  spin: 6.5,         // rad/s the swirl turns at. ONE sign, or it reads as a scramble
-  rise: 1.35,        // m/s it climbs while it turns
-  every: .014,       // seconds between sparks at full weight
+  // ---- the beam (m115). It sweeps the whole body once, and what is BEHIND it is the new one
+  scan: [.04, .97],  // where the beam starts and ends, as `u`
+  band: .085,        // how wide it is, as a fraction of his height
+  lines: 0,          // contour rings. 0 takes `rings`, so it is the slices it is MADE of
+  deep: [.26, .06, .46],  // ahead of the beam -- the body that is coming off
+  col:  [.08, .58, .30],  // behind it -- the one arriving
+  hot:  [.70, 1.0, .82],  // the beam itself, and the rim
+  cool: [.30, .72, 1.0],  // and the motes, so the swarm is not one flat colour
+  // ---- the swirl. THREE populations, because one is a drift (m115)
+  spin: 6.5,         // rad/s the orbit turns at. ONE sign, or it reads as a scramble
+  rise: 1.35,        // m/s the motes climb while they turn
+  every: .012,       // seconds between motes at full weight
   spkSize: .10, spkLife: .62,
+  rushEvery: .010,   // and between the streaks rushing IN, over the first half
+  rushR: 2.4,        // how far out they start, as multiples of the hull there
+  rushV: 3.6,        // m/s they close at -- negative `rv`, so they gather on him
+  rushSpin: 11.0,    // and they turn faster than the motes, which is what makes them streaks
+  rushSize: .085, rushLife: .40,
+  blowN: 26,         // embers thrown OUT at the swap, on the same follow
+  blowV: 4.2, blowSpin: 4.0, blowSize: .16, blowLife: .70,
+  // ---- and the punctuation
+  ringR: 3.4,        // the shockwave on the floor reaches this
+  ringT: .55,        // over this
+  shake: .34,        // and the lens takes this much of a knock
   // THE GAIT, AS FRACTIONS OF THE KIND'S OWN REFERENCE SPEEDS -- so one table serves a drunk
   // ambling at 0.56 m/s and a warrior at 1.79 with nothing typed per character.
   idleTo: .90,       // idle has given way by this much of `walkRef`
@@ -4920,12 +4938,12 @@ function glowSprite(colour, size) {
 // his root and orbits it stays ON him, which is the thing being asked for. `follow` is the
 // body, `ox/oy/oz` is where the spark sits relative to him.
 const SPK = {
-  on: 1, n: 260,
+  on: 1, n: 360,
   g: 9.5,            // m/s^2 -- sparks fall, which is most of what says they are debris
   drag: 1.9,
 };
 const spark = { i: 0, live: 0, pts: null, pos: null, col: null, siz: null, alp: null,
-                v: [], life: [], age: [], follow: [], off: [], spin: [], rad: [] };
+                v: [], life: [], age: [], follow: [], off: [], spin: [], rad: [], rv: [] };
 // **THE PLUMBING IS A FACTORY, BECAUSE THERE IS MORE THAN ONE KIND OF PARTICLE (m41).** What
 // every pool here shares is a `Points` whose points are sized in WORLD METRES -- which is the
 // one part worth having exactly once, since `gl_PointSize` derived wrongly is a size that
@@ -4989,11 +5007,12 @@ function puffFlush(P, live) {
   spark.pos = P.pos; spark.col = P.col; spark.siz = P.siz; spark.alp = P.alp;
   spark.pts = P.pts; spark.mat = P.mat; spark.P = P;
   for (let i = 0; i < n; i++) { spark.v.push(new THREE.Vector3()); spark.off.push(new THREE.Vector3());
-    spark.life.push(0); spark.age.push(0); spark.follow.push(null); spark.spin.push(0); spark.rad.push(0); }
+    spark.life.push(0); spark.age.push(0); spark.follow.push(null); spark.spin.push(0);
+    spark.rad.push(0); spark.rv.push(0); }
 }
 const _sk = new THREE.Vector3();
 // ONE spark. Everything else is a loop over this.
-function spk(x, y, z, vx, vy, vz, size, life, col, follow, spin) {
+function spk(x, y, z, vx, vy, vz, size, life, col, follow, spin, rv) {
   if (!SPK.on) return;
   const i = spark.i; spark.i = (spark.i + 1) % SPK.n;
   spark.pos[i * 3] = x; spark.pos[i * 3 + 1] = y; spark.pos[i * 3 + 2] = z;
@@ -5007,6 +5026,11 @@ function spk(x, y, z, vx, vy, vz, size, life, col, follow, spin) {
     // A SIGN PER SPARK IS A SCRAMBLE, NOT A SWIRL, so a caller that wants a coherent one says
     // which way. Absent, it is the random tumble every impact has always had.
     spark.spin[i] = spin === undefined ? (Math.random() * 2 - 1) * 5.0 : spin;
+    // **AND A FOLLOWER CAN CLOSE OR OPEN (m115).** A swarm that only ever orbits and rises
+    // drifts; one rushing INWARD is a thing being gathered, and one blowing out is a thing
+    // coming apart. `rv` is m/s on the offset's own radius, and 0 -- every caller before this
+    // one -- is the orbit it always had.
+    spark.rv[i] = rv || 0;
     spark.rad[i] = Math.hypot(spark.off[i].x, spark.off[i].z);
   }
 }
@@ -5055,7 +5079,14 @@ function stepSparks(dt) {
       // body rather than hanging beside it.
       const o = spark.off[i], th = spark.spin[i] * dt;
       const c = Math.cos(th), sn = Math.sin(th);
-      const nx = o.x * c - o.z * sn, nz = o.x * sn + o.z * c;
+      let nx = o.x * c - o.z * sn, nz = o.x * sn + o.z * c;
+      const rv = spark.rv[i];
+      if (rv) {
+        // IT CONVERGES ON A FLOOR RATHER THAN THROUGH ZERO, or a spark rushing in turns round
+        // and comes back out the far side, which reads as a bug and not as a gather.
+        const r0 = Math.hypot(nx, nz), r1 = Math.max(.05, r0 + rv * dt), k = r1 / (r0 || 1);
+        nx *= k; nz *= k;
+      }
       o.set(nx, o.y + spark.v[i].y * dt, nz);
       P[i * 3] = f.root.position.x + o.x;
       P[i * 3 + 1] = f.root.position.y + o.y;
@@ -9393,7 +9424,7 @@ const morphOff = () => morphGo(null);
 // him rather than being left behind, and ONE sign of spin, because a random sign per spark is
 // a scramble and not a swirl. A second particle system would have bought nothing.
 const MPH = { blob: null, geo: null, mat: null, pos: null, nrm: null, rows: 0, seg: 0,
-              _r: null, H: 1, t: 0, e: 0 };
+              _r: null, H: 1, t: 0, e: 0, re: 0, ring: null, ringT: 9 };
 
 // PROF:START -- `npm run hull` lifts this text and runs it. One copy, not two.
 function mphProf(s) {
@@ -9465,25 +9496,43 @@ function mphMesh() {
   g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   g.setIndex(idx);
   const mat = new THREE.ShaderMaterial({
-    uniforms: { uA: { value: 0 }, uRim: { value: MORPH.rim },
+    uniforms: { uA: { value: 0 }, uRim: { value: MORPH.rim }, uH: { value: 1 },
+                uScan: { value: 0 }, uBand: { value: MORPH.band },
+                uLines: { value: MORPH.lines || MORPH.rings },
                 uCol: { value: new THREE.Vector3().fromArray(MORPH.col) },
-                uHot: { value: new THREE.Vector3().fromArray(MORPH.hot) } },
+                uHot: { value: new THREE.Vector3().fromArray(MORPH.hot) },
+                uDeep: { value: new THREE.Vector3().fromArray(MORPH.deep) } },
     vertexShader: `
-      varying vec3 vN; varying vec3 vE;
+      uniform float uH;
+      varying vec3 vN; varying vec3 vE; varying float vU;
       void main() {
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
         vN = normalize(normalMatrix * normal);
         vE = normalize(-mv.xyz);
+        vU = position.y / max(0.05, uH);
         gl_Position = projectionMatrix * mv;
       }`,
-    // A FRESNEL RIM IS WHAT MAKES A SILHOUETTE READ AS A VOLUME. Flat, an additive lathe is a
-    // green cut-out of a man; hot at the grazing angle it is something with an inside.
+    // **A SMOOTH GLOWING LUMP IS THE THING THAT READS AS NOTHING (m115).** Three terms, and
+    // each says a different thing about what is happening:
+    //   the BEAM      one pass up the body, and what is BEHIND it is a different colour -- so
+    //                 the shot literally travels across him turning one man into the other
+    //   the CONTOURS  thin rings at the hull's OWN slice spacing, so it reads as something
+    //                 constructed out of measurements rather than as a blob
+    //   the RIM       a fresnel, because flat it is a green cut-out of a man and hot at the
+    //                 grazing angle it is something with an inside
     fragmentShader: `
-      uniform vec3 uCol; uniform vec3 uHot; uniform float uA; uniform float uRim;
-      varying vec3 vN; varying vec3 vE;
+      uniform vec3 uCol; uniform vec3 uHot; uniform vec3 uDeep;
+      uniform float uA; uniform float uRim; uniform float uScan; uniform float uBand;
+      uniform float uLines;
+      varying vec3 vN; varying vec3 vE; varying float vU;
       void main() {
         float f = pow(clamp(1.0 - abs(dot(normalize(vN), normalize(vE))), 0.0, 1.0), uRim);
-        gl_FragColor = vec4(mix(uCol, uHot, f) * (0.35 + f * 1.45) * uA, 1.0);
+        float built = smoothstep(uScan + uBand, uScan - uBand, vU);
+        float beam  = 1.0 - smoothstep(0.0, uBand, abs(vU - uScan));
+        float line  = pow(abs(sin(vU * uLines * 3.14159265)), 26.0);
+        vec3  c = mix(uDeep, uCol, built);
+        float g = 0.26 + f * 1.25 + line * (0.35 + built * 0.45) + beam * 2.1;
+        gl_FragColor = vec4((c + uHot * (beam * 0.95 + f * 0.22)) * g * uA, 1.0);
       }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide, toneMapped: false,
@@ -9538,7 +9587,13 @@ function mphFill(A, B, hA, hB, a, w, t) {
 // EMITTED AROUND `rig.root`, NOT AROUND `player.pos`. `spk` stores the offset against the root
 // it is handed, and this runs before the root is moved to the player this frame -- so taking
 // the centre from the root is what makes the offset exactly the one intended.
-function mphSwirl() {
+//
+// **AND THERE ARE THREE OF THEM, BECAUSE ONE IS A DRIFT (m115).** A single population orbiting
+// and rising is the same picture for the whole effect; what reads is different things happening
+// at different rates. The MOTES hang about him the whole time, the STREAKS rush IN over the
+// first half (a thing being gathered), and the EMBERS blow OUT at the swap. All three are the
+// same pool and the same draw call -- the only new idea is `rv`, a rate on the follow radius.
+function mphMote() {
   const C = rig.root.position, R = MPH._r, hy = Math.random();
   const a = Math.random() * Math.PI * 2;
   const i = Math.min(MPH.rows - 1, Math.round(hy * (MPH.rows - 1)));
@@ -9547,7 +9602,64 @@ function mphSwirl() {
   spk(C.x + Math.cos(a) * rr, C.y + hy * MPH.H, C.z + Math.sin(a) * rr,
       0, MORPH.rise * (.5 + Math.random()), 0,
       MORPH.spkSize * (.6 + Math.random() * .8), MORPH.spkLife * (.7 + Math.random() * .7),
-      MORPH.hot, rig, MORPH.spin * (.75 + Math.random() * .5));
+      Math.random() < .45 ? MORPH.cool : MORPH.hot, rig,
+      MORPH.spin * (.75 + Math.random() * .5));
+}
+// A STREAK STARTS WELL OUTSIDE HIM AND CLOSES. Its life is set so it ARRIVES rather than
+// expiring on the way in -- a gather whose particles vanish short of the body is a halo.
+function mphRush() {
+  const C = rig.root.position, R = MPH._r, hy = Math.random();
+  const a = Math.random() * Math.PI * 2;
+  const i = Math.min(MPH.rows - 1, Math.round(hy * (MPH.rows - 1)));
+  const j = Math.min(MPH.seg - 1, Math.floor(a / (Math.PI * 2) * MPH.seg));
+  const rr = ((R[i * MPH.seg + j] || .18) + .10) * MORPH.rushR * (.8 + Math.random() * .5);
+  spk(C.x + Math.cos(a) * rr, C.y + hy * MPH.H, C.z + Math.sin(a) * rr,
+      0, MORPH.rise * .3, 0,
+      MORPH.rushSize * (.7 + Math.random() * .7), MORPH.rushLife * (.7 + Math.random() * .6),
+      MORPH.hot, rig, MORPH.rushSpin * (.8 + Math.random() * .5), -MORPH.rushV);
+}
+function mphBlow() {
+  const C = rig.root.position, R = MPH._r;
+  for (let n = 0; n < MORPH.blowN; n++) {
+    const a = Math.random() * Math.PI * 2, hy = Math.random();
+    const i = Math.min(MPH.rows - 1, Math.round(hy * (MPH.rows - 1)));
+    const j = Math.min(MPH.seg - 1, Math.floor(a / (Math.PI * 2) * MPH.seg));
+    const rr = (R[i * MPH.seg + j] || .18) + .05;
+    spk(C.x + Math.cos(a) * rr, C.y + hy * MPH.H, C.z + Math.sin(a) * rr,
+        0, MORPH.rise * (.2 + Math.random() * .8), 0,
+        MORPH.blowSize * (.6 + Math.random() * .9), MORPH.blowLife * (.6 + Math.random() * .8),
+        Math.random() < .3 ? MORPH.cool : MORPH.hot, rig,
+        MORPH.blowSpin * (Math.random() * 2 - 1), MORPH.blowV * (.6 + Math.random() * .8));
+  }
+}
+// A SHOCKWAVE ON THE FLOOR IS WHAT GIVES AN EVENT A PLACE AND A SIZE. It is its own mesh and
+// not `markRing`, which belongs to the guard lock -- one owner per object, which is this file's
+// oldest invariant wearing its smallest hat.
+function mphRing() {
+  if (!MPH.ring) {
+    const g = new THREE.RingGeometry(.86, 1.0, 48);
+    g.rotateX(-Math.PI / 2);
+    MPH.ring = new THREE.Mesh(g, new THREE.MeshBasicMaterial({
+      color: new THREE.Color().fromArray(MORPH.hot), transparent: true, opacity: 0,
+      depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
+      blending: THREE.AdditiveBlending }));
+    MPH.ring.renderOrder = 3; MPH.ring.frustumCulled = false; MPH.ring.visible = false;
+    scene.add(MPH.ring);
+  }
+  MPH.ringT = 0;
+  MPH.ring.position.set(player.pos.x, player.pos.y + .06, player.pos.z);
+  MPH.ring.visible = true;
+}
+function mphRingStep(dt) {
+  if (!MPH.ring || !MPH.ring.visible) return;
+  MPH.ringT += dt;
+  const u = MPH.ringT / MORPH.ringT;
+  if (u >= 1) { MPH.ring.visible = false; return; }
+  // IT OPENS FAST AND SETTLES, which is what a wave does, and it fades on the square so the
+  // last third of it is not a pale disc sitting on the road.
+  const e = 1 - (1 - u) * (1 - u);
+  MPH.ring.scale.setScalar(.35 + e * MORPH.ringR);
+  MPH.ring.material.opacity = (1 - u) * (1 - u) * .85;
 }
 
 function mphBlob(u, dt) {
@@ -9565,14 +9677,26 @@ function mphBlob(u, dt) {
   // frame's, which on a yaw is a lag nobody can see.
   M.rotation.y = (rig.drawnYaw || 0) - (rig.faceOff || 0);
   M.visible = w > .01;
-  MPH.mat.uniforms.uA.value = w;
-  MPH.mat.uniforms.uRim.value = MORPH.rim;
+  const U = MPH.mat.uniforms;
+  U.uA.value = w; U.uRim.value = MORPH.rim; U.uH.value = MPH.H;
+  U.uBand.value = MORPH.band; U.uLines.value = MORPH.lines || MORPH.rings;
+  U.uCol.value.fromArray(MORPH.col); U.uHot.value.fromArray(MORPH.hot);
+  U.uDeep.value.fromArray(MORPH.deep);
+  // ONE PASS UP THE BODY ACROSS THE WHOLE THING, so the beam and the wrap are the same event
+  // rather than two. It runs a little past both ends, or the last slice never gets swept.
+  U.uScan.value = lerp(MORPH.scan[0] - MORPH.band, MORPH.scan[1] + MORPH.band, u);
   if (rig.model) rig.model.visible = !(u > MORPH.hide[0] && u < MORPH.hide[1]);
-  // THE RATE RIDES THE WEIGHT, so the swirl thickens into the wrap and thins out of it -- the
+  // THE RATE RIDES THE WEIGHT, so the swarm thickens into the wrap and thins out of it -- the
   // jetpack's own rule, that a run of particles coming faster is a machine winding up.
   MPH.e -= dt;
-  for (let n = 0; n < 12 && MPH.e <= 0 && w > .04; n++) { mphSwirl(); MPH.e += MORPH.every / w; }
+  for (let n = 0; n < 14 && MPH.e <= 0 && w > .04; n++) { mphMote(); MPH.e += MORPH.every / w; }
   if (MPH.e <= 0) MPH.e = MORPH.every;
+  // AND THE RUSH IS THE FIRST HALF ONLY. Past the swap there is nothing left to gather, and
+  // streaks still closing on a body that has already changed read as the effect running on.
+  const g = u < .55 ? 1 - smooth(.30, .58, u) * .75 : 0;
+  MPH.re -= dt;
+  if (g > .05) { for (let n = 0; n < 14 && MPH.re <= 0; n++) { mphRush(); MPH.re += MORPH.rushEvery / g; } }
+  if (MPH.re <= 0) MPH.re = MORPH.rushEvery;
 }
 
 // AND IT NEVER LEAVES A BODY HIDDEN. Every way out of the transform goes through here, because
@@ -9580,7 +9704,7 @@ function mphBlob(u, dt) {
 function mphBlobOff() {
   if (MPH.blob) { MPH.blob.visible = false; MPH.mat.uniforms.uA.value = 0; }
   if (rig.model) rig.model.visible = true;
-  MPH.e = 0;
+  MPH.e = 0; MPH.re = 0;
 }
 
 function stepMorph(dt) {
@@ -9602,9 +9726,15 @@ function stepMorph(dt) {
       mphTint((to || rig.base).mats, 1);
       p.mphSt = 'in'; p.mphT = 0;
       // the swap is the EVENT, so it is where the noise and the debris are -- not the release
-      snd('zap', { g: .55, r: p.mphK ? .85 : 1.2, dur: .5 });
-      spkBurst(p.pos.x, p.pos.y + player.mphH * .5, p.pos.z, 30,
-               { col: [.5, 1, .72], spread: 5.5, up: 3.2, r: .5, size: .13, life: .55 });
+      // **THE SWAP IS THE ONE BEAT IN HERE, SO IT IS WHERE ALL THE PUNCTUATION GOES (m115).**
+      // A continuous ramp with nothing happening in it is what an effect with no moment reads
+      // like; four things on one frame is what makes it an event.
+      snd('zap', { g: .62, r: p.mphK ? .85 : 1.2, dur: .5 });
+      camShake(MORPH.shake);
+      mphRing();
+      mphBlow();
+      spkBurst(p.pos.x, p.pos.y + player.mphH * .5, p.pos.z, 34,
+               { col: MORPH.hot, spread: 6.5, up: 3.4, r: .5, size: .15, life: .6 });
     }
   } else {
     const k = 1 - clamp(p.mphT / Math.max(.02, MORPH.back), 0, 1);
@@ -11664,6 +11794,7 @@ function frame() {
   // is marking is a ring that slides off him every time he moves.
   markStep(dt, now / 1000);
   stepSparks(dt);
+  mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
   paintRetic();
