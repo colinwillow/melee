@@ -1220,6 +1220,80 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **THE BODY WAS HIDDEN BEFORE THE BLOB WAS THERE, AND THE COMMENT ABOVE IT CLAIMED THE
+  OPPOSITE (m118, `MORPH.hide`, `MORPH.fade`, `MORPH.swell0`).** *"The character disappears
+  before the blob shows up -- you shoot him, the character just disappears, then the blob shows
+  up, then the new character's in its place. The blob needs to subsume and consume the character
+  before the mesh disappears. Does that make sense? And same thing on the other end."*
+  **HIS READING IS THE ARITHMETIC EXACTLY, AND m113's OWN NOTE SAID IT WAS THE OTHER WAY ROUND.**
+  That note (and the line in this file) called `hide` *"strictly INSIDE the blob's own full
+  window"*. `fade` is [.30, .70] and `hide` was [.27, .73], so it is strictly OUTSIDE it at both
+  ends -- computed off the shipped `smooth` over a 0.90 s transform:
+      m113   the body went  **0.027 s BEFORE** the blob reached full weight
+             and came back  **0.027 s AFTER** it had already begun to leave
+      m118   full blob over a VISIBLE body   0.189 s going in, 0.171 s coming out
+  **A behaviour asserted only in a comment is not a behaviour** -- fifth time in this account,
+  after `blast0`, the 40 cm cube, `CLIPS.block` and `packOff`, and the tell is the same every
+  time: the sentence is in the imperative and the line under it is doing something else. The
+  old line is left in place with the correction on it rather than quietly edited, because the
+  claim is what made this cost five builds.
+  **AND `hide` MUST SPAN THE SWAP, WHICH IS NOT THE MIDDLE.** The swap lands at
+  `(out + hold) / tot` = **.622**, so the window is skewed late by construction and must not be
+  made symmetric -- [.32, .72] leaves 0.088 s after the swap before the new body is drawn.
+  Widening `hide` is therefore not free at the top end and `fade[1]` is what has to move.
+  **AND THE SHELL INFLATES OVER HIM (`MORPH.swell0`).** A weight ramp alone is a thing fading up
+  in FRONT of a body; *"subsume and consume"* is a thing CLOSING over one. It rides `w`, so it
+  cannot disagree with the fade, needs no window of its own, and is symmetric for free -- the
+  far end is the blob shrinking onto the new body and being absorbed rather than switched off.
+  `.94 -> 1.16`, and `pad` .035 means it encloses at every radius a body actually has even at
+  the bottom of that range, so it can never end up inside him and occluded by his own depth.
+- **AND A LOW-POLY LUMP IS NOT A SWIRL (m118, `MORPH.flow`, the resolution, `SPK.n`).** *"We
+  just need to add more detail to the blob. It's just kind of like not a very particle or
+  swirling blob, it's just very like low poly mesh."* Three separate things, and the first is
+  the one that actually answers the word he used:
+  **THE SURFACE FLOWS.** Two counter-winding helices -- three ribbons up one way and five down
+  the other, interfering into a moving lattice -- for one `sin`/`cos` pair a fragment. A static
+  surface with a rim and some contour lines on it is a mesh whatever its triangle count; what
+  makes it a SWIRL is that what is on it moves.
+  **AND IT IS WRITTEN AS `cos(k*theta - phase)` EXPANDED IN (cos, sin), NEVER FROM AN `atan`.**
+  An angle has a seam at +/-pi and the ONE quad that straddles it interpolates the whole way
+  back round: a bright band welded to the blob for ever, in one place, which is exactly the
+  class of fault nothing in this container can see. A DIRECTION vector has no seam, and the
+  Chebyshev form of cos(3t)/sin(3t) in its components is continuous by construction -- which is
+  also why the harmonics have to be INTEGERS. Checked numerically rather than argued: the
+  identity holds to 2.6e-15 over the whole circle and to 5.6e-16 across the seam quad itself.
+  **AND ITS CLOCK IS RESET PER TRANSFORM.** `MPH.t` only ever grew, and a phase in the thousands
+  is where a fragment float stops resolving one frame from the next -- a moving pattern that
+  quietly stops moving after an hour of play. A transform is under a second.
+  **THE MESH IS 30 x 36 RATHER THAN 20 x 24**, 2160 triangles in the same one draw call, because
+  24 facets round a torso read as facets. **And `lines` is PINNED at 20** rather than tracking
+  `rings`: how many contour rings there are is a LOOK and how many rows the hull has is a
+  RESOLUTION, and moving both at once means neither can be judged.
+  **AND `mphProf`'s PASS COUNTS ARE DERIVED FROM THE GRID, NOT TYPED.** A fill pass reaches one
+  CELL, so at 36 segments four of them cover two thirds of the arc they used to and the gap
+  between the legs stops closing -- a spike of nothing exactly where the silhouette matters.
+  Derived rather than given its own constant, **because `npm run hull` lifts that text and reads
+  `MORPH` by name**: a key it does not know about arrives `undefined`, the loop runs zero times,
+  and the gate reports a broken profile on a profile that is fine.
+  **AND `mphFill` TOOK THE SWELL AS AN OPTIONAL EIGHTH ARGUMENT** for the same reason -- hull
+  calls it with seven and measures the SHAPE rather than the ramp, so it defaults to
+  `MORPH.swell` and that harness is unchanged.
+  **THE SWARM IS ROUGHLY TWICE AS DENSE AND THE MOTES ARE SMALLER**, because "particle" reads as
+  many small things rather than few big ones: `every`/`rushEvery` .012/.010 -> .0055, `spkSize`
+  .10 -> .075, `blowN` 26 -> 44. At m115's rates about 92 were alive round him at once, which is
+  a drift; at these it is nearer 190, so `SPK.n` went 360 -> 560 -- a pool that recycles out
+  from under every other effect on screen during a one-second transform is worse than a bigger
+  buffer, and a `Points` buffer is nothing.
+  **AND THE MOTES GET A SIGNED RADIAL DRIFT, WHICH IS NOT THE SPIN'S RULE.** One sign of SPIN is
+  what makes a swirl rather than a scramble (m115) and it stands; mixed signs on the RADIUS are
+  a different axis -- some motes closing while others open is the cloud CHURNING, where one sign
+  there would be a shell breathing in and out together.
+  **WHAT IS UNVERIFIED AND WHY:** there is no GPU in this container and nothing here can build a
+  skin, so **whether any of it looks better is a device question** -- that is stated rather than
+  dressed up, and it is the same gap m115 ended on. What CAN be checked here is arithmetic and
+  was: the two windows, the swap falling inside `hide`, and the seam. `npm run hull` is the one
+  tool that covers the higher-resolution profile and it was NOT run. `mel.MORPH.flow = 0` is the
+  m115 shader exactly, and `swell0`, `fade`, `hide`, `rings`, `seg` and every rate are live.
 - **THE WARRIOR WAS SQUARED UP THE WHOLE TIME AND THE REFERENCE BEARING WAS WRONG (m117,
   `npm run sim` case 14).** *"yeah run it"* -- and it came back `1 FAILED`, on a row that has
   been red since **m112** with nobody looking. Not a regression from m116: bisected across five
@@ -1386,7 +1460,8 @@ same picture from a phone.
   restarting at it. The phases still own the white tint; `u` owns everything drawn, and the
   windows are its own fractions rather than being tied to a phase boundary:
       fade .30-.70   the blob at full weight, ramped either side
-      hide .27-.73   the body not drawn -- strictly INSIDE the blob's own full window
+      hide .27-.73   the body not drawn -- **and this line CLAIMED it was strictly inside the
+                     blob's own full window and it was the exact inverse. See m118.**
       wrap .14-.86   the silhouette travelling, so it is settled on the right shape at both ends
       the swap lands at u .62, by which point the blob is 74% of the way to the new body
   **A FRESNEL RIM IS WHAT MAKES A SILHOUETTE READ AS A VOLUME.** Flat, an additive lathe is a

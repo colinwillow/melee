@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m117</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m118</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m117</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m118</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm117';
+const BUILD = 'm118';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -3197,19 +3197,28 @@ const MORPH = {
   tall: 1,           // 1 = drawn at the KIND's own height, 0 = at his. See the note.
   // ---- THE PROXY BLOB (m113). See `mphProf` for why a real vertex morph is not available.
   blob: 1,           // 0 is m112 exactly: the flash and the swap, and no proxy mesh
-  rings: 20,         // height bands the silhouette is measured into, and rows in the hull
-  seg: 24,           // angular sectors, and segments around it
-  swell: 1.10,       // how far outside the body it sits, so it plainly ENCLOSES him
+  rings: 30,         // height bands the silhouette is measured into, and rows in the hull
+  seg: 36,           // angular sectors, and segments around it
+  swell: 1.16,       // how far outside the body it sits at full weight -- it plainly ENCLOSES
+  swell0: .94,       // and where it starts and ends. It INFLATES over him, which is the verb
   pad: .035,         // plus a flat one, so an arm is not paper thin
   wob: .07,          // how hard it breathes, at the middle of the wrap
   wrap: [.14, .86],  // the window of `u` the silhouette actually travels across
-  hide: [.27, .73],  // and the window the BODY is not drawn in -- strictly inside `fade`
-  fade: [.30, .70],  // the blob is at full weight over this, ramped either side
+  // **THE ORDER IS THE WHOLE POINT AND IT WAS THE WRONG WAY ROUND (m118).** `hide` has to open
+  // WELL AFTER the blob is at full weight and close WELL BEFORE it leaves, or the body is gone
+  // before there is anything enclosing it. At `out`+`hold`+`back` = .90 s that is 0.19 s of a
+  // full blob over a visible body going in and 0.17 s coming out. **`hide` must also SPAN the
+  // swap**, which lands at (out+hold)/tot = .622 -- not the middle, so this window is not
+  // symmetric and must not be made so.
+  hide: [.32, .72],  // the window the BODY is not drawn in -- strictly inside `fade`, measured
+  fade: [.11, .91],  // the blob is at full weight over this, ramped either side
   rim: 2.4,          // edge falloff. Bigger is a thinner, hotter rim
   // ---- the beam (m115). It sweeps the whole body once, and what is BEHIND it is the new one
   scan: [.04, .97],  // where the beam starts and ends, as `u`
   band: .085,        // how wide it is, as a fraction of his height
-  lines: 0,          // contour rings. 0 takes `rings`, so it is the slices it is MADE of
+  lines: 20,         // contour rings. 0 takes `rings` -- pinned, so raising the mesh's own
+                     // resolution is a smoother SURFACE and not a different LOOK
+  flow: 1.0,         // the swirl on that surface (m118). 0 is the m115 shader exactly
   deep: [.26, .06, .46],  // ahead of the beam -- the body that is coming off
   col:  [.08, .58, .30],  // behind it -- the one arriving
   hot:  [.70, 1.0, .82],  // the beam itself, and the rim
@@ -3217,14 +3226,15 @@ const MORPH = {
   // ---- the swirl. THREE populations, because one is a drift (m115)
   spin: 6.5,         // rad/s the orbit turns at. ONE sign, or it reads as a scramble
   rise: 1.35,        // m/s the motes climb while they turn
-  every: .012,       // seconds between motes at full weight
-  spkSize: .10, spkLife: .62,
-  rushEvery: .010,   // and between the streaks rushing IN, over the first half
+  every: .0055,      // seconds between motes at full weight
+  spkSize: .075, spkLife: .62,
+  spkDrift: .55,     // m/s in or out, SIGNED per mote -- the cloud churns rather than shelling
+  rushEvery: .0055,  // and between the streaks rushing IN, over the first half
   rushR: 2.4,        // how far out they start, as multiples of the hull there
   rushV: 3.6,        // m/s they close at -- negative `rv`, so they gather on him
   rushSpin: 11.0,    // and they turn faster than the motes, which is what makes them streaks
-  rushSize: .085, rushLife: .40,
-  blowN: 26,         // embers thrown OUT at the swap, on the same follow
+  rushSize: .07, rushLife: .40,
+  blowN: 44,         // embers thrown OUT at the swap, on the same follow
   blowV: 4.2, blowSpin: 4.0, blowSize: .16, blowLife: .70,
   // ---- and the punctuation
   ringR: 3.4,        // the shockwave on the floor reaches this
@@ -4941,7 +4951,11 @@ function glowSprite(colour, size) {
 // his root and orbits it stays ON him, which is the thing being asked for. `follow` is the
 // body, `ox/oy/oz` is where the spark sits relative to him.
 const SPK = {
-  on: 1, n: 360,
+  // **560, BECAUSE THE MORPH'S THREE POPULATIONS ARE THE BIGGEST DRAW ON IT (m118).** At
+  // m115's rates about 92 were alive round him at once, which is a drift and not a swarm; at
+  // m118's they are nearer 190, and a pool that recycles out from under every other effect on
+  // screen during a one-second transform is worse than a slightly bigger buffer.
+  on: 1, n: 560,
   g: 9.5,            // m/s^2 -- sparks fall, which is most of what says they are debris
   drag: 1.9,
 };
@@ -9461,7 +9475,14 @@ function mphProf(s) {
   // A HOLE IS A SECTOR WITH NO VERTICES IN IT -- the air between the legs, the gap under an arm
   // -- and a zero there is a spike of nothing rather than a silhouette. Filled from whatever
   // neighbours DO have geometry, which is the only honest thing to put in it.
-  for (let pass = 0; pass < 4; pass++) for (let i = 0; i <= N; i++) for (let j = 0; j < S; j++) {
+  // **AND THE PASS COUNT IS DERIVED FROM THE GRID, NOT TYPED (m118).** A fill pass reaches one
+  // CELL, so at a finer grid four of them cover less arc and a gap between the legs stops
+  // closing -- which is a spike of nothing exactly where the silhouette matters. Derived rather
+  // than given its own constant, because `npm run hull` lifts this text and reads `MORPH` by
+  // name: a key it does not know about arrives `undefined`, the loop runs zero times, and the
+  // gate reports a broken profile on a profile that is fine.
+  const fillP = Math.max(4, Math.round(S / 6));
+  for (let pass = 0; pass < fillP; pass++) for (let i = 0; i <= N; i++) for (let j = 0; j < S; j++) {
     if (g[i * S + j] > 0) continue;
     let sum = 0, n = 0;
     for (const [di, dj] of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
@@ -9472,8 +9493,11 @@ function mphProf(s) {
   // AND IT IS SMOOTHED, because the raw max is one stray vertex per sector -- an antenna, a
   // fingertip, a hair chain -- and a hull built off those is spiky in exactly the way that
   // reads as noise rather than as a body. Wrapping in angle, clamped in height.
+  // Same argument: a 5-tap smooth covers half as much arc at twice the segments, so the pass
+  // count holds the ANGULAR footprint rather than the number of cells.
   const t = new Float32Array(g.length);
-  for (let pass = 0; pass < 2; pass++) {
+  const smP = Math.max(2, Math.round(S / 12));
+  for (let pass = 0; pass < smP; pass++) {
     for (let i = 0; i <= N; i++) for (let j = 0; j < S; j++)
       t[i * S + j] = at(i, j) * .44 +
         (at(i, j - 1) + at(i, j + 1) + at(i - 1, j) + at(i + 1, j)) * .14;
@@ -9501,18 +9525,21 @@ function mphMesh() {
   const mat = new THREE.ShaderMaterial({
     uniforms: { uA: { value: 0 }, uRim: { value: MORPH.rim }, uH: { value: 1 },
                 uScan: { value: 0 }, uBand: { value: MORPH.band },
+                uT: { value: 0 }, uFlow: { value: MORPH.flow },
                 uLines: { value: MORPH.lines || MORPH.rings },
                 uCol: { value: new THREE.Vector3().fromArray(MORPH.col) },
                 uHot: { value: new THREE.Vector3().fromArray(MORPH.hot) },
                 uDeep: { value: new THREE.Vector3().fromArray(MORPH.deep) } },
     vertexShader: `
       uniform float uH;
-      varying vec3 vN; varying vec3 vE; varying float vU;
+      varying vec3 vN; varying vec3 vE; varying float vU; varying vec2 vD;
       void main() {
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
         vN = normalize(normalMatrix * normal);
         vE = normalize(-mv.xyz);
         vU = position.y / max(0.05, uH);
+        // THE BEARING ROUND HIM, AS A DIRECTION AND NOT AN ANGLE. See the swirl below.
+        vD = normalize(position.xz + vec2(1e-5, 0.0));
         gl_Position = projectionMatrix * mv;
       }`,
     // **A SMOOTH GLOWING LUMP IS THE THING THAT READS AS NOTHING (m115).** Three terms, and
@@ -9526,16 +9553,36 @@ function mphMesh() {
     fragmentShader: `
       uniform vec3 uCol; uniform vec3 uHot; uniform vec3 uDeep;
       uniform float uA; uniform float uRim; uniform float uScan; uniform float uBand;
-      uniform float uLines;
-      varying vec3 vN; varying vec3 vE; varying float vU;
+      uniform float uLines; uniform float uT; uniform float uFlow;
+      varying vec3 vN; varying vec3 vE; varying float vU; varying vec2 vD;
       void main() {
         float f = pow(clamp(1.0 - abs(dot(normalize(vN), normalize(vE))), 0.0, 1.0), uRim);
         float built = smoothstep(uScan + uBand, uScan - uBand, vU);
         float beam  = 1.0 - smoothstep(0.0, uBand, abs(vU - uScan));
         float line  = pow(abs(sin(vU * uLines * 3.14159265)), 26.0);
+        // **AND THE SURFACE FLOWS (m118).** Two counter-winding helices -- three ribbons up one
+        // way and five down the other -- so what is on it is MOVING rather than a static lump,
+        // which is the difference between a mesh and a swirl.
+        // **WRITTEN AS cos(k*theta - phase) EXPANDED IN (cos, sin), NEVER FROM AN atan.** An
+        // angle has a seam at +-pi, and the one quad that straddles it interpolates the whole
+        // way back round: a bright band welded to the blob for ever, in one place, which is
+        // exactly the class of fault nothing in this container can see. A DIRECTION has no seam
+        // and the Chebyshev form of cos(3t)/sin(3t) in its components is continuous by
+        // construction -- which is also why the harmonics have to be INTEGERS.
+        vec2  d  = normalize(vD);
+        float ct = d.y, st = d.x;
+        float c3 = 4.0 * ct * ct * ct - 3.0 * ct;
+        float s3 = 3.0 * st - 4.0 * st * st * st;
+        float c5 = 16.0 * ct * ct * ct * ct * ct - 20.0 * ct * ct * ct + 5.0 * ct;
+        float s5 = 16.0 * st * st * st * st * st - 20.0 * st * st * st + 5.0 * st;
+        float p1 = vU *   9.0 - uT * 2.4;
+        float p2 = vU * -13.0 + uT * 3.1;
+        float fa = pow(abs(c3 * cos(p1) + s3 * sin(p1)), 7.0);
+        float fb = pow(abs(c5 * cos(p2) + s5 * sin(p2)), 7.0);
+        float flow = (fa + fb * 0.8) * uFlow;
         vec3  c = mix(uDeep, uCol, built);
-        float g = 0.26 + f * 1.25 + line * (0.35 + built * 0.45) + beam * 2.1;
-        gl_FragColor = vec4((c + uHot * (beam * 0.95 + f * 0.22)) * g * uA, 1.0);
+        float g = 0.26 + f * 1.25 + line * (0.35 + built * 0.45) + beam * 2.1 + flow * 1.1;
+        gl_FragColor = vec4((c + uHot * (beam * 0.95 + f * 0.22 + flow * 0.30)) * g * uA, 1.0);
       }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide, toneMapped: false,
@@ -9555,14 +9602,17 @@ function mphMesh() {
 // normal is their cross product. The rim reads `abs(dot)` and the material is double sided, so
 // which way round it comes out cannot show; what WOULD show is a zero at the poles, where the
 // row tangent is nothing, and that is the one case guarded.
-function mphFill(A, B, hA, hB, a, w, t) {
+// `sw` is the swell THIS FRAME (m118) and defaults to the full one, so `npm run hull` -- which
+// calls this with seven arguments and measures the shape rather than the ramp -- is unchanged.
+function mphFill(A, B, hA, hB, a, w, t, sw) {
   const rows = MPH.rows, seg = MPH.seg, P = MPH.pos, N = MPH.nrm, R = MPH._r;
+  const SW = sw || MORPH.swell;
   const H = MPH.H = lerp(hA, hB, a), step = H / (rows - 1), TAU = Math.PI * 2;
   // A SLOW, LOW-FREQUENCY BREATH RATHER THAN A BOIL. A per-cell wobble on a 2D hull is noise,
   // and noise on a shape whose whole job is to be recognisable is what reads as random.
   for (let i = 0; i < rows; i++) for (let j = 0; j < seg; j++) {
     const k = i * seg + j;
-    const r = lerp(A[k], B[k], a) * MORPH.swell + MORPH.pad;
+    const r = lerp(A[k], B[k], a) * SW + MORPH.pad;
     R[k] = Math.max(0, r * (1 + w * Math.sin(i * .9 + t * 3.1) * Math.cos(j * .7 - t * 2.3)));
   }
   for (let j = 0; j < seg; j++) { R[j] = 0; R[(rows - 1) * seg + j] = 0; }
@@ -9604,9 +9654,14 @@ function mphMote() {
   const rr = (R[i * MPH.seg + j] || .18) * (1.1 + Math.random() * .6) + .06;
   spk(C.x + Math.cos(a) * rr, C.y + hy * MPH.H, C.z + Math.sin(a) * rr,
       0, MORPH.rise * (.5 + Math.random()), 0,
-      MORPH.spkSize * (.6 + Math.random() * .8), MORPH.spkLife * (.7 + Math.random() * .7),
+      MORPH.spkSize * (.5 + Math.random() * 1.1), MORPH.spkLife * (.7 + Math.random() * .7),
       Math.random() < .45 ? MORPH.cool : MORPH.hot, rig,
-      MORPH.spin * (.75 + Math.random() * .5));
+      MORPH.spin * (.75 + Math.random() * .5),
+      // **A SIGNED DRIFT, WHICH IS NOT THE SPIN'S RULE (m118).** One sign of SPIN is what makes
+      // a swirl rather than a scramble and it stands; mixed signs on the RADIUS are a different
+      // axis -- some motes closing while others open is the cloud churning, and one sign there
+      // would be a shell breathing in and out together.
+      MORPH.spkDrift * (Math.random() * 2 - 1));
 }
 // A STREAK STARTS WELL OUTSIDE HIM AND CLOSES. Its life is set so it ARRIVES rather than
 // expiring on the way in -- a gather whose particles vanish short of the body is a halo.
@@ -9671,8 +9726,14 @@ function mphBlob(u, dt) {
   const M = mphMesh();
   const w = smooth(0, MORPH.fade[0], u) * (1 - smooth(MORPH.fade[1], 1, u));
   MPH.t += dt;
+  // **IT INFLATES OVER HIM AND DEFLATES OFF THE NEW ONE (m118).** The weight ramp alone is a
+  // thing fading up in FRONT of a body; a shell that also CLOSES is a thing swallowing one --
+  // which is the verb he used. It rides `w`, so it cannot disagree with the fade, needs no
+  // window of its own, and is symmetric by construction: the far end is the blob shrinking
+  // onto the new body and being absorbed rather than switched off.
+  const sw = lerp(MORPH.swell0, MORPH.swell, w);
   mphFill(p.mphPA, p.mphPB, p.mphHA, p.mphHB,
-          smooth(MORPH.wrap[0], MORPH.wrap[1], u), MORPH.wob * w, MPH.t);
+          smooth(MORPH.wrap[0], MORPH.wrap[1], u), MORPH.wob * w, MPH.t, sw);
   M.position.copy(p.pos);
   // **AND IT IS TURNED WITH HIM.** The hull is not a body of revolution any more, so an arm is
   // at an ANGLE and the blob has to carry the same yaw the body is drawn at. `faceOff` is
@@ -9683,6 +9744,7 @@ function mphBlob(u, dt) {
   const U = MPH.mat.uniforms;
   U.uA.value = w; U.uRim.value = MORPH.rim; U.uH.value = MPH.H;
   U.uBand.value = MORPH.band; U.uLines.value = MORPH.lines || MORPH.rings;
+  U.uT.value = MPH.t; U.uFlow.value = MORPH.flow;
   U.uCol.value.fromArray(MORPH.col); U.uHot.value.fromArray(MORPH.hot);
   U.uDeep.value.fromArray(MORPH.deep);
   // ONE PASS UP THE BODY ACROSS THE WHOLE THING, so the beam and the wrap are the same event
@@ -9707,7 +9769,11 @@ function mphBlob(u, dt) {
 function mphBlobOff() {
   if (MPH.blob) { MPH.blob.visible = false; MPH.mat.uniforms.uA.value = 0; }
   if (rig.model) rig.model.visible = true;
-  MPH.e = 0; MPH.re = 0;
+  // AND THE SWIRL'S CLOCK GOES BACK TO ZERO. It feeds `sin`/`cos` in a fragment shader, and a
+  // counter that only ever grows is a phase in the thousands after an hour -- which is where a
+  // float stops resolving one frame from the next and a moving pattern quietly stops moving.
+  // A transform is under a second, so per-transform is the whole range it ever needs.
+  MPH.t = 0; MPH.e = 0; MPH.re = 0;
 }
 
 function stepMorph(dt) {
