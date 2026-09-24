@@ -1219,6 +1219,114 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **THE DNA GUN, AND THE TRANSFORM IS A MODEL SWAP INSIDE `rig.root` (m112, `MORPH`, `morphGo`,
+  `mphWear`, `morphAnim`).** *"The alien has some sort of DNA gun -- you shoot one of the NPCs and
+  the character transforms into them. How about we do a third gun mode which is the DNA thing. We
+  don't have all of the animations for the player that we do for the NPCs, so if you transform
+  into them you could only do basic locomotion, you wouldn't be holding a gun any more -- but
+  since those characters have walk and idle and run we could just try it. My original thought was
+  sculpting a single base mesh around every character so it's a literal mesh transform, but we
+  could just cheat it: the character mesh glows and turns white, then you blend them, and it turns
+  from white to the new character's colour. Just as a test, and then a little button to transform
+  back."*
+  **NEARLY ALL OF IT WAS ALREADY BUILT, AND THAT IS `d.K`'S DIVIDEND FOR THE NINTH TIME.** `rig`
+  is the player's DRAWN BODY and nothing more -- a model, a mixer, an action table, a clip table,
+  a damped weight table, a bone map, a facing offset and a mount map. Every one of those is a
+  FIELD, so wearing somebody else is repointing them at a clone of that kind's proto and putting
+  his own set aside in `rig.base`. **`stepPlayer`, the collider, the camera, the heading, the
+  bolts and the whole of the physics never learn it happened.** The kinds already carry a measured
+  proto; `bodyProto` stashing it on `K.P` is the one line that made it reachable, and a proto that
+  exists only as a local inside a builder is a proto nothing else can reach.
+  **AND THE THIRD MODE IS WHAT m52 SAID IT WOULD BE.** *"A third mode is a row in that table and
+  the arc simply divides three ways."* One row in `WEAP.modes`, one `dnaNow()` beside `autoNow()`,
+  and the arc row, the lit segment, the hint and the hysteresis all came with it.
+  **THE SAMPLE ROUND IS NOT A WEAPON, WHICH IS WHY IT BRANCHES RATHER THAN TAKING A FLAG.** It
+  never goes through `dummyHit` at all: no cone, no power, no damage, no blast, no knock-down, no
+  `d.cool`. `dnaCatch` is the nearest body it can actually be WORN as, and nothing else in the
+  game reads it -- threading a "this one does nothing" flag through six arguments of the weapon
+  path would be one function pretending to be two.
+  **WHO CAN BE SAMPLED IS STRUCTURAL, NOT A LIST.** A body you can wear has to stand, walk and run,
+  because those three ARE the morphed gait -- so `dnaOK` is `K.clips.idle && walk && run` and the
+  officer (an idle and nothing else) is refused by what he IS rather than by name. `stripPoses`'
+  own rule, one table over. Everybody else on the street qualifies.
+  **HE IS DRAWN AT THE KIND'S OWN HEIGHT, AND THE GAIT REFERENCES ARE THE ARGUMENT.** A disguise
+  that stands a head shorter than the men it is a disguise for is not one -- and `K.walkRef` /
+  `K.runRef` are how fast the planted foot slides AT THAT KIND'S OWN SCALE (m52), so drawing him
+  at `K.h` is what lets the clips be played at their own numbers with nothing re-derived.
+  **THE COLLIDER DOES NOT FOLLOW**: `p.r`, `p.hh`, `MOVE.step` and every speed stay his, because
+  changing a body's size mid-game is m52's whole build and this is a test. **One term does have
+  to follow, and it is the camera's look point** -- `CAM.look` is chest height on HIM, which on a
+  1.78 m drunk is the man's waist and frames him low. `MORPH.tall = 0` draws him at his own height
+  for the A/B.
+  **AND THE GAIT IS THE HONEST LIMIT, STATED RATHER THAN HIDDEN.** `K.runRef` on a drunk is 1.8 to
+  2.0 m/s and the player sprints at 7.2, so past a run the clip clamps at that kind's own `tsHi`
+  and the feet slide. That is *"you could only do like basic locomotion"* said as a number. The
+  fix is a faster clip or a slower disguise and neither is this build.
+  **THE FLASH IS AN EMISSIVE RAMP AND THE SWAP HAPPENS AT THE TOP OF IT**, which is his cheat
+  exactly: the body you are TAKING OFF goes white, the mesh is exchanged while nothing is
+  readable, and the new one comes up out of the white. Both halves matter -- whiten only the
+  arrival and what you see is one body vanishing and another appearing.
+  **A 1x1 WHITE TEXTURE RATHER THAN `emissiveMap = null`.** `USE_EMISSIVEMAP` is a #define, so
+  swapping a map for NOTHING is a program compile and link in the middle of the one second the
+  effect is on screen; texture to texture is not. Every material's own colour, emissive, map and
+  intensity are stashed on it the first time it is tinted and put back exactly, so a body that has
+  been worn is byte-for-byte what it was afterwards -- which is what lets it be worn again.
+  **AND THE WORN SKIN'S MATERIALS ARE ITS OWN.** `skeletonClone` SHARES them, so without the clone
+  the flash would whiten every copy of that kind standing in the street -- m39's `bodyFlash`
+  lesson, one body over.
+  **THE SKIN IS BUILT WHEN THE SHOT LANDS AND KEPT ON THE KIND.** A transform that clones a mesh,
+  a skeleton and a mixer on the frame it fires is a hitch on exactly the frame something is
+  happening, and wearing the same man twice is the common case.
+  **AND THE SWAP SEEDS THE NEW SKIN AT ITS IDLE.** `skinWeights` damps in over `.055`, so a fresh
+  `cw` leaves every bone at a total weight of nothing for a frame or two -- which is the mixer
+  blending back to BIND, **which is the T-pose exactly**. It is masked by the white, and a flash
+  of T-pose is not a thing to leave to luck.
+  **`stepMorph` RUNS ABOVE `rigAnim` FOR THE SAME REASON.** Run after it, the frame's weights are
+  set on the body that has just been taken off and the new one spends a frame at zero.
+  **AND `rigAnim` NEEDED ONE EARLY RETURN, NOT A BRANCH PER STATE.** Every clip name below that
+  line is zap's, and a table naming none of the actions a borrowed skin has takes `skinWeights`'
+  own T-pose escape hatch **and lands in the thing it exists to prevent** -- because the fallback
+  is `CLIPS.idle`, which this skin has never heard of either. `morphAnim` builds its table out of
+  the KIND's clips and passes the KIND's idle as the fallback, which closes that hole completely.
+  **THE VERBS ARE OFF BECAUSE THERE ARE NO CLIPS FOR THEM, NOT BECAUSE THE STATES WOULD BREAK.**
+  A strike, a roll, a dash, a slam, a backflip, wall cover and a ledge hang all end in a pose a
+  borrowed skin has not got, which is a body sliding about in its walk cycle. `mphOn()` is the one
+  predicate all of them read, and `stepKit` is a single early return that CLEARS rather than skips
+  -- a thumb that was on the pad when the shot landed must not arrive still armed.
+  **AND HE LETS GO OF THE WALL**, through `wallDrop`/`ledgeDrop` rather than by clearing the
+  fields, because those two states have their own exits and a pinned man in a walk pose is the one
+  thing this cannot leave behind.
+  **THE FOOTSTEPS FOLLOW THE BODY.** `STEP.clip` is `{ d, r }` per band (m68), so the morph carries
+  its own measured pair and `strideNow` works the distance out at the speed he is going -- without
+  it the feet are a drunk's and the sound is zap's stride.
+  **AND THE SEAT BONE IS INVALIDATED.** `PACK._b` is looked up once and cached, which is right and
+  is exactly what a swapped model breaks -- a stale one is Clancy riding a bone that is no longer
+  in the scene.
+  **THE WAY BACK IS A GESTURE THAT ALREADY EXISTS.** *"A little button to transform back."* The
+  left pad's tap is already "change what you are carrying", the kit is forced to bare hands for the
+  whole disguise, so there is nothing to cycle to -- and the weapon label says `tap left pad ·
+  revert`, which is the prompt drawn on the control that performs it. `actB`'s rule, and it is what
+  stops a re-used gesture being a hidden mode.
+  **AND THE `zap` SAMPLE IS FINALLY THE SOUND OF THE THING IT IS A RECORDING OF.** m27 took it off
+  the blaster as a duplicate and it has been loaded and unused since; an electrical sample beam is
+  what it always was.
+  **WHAT IS UNVERIFIED AND WHY:** every character GLB here is draco and `DRACOLoader` wants a
+  Worker, so **nothing in this container can build a skin** -- whether the white reads as a
+  transform, whether a drunk's walk at 7 m/s reads as a slide or as a bug, and whether a 1.78 m
+  body on a 1.25 m collider reads wrong are all device questions. The chip is what answers the
+  first half of any report: `DNA HICK SKINNY` is who he is wearing and `DNAOUT0.21` is the flash
+  running, because "the shot did nothing", "it fired and he never changed" and "he changed into the
+  wrong one" are three bugs and one picture from a phone. `mel.dna('hobo')` wears the nearest
+  matching kind with no shot fired, `mel.dna()` puts him back, and `mel.MORPH` is live.
+  **NOT DONE, AND EACH FOR A REASON:** nobody REACTS to the disguise -- *"when the game is fully
+  built you're in a human city and you're an alien, so if people see you they get afraid of you,
+  if cops see you they shoot at you, but if you transform into one of them they don't think
+  anything of it"* -- and that is `foeTarget`'s own aggro rule rather than a rider on this. There
+  is no sample-and-return, no DNA the gun HOLDS and no menu of what you have collected; the shot
+  transforms you on the spot, which is his *"we don't need to get so detailed with that whole
+  thing"*. And the literal mesh transform wants the one base mesh he described, which is an ASSET
+  decision: the moment every character shares a topology, this same swap becomes a morph-target
+  blend with `mphWear` doing the same job.
 - **THE SWAP IS TWO EVENTS NOW, AND BOTH CROSSINGS ARE MEASURED (m111, `SWAP.hide`/`SWAP.show`).**
   *"The weapon switches before he looks like the first weapon goes into the backpack -- his arm
   reaches into the backpack and then comes back to rest out of it. The weapon needs to switch like
@@ -5243,8 +5351,8 @@ means anything you can carry from one situation to the next.
 | | left | right |
 |---|---|---|
 | hold | move | **hold UP**: firing position, charge, release to fire (blaster) / wind up (hammer) |
-| arc row | **Clancy: ROAM / PACK** (m104) | the blaster's CHARGE / AUTO |
-| tap | next weapon | jump |
+| arc row | **Clancy: ROAM / PACK** (m104) | the blaster's CHARGE / AUTO / **DNA** (m112) |
+| tap | next weapon, **or revert while disguised** (m112) | jump |
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
 
@@ -5295,6 +5403,11 @@ means anything you can carry from one situation to the next.
   which is what the four clips support. A dedicated sprint gesture is a slot, not a clip.
 - `weapon_root_left` is unused. Dual wield is a weapon file exported onto it and one roster line.
 - No audio at all.
+- **Nobody reacts to the disguise.** The DNA gun (m112) changes what he is DRAWN as and nothing
+  else -- *"if people see you they get afraid of you, if cops see you they shoot at you, but if
+  you transform into one of them they don't think anything of it"* is `foeTarget`'s aggro rule
+  and its own build. And there is no sample-and-return and no DNA the gun holds: the shot
+  transforms you on the spot, which is deliberate.
 - The world is a white floor and ten boxes, with a painted street grid round it (m110). It is
   a test site, not a level. **The streets have no relief** -- no kerb, no lamp, no crossing --
   and the one thing standing between them and all three is `camHit` having a minimum height,

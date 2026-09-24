@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m111</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m112</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m111</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m112</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm111';
+const BUILD = 'm112';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -1546,6 +1546,13 @@ const WEAP = {
   modes: [
     { key: 'charge', label: 'CHARGE', hint: 'hold up \u00b7 release fires' },
     { key: 'auto',   label: 'AUTO',   hint: 'hold up \u00b7 rapid fire', auto: true },
+    // **AND THE THIRD ONE IS THE DNA GUN (m112).** *"Can we turn one of the gun modes -- right
+    // now we have the blaster charge and then the machine gun -- how about we do a third one
+    // which is the DNA thing, and when you shoot them the character transforms into them."*
+    // m52 wrote that a third mode is *"a row in that table and the arc simply divides three ways"*
+    // and this is the build that collects on it: the row, `dnaNow()` and the branch in the bolt
+    // are the whole of the gun. It carries no damage and no blast -- see `MORPH`.
+    { key: 'dna',    label: 'DNA',    hint: 'hold up \u00b7 release samples', dna: true },
   ],
   mode: 0,
   fireAt: .78, keepAt: .48, armT: .09, arc: 1.05,
@@ -3131,6 +3138,65 @@ const SLAM = {
   // clip over `dashDur + finishTail` = .52 s, so this is the rate he is looking at on it today.
   rateMax: 3.5,
   max: 1.2,            // the failsafe, in case the ground moves out from under the prediction
+};
+
+// ============================================================================================
+// THE DNA GUN, AND THE TRANSFORM IS A CHEAT ON PURPOSE (m112, `MORPH`)
+//
+// *"The alien has some sort of DNA gun -- you shoot one of the NPCs and the character transforms
+// into them. We don't have all of the animations for the player that we do for the NPCs, so if
+// you transform into them you could only do basic locomotion, you wouldn't be holding a gun any
+// more -- but since those characters have walk and idle and run we could just try it. My original
+// thought was sculpting a single base mesh around every character so it's a literal mesh
+// transform, but we could just cheat it: the character mesh glows and turns white, then you blend
+// them, and it turns from white to the new character's colour. Just as a test, and then we'll
+// have a little button to transform back."*
+//
+// **THE WHOLE THING IS A MODEL SWAP INSIDE `rig.root`, WHICH IS WHY IT COST SO LITTLE.** `rig`
+// is the player's DRAWN BODY -- a model, a mixer, an action table, a bone map and a facing
+// offset -- and every one of those is a field. So wearing somebody else is repointing them at a
+// clone of his proto and putting the old set aside in `rig.base`; the position, the heading, the
+// collider, the camera, the footsteps and the whole of `stepPlayer` never learn it happened.
+// That is `d.K`'s dividend one body over: the kinds already carry a measured proto, and
+// `bodyProto` stashing it on `K.P` is the one line that makes it reachable.
+//
+// **HE IS DRAWN AT THE KIND'S OWN HEIGHT, AND THAT IS A MEASUREMENT RATHER THAN TASTE.** A
+// disguise that stands a head shorter than the men it is a disguise for is not one -- and the
+// gait references are the real argument: `K.walkRef`/`K.runRef` are how fast the planted foot
+// slides AT THAT KIND'S OWN SCALE (m52), so drawing him at `K.h` is what lets the clips be
+// played at their own numbers with nothing re-derived. **The collider does not move with it**:
+// `p.r`, `p.hh`, `MOVE.step` and every speed stay his, because changing a body's size mid-game
+// is m52's whole build and this is a test. What DOES follow is the camera's look point, which
+// is chest height on the body being DRAWN -- one term, or the lens frames a 1.78 m man at his
+// waist. `MORPH.tall = 0` draws him at his own height for the A/B.
+//
+// **AND THE GAIT IS THE HONEST LIMIT.** `K.runRef` on a drunk is 1.8 to 2.0 m/s and the player
+// sprints at 7.2, so past a run the clip clamps at the kind's own `tsHi` and his feet slide --
+// which is *"you could only do like basic locomotion"* said as a number rather than hidden. The
+// fix is a faster clip or a slower disguise, and neither is this build.
+//
+// **THE FLASH IS AN EMISSIVE RAMP, NOT A DISSOLVE**, and it swaps the mesh at the top of it --
+// which is exactly the cheat he described. Both halves matter: the body you are TAKING OFF goes
+// white, the swap happens while nothing is readable, and the new one comes up out of the white.
+// **A 1x1 WHITE TEXTURE RATHER THAN `emissiveMap = null`**: `USE_EMISSIVEMAP` is a #define, so
+// swapping a map for NOTHING is a program recompile mid-transform, where texture -> texture is
+// not. Every material's own values are stashed on it the first time it is tinted and put back
+// exactly, so a body that has been worn is byte-for-byte what it was afterwards.
+// **AND THE WORN SKIN'S MATERIALS ARE ITS OWN** (`skeletonClone` shares them), or the flash
+// would whiten every copy of that kind standing in the street -- m39's lesson, one body over.
+// ============================================================================================
+const MORPH = {
+  on: 1,
+  out: .42,          // the body he is wearing goes white over this
+  hold: .10,         // and stays white while the mesh is swapped
+  back: .40,         // then the new one comes up out of it
+  white: 6.0,        // how hard the emissive drives at full flash
+  tall: 1,           // 1 = drawn at the KIND's own height, 0 = at his. See the note.
+  // THE GAIT, AS FRACTIONS OF THE KIND'S OWN REFERENCE SPEEDS -- so one table serves a drunk
+  // ambling at 0.56 m/s and a warrior at 1.79 with nothing typed per character.
+  idleTo: .90,       // idle has given way by this much of `walkRef`
+  runFrom: 1.25,     // the walk starts giving way here (x walkRef)
+  runTo: .95,        // and the run owns it by here (x runRef)
 };
 
 const CLIPS = {
@@ -5405,6 +5471,21 @@ function markStep(dt, t) {
 
 // ---- the bolts ----
 const BOLTS = [];
+// green rather than violet-and-cyan: haze, body, core, in `glowBall`'s own order
+const DNABALL = [0x18b45f, 0x4dff9a, 0xffffff];
+// WHO A SAMPLE SHOT CATCHES. It is not a weapon: no cone, no power, no blast, no `d.cool` -- the
+// nearest body it can actually be WORN as, and nothing else in the game reads it.
+function dnaCatch(x, z, r) {
+  let best = null, bd = Infinity;
+  for (const d of DUMMIES) {
+    if (!dnaOK(d.K)) continue;
+    const dx = d.root.position.x - x, dz = d.root.position.z - z;
+    const dd = dx * dx + dz * dz, R = r + d.K.r;
+    if (dd > R * R || dd >= bd) continue;
+    bd = dd; best = d;
+  }
+  return best;
+}
 function fireBolt(chg) {
   const m = muzzleWorld().clone();
   const a = aimTarget();
@@ -5415,9 +5496,16 @@ function fireBolt(chg) {
   // reaches all come off `chg`, so they cannot drift apart.
   const size = lerp(WEAP.ball0, WEAP.ball1, chg);
   const g = glowBall(size);
+  // **THE SAMPLER IS A DIFFERENT COLOUR, NOT A DIFFERENT BALL (m112).** A round that does no
+  // damage and a round that flattens a man must not be the same picture -- and `glowSprite`
+  // builds its own material per layer, so this is a recolour rather than a second builder.
+  const dna = dnaNow() ? 1 : 0;
+  if (dna) for (let i = 0; i < DNABALL.length; i++)
+    if (g.children[i] && g.children[i].material) g.children[i].material.color.setHex(DNABALL[i]);
   g.position.copy(m);
   scene.add(g);
-  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size, auto: autoNow() ? 1 : 0,
+  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size, dna,
+               auto: autoNow() ? 1 : 0,
                blast: lerp(WEAP.blast0, WEAP.blast1, chg) });
 }
 // **THE ASSIST IS ON THE SHOT NOW, NOT ON THE AIM (m36).** *"No aim assist like with the
@@ -5561,7 +5649,13 @@ function stepBolts(dt) {
       // measure from because the first thing within four metres of the path IS the impact.
       // Here it is the visible ball: 1.41 m at a full charge against a picture 1.90 m across,
       // and 0.68 at a fumble. The blast still happens -- at the point it lands, below.
-      if (!dead) {
+      // **A SAMPLE ROUND HITS NOBODY (m112).** It carries no power and no damage, so it does not
+      // go through `dummyHit` at all -- the branch is what keeps "this is a weapon" and "this is
+      // a sampler" from being one function with a flag threaded through six arguments.
+      if (!dead && b.dna) {
+        const got = dnaCatch(b.pos.x, b.pos.z, b.size * .5);
+        if (got) { dead = true; b.onDna = got; }
+      } else if (!dead) {
         const got = dummyHit(b.pos.x, b.pos.z, Math.atan2(b.vel.x, b.vel.z),
                              WEAP.pow0 + b.chg * (WEAP.pow1 - WEAP.pow0),
                              b.auto ? WEAP.autoR : b.size * .5, FOE.dmg.bolt, 0, WEAP.blastMax);
@@ -5587,6 +5681,20 @@ function stepBolts(dt) {
           0, 0, 0, b.size * (.28 + Math.random() * .3), WEAP.trailLife, BOLT_COL);
     }
     if (dead) {
+      // THE SAMPLE LANDS, AND THAT IS THE WHOLE OF IT: no blast, no launch, no hit bank. The
+      // TRANSFORM is the event and `stepMorph` owns its noise, so the arrival is a small green
+      // burst and the `zap` sample -- which has been loaded and unused since m27 took it off the
+      // trigger, and which is finally the sound of the thing it was always a recording of.
+      if (b.dna) {
+        snd('zap', { g: .38, r: 1.25, dur: .38 });
+        spkBurst(b.pos.x, b.pos.y, b.pos.z, 22,
+                 { col: [.3, 1, .6], spread: 4.5, up: 2.2, r: b.size * .5, size: .12, life: .45 });
+        if (b.onDna) { spkCling(b.onDna, 26, { col: [.3, 1, .6], size: .12, life: .9, rise: 1.3 });
+                       morphGo(b.onDna.K); }
+        b.g.traverse(o => { if (o.material) o.material.dispose(); });
+        scene.remove(b.g); BOLTS.splice(i, 1);
+        continue;
+      }
       // **A PLASMA BOLT LANDING IS NOT A DETONATION (m55).** *"I don't love the noise when the
       // plasma cannon hits them -- it's kind of an explosion noise, whereas I want it to be
       // more of, I'm not sure, something else. I'll probably go make a better one."*
@@ -5784,6 +5892,10 @@ const player = {
   runT: 0, airKick: 0, meleeAir: 0, meleeBody: 0, melGap: 0,   // how long he has actually been running, and the air kick
   wall: null, wallSt: '', wallT: 0, wallOff: 0, wallSide: 0, wallCool: 0, wx0: 0, wz0: 0,
   swap: 0, swapTo: 0, swapT: 0, swapDone: 0, swapAt: 0, swapHideAt: 0, swapHid: 0,  // the reach into the backpack
+  // THE DNA DISGUISE (m112). `mphK` is the KIND he is wearing (null is himself), `mphSt` is the
+  // white flash, and `mphH` is how tall the body being DRAWN is -- which the camera's look point
+  // reads and nothing else does.
+  mphK: null, mphNext: null, mphSt: '', mphT: 0, mphH: 0,
   melH: null,                       // the bearing a strike was thrown at -- what it launches along
   bkT: 0, bkOn: 0, bkHang: 0, bkVy: 0,  // the charge, the duck, and the PUSH he is held on the
                                     // floor for before the launch
@@ -5842,6 +5954,9 @@ function slotNow() { return WEAP.slots[player.slot]; }
 // was its own slot, and one answer is the whole reason it reads better as a mode.
 function modeNow() { return slotNow().aim ? WEAP.modes[WEAP.mode] : null; }
 function autoNow() { const m = modeNow(); return !!(m && m.auto); }
+// AND THE SAME ANSWER FOR THE SAMPLER. One reader, so the bolt, the sound and the ball's colour
+// cannot disagree about which trigger this is.
+function dnaNow() { const m = modeNow(); return !!(m && m.dna); }
 // THE ARMED GAIT IS THE WHOLE TIME HE IS CARRYING IT, NOT ONLY WHILE HE IS AIMING. `p.aim` is
 // live from the moment the trigger arms, which is a fraction of a second either side of a shot
 // -- and a man walking around with a blaster does not put it away for the rest of the time.
@@ -5933,7 +6048,17 @@ function stickLocked(L) {
 }
 WEAP.worn = {};
 function paintKit() {
-  const s = slotNow(), m = modeNow();
+  const s = slotNow(), m = modeNow(), mk = player.mphK;
+  // **WHILE HE IS SOMEBODY ELSE THE LABEL IS WHO, AND THE HINT IS THE WAY BACK (m112).** The kit
+  // is bare hands for the whole disguise, so the one line with room in it is the one that says
+  // the tap means something else now -- which is what stops that being a hidden mode.
+  if (mk) {
+    wepName.textContent = mphName(mk);
+    wepHint.textContent = 'tap left pad · revert';
+    paintArcRow(modeRow, 0, WEAP.mode);
+    padR.classList.remove('ready');
+    return;
+  }
   // THE NAME STAYS THE SLOT'S. "BLASTER \u00b7 CHARGE" in the display face is wide enough to
   // meet the build chip on a 390 px phone, and the mode is already on screen as a lit button
   // -- which is the whole point of the row. The hint says which, because that is the line
@@ -6142,6 +6267,13 @@ function cycleKit() {
   const p = player;
   if (p.swap || p.knock || p.wall || p.ledge) return;                        // one at a time, not out of a
                                               // knock-down, and not with his hands full
+  // **AND WHILE HE IS SOMEBODY ELSE THERE IS NOTHING TO CYCLE TO, SO THE TAP IS THE WAY BACK
+  // (m112).** *"We'll just have a little button to transform back to get full functionality."*
+  // This pad's tap is already "change what you are carrying", the kit is forced to bare hands
+  // for the whole disguise, and the weapon label says `tap left pad \u00b7 revert` -- so it is a
+  // gesture that already exists doing the thing it already means, with the prompt drawn on the
+  // control that performs it. `actB`'s rule, one HUD element over.
+  if (mphOn()) { morphOff(); return; }
   swapGo((p.slot + 1) % WEAP.slots.length);
 }
 
@@ -6229,6 +6361,7 @@ function kickGo(h) {
 function meleeGo(h) {
   const p = player;
   if (p.knock) return;                  // out of a knock-down: the get-up is not his to cancel
+  if (mphOn()) return;                  // and a borrowed skin has no strike to throw (m112)
   swapStop();
   // **A FLICK IN THE AIR IS THE FLYING KICK (m88).** *"Flying kick is if you jumped in the air
   // and you melee."* Until now `meleeGo` simply returned when airborne, so a flick up there did
@@ -6355,6 +6488,7 @@ function meleeGo(h) {
 // from where he stood onto the pinned standoff across `inDur`, which is what makes the clip read
 // as an approach rather than as a snap plus an animation.
 function wallGo(W) {
+  if (mphOn()) return 0;               // no cover clips on a borrowed skin (m112)
   const p = player, nm = WALL.clips.in;
   swapStop();
   p.wall = W; p.wallSt = 'in'; p.wallT = 0; p.wallOff = 0; p.wallSide = 0;
@@ -6472,6 +6606,7 @@ function stepWall(dt) {
 // RISING IS DELIBERATE**, not an oversight: jumping at a fire escape and being caught by it on
 // the way up is the move, and a test for `vel.y < 0` would take it away.
 function ledgeGo(L) {
+  if (mphOn()) return 0;               // no hang clips on a borrowed skin (m112)
   const p = player;
   swapStop(); triggerStop();
   p.ledge = L; p.ledgeSt = 'in'; p.ledgeT = 0; p.ledgeOff = 0; p.ledgeSide = 0;
@@ -6671,7 +6806,7 @@ function backGo(far, fired) {
   const p = player, k = clamp(p.bkT / AIR.hold, 0, 1), on = p.bkOn;
   p.bkT = 0; p.bkOn = 0;
   // a flick or a tap already answered this thumb, and one gesture may only mean one thing
-  if (!on || fired || far >= MOVE.tapR || !p.grounded || p.land) return 0;
+  if (!on || fired || far >= MOVE.tapR || !p.grounded || p.land || mphOn()) return 0;
   const hi = AIR.hi0 + (AIR.hi1 - AIR.hi0) * k, vy = Math.sqrt(2 * MOVE.g * hi);
   // **IT SPENDS THE DOUBLE.** A front flip started out of a backflip is two rotations fighting
   // over one body, and this is already the higher jump of the two -- so the backflip IS the
@@ -6700,7 +6835,7 @@ function backGo(far, fired) {
 
 function slamGo(dx, dy) {
   const p = player;
-  if (p.grounded || p.knock || p.slam || p.slamUsed || p.roll) return 0;
+  if (p.grounded || p.knock || p.slam || p.slamUsed || p.roll || mphOn()) return 0;
   swapStop();
   if (!(dy > 0 && Math.abs(dy) > Math.abs(dx))) return 0;
   const nm = CLIPS.chargeGo;
@@ -6805,7 +6940,7 @@ function triggerStop() {
 function rollGo(h) {
   const p = player;
   swapStop();
-  if (!p.grounded || p.knock || p.roll || p.melee || p.chargeGo) return;
+  if (!p.grounded || p.knock || p.roll || p.melee || p.chargeGo || mphOn()) return;
   p.roll = 1; p.rollT = 0; p.rollH = (h != null ? h : p.faceH);
   p.heading = p.rollH; p.melee = 0; p.meleeChain = 0;
   // **A ROLL STOPS THE SHOT (m68).** *"When I'm shooting and then I roll, he needs to stop
@@ -7293,6 +7428,17 @@ function padUp(on) {
 function stepKit(dt) {
   const p = player, s = slotNow(), R = stick.R;
   const up = -R.y, mag = Math.hypot(R.x, R.y);
+
+  // **WEARING SOMEBODY ELSE THERE IS NO KIT (m112).** Every branch below ends in a pose he has
+  // not got, so this is one early return rather than seven gates -- and it CLEARS rather than
+  // simply skipping, or a thumb that was on the pad when the shot landed arrives still armed.
+  if (mphOn()) {
+    triggerStop();
+    p.block = 0; p.blockT = 0; p.center = 0; p.centerT = 0; p.bkT = 0; p.bkOn = 0;
+    p.chg = 0; p.autoT = 0; chargeFx.visible = false;
+    GUNU.k.value = damp(GUNU.k.value, 0, .06, dt);
+    return;
+  }
 
   // ---- DOWN ON THE RIGHT PAD IS A GUARD (m37). *"I want to make it so that down on the right
   //      stick is block. I know I don't have a block animation yet, but I'll put one in."*
@@ -8034,6 +8180,11 @@ function stepPlayer(dt) {
 // ============================================================================================
 function rigAnim(dt) {
   const p = player, sp = p.speed, t = {};
+
+  // **WEARING SOMEBODY ELSE, EVERY NAME BELOW IS A CLIP THIS SKIN HAS NEVER HEARD OF (m112)** --
+  // and a table that names none of them leaves every bone at zero total weight, which is the
+  // T-pose exactly. One early return, and `morphAnim` builds its table out of the KIND's own.
+  if (p.mphK) { morphAnim(dt); return; }
 
   if (p.roll) { t[CLIPS.roll] = 1; setWeights(t, dt); return; }
   if (p.melee) { t[p.meleeName] = 1; setWeights(t, dt); return; }
@@ -8970,7 +9121,12 @@ function bodyProto(g, K) {
   }
   console.log('[melee] ' + K.file + ': ' + authored.toFixed(4) + ' m authored -> x' + scale.toFixed(3) +
               ', ' + clips.length + ' clips');
-  return { proto, scale, faceOff, clips };
+  // **AND IT IS STASHED ON THE KIND (m112).** The DNA gun wears a clone of this, and a proto
+  // that only exists as a local inside a builder is a proto nothing else can reach -- which is
+  // the one line between "a table and a load line" and a second loader.
+  const P = { proto, scale, faceOff, clips };
+  K.P = P;
+  return P;
 }
 
 function bodySpawn(P, K, x, z) {
@@ -9042,6 +9198,184 @@ function bodySpawn(P, K, x, z) {
   }
   DUMMIES.push(d);
   return d;
+}
+
+// ---- THE DNA GUN'S TRANSFORM (m112) --------------------------------------------------------
+// See `MORPH` for why it is a model swap inside `rig.root` and why the flash is a cheat.
+const MPH_WHITE = new THREE.Color(1, 1, 1);
+// A 1x1 WHITE MAP. `USE_EMISSIVEMAP` is a #define, so swapping a map for NULL recompiles the
+// program mid-transform and swapping texture for texture does not.
+const MPH_TEX = (() => {
+  const t = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1);
+  t.colorSpace = THREE.SRGBColorSpace; t.needsUpdate = true; return t;
+})();
+// WHO CAN BE SAMPLED IS A STRUCTURAL TEST, NOT A LIST. A body you can wear has to be able to
+// stand, walk and run, because those three are the whole of what the morphed gait blends -- so
+// the officer (who has an idle and nothing else) is refused by what he IS rather than by name.
+const dnaOK = K => !!(MORPH.on && K && K.P && K.clips && K.clips.idle && K.clips.walk && K.clips.run);
+const mphOn = () => !!(player.mphK || player.mphSt);
+// his own file, read as a name. Nothing in the kinds carries one and six table edits to add a
+// string is six things to keep in step with the filenames they would be copied from.
+const mphName = K => String(K.file).split('/').pop().replace(/\.glb$/i, '')
+  .replace(/^alien[ _-]+/i, '').replace(/[ _-]*\d+$/, '').replace(/[_-]+/g, ' ').toUpperCase();
+
+function mphMats(model) {
+  const out = [], seen = new Set();
+  model.traverse(o => {
+    const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+    for (const m of ms) if (m && !seen.has(m)) { seen.add(m); out.push(m); }
+  });
+  return out;
+}
+// THE STRIDE IS THE SAME ARITHMETIC ON WHOEVER IS DRAWN (m64/m68): `{ d, r }` per band, and
+// `strideNow` works the distance out at the speed he is actually going. Without it the
+// footsteps keep zap's stride while a drunk's legs are on screen.
+function mphStride(clips, K) {
+  const st = (nm, ref) => { const c = nm && clips[nm]; return c ? { d: c.duration, r: ref } : null; };
+  const w = st(K.clips.walk, K.walkRef), r = st(K.clips.run, K.runRef);
+  return { walk: w, run: r, sprint: r };
+}
+// 0 puts every material back exactly as it was, which is what lets a worn body be worn again.
+function mphTint(mats, k) {
+  for (const m of mats) {
+    let o = m.userData.mph0;
+    if (!o) o = m.userData.mph0 = { col: m.color ? m.color.clone() : null,
+                                    map: m.emissiveMap || null, i: m.emissiveIntensity,
+                                    em: m.emissive ? m.emissive.clone() : null };
+    if (k <= .001) {
+      if (m.color && o.col) m.color.copy(o.col);
+      if (m.emissive && o.em) m.emissive.copy(o.em);
+      m.emissiveMap = o.map; m.emissiveIntensity = o.i;
+      continue;
+    }
+    if (m.color && o.col) m.color.copy(o.col).lerp(MPH_WHITE, k);
+    if (m.emissive) m.emissive.setRGB(1, 1, 1);
+    if (o.map) m.emissiveMap = MPH_TEX;
+    m.emissiveIntensity = lerp(o.i, MORPH.white, k);
+  }
+}
+// BUILT ONCE PER KIND AND KEPT. A transform that clones a skin and a mixer on the frame it
+// fires is a hitch on exactly the frame something is happening, and wearing the same man twice
+// is common -- so the clone is made when the shot lands and the swap itself allocates nothing.
+function mphSkin(K) {
+  if (K.mph) return K.mph;
+  const P = K.P; if (!P) return null;
+  const model = skeletonClone(P.proto);
+  const mats = [];
+  model.traverse(o => {
+    if (!o.isMesh && !o.isSkinnedMesh) return;
+    if (Array.isArray(o.material)) o.material = o.material.map(m => { const c = m.clone(); mats.push(c); return c; });
+    else if (o.material) { o.material = o.material.clone(); mats.push(o.material); }
+  });
+  // DRAWN AT THE KIND'S OWN HEIGHT -- see `MORPH.tall`. `P.scale` is `K.h / authored`, so this
+  // is `h / authored` and nothing about the export is assumed.
+  const h = MORPH.tall ? K.h : RIG.height;
+  model.scale.setScalar(P.scale * h / K.h);
+  const bones = {};
+  model.traverse(o => { if (o.isBone) bones[o.name] = o; });
+  const mixer = new THREE.AnimationMixer(model);
+  const actions = {}, clips = {};
+  const loops = K.loops || bodyLoops(K);
+  for (const c of P.clips) {
+    clips[c.name] = c;
+    const a = mixer.clipAction(c);
+    if (!loops.has(c.name)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
+    a.enabled = true; a.setEffectiveWeight(0); a.play();
+    actions[c.name] = a;
+  }
+  K.mph = { K, model, mixer, actions, clips, cw: {}, bones, faceOff: P.faceOff, mats, h,
+            mounts: {}, stride: mphStride(clips, K) };
+  return K.mph;
+}
+// THE SWAP. Every field `rig` carries is repointed at one set or the other, so there is one
+// drawn body and nothing anywhere else has to know which it is.
+function mphWear(skin) {
+  const s = skin || rig.base;
+  if (rig.model) rig.root.remove(rig.model);
+  rig.model = s.model; rig.root.add(s.model);
+  rig.mixer = s.mixer; rig.actions = s.actions; rig.clips = s.clips; rig.cw = s.cw;
+  rig.bones = s.bones; rig.faceOff = s.faceOff; rig.mounts = s.mounts || {};
+  STEP.clip = s.stride;
+  // THE SEAT BONE BELONGS TO WHATEVER BODY IS DRAWN. `PACK._b` is looked up once and cached,
+  // which is right and is exactly what a swapped model invalidates -- a stale one is Clancy
+  // riding a bone that is no longer in the scene.
+  PACK._b = null; PACK._exact = 0;
+  // **AND THE NEW SKIN STARTS AT ITS IDLE RATHER THAN AT ZERO.** `skinWeights` damps in over
+  // `.055`, so a fresh `cw` leaves every bone at a total weight of nothing for a frame or two
+  // -- which is the mixer blending back to BIND, which is the T-POSE exactly. It is masked by
+  // the white, and a flash of T-pose is not something to leave to luck.
+  const idle = skin ? skin.K.clips.idle : CLIPS.idle;
+  s.cw = {}; s.cw[idle] = 1; rig.cw = s.cw;
+  const a = rig.actions[idle]; if (a) { a.play(); a.setEffectiveWeight(1); }
+  player.mphK = skin ? skin.K : null;
+  player.mphH = s.h;
+  paintKit();
+}
+// **HIS HANDS ARE EMPTY AND EVERY VERB IS OFF.** Not because the states would break -- they are
+// gated -- but because there is no clip for any of them on a borrowed skin, and a state with no
+// clip is a body sliding about in its walk pose. `mphOn()` is the one predicate they all read.
+function morphGo(K) {
+  const p = player;
+  if (!MORPH.on || p.mphSt) return 0;                 // one transform at a time
+  if (K && !dnaOK(K)) return 0;
+  if ((p.mphK || null) === (K || null)) return 0;
+  if (K && !mphSkin(K)) return 0;
+  p.mphNext = K || null; p.mphSt = 'out'; p.mphT = 0;
+  triggerStop(); swapStop();
+  if (p.slot !== 0) applySlot(0);
+  // **AND HE LETS GO OF THE WALL.** `morphAnim` has no branch for cover or a hang -- those clips
+  // are zap's -- so a shot that lands while he is on one would pin him there in a walk pose.
+  // The two states have their own exits and this uses them rather than clearing the fields.
+  if (p.wall) wallDrop(1);      // 1 = let go outright; `0` keeps him in the stand-up clip
+  if (p.ledge) ledgeDrop(0);
+  p.melee = 0; p.roll = 0; p.chargeGo = 0; p.slam = 0; p.block = 0; p.center = 0;
+  p.bkT = 0; p.bkOn = 0; p.flip = '';
+  snd('ready', { g: .5, r: K ? .78 : 1.15 });
+  return 1;
+}
+const morphOff = () => morphGo(null);
+function stepMorph(dt) {
+  const p = player;
+  if (!p.mphSt) return;
+  p.mphT += dt;
+  const cur = p.mphK ? p.mphK.mph : rig.base;
+  if (p.mphSt === 'out') {
+    mphTint(cur.mats, clamp(p.mphT / Math.max(.02, MORPH.out), 0, 1));
+    if (p.mphT >= MORPH.out + MORPH.hold) {
+      mphTint(cur.mats, 0);                            // the body coming off goes back to itself
+      const to = p.mphNext ? mphSkin(p.mphNext) : null;
+      mphWear(to);
+      mphTint((to || rig.base).mats, 1);
+      p.mphSt = 'in'; p.mphT = 0;
+      // the swap is the EVENT, so it is where the noise and the debris are -- not the release
+      snd('zap', { g: .55, r: p.mphK ? .85 : 1.2, dur: .5 });
+      spkBurst(p.pos.x, p.pos.y + player.mphH * .5, p.pos.z, 30,
+               { col: [.5, 1, .72], spread: 5.5, up: 3.2, r: .5, size: .13, life: .55 });
+    }
+  } else {
+    const u = 1 - clamp(p.mphT / Math.max(.02, MORPH.back), 0, 1);
+    mphTint(cur.mats, u);
+    if (u <= 0) { mphTint(cur.mats, 0); p.mphSt = ''; p.mphNext = null; }
+  }
+}
+// THE GAIT, AND NOTHING ELSE. It reads the KIND's own clip table and its own reference speeds,
+// and `skinWeights`' fallback is the KIND's idle -- the player's own would be a name this skin
+// has never heard of, which takes the T-pose escape hatch and lands in the thing it prevents.
+function morphAnim(dt) {
+  const p = player, K = p.mphK, C = K.clips, sp = p.speed, t = {};
+  if (C.air && !p.grounded) t[C.air] = 1;
+  else if (p.knock) t[(p.gotUp ? C.upF : C.downF) || C.idle] = 1;
+  else {
+    const A = smooth(STEP.at * .5, K.walkRef * MORPH.idleTo, sp);
+    const B = smooth(K.walkRef * MORPH.runFrom, K.runRef * MORPH.runTo, sp);
+    t[C.idle] = 1 - A; t[C.walk] = A * (1 - B); t[C.run] = A * B;
+    const ts = (nm, ref) => {
+      const a = rig.actions[nm];
+      if (a) a.setEffectiveTimeScale(clamp(sp / Math.max(.05, ref), K.tsLo || .7, K.tsHi || 1.5));
+    };
+    ts(C.walk, K.walkRef); ts(C.run, K.runRef);
+  }
+  skinWeights(rig, t, dt, .06, C.idle);
 }
 
 // WHICH NAMES LOOP. Everything else is a one-shot, so this is derived from the table rather
@@ -10986,7 +11320,10 @@ function stepCam(dt) {
   }
   if (p.lock) cam.az += wrapAngle(lockH(p.lock) - cam.az) * Math.min(1, LOCK.cam * dt);
   cam.el = CAM.el;
-  cam.tgt.set(p.pos.x, p.pos.y + CAM.look, p.pos.z);
+  // **AND THE LOOK POINT IS CHEST HEIGHT ON THE BODY BEING DRAWN (m112).** `CAM.look` is his own
+  // chest; worn as a 1.78 m drunk that is the man's waist, so the lens frames him low. It is the
+  // one term the morph moves -- the collider and every speed stay his, deliberately.
+  cam.tgt.set(p.pos.x, p.pos.y + CAM.look * ((p.mphH || RIG.height) / RIG.height), p.pos.z);
   const ce = Math.cos(cam.el);
   const bx = -Math.sin(cam.az) * ce, by = Math.sin(cam.el), bz = -Math.cos(cam.az) * ce;
   const want = CAM.dist + p.speed * CAM.distV;
@@ -11045,6 +11382,10 @@ function frame() {
     stepMoto(dt);
     stepDummies(dt);
     stepShe(dt);
+    // **BEFORE `rigAnim`, BECAUSE IT SWAPS THE MODEL.** Run after it, the weights of the frame
+    // would be set on the body that has just been taken off and the new one would spend a frame
+    // at zero -- which is the mixer blending back to BIND, which is the T-pose.
+    stepMorph(dt);
     rigAnim(dt);
     rig.mixer.update(dt);
     // DRAWN AT `faceH`, not at `heading`, plus the rigid yaw that puts the barrel down his nose.
@@ -11173,8 +11514,13 @@ function frame() {
     // WHICH PAD MODE IT IS IN. Silent when they are fixed, because that is the default and the
     // pads plainly say so by being where they always are -- `rollREC`'s rule, one control over.
     const fl = STICK.dyn ? ' · FLOAT' : '';
+    // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
+    // he never changed" and "he changed into the wrong one" are three bugs and one picture from
+    // a phone. Silent when he is himself, `rollREC`'s rule.
+    const mp = p.mphSt ? ' · DNA' + p.mphSt.toUpperCase() + p.mphT.toFixed(2)
+             : p.mphK ? ' · DNA ' + mphName(p.mphK) : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
@@ -11380,6 +11726,14 @@ async function init() {
   // a GPU, so whether a compile is what he is feeling is a device question.
   try { renderer.compile(scene, camera); } catch (err) { console.warn('[melee] warm-up', err); }
 
+  // **HIS OWN BODY, PUT ASIDE (m112).** The DNA gun repoints every field `rig` carries at a
+  // borrowed skin, so the set that is his has to be a set too -- captured HERE, after the clips
+  // and after `STEP.clip` is measured, because those are the two things it has to carry back.
+  rig.base = { model: rig.model, mixer: rig.mixer, actions: rig.actions, clips: rig.clips,
+               cw: rig.cw, bones: rig.bones, faceOff: rig.faceOff, mounts: rig.mounts,
+               mats: mphMats(rig.model), h: RIG.height, stride: STEP.clip };
+  player.mphH = RIG.height;
+
   player.pos.y = groundAt(player.pos.x, player.pos.z, 0, MOVE.step);
   rig.ready = true;
   setBoot('go', 1);
@@ -11395,6 +11749,17 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   DUMMY, DUMMIES, LOCK, LEDGE, WALL, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, slamGo, chargeRelease, groundAt,
   MFX, camShake, palDive,
+  // THE DNA GUN, LIVE (m112). `mel.dna('hick')` wears the nearest kind whose file matches, with
+  // no shot fired -- which is the only way to look at the transform without a fight, and is
+  // `mel.slamfx()`'s own argument. `mel.dna()` puts him back.
+  MORPH, morphGo, morphOff, mphName,
+  dna: q => {
+    if (!q) return morphOff() ? 'reverting' : 'he is himself';
+    const re = new RegExp(String(q), 'i');
+    const d = DUMMIES.find(b => dnaOK(b.K) && re.test(b.K.file));
+    if (!d) return 'nobody here matches ' + q;
+    return morphGo(d.K) ? mphName(d.K) : 'busy';
+  },
   // THE PADS AND THE PACK, LIVE (m104). `mel.dyn(1)` floats the sticks and `mel.dyn(0)` puts
   // them back bigger and fixed -- one switch, the body class, and nothing else to keep in step.
   // `mel.pack(1)` sends the sidekick to your back from the console, which is the same call the
