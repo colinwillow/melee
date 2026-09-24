@@ -1220,6 +1220,33 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **THE WARRIOR WAS SQUARED UP THE WHOLE TIME AND THE REFERENCE BEARING WAS WRONG (m117,
+  `npm run sim` case 14).** *"yeah run it"* -- and it came back `1 FAILED`, on a row that has
+  been red since **m112** with nobody looking. Not a regression from m116: bisected across five
+  commits, and the DNA gun is where it turns.
+  **IT IS THE THIRD INVENTED PASS MARK IN THIS ONE CASE, AND THE COMMENT ABOVE IT ALREADY
+  RECORDS THE OTHER TWO.** The facing was `|wrap(d.h - PI)|` -- his heading against a HARD-CODED
+  pi, which is the bearing to the player only while he stands on the +Z axis he spawned on. He
+  CIRCLES (m36), so he does not. m112 shifted the seeded stream, he drew a different `nerve`,
+  ended the fight at **(0.24, 0.21)** rather than dead ahead, and a correct fight failed for a
+  third distinct reason. Measured honestly against the bearing to the player:
+      at the closest frame   pos (-0.25, -0.22)   h 49 deg   bearing to player 49 deg
+      TRUE min off-bearing   **0.0 deg**  -- he was squared up, and the REFERENCE was wrong
+  **A MINIMUM OVER A WINDOW DOES NOT RESCUE A WRONG REFERENCE**, which is what m40's fix here
+  stopped at: it made the SAMPLING honest and left the thing being compared against alone.
+  **AND THE BEARING IS NOT SAMPLED ON TOP OF THE PLAYER.** He reaches 0.00 m in this harness --
+  the player is never stepped, so `pushBodies` (which moves the PLAYER, not the body) never runs
+  and nothing shoves him off -- and at zero gap the reference is `atan2(0, 0)`, which is noise.
+  `copFly`'s rule one system over: a direction recovered from geometry where the two things
+  coincide is not a direction. Sampled from `axis` .25 m out.
+  **VERIFIED BY BREAKING THE RULE IN A COPY**, which is the only thing that proves an assertion
+  is an assertion: bend the approach's `faceTo` by 1.2 rad and the row reads **75 deg off** and
+  fails. The fixed version is a gate, not a row that cannot go red.
+  **AND THE 0.00 m IS A STATED GAP RATHER THAN A FAULT.** This case pins the player on purpose so
+  the warrior's approach is measured against a fixed point, which is right for testing a BRAIN --
+  in the game he stops around `hold` 1.7 m. The row asserts `< hitR` 1.9 and passes honestly
+  either way.
+
 - **HE TELEPORTED OFF YOUR BACK, AND THE NOTE ABOVE THE LINE CLAIMED HE DID NOT (m116,
   `packOff`).** *"When you tell him to go back to roam he just like teleports down to the ground.
   I want him to literally jump off your backpack."* Exactly what it did. `packOff` set

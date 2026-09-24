@@ -510,6 +510,16 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
   // different reasons on different runs. **A state machine is not measured on one frame.**
   // What closing MEANS is that he gets somewhere he can strike from; what facing MEANS is that
   // he squares up while he is there. Both are minima over the last stretch of the fight.
+  // **AND THE FACING WAS MEASURED AGAINST A HARD-CODED PI, WHICH IS ONLY THE BEARING TO THE
+  // PLAYER WHILE HE STANDS ON THE +Z AXIS HE SPAWNED ON.** He CIRCLES, so he does not -- and
+  // m112 shifted the seeded stream, he drew a different `nerve`, ended the fight at (0.24, 0.21)
+  // rather than dead ahead, and a correct fight failed for a THIRD distinct reason. Measured
+  // honestly against the bearing to the player he reads **0.0 deg off**: he was squared up the
+  // whole time and the REFERENCE was wrong. Third invented pass mark in this one case.
+  // The bearing is only sampled from `axis` metres out, because on top of the player it is
+  // `atan2(0, 0)` -- a direction recovered from geometry where the two things coincide is
+  // noise, which is `copFly`'s own rule one system over.
+  const axis = .25;
   let faced = Math.PI, near = 99;
   // TWENTY SECONDS, NOT TWELVE. He starts 16 m out and a wary roll walks the last stretch at
   // about 1.2 m/s, so twelve was marginal ON TRAVEL TIME rather than on behaviour -- it passed
@@ -518,8 +528,13 @@ console.log('\n-- 14. THE WARRIOR NOTICES, CLOSES, SWINGS, AND GOES DOWN --');
   for (let i = 0; i < 60 * 20; i++) {
     M.stepDummies(DT);
     if (i > 60 * 16) {
-      faced = Math.min(faced, Math.abs(((d.h - Math.PI + 3 * Math.PI) % (2 * Math.PI)) - Math.PI));
-      near = Math.min(near, Math.hypot(d.root.position.x - p.pos.x, d.root.position.z - p.pos.z));
+      const gx = p.pos.x - d.root.position.x, gz = p.pos.z - d.root.position.z;
+      const gap = Math.hypot(gx, gz);
+      if (gap > axis) {
+        const to = Math.atan2(gx, gz);
+        faced = Math.min(faced, Math.abs(((d.h - to + 3 * Math.PI) % (2 * Math.PI)) - Math.PI));
+      }
+      near = Math.min(near, gap);
     }
   }
   ok('he closes to somewhere he can strike from', near < K.hitR, `${near.toFixed(2)} m at the closest, hitR is ${K.hitR}`);
