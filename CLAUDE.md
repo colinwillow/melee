@@ -1220,6 +1220,97 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **THE LEDGE HANG WAS MEASURED ON ZAP AND DRAWN ON SOMEBODY ELSE (m122, `bodyK`).** *"For some
+  reason, all of the characters do the ledge hang too high, like from their hips it seems."*
+  Exactly that, and it is one ratio. `LEDGE.hang` .861 and `LEDGE.out` .170 are fractions of
+  `RIG.height` **measured off zap's own hang clip** -- his hands sit 1.076 m above his root -- and
+  `MORPH.tall` draws a disguise at the KIND's own height while the collider, the speeds and
+  `MOVE.step` stay his. So the root went to `lip - 1.076` on a body whose hands are `k` times
+  further up than that, and the whole difference hung over the lip:
+      zap      h 1.25  k 1.000   hands at the lip  +0.000   the lip at **86%** of him
+      skater   h 1.68  k 1.344                     +0.370               64%   <- his screenshot
+      hick     h 1.78  k 1.424                     +0.456               60%
+      warrior  h 1.85  k 1.480                     +0.517               58%
+      clancy   h 0.62  k 0.496                     **-0.542**          174%   <- over his head
+  86% of a body is his hands; 60% is his hips, which is the word he used. Scaled, it is 0.000 at
+  every height and Clancy stops hanging off a lip half a metre above his own crown.
+  **AND THE CATCH BAND HAD TO MOVE WITH IT.** `ledgeFind` centres the window on where his hands
+  END UP -- *"the placement number IS the acquire number and the two cannot drift"* -- so scaling
+  only `ledgeAt` would have left the window where zap's hands would be while the pose put the
+  skater's 37 cm higher, which is the two halves of one rule disagreeing.
+  **IT IS NOT `rig.gaitK`, AND FOLDING IT IN WOULD HAVE BEEN THE `chargeGoH` BUG (m27).** That
+  one is set only when the clip BORROW succeeds, because a refused borrow plays the kind's own
+  clips at the kind's own reference speeds and the gait must divide by nothing -- and the body is
+  drawn just as tall either way. Two facts, two numbers.
+  **AND IT WAS ALREADY BEING COMPUTED INLINE.** `stepCam` has scaled its look point by
+  `(p.mphH || RIG.height) / RIG.height` since m112; `bodyK()` is that expression with a name, and
+  three readers rather than three copies. **A function, not a const** -- `ledgeFind` sits four
+  thousand lines above `player` and a const read from up there is a temporal dead zone, which
+  this file has paid for eight times.
+  **`WALL` IS DELIBERATELY NOT THIS.** `tall`, `chest` and `stand` are a THRESHOLD ("does this box
+  hide me") and a standoff measured against his own radius, and the cover pose is a STANDING pose
+  -- there is no placement offset to get wrong, so a taller disguise against a wall is still
+  against the wall. One variable moved. The same goes for `LEDGE.inset`, `reach` and `hop`, which
+  are plan positions against a collider that stays zap's.
+- **A DISGUISE CARRIES HIS WEAPONS, ON ITS OWN HAND (m122, `mphMounts`).** *"I can't swap through
+  the weapons. I'm wondering if we can just have the characters map the weapon to their hand joint
+  since I don't have weapon joints for most of them... we can just map it to their hands until I
+  can re-export them with weapon joints."* Read out of the files before a line was written, and
+  the reason it works at all is in the first row:
+      zap        weapon_root_right  parent **mixamorig_RightHand**  t 3.858, 7.971, -1.553
+                 weapon_tip_2       parent weapon_root_right        t -14.310, 0, 0
+      warrior    weapon_root        parent mixamorig_RightHand      -- the MACE's, tip +Z 36.18
+      hick / hobo / clancy / skater / female     **no weapon nodes at all**
+      and every one of the seven has `mixamorig_RightHand`
+  Zap's mount is a plain child of his hand with a constant local transform, so copying that
+  transform onto another rig's hand puts the gun where he holds it -- and **proportional to the
+  wearer**, because the bone chain carries the armature's 0.01 and the model's own scale. That is
+  this file's "as authored means proportional" rule one mount over, and on the skater it comes out
+  1.22x his, which is right for a body 1.34x his height.
+  **THE WARRIOR'S OWN JOINT IS NOT USED, DELIBERATELY.** It is spelt `weapon_root` rather than
+  `weapon_root_right`, so the name lookup never asks for it -- and it is the MACE's: its tip is at
+  (0, 0, 36.18) against the blaster file's (-14.31, 0, 0), a different axis and a different
+  length, so parenting the blaster there would point the barrel sideways.
+  **A RIG THAT HAS THE RIGHT JOINT USES THE JOINT**, which is `weapFit`'s rule: `mphMounts`
+  collects any `/^weapon_root/` on the skin first, so the day one of these exports carries
+  `weapon_root_right` it lands with **no code change here at all**.
+  **AND THE TIP COMES WITH IT.** `mountWeapon` reads the barrel AXIS off a `tip` child of the host
+  and `barrelH` reads the same pair every frame for the pose correction -- so a mount with no tip
+  is a gun with no direction, and `poseBias` would have returned null for the whole disguise.
+  **WHICH HAND IS READ OFF ZAP'S OWN MOUNT, NEVER TYPED.** His right one hangs off
+  `mixamorig_RightHand` and his left off the left, so one lookup serves both and dual wield needs
+  nothing added. The local transform is read LIVE rather than captured, which is safe for the
+  reason m35 checked: no mount marker deviates from its rest pose by more than 0.5 deg anywhere in
+  the file, and `normaliseClips` has already stripped every non-Hips position track.
+  **AND `mountWeapon` RUNS ONCE AT LOAD, WHICH IS THE OTHER HALF.** It parents the group to a bone
+  PERMANENTLY -- zap's -- so before this every disguise left both weapons hanging off a skeleton
+  no longer in the scene, which from a phone is indistinguishable from the kit being switched off.
+  `mphWear` re-hosts them by `w.root`, because it is the one place that knows which body is drawn.
+  `w.axis` and `w.muzzle` are MOUNT-LOCAL and the synthesised mount carries zap's own transform, so
+  neither is re-measured; `w.host` is, because `muzzleWorld` and `barrelH` read it every frame.
+  **WHAT THIS CANNOT DO is fit a hand it was not measured on.** Zap's wrist-to-grip offset is his,
+  so on a rig whose hands are proportionally a different shape the gun sits a little off -- which
+  is exactly the gap his re-export closes, and is why this is a stand-in rather than an answer.
+- **AND THE KIT IS LIVE AGAIN WHILE HE IS SOMEBODY ELSE (m122).** *"We need to still be able to
+  swap through the weapons when you're like the NPC characters, which the buttons don't show up."*
+  Three gates, all written when a disguise genuinely had nothing to play, and all now answered:
+      `stepKit`'s early return was `mphOn()` -- wearing ANYBODY -- on the argument that every
+      branch below ends in a pose he has not got. That stopped being true at m119, when
+      `mphBorrow` put zap's whole pool on the skin: the aim pose, both strafes and the shoot clip
+      are all there. It is `mphBare()` now, the same predicate the six verbs took, and it still
+      means what it always meant -- no pool to do it with, plus the transform itself.
+      `cycleKit`'s m121 inert tap is gone, so the tap means exactly one thing in every state --
+      which is the whole point of a control map. REVERT keeps its own button on the left wheel, so
+      there is no conflict left to resolve.
+      `paintKit`'s disguise branch gave the label line to the character's NAME, because with bare
+      hands it was the only thing that line had to say. There is a weapon in his fist now and the
+      label is what changes as he taps; WHO he is, is on screen twice already (the chip reads
+      `DNA <NAME>` and REVERT is lit), so nothing was lost by giving the line back to the kit.
+  **Only the TRANSFORM ITSELF still blanks it**, because for that second there is no body to be
+  carrying anything and the ring must not read armed.
+  **AND THE CHIP SAYS `NOHAND`** when a disguise's mount was never made -- "the mount is missing",
+  "it is there and the gun is in the wrong place" and "the kit is switched off" are three bugs and
+  one picture from a phone, and only the host answers the first. Silent on every rig in the repo.
 - **A BONE COUNT IS A PROXY FOR A STRUCTURE, AND IT FAILED ON THE ONE RIG WITH NO FINGERS
   (m121, `MORPH.needs`).** *"For some reason the animations aren't working on Clancy. I tried
   the homeless guy, the warrior alien -- they worked on those, but they didn't work on Clancy,
@@ -5780,7 +5871,7 @@ means anything you can carry from one situation to the next.
 |---|---|---|
 | hold | move | **hold UP**: firing position, charge, release to fire (blaster) / wind up (hammer) |
 | arc row | **Clancy: ROAM / PACK**, or **REVERT** while disguised (m121) | the blaster's CHARGE / AUTO / **DNA** (m112) |
-| tap | next weapon (inert while disguised -- m121) | jump |
+| tap | next weapon (**live while disguised again -- m122**) | jump |
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
 
@@ -5836,15 +5927,19 @@ means anything you can carry from one situation to the next.
   you transform into one of them they don't think anything of it"* is `foeTarget`'s aggro rule
   and its own build. And there is no sample-and-return and no DNA the gun holds: the shot
   transforms you on the spot, which is deliberate.
-- **And a disguise still has no WEAPONS** -- his own *"ignore weapons for now"*. Every rig but
-  the warrior's has no `weapon_root` at all, and his is spelt differently from zap's pair, so
-  the mount is found by name and finds nothing. The day an export carries `weapon_root_right`
-  and `weapon_tip_2` it needs no code change here (m119's borrow already puts the poses on him);
-  until then `stepKit` is one early return on `mphOn()` and the kit is forced to bare hands.
-- **A disguise keeps HIS collider and HIS speeds at the KIND's height** (`MORPH.tall`). So the
-  camera's look point is zap's chest on a body a head taller, and a 1.78 m hick stands in a
-  1.25 m cylinder. `MORPH.tall = 0` draws him at zap's height and is the A/B; changing the
-  collider mid-game is m52's whole build.
+- **A disguise's weapon is on its HAND, not on a joint (m122).** Every rig but the warrior's has
+  no `weapon_root` at all, and his is spelt differently and belongs to the mace -- so `mphMounts`
+  copies zap's own hand-to-mount local transform onto the borrowed `mixamorig_RightHand`. It puts
+  the gun where he holds it, proportional to the wearer, and it **cannot fit a hand it was not
+  measured on**: zap's wrist-to-grip offset is his, so on a rig whose hands are a different shape
+  it sits a little off. The day an export carries `weapon_root_right` and `weapon_tip_2` that rig
+  uses its own joint with no code change here.
+- **A disguise keeps HIS collider and HIS speeds at the KIND's height** (`MORPH.tall`), so a
+  1.78 m hick stands in a 1.25 m cylinder. The camera's look point and the ledge hang both scale
+  by `bodyK()` (m122); `WALL.tall` / `chest` / `stand` deliberately do NOT, because those are a
+  threshold and a standoff rather than a placement -- so a box that is cover for zap is cover for
+  a body a head taller, which is arguable and is stated rather than assumed. `MORPH.tall = 0`
+  draws him at zap's height and is the A/B; changing the collider mid-game is m52's whole build.
 - The world is a white floor and ten boxes, with a painted street grid round it (m110). It is
   a test site, not a level. **The streets have no relief** -- no kerb, no lamp, no crossing --
   and the one thing standing between them and all three is `camHit` having a minimum height,

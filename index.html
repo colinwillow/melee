@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m121</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m122</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m121</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m122</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm121';
+const BUILD = 'm122';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -4436,7 +4436,12 @@ function wallFind(px, py, pz, R) {
 // which is what makes *"design buildings with levels"* a thing he can do in the world builder
 // rather than a thing that needs a second list to keep in step.
 function ledgeFind(px, py, pz, R) {
-  const hands = py + RIG.height * LEDGE.hang;
+  // **AND IT IS THE DRAWN BODY'S HANDS, NOT HIS (m122).** The band is centred on where his
+  // hands END UP, so it has to ask the same question `ledgeAt` answers -- and on a disguise
+  // that is `bodyK()` taller. Read `RIG.height` here and the catch window sits where zap's
+  // hands would be while the pose puts the skater's 37 cm higher, so the acquire and the
+  // placement disagree about the one thing they were written to agree about.
+  const hands = py + RIG.height * LEDGE.hang * bodyK();
   let best = null, bd = 1e9;
   for (const b of BOXES) {
     if (b.maxy - b.miny < LEDGE.tall) continue;      // a kerb is not a ledge
@@ -4925,7 +4930,10 @@ function mountWeapon(slot, g) {
     if (m) { GUNU.hue.value = m.hue; GUNU.rgb.value.setHSL(m.hue, 1, .6); WEAP.hue = m.hue; }
     hueGlow(o.material, GUNU, 'gun');
   }
-  return { group, cm, muzzle, host, axis };
+  // **AND WHICH MOUNT IT WENT ON (m122).** `mountWeapon` runs ONCE at load and parents the
+  // group to a bone permanently -- zap's -- so a disguise left both weapons hanging off a
+  // skeleton no longer in the scene. `mphWear` re-hosts them by this name.
+  return { group, cm, muzzle, host, axis, root: got.root };
 }
 
 // ============================================================================================
@@ -6145,12 +6153,18 @@ function paintKit() {
   // THE LEFT WHEEL ANSWERS TO THE SAME STATE, and one place deciding is what stops the label,
   // the hint and the button disagreeing about what the controls currently mean.
   paintPalRow();
-  // **WHILE HE IS SOMEBODY ELSE THE LABEL IS WHO, AND THE HINT IS THE WAY BACK (m112).** The kit
-  // is bare hands for the whole disguise, so the one line with room in it is the one that says
-  // the tap means something else now -- which is what stops that being a hidden mode.
-  if (mk) {
-    wepName.textContent = mphName(mk);
-    wepHint.textContent = 'REVERT · left wheel';
+  // **AND THE LABEL IS THE SLOT AGAIN, EVEN WHILE HE IS SOMEBODY ELSE (m122).** *"We need to
+  // still be able to swap through the weapons when you're like the NPC characters, which the
+  // buttons don't show up."* m112 gave this line to the character's NAME because the kit was
+  // bare hands for the whole disguise, so it was the only thing the line had to say; with the
+  // hand mount there is a weapon in his fist and the label is what changes as he taps. WHO he
+  // is, is already on screen twice -- the chip reads `DNA <NAME>` and REVERT is lit on the left
+  // wheel -- so nothing was lost by giving the line back to the kit.
+  // **ONLY THE TRANSFORM ITSELF STILL BLANKS IT**, because for that second there is no body to
+  // be carrying anything and the ring must not read armed.
+  if (player.mphSt) {
+    wepName.textContent = mk ? mphName(mk) : '';
+    wepHint.textContent = '';
     paintArcRow(modeRow, 0, WEAP.mode);
     padR.classList.remove('ready');
     return;
@@ -6363,15 +6377,15 @@ function cycleKit() {
   const p = player;
   if (p.swap || p.knock || p.wall || p.ledge) return;                        // one at a time, not out of a
                                               // knock-down, and not with his hands full
-  // **AND WHILE HE IS SOMEBODY ELSE THE TAP DOES NOTHING RATHER THAN MEANING SOMETHING ELSE
-  // (m121).** m112 spent it on the revert, on the argument that the kit is bare hands for the
-  // whole disguise so the gesture was free -- and it is not free, because it is the ONLY way to
-  // change weapons and a disguise is a state you spend real time in. *"I can't change my weapons
-  // or anything... we need a more clever way to switch back."* REVERT is a button on the left
-  // wheel now (`paintPalRow`), which is a control that SAYS what it is; cycling into a slot
-  // `stepKit` refuses to fire would put a weapon in his hand that does nothing, so the tap is
-  // simply inert here and means exactly one thing everywhere.
-  if (mphOn()) return;
+  // **AND IT CYCLES WHILE HE IS SOMEBODY ELSE, WHICH IS WHAT IT WAS ALWAYS FOR (m122).** m112
+  // spent this tap on the revert; m121 took that back and left it INERT, on the argument that
+  // cycling into a slot `stepKit` refuses to fire would put a weapon in his hand that does
+  // nothing. That argument died with the hand mount -- the kit fires on a disguise now, so the
+  // tap means exactly one thing in every state, which is the whole point of a control map.
+  // REVERT keeps its own button on the left wheel (`paintPalRow`), so there is no conflict left.
+  // A swap mid-transform is still refused, by `mphBare()` one line down in `stepKit` and by the
+  // knock-down test above -- the body is not his to reach into while the blob has it.
+  if (player.mphSt) return;
   swapGo((p.slot + 1) % WEAP.slots.length);
 }
 
@@ -6717,9 +6731,17 @@ function ledgeGo(L) {
 // WHERE HIS ROOT GOES, FROM THE TWO MEASURED NUMBERS AND NOTHING ELSE. His hands sit on the lip
 // at the face; the root is `out` back along the normal and `hang` below it.
 function ledgeAt(L, o) {
-  o.x = L.cx + L.nx * (RIG.height * LEDGE.out);
-  o.z = L.cz + L.nz * (RIG.height * LEDGE.out);
-  o.y = L.y - RIG.height * LEDGE.hang;
+  // **SCALED BY THE DRAWN BODY (m122).** *"All of the characters do the ledge hang too high,
+  // like from their hips it seems."* Exactly that, and it is arithmetic: these two numbers are
+  // fractions of `RIG.height` measured off ZAP's hang clip, and `MORPH.tall` draws a disguise
+  // at the kind's own height. On the skater (1.68 against his 1.25, x1.344) her hands sit
+  // 1.446 m above her root while the root was placed 1.076 m under the lip -- so her hands
+  // ended **0.37 m over it** and the lip crossed her at 64% of her height, which is her hips.
+  // His word for it was the measurement.
+  const k = RIG.height * bodyK();
+  o.x = L.cx + L.nx * (k * LEDGE.out);
+  o.z = L.cz + L.nz * (k * LEDGE.out);
+  o.y = L.y - k * LEDGE.hang;
   return o;
 }
 const _lp = { x: 0, y: 0, z: 0 };
@@ -7527,10 +7549,15 @@ function stepKit(dt) {
   const p = player, s = slotNow(), R = stick.R;
   const up = -R.y, mag = Math.hypot(R.x, R.y);
 
-  // **WEARING SOMEBODY ELSE THERE IS NO KIT (m112).** Every branch below ends in a pose he has
-  // not got, so this is one early return rather than seven gates -- and it CLEARS rather than
+  // **WEARING SOMEBODY ELSE WITH NOTHING TO PLAY (m112, narrowed at m122).** It read `mphOn()`
+  // -- wearing anybody at all -- on the argument that every branch below ends in a pose he has
+  // not got. True when it was written, and it stopped being true the moment `mphBorrow` put
+  // zap's whole pool on the skin: the aim pose, the strafes and the shoot clip are all there.
+  // So it is `mphBare()` now, the same predicate the six verbs took at m119, and what it means
+  // is what it always meant -- **no pool to do it with**, plus the transform itself, which owns
+  // the body while it runs. One early return rather than seven gates, and it CLEARS rather than
   // simply skipping, or a thumb that was on the pad when the shot landed arrives still armed.
-  if (mphOn()) {
+  if (mphBare()) {
     triggerStop();
     p.block = 0; p.blockT = 0; p.center = 0; p.centerT = 0; p.bkT = 0; p.bkOn = 0;
     p.chg = 0; p.autoT = 0; chargeFx.visible = false;
@@ -9331,6 +9358,20 @@ const mphOn = () => !!(player.mphK || player.mphSt);
 // like ignore weapons for now"*. This is "wearing somebody else WITH NO POOL TO DO IT WITH",
 // plus the transform itself, which owns the body while it runs.
 const mphBare = () => !!player.mphSt || !!(player.mphK && !rig.borrowed);
+// **AND HOW BIG THE DRAWN BODY IS, WHICH IS A THIRD FACT AGAIN (m122).** `MORPH.tall` draws a
+// disguise at the KIND's own height while the collider, the speeds and `MOVE.step` stay his --
+// so anything that places a PART OF HIS BODY relative to the world has to ask how tall the
+// thing on screen actually is. The camera's look point has scaled by exactly this since m112
+// and it was written inline there; the ledge hang needs the same number, so it is one function
+// with three readers rather than three copies of one expression.
+// **IT IS NOT `rig.gaitK` AND MUST NOT BE FOLDED INTO IT.** That one is set only when the clip
+// BORROW succeeds, because a refused borrow plays the kind's OWN clips at the kind's OWN
+// reference speeds and the gait must not divide by anything -- and the body is drawn just as
+// tall either way. One number doing two jobs is `chargeGoH`'s own lesson (m27), and this is
+// exactly the shape it takes.
+// **A FUNCTION, NOT A CONST**, because `ledgeFind` sits four thousand lines above `player` and
+// a const read from up there is a temporal dead zone. This file has paid for that eight times.
+function bodyK() { return (player.mphH || RIG.height) / RIG.height; }
 const MHIPS = 'mixamorig_Hips';
 // THE BIND POSE, CAPTURED WHILE THE SKELETON STILL HAS ONE. A mixer overwrites a bone's local
 // transform every frame, so a rest pose cannot be read back off a posed skeleton -- this runs
@@ -9427,6 +9468,8 @@ function mphSkin(K) {
   }
   K.mph = { K, model, mixer, actions, clips, cw: {}, bones, faceOff: P.faceOff, mats, h,
             mounts: {}, bind, stride: mphStride(clips, K) };
+  // AFTER THE SKIN EXISTS, because it reads `skin.bones` and hangs the mount on one of them.
+  K.mph.mounts = mphMounts(K.mph);
   // **ON THE FRAME THE CLONE IS MADE, WHICH IS ALREADY THE ALLOCATION FRAME (m119).** The whole
   // reason `mphSkin` runs when the shot LANDS rather than at the swap is so that the swap
   // itself allocates nothing; the retarget belongs on the same side of that line.
@@ -9499,6 +9542,59 @@ function mphSkin(K) {
 // two clips on two skeletons -- which is what makes 54 clips per kind cost two small arrays
 // rather than a copy of the whole animation set. `normaliseClips` has already cloned every
 // `times` array (the worst landmine in this class of file), and nothing mutates one after load.
+// **A DISGUISE CARRIES HIS WEAPONS, MOUNTED TO ITS HAND (m122).** *"I'm wondering if we can
+// just have the characters map the weapon to their hand joint since I don't have weapon joints
+// for most of them... so we can just map it to their hands until I can re-export them with
+// weapon joints."* Read straight out of the files, and the reason this works at all:
+//     zap          weapon_root_right  parent **mixamorig_RightHand**  t 3.858, 7.971, -1.553
+//                  weapon_tip_2       parent weapon_root_right        t -14.310, 0, 0
+//     warrior      weapon_root        parent mixamorig_RightHand      -- the MACE's, tip +Z 36
+//     hick / hobo / clancy / skater / female    no weapon nodes at all
+//     and **every one of the seven has `mixamorig_RightHand`**
+// So zap's mount is a plain child of his hand with a constant local transform, and copying that
+// transform onto another rig's hand puts the gun where he holds it -- **proportional to the
+// wearer**, because the bone chain carries the armature's 0.01 and the model's own scale, which
+// is this file's own "as authored means proportional" rule (m8) one mount over.
+// **THE WARRIOR'S OWN JOINT IS NOT USED AND THAT IS DELIBERATE.** It is spelt `weapon_root`
+// rather than `weapon_root_right`, so the name lookup never asks for it -- and it is the MACE's
+// mount: its tip is at (0, 0, 36.18) where the blaster file's is at (-14.31, 0, 0), a different
+// axis and a different length, so parenting the blaster there would point the barrel sideways.
+// **A RIG THAT HAS THE RIGHT JOINT USES IT, which is `weapFit`'s rule**: the day one of these
+// exports carries `weapon_root_right` it lands with no code change here at all.
+// **AND THE TIP COMES WITH IT.** `mountWeapon` reads the BARREL AXIS off a `tip` child of the
+// host and `barrelH` reads the same pair every frame for the pose correction -- so a mount with
+// no tip is a gun with no direction, and `poseBias` returns null for the whole disguise.
+// **WHICH HAND IS READ OFF ZAP'S OWN MOUNT, never typed** -- his right one hangs off
+// `mixamorig_RightHand` and his left off the left, so one lookup serves both and dual wield
+// needs nothing added. And the local transform is read LIVE rather than captured, which is safe
+// for the reason m35 checked: no mount marker deviates from its rest pose by more than 0.5 deg
+// anywhere in the file, and `normaliseClips` has already stripped every non-Hips position track.
+// **WHAT THIS CANNOT DO is fit a hand it was not measured on.** Zap's wrist-to-grip offset is
+// his; on a rig whose hands are proportionally a different shape the gun sits a little off, and
+// that is exactly the gap his re-export closes.
+function mphMounts(skin) {
+  const out = {};
+  skin.model.traverse(o => { if (/^weapon_root/.test(o.name)) out[o.name] = o; });
+  const base = rig.base;
+  if (!base || !base.mounts) return out;
+  for (const n in base.mounts) {
+    if (out[n]) continue;
+    const src = base.mounts[n];
+    const hand = src.parent && skin.bones[src.parent.name];
+    if (!hand) continue;
+    const m = new THREE.Object3D();
+    m.name = n;
+    m.position.copy(src.position); m.quaternion.copy(src.quaternion); m.scale.copy(src.scale);
+    for (const c of src.children) if (/tip/.test(c.name)) {
+      const t = new THREE.Object3D();
+      t.name = c.name; t.position.copy(c.position); t.quaternion.copy(c.quaternion);
+      m.add(t);
+    }
+    hand.add(m);
+    out[n] = m;
+  }
+  return out;
+}
 const _rtq = new THREE.Quaternion(), _rtv = new THREE.Vector3();
 function mphBorrow(skin) {
   if (skin.borrow !== undefined) return skin.borrow;
@@ -9605,6 +9701,19 @@ function mphWear(skin) {
   // real A/B on the phone and not a thing that only applies to a kind nobody has worn yet.
   rig.borrowed = MORPH.borrow ? (s.borrow || 0) : 0;
   rig.gaitK = s.gaitK || 1;
+  // **AND WHAT HE IS CARRYING MOVES WITH HIM (m122).** `mountWeapon` runs once at LOAD and
+  // parents each weapon to a bone, permanently -- so before this every disguise left both of
+  // them hanging off a skeleton that is no longer in the scene, which from the phone is
+  // indistinguishable from the kit being switched off. This is the one place that knows which
+  // body is drawn, so it is the one place that re-hosts them. `w.axis` and `w.muzzle` are
+  // MOUNT-LOCAL and the synthesised mount carries zap's own transform, so neither has to be
+  // re-measured; `w.host` does, because `muzzleWorld` and `barrelH` both read it every frame.
+  for (const key in WEAP.worn) {
+    const w = WEAP.worn[key];
+    if (!w || !w.group || !w.root) continue;
+    const h = rig.mounts[w.root];
+    if (h && w.group.parent !== h) { h.add(w.group); w.host = h; }
+  }
   STEP.clip = s.stride;
   // THE SEAT BONE BELONGS TO WHATEVER BODY IS DRAWN. `PACK._b` is looked up once and cached,
   // which is right and is exactly what a swapped model invalidates -- a stale one is Clancy
@@ -12102,7 +12211,7 @@ function stepCam(dt) {
   // **AND THE LOOK POINT IS CHEST HEIGHT ON THE BODY BEING DRAWN (m112).** `CAM.look` is his own
   // chest; worn as a 1.78 m drunk that is the man's waist, so the lens frames him low. It is the
   // one term the morph moves -- the collider and every speed stay his, deliberately.
-  cam.tgt.set(p.pos.x, p.pos.y + CAM.look * ((p.mphH || RIG.height) / RIG.height), p.pos.z);
+  cam.tgt.set(p.pos.x, p.pos.y + CAM.look * bodyK(), p.pos.z);
   const ce = Math.cos(cam.el);
   const bx = -Math.sin(cam.az) * ce, by = Math.sin(cam.el), bz = -Math.cos(cam.az) * ce;
   const want = CAM.dist + p.speed * CAM.distV;
@@ -12297,9 +12406,15 @@ function frame() {
     // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from
     // a phone. Silent when he is himself, `rollREC`'s rule.
+    // **AND WHETHER THE WEAPON FOUND A HAND (m122).** *"I can't swap through the weapons."*
+    // "the mount was never made", "it was made and the gun is in the wrong place" and "the kit
+    // is switched off" are three bugs and one picture from a phone, and only the host answers
+    // the first. Silent when it has one, which is every rig in the repo.
+    const wn = p.mphK && (() => { const w = WEAP.worn[slotNow().key];
+      return w && w.root && !rig.mounts[w.root] ? ' NOHAND' : ''; })();
     const mp = p.mphSt ? ' · DNA' + p.mphSt.toUpperCase() + p.mphT.toFixed(2)
              : p.mphK ? ' · DNA ' + mphName(p.mphK) +
-                        (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') : '';
+                        (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
