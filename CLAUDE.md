@@ -1220,6 +1220,91 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **A BORROWED SKIN WEARS HIS WHOLE MOVESET NOW, ROTATION-ONLY (m119, `mphBorrow`, `mphBare`).**
+  *"Once you transform, obviously the new characters don't have all of the same things my hero
+  does -- but we could just implement a rotation based borrow of the animation so you can still
+  do all of the same stuff. Ignore weapons for now. The general dynamics doesn't even work: you
+  can't run, you can't even rotate. I have many times in the past just taken animation, rotation
+  only, from one character and applied it to two others -- they're all rigged with Mixamo."*
+  **HE IS RIGHT, AND THE FILES SAY HOW RIGHT.** Read out of the GLBs' own JSON chunk (animation
+  samplers and node transforms are never draco compressed, so this is measurable here even
+  though nothing in this container can decode a MESH). Against zap's 62 bones:
+      hick / hobo / skater   57 shared   mean rest offset 1.58 deg   **1 bone over 5 deg**
+      alien_warrior          50 (index fingers)          1.80        1
+      clancy                 25 (all fingers)            3.61        1
+      alien_female_purple    50                          **0.00**    **0**
+  **Every rig shares zap's bind pose to 0.00 degrees on every single bone except the Hips**, and
+  the five missing on a clean rig are `root` and the four weapon markers -- nothing a locomotion
+  clip drives, and nobody sees a finger curl at eight metres.
+  **AND THE ONE BONE THAT DIFFERS IS EXACTLY 90.0 DEGREES, STRUCTURALLY.** zap's chain is
+  `Armature(+90 X) > root(-90 X) > Hips`; theirs is `Armature(+90 X) > Hips(-90 X)` -- the same
+  net world rotation with the turn in a different NODE. **The female is the control that proves
+  it**: she HAS a `root` and reads 0.00 at the Hips; the five that have not read 90.0. So the
+  whole difference between these rigs is ONE CONSTANT ROTATION at the top of the chain.
+  **SO THE DELTA IS APPLIED AT THE HIPS AND NOWHERE ELSE, AND THAT MUST NOT BE RE-DERIVED PER
+  BONE.** Shredworld shipped the per-bone form `q_T = q_restT * inv(q_restS) * q_animS`, A/B'd it
+  and turned it **off**: per bone it ignores the PARENT-CHAIN term, so the correction compounds
+  down each limb -- it splayed Moussa bow-legged and took his arm divergence from 4.6 deg to 33.
+  Here there is nothing to compound, because every other bone is 0.00 and the Hips' parent is the
+  armature itself, so the chain term above it is the identity and the delta is EXACT rather than
+  approximate. `MORPH.restTol` is the guard, not a fudge: the day an export arrives whose elbow
+  is twenty degrees off zap's, this is the wrong tool and it refuses and says so.
+  **ONE DELTA SERVES THE ROTATION AND THE TRANSLATION, AND THAT IS NOT A COINCIDENCE.** A bone's
+  local rotation composes with its parent's WORLD rotation and its local translation is expressed
+  in that same parent frame, so with `D = inv(parentWorld_T) * parentWorld_S`:
+      quaternion   q' = D * q                             the world rotation is preserved
+      position     p' = t_restT + k * (D * (p - t_restS))  re-expressed in the target's frame
+  Verified numerically off the files rather than argued: **`D * zapBindHips` lands on each rig's
+  own bind hips to 0.000 degrees, on all six.**
+  **AND THE TRANSLATION IS A DELTA FROM REST, NOT A SCALED ABSOLUTE -- WHICH THE MEASUREMENT IS
+  WHAT CAUGHT.** `k * (D * p)` is right about the axis that is his HEIGHT (-37.31 against his own
+  -37.30 on the hick) and wrong about where the artist put his pelvis relative to the armature
+  origin, which is a free choice per export: 2.5 units of 37 off on the hick and **11.5 of 25.6
+  on Clancy**, which at his scale is a fifth of a metre of body floating. Taken as a departure
+  from rest it is exact at the bind pose on every rig by construction and proportional everywhere
+  else -- a 10-unit crouch in zap becomes a 9.30-unit crouch on the hick, which is `10 * k`.
+  **AND THE HIPS POSITION IS KEPT RATHER THAN DROPPED, WHICH IS THE ONE PLACE "ROTATION ONLY" IS
+  WRONG.** That track is the body's HEIGHT OFF THE GROUND and every crouch, landing, roll and
+  fall in the set uses it; dropped, the legs fold and the soles hang in the air, which is a bug
+  `tools/melee.mjs` paid for one repo over. Every OTHER position track really is a bone LENGTH
+  and `normaliseClips` has already thrown those away at load along with every scale track.
+  **THE NON-HIPS TRACKS ARE SHARED, NOT COPIED.** A `KeyframeTrack` is immutable data and
+  `createInterpolant` allocates a fresh result buffer per action, so one track object backs two
+  clips on two skeletons -- which is what makes 50-odd clips per kind cost two small arrays
+  rather than a copy of the whole animation set. `normaliseClips` has already cloned every
+  `times` array (the worst landmine in this class of file) and nothing mutates one after load.
+  **AND THE BIND POSE IS CAPTURED BEFORE THE MIXER EXISTS, COMPOSED UP TO THE MODEL.** A mixer
+  overwrites a bone's local transform every frame, so a rest pose cannot be read back off a posed
+  skeleton -- and `getWorldQuaternion` would fold in whatever the model is PARENTED to, which the
+  two sides of this are not alike in: zap's is already under `rig.root`, whose yaw is written
+  every frame, while a freshly cloned skin is under nothing at all. Measuring the two in different
+  frames would have been silent and is only not happening today by accident of ordering.
+  **AND THEN `rigAnim` IS THE ORDINARY PATH, WHICH IS MOST OF THE RETURN.** `morphAnim` is the
+  three clips a kind carries of its own; once zap's pool is on the skin every name in `CLIPS`
+  resolves and there is nothing left for a second animation path to do -- the gait, the strafes,
+  the backpedal, the landings, the turn hook and the knock-down all arrive at once, and the six
+  verbs m112 switched off (`meleeGo`, `rollGo`, `wallGo`, `ledgeGo`, `slamGo`, `backGo`) come back
+  by reading `mphBare()` instead of `mphOn()`. **The KIT stays on `mphOn()`**, because a borrowed
+  rig genuinely has no weapon mount -- his own *"we could like ignore weapons for now"*.
+  **AND THE GAIT HAS TO BE TOLD HOW BIG HE IS (`rig.gaitK`).** A reference speed is how fast the
+  PLANTED FOOT slides, which is authored travel TIMES the scale the model is drawn at -- so zap's
+  run clip on a hick 42% taller covers 42% more ground per cycle and the feet slide at the same
+  world speed. One ratio through `add`'s own `setScale`, and the stride table with it. **That is
+  also the best candidate for "you can't run"**: at `MORPH.tall` the hick is drawn 1.42x and his
+  own `runRef` is 2.00, so a 7 m/s sprint clamped his walk cycle at `tsHi` and what was on screen
+  was a body sliding with its legs barely moving.
+  **WHAT I COULD NOT REPRODUCE BY READING IS THE ROTATION.** `rig.root.rotation.y` is written
+  every frame from `player.faceH` with no morph gate anywhere near it, and `faceOff` measures ~0
+  on every one of these rigs -- so *"the character doesn't rotate against the camera"* has no
+  cause I can find in the code, and it is stated as unexplained rather than dressed up as fixed.
+  What the borrow does is make the question moot: standing and turning he now has zap's idle, and
+  moving he has the whole four-clip gait and both strafes.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin (draco wants a
+  Worker) and there is no GPU, so **whether he stands up in the borrowed clips is a device
+  question** -- the arithmetic that CAN be checked here is above and was. The chip carries
+  `DNA HICK SKINNY+54` (how many of zap's clips he is actually wearing) or `NOBORROW`, because
+  "the borrow refused", "it ran and the pose is wrong" and "it never transformed" are three bugs
+  and one picture from a phone. `mel.MORPH.borrow = 0` is m112..m118 exactly, live.
 - **THE BODY WAS HIDDEN BEFORE THE BLOB WAS THERE, AND THE COMMENT ABOVE IT CLAIMED THE
   OPPOSITE (m118, `MORPH.hide`, `MORPH.fade`, `MORPH.swell0`).** *"The character disappears
   before the blob shows up -- you shoot him, the character just disappears, then the blob shows
@@ -5676,6 +5761,15 @@ means anything you can carry from one situation to the next.
   you transform into one of them they don't think anything of it"* is `foeTarget`'s aggro rule
   and its own build. And there is no sample-and-return and no DNA the gun holds: the shot
   transforms you on the spot, which is deliberate.
+- **And a disguise still has no WEAPONS** -- his own *"ignore weapons for now"*. Every rig but
+  the warrior's has no `weapon_root` at all, and his is spelt differently from zap's pair, so
+  the mount is found by name and finds nothing. The day an export carries `weapon_root_right`
+  and `weapon_tip_2` it needs no code change here (m119's borrow already puts the poses on him);
+  until then `stepKit` is one early return on `mphOn()` and the kit is forced to bare hands.
+- **A disguise keeps HIS collider and HIS speeds at the KIND's height** (`MORPH.tall`). So the
+  camera's look point is zap's chest on a body a head taller, and a 1.78 m hick stands in a
+  1.25 m cylinder. `MORPH.tall = 0` draws him at zap's height and is the A/B; changing the
+  collider mid-game is m52's whole build.
 - The world is a white floor and ten boxes, with a painted street grid round it (m110). It is
   a test site, not a level. **The streets have no relief** -- no kerb, no lamp, no crossing --
   and the one thing standing between them and all three is `camHit` having a minimum height,

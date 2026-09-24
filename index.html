@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m118</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m119</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m118</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m119</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm118';
+const BUILD = 'm119';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -3195,6 +3195,11 @@ const MORPH = {
   back: .34,         // then the new one comes up out of it
   white: 6.0,        // how hard the emissive drives at full flash
   tall: 1,           // 1 = drawn at the KIND's own height, 0 = at his. See the note.
+  // ---- HIS MOVESET, WORN BY SOMEBODY ELSE (m119). See `mphBorrow` for the whole argument.
+  borrow: 1,         // 0 is m112..m118 exactly: the kind's own three clips and nothing else
+  borrowMin: 30,     // bones of zap's the skin has to carry before it is worth doing at all
+  restTol: .14,      // rad. A non-Hips bone further off zap's bind than this is a rig this
+                     // borrow cannot be trusted on -- measured at load, and it SAYS SO
   // ---- THE PROXY BLOB (m113). See `mphProf` for why a real vertex morph is not available.
   blob: 1,           // 0 is m112 exactly: the flash and the swap, and no proxy mesh
   rings: 30,         // height bands the silhouette is measured into, and rows in the hull
@@ -4490,6 +4495,9 @@ function camHit(x, y, z, pad) {
 const rig = {
   ready: false, root: null, model: null, mixer: null,
   actions: {}, clips: {}, cw: {},          // cw: the damped weight of each action
+  // m119: how many of zap's clips the drawn body is wearing (0 = his own), and the ratio its
+  // height bears to his, which is what a borrowed reference speed has to be divided by.
+  borrowed: 0, gaitK: 1, bind: null,
   bones: {}, scale: 1, faceOff: 0, mounts: {},
 };
 
@@ -6430,7 +6438,7 @@ function kickGo(h) {
 function meleeGo(h) {
   const p = player;
   if (p.knock) return;                  // out of a knock-down: the get-up is not his to cancel
-  if (mphOn()) return;                  // and a borrowed skin has no strike to throw (m112)
+  if (mphBare()) return;                // no strike on a skin with no pool to throw one (m119)
   swapStop();
   // **A FLICK IN THE AIR IS THE FLYING KICK (m88).** *"Flying kick is if you jumped in the air
   // and you melee."* Until now `meleeGo` simply returned when airborne, so a flick up there did
@@ -6557,7 +6565,7 @@ function meleeGo(h) {
 // from where he stood onto the pinned standoff across `inDur`, which is what makes the clip read
 // as an approach rather than as a snap plus an animation.
 function wallGo(W) {
-  if (mphOn()) return 0;               // no cover clips on a borrowed skin (m112)
+  if (mphBare()) return 0;             // no cover clips without zap's pool on him (m119)
   const p = player, nm = WALL.clips.in;
   swapStop();
   p.wall = W; p.wallSt = 'in'; p.wallT = 0; p.wallOff = 0; p.wallSide = 0;
@@ -6675,7 +6683,7 @@ function stepWall(dt) {
 // RISING IS DELIBERATE**, not an oversight: jumping at a fire escape and being caught by it on
 // the way up is the move, and a test for `vel.y < 0` would take it away.
 function ledgeGo(L) {
-  if (mphOn()) return 0;               // no hang clips on a borrowed skin (m112)
+  if (mphBare()) return 0;             // no hang clips without zap's pool on him (m119)
   const p = player;
   swapStop(); triggerStop();
   p.ledge = L; p.ledgeSt = 'in'; p.ledgeT = 0; p.ledgeOff = 0; p.ledgeSide = 0;
@@ -6875,7 +6883,7 @@ function backGo(far, fired) {
   const p = player, k = clamp(p.bkT / AIR.hold, 0, 1), on = p.bkOn;
   p.bkT = 0; p.bkOn = 0;
   // a flick or a tap already answered this thumb, and one gesture may only mean one thing
-  if (!on || fired || far >= MOVE.tapR || !p.grounded || p.land || mphOn()) return 0;
+  if (!on || fired || far >= MOVE.tapR || !p.grounded || p.land || mphBare()) return 0;
   const hi = AIR.hi0 + (AIR.hi1 - AIR.hi0) * k, vy = Math.sqrt(2 * MOVE.g * hi);
   // **IT SPENDS THE DOUBLE.** A front flip started out of a backflip is two rotations fighting
   // over one body, and this is already the higher jump of the two -- so the backflip IS the
@@ -6904,7 +6912,7 @@ function backGo(far, fired) {
 
 function slamGo(dx, dy) {
   const p = player;
-  if (p.grounded || p.knock || p.slam || p.slamUsed || p.roll || mphOn()) return 0;
+  if (p.grounded || p.knock || p.slam || p.slamUsed || p.roll || mphBare()) return 0;
   swapStop();
   if (!(dy > 0 && Math.abs(dy) > Math.abs(dx))) return 0;
   const nm = CLIPS.chargeGo;
@@ -7009,7 +7017,7 @@ function triggerStop() {
 function rollGo(h) {
   const p = player;
   swapStop();
-  if (!p.grounded || p.knock || p.roll || p.melee || p.chargeGo || mphOn()) return;
+  if (!p.grounded || p.knock || p.roll || p.melee || p.chargeGo || mphBare()) return;
   p.roll = 1; p.rollT = 0; p.rollH = (h != null ? h : p.faceH);
   p.heading = p.rollH; p.melee = 0; p.meleeChain = 0;
   // **A ROLL STOPS THE SHOT (m68).** *"When I'm shooting and then I roll, he needs to stop
@@ -8253,7 +8261,10 @@ function rigAnim(dt) {
   // **WEARING SOMEBODY ELSE, EVERY NAME BELOW IS A CLIP THIS SKIN HAS NEVER HEARD OF (m112)** --
   // and a table that names none of them leaves every bone at zero total weight, which is the
   // T-pose exactly. One early return, and `morphAnim` builds its table out of the KIND's own.
-  if (p.mphK) { morphAnim(dt); return; }
+  // **AND WITH ZAP'S POOL ON HIM IT IS THE ORDINARY PATH (m119).** `morphAnim` is the three
+  // clips a kind carries of its own; once `mphBorrow` has put zap's 50-odd on the skin, every
+  // name below resolves and there is nothing left for a second animation path to do.
+  if (p.mphK && !rig.borrowed) { morphAnim(dt); return; }
 
   if (p.roll) { t[CLIPS.roll] = 1; setWeights(t, dt); return; }
   if (p.melee) { t[p.meleeName] = 1; setWeights(t, dt); return; }
@@ -8346,7 +8357,9 @@ function rigAnim(dt) {
   const add = (nm, w, ref) => {
     if (w <= 0) return;
     t[nm] = (t[nm] || 0) + w;
-    if (ref) setScale(nm, clamp(sp / ref, GAIT.tsLo, GAIT.tsHi));
+    // `rig.gaitK` is 1 on his own body and the height ratio on a borrowed one -- a reference
+    // speed is authored travel TIMES the scale the model is drawn at (m119).
+    if (ref) setScale(nm, clamp(sp / (ref * (rig.gaitK || 1)), GAIT.tsLo, GAIT.tsHi));
   };
   // whatever the two one-shot layers above claimed comes out of the budget the gait gets, so
   // the table sums to exactly 1 however many of them are live
@@ -9283,6 +9296,32 @@ const MPH_TEX = (() => {
 // the officer (who has an idle and nothing else) is refused by what he IS rather than by name.
 const dnaOK = K => !!(MORPH.on && K && K.P && K.clips && K.clips.idle && K.clips.walk && K.clips.run);
 const mphOn = () => !!(player.mphK || player.mphSt);
+// **AND THE NARROWER ONE IS WHAT THE VERBS READ (m119).** `mphOn` is "wearing somebody else"
+// and still gates the KIT -- a borrowed skin has no weapon mount, which is his own *"we could
+// like ignore weapons for now"*. This is "wearing somebody else WITH NO POOL TO DO IT WITH",
+// plus the transform itself, which owns the body while it runs.
+const mphBare = () => !!player.mphSt || !!(player.mphK && !rig.borrowed);
+const MHIPS = 'mixamorig_Hips';
+// THE BIND POSE, CAPTURED WHILE THE SKELETON STILL HAS ONE. A mixer overwrites a bone's local
+// transform every frame, so a rest pose cannot be read back off a posed skeleton -- this runs
+// once, on a model no action has touched, and is the whole input to the retarget.
+function bindPose(bones, model) {
+  const h = bones && bones[MHIPS];
+  if (!h || !h.parent) return null;
+  const rest = {};
+  for (const n in bones) { const q = bones[n].quaternion; rest[n] = [q.x, q.y, q.z, q.w]; }
+  // THE HIPS' PARENT's rotation, which is the frame BOTH its local rotation and its local
+  // translation are expressed in -- see `mphBorrow`.
+  // **COMPOSED UP TO THE MODEL, NOT TO THE SCENE.** `getWorldQuaternion` folds in whatever the
+  // model happens to be parented to, and the two sides of this are not parented alike: zap's is
+  // already under `rig.root`, whose yaw is written every frame, while a freshly cloned skin is
+  // under nothing at all. Measuring the two in different frames is exactly the fault this delta
+  // exists to remove, and it would have been silent -- today `rig.root` is at yaw 0 when this
+  // runs and it is only true by accident of ordering.
+  const pq = new THREE.Quaternion();
+  for (let o = h.parent; o && o !== model; o = o.parent) pq.premultiply(o.quaternion);
+  return { pq, t: h.position.clone(), rest };
+}
 // his own file, read as a name. Nothing in the kinds carries one and six table edits to add a
 // string is six things to keep in step with the filenames they would be copied from.
 const mphName = K => String(K.file).split('/').pop().replace(/\.glb$/i, '')
@@ -9342,6 +9381,10 @@ function mphSkin(K) {
   model.scale.setScalar(P.scale * h / K.h);
   const bones = {};
   model.traverse(o => { if (o.isBone) bones[o.name] = o; });
+  // BEFORE THE MIXER EXISTS, which is the only moment this skeleton is provably at its bind
+  // pose -- see `bindPose`. `skeletonClone` of a proto nothing has ever animated is a rest pose
+  // by construction, and one frame later it is not.
+  const bind = bindPose(bones, model);
   const mixer = new THREE.AnimationMixer(model);
   const actions = {}, clips = {};
   const loops = K.loops || bodyLoops(K);
@@ -9353,9 +9396,166 @@ function mphSkin(K) {
     actions[c.name] = a;
   }
   K.mph = { K, model, mixer, actions, clips, cw: {}, bones, faceOff: P.faceOff, mats, h,
-            mounts: {}, stride: mphStride(clips, K) };
+            mounts: {}, bind, stride: mphStride(clips, K) };
+  // **ON THE FRAME THE CLONE IS MADE, WHICH IS ALREADY THE ALLOCATION FRAME (m119).** The whole
+  // reason `mphSkin` runs when the shot LANDS rather than at the swap is so that the swap
+  // itself allocates nothing; the retarget belongs on the same side of that line.
+  mphBorrow(K.mph);
   return K.mph;
 }
+
+// ============================================================================================
+// WEARING HIS MOVESET (m119, `mphBorrow`)
+// ============================================================================================
+// *"We could just implement a rotation based borrow of the animation so that you can still do
+//  all of the same stuff... I have many times in the past just taken animation, rotation only,
+//  from one character and applied it to two others -- they're all rigged with Mixamo."*
+//
+// **HE IS RIGHT, AND THE FILES SAY HOW RIGHT.** Read straight out of the GLBs' own JSON chunk
+// (animation samplers and node transforms are never draco compressed, so this is measurable
+// here even though nothing in this container can decode a mesh): every rig shares zap's bind
+// pose to **0.00 degrees on every single bone** except `mixamorig_Hips`, which is **exactly
+// 90.0** on five of the six.
+//     hick / hobo / skater   57 of zap's 62 bones   mean rest offset 1.58 deg   1 bone over 5
+//     warrior                50 of 62 (index fingers)               1.80       1
+//     clancy                 25 of 62 (all fingers)                 3.61       1
+//     alien_female_purple    50 of 62                               **0.00**   **0**
+// and the five missing on a clean rig are `root` and the four weapon markers -- nothing a
+// locomotion clip drives, and nobody sees a finger curl at eight metres.
+//
+// **THE 90 DEGREES IS STRUCTURAL, AND THE FEMALE IS THE CONTROL THAT PROVES IT.** zap's chain
+// is `Armature(+90 X) > root(-90 X) > Hips`; theirs is `Armature(+90 X) > Hips(-90 X)` -- the
+// same net world rotation with the turn in a different node. She HAS a `root` and reads 0.00
+// at the Hips; they have not and read 90.0. So the whole difference between these rigs is ONE
+// CONSTANT ROTATION at the top of the chain, which is the one case a rest-delta is safe in.
+//
+// **AND IT IS APPLIED AT THE HIPS AND NOWHERE ELSE. DO NOT RE-DERIVE IT PER BONE.** Shredworld
+// shipped the per-bone form `q_T = q_restT * inv(q_restS) * q_animS`, A/B'd it and turned it
+// OFF: per bone it ignores the PARENT-CHAIN term, so the correction compounds down each limb --
+// it splayed Moussa bow-legged and took his arm divergence from 4.6 deg to 33. Here there is
+// nothing to compound, because every other bone is 0.00 and the Hips' parent is the armature
+// itself, so the chain term above it is the identity and the delta is exact rather than
+// approximate. That is also why the tolerance below is a GUARD and not a fudge: the day an
+// export arrives whose elbow is 20 degrees off zap's, this is the wrong tool and it says so.
+//
+// **ONE DELTA SERVES THE ROTATION AND THE TRANSLATION, AND THAT IS NOT A COINCIDENCE.** A
+// bone's local rotation composes with its parent's WORLD rotation, and its local translation
+// is expressed in that same parent frame. So with `D = inv(parentWorld_T) * parentWorld_S`:
+//     quaternion   q' = D * q           the WORLD rotation is preserved exactly
+//     position     p' = k * (D * p)     the vector is re-expressed in the target's frame
+// `k` is the ratio of the two rigs' own rest hip lengths, so it is a PROPORTION and carries no
+// size with it. **THE ROTATION HALF IS EXACT** -- `D * zapBindHips` lands on each rig's own bind
+// hips to **0.000 degrees**, on all six, which is the whole reason this is sound.
+//
+// **AND THE TRANSLATION IS A DELTA FROM REST, NOT A SCALED ABSOLUTE.** `k * (D * p)` is right
+// about the axis that is his HEIGHT and wrong about where the artist put his pelvis relative to
+// the armature origin, which is a free choice and differs per export -- measured, it lands
+// 2.5 units out of 37 off on the hick and **11.5 out of 25.6 on Clancy**, which at his scale is
+// a fifth of a metre of body floating. Taken as a departure from rest it is exact at the bind
+// pose on every rig BY CONSTRUCTION and proportional everywhere else, which is what a crouch is:
+//     p' = t_restT + k * (D * (p - t_restS))
+// That is `tools/melee.mjs`'s own remap one repo over, and the reason it is not simply dropped
+// is below.
+//
+// **AND THE HIPS POSITION IS KEPT RATHER THAN DROPPED, WHICH IS WHERE "ROTATION ONLY" IS
+// WRONG.** That one track is the body's HEIGHT OFF THE GROUND, and every crouch, landing, roll
+// and fall in the set uses it -- dropped, the legs fold and the soles hang in the air, which
+// is a bug `tools/melee.mjs` paid for one repo over. Every OTHER position track really is a
+// bone LENGTH and would stretch him, and `normaliseClips` has already thrown those away at
+// load along with every scale track.
+//
+// **THE NON-HIPS TRACKS ARE SHARED, NOT COPIED.** A `KeyframeTrack` is immutable data and
+// `createInterpolant` allocates a fresh result buffer per action, so one track object can back
+// two clips on two skeletons -- which is what makes 54 clips per kind cost two small arrays
+// rather than a copy of the whole animation set. `normaliseClips` has already cloned every
+// `times` array (the worst landmine in this class of file), and nothing mutates one after load.
+const _rtq = new THREE.Quaternion(), _rtv = new THREE.Vector3();
+function mphBorrow(skin) {
+  if (skin.borrow !== undefined) return skin.borrow;
+  skin.borrow = 0; skin.gaitK = 1;
+  const src = rig.base;
+  if (!MORPH.borrow || !src || !src.bind || !skin.bind || !skin.bones[MHIPS]) return 0;
+  const S = src.bind, T = skin.bind;
+  const D = T.pq.clone().invert().multiply(S.pq);
+  const k = T.t.length() / (S.t.length() || 1);
+  // HOW FAR HIS BIND POSE IS FROM ZAP'S, PER BONE -- measured rather than trusted, because the
+  // single-delta form above is only sound while this is ~0 everywhere but the Hips.
+  let shared = 0, worst = 0, worstN = '';
+  for (const n in S.rest) {
+    if (n === MHIPS || !skin.bones[n]) continue;
+    shared++;
+    const a = S.rest[n], b = T.rest[n];
+    if (!b) continue;
+    const d = 2 * Math.acos(Math.min(1, Math.abs(a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3])));
+    if (d > worst) { worst = d; worstN = n; }
+  }
+  if (shared < MORPH.borrowMin) {
+    console.warn('[melee] borrow: only ' + shared + ' shared bones, needs ' + MORPH.borrowMin);
+    return 0;
+  }
+  if (worst > MORPH.restTol) {
+    console.warn('[melee] borrow: ' + worstN + ' is ' + (worst * 180 / Math.PI).toFixed(1) +
+                 ' deg off zap\'s bind -- a single-delta retarget is the wrong tool here');
+    return 0;
+  }
+  let made = 0;
+  for (const nm in src.clips) {
+    const c = src.clips[nm];
+    const tracks = [];
+    for (const t of c.tracks) {
+      const dot = t.name.lastIndexOf('.');
+      const bone = t.name.slice(0, dot), prop = t.name.slice(dot + 1);
+      if (!skin.bones[bone]) continue;              // a finger, or a weapon marker, he has not got
+      if (!t.values || !t.values.length || !t.times || !t.times.length) continue;
+      if (prop === 'position') {
+        if (bone !== MHIPS) continue;               // a bone LENGTH, and not his
+        const v = t.values, o = new Float32Array(v.length);
+        for (let i = 0; i < v.length; i += 3) {
+          _rtv.set(v[i] - S.t.x, v[i + 1] - S.t.y, v[i + 2] - S.t.z)
+              .applyQuaternion(D).multiplyScalar(k).add(T.t);
+          o[i] = _rtv.x; o[i + 1] = _rtv.y; o[i + 2] = _rtv.z;
+        }
+        tracks.push(new t.constructor(t.name, t.times, o));
+      } else if (prop === 'quaternion') {
+        if (bone !== MHIPS) { tracks.push(t); continue; }   // 0.00 deg off: nothing to do
+        const v = t.values, o = new Float32Array(v.length);
+        for (let i = 0; i < v.length; i += 4) {
+          _rtq.set(v[i], v[i + 1], v[i + 2], v[i + 3]).premultiply(D);
+          o[i] = _rtq.x; o[i + 1] = _rtq.y; o[i + 2] = _rtq.z; o[i + 3] = _rtq.w;
+        }
+        tracks.push(new t.constructor(t.name, t.times, o));
+      }
+    }
+    if (!tracks.length) continue;
+    // AND ZAP'S NAME WINS WHERE THEY COLLIDE. Measured: the only collisions in the whole roster
+    // are `in_air` (hobo), `idle_01` (clancy) and `idle_01`/`run_fwd`/`walk_fwd` (the female) --
+    // and on every one of them zap's is the clip everything in `CLIPS` was written against.
+    const old = skin.actions[nm];
+    if (old) { old.setEffectiveWeight(0); old.stop(); }
+    skin.cw[nm] = 0;
+    const nc = new THREE.AnimationClip(nm, c.duration, tracks);
+    skin.clips[nm] = nc;
+    const a = skin.mixer.clipAction(nc);
+    if (ONCE.has(nm)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
+    a.enabled = true; a.setEffectiveWeight(0); a.play();
+    skin.actions[nm] = a;
+    made++;
+  }
+  // **AND THE GAIT HAS TO BE TOLD HOW BIG HE IS.** A reference speed is how fast the PLANTED
+  // FOOT slides, which is authored travel times the scale the model is drawn at -- so zap's
+  // clip on a body 42% taller covers 42% more ground per cycle and the feet slide at the same
+  // world speed. One ratio through `add`'s own `setScale`, and the stride table with it.
+  skin.gaitK = (skin.h || RIG.height) / RIG.height;
+  const zk = c => c ? { d: c.d, r: c.r * skin.gaitK } : null;
+  skin.stride = { walk: zk(src.stride.walk), run: zk(src.stride.run), sprint: zk(src.stride.sprint) };
+  skin.borrow = made;
+  console.log('[melee] borrow: ' + made + ' of zap\'s clips onto ' + shared + ' shared bones, ' +
+              'hips delta ' + (2 * Math.acos(Math.min(1, Math.abs(D.w))) * 180 / Math.PI).toFixed(1) +
+              ' deg, k ' + k.toFixed(3) + ', gait x' + skin.gaitK.toFixed(3) +
+              ', worst other bone ' + (worst * 180 / Math.PI).toFixed(2) + ' deg (' + worstN + ')');
+  return made;
+}
+
 // THE SWAP. Every field `rig` carries is repointed at one set or the other, so there is one
 // drawn body and nothing anywhere else has to know which it is.
 function mphWear(skin) {
@@ -9364,6 +9564,12 @@ function mphWear(skin) {
   rig.model = s.model; rig.root.add(s.model);
   rig.mixer = s.mixer; rig.actions = s.actions; rig.clips = s.clips; rig.cw = s.cw;
   rig.bones = s.bones; rig.faceOff = s.faceOff; rig.mounts = s.mounts || {};
+  // WHAT THE GAIT AND THE VERB GATES READ (m119). `rig.base` carries neither, so putting his
+  // own body back is `0` and `1` without a case for it.
+  // READ THROUGH THE SWITCH rather than off the cached count, so `mel.MORPH.borrow = 0` is a
+  // real A/B on the phone and not a thing that only applies to a kind nobody has worn yet.
+  rig.borrowed = MORPH.borrow ? (s.borrow || 0) : 0;
+  rig.gaitK = s.gaitK || 1;
   STEP.clip = s.stride;
   // THE SEAT BONE BELONGS TO WHATEVER BODY IS DRAWN. `PACK._b` is looked up once and cached,
   // which is right and is exactly what a swapped model invalidates -- a stale one is Clancy
@@ -9373,16 +9579,21 @@ function mphWear(skin) {
   // `.055`, so a fresh `cw` leaves every bone at a total weight of nothing for a frame or two
   // -- which is the mixer blending back to BIND, which is the T-POSE exactly. It is masked by
   // the white, and a flash of T-pose is not something to leave to luck.
-  const idle = skin ? skin.K.clips.idle : CLIPS.idle;
+  // **AND THE SEED IS THE CLIP THE NEXT FRAME WILL ACTUALLY ASK FOR (m119).** With zap's pool
+  // on him `rigAnim` takes the ordinary path and wants `CLIPS.idle`, so seeding the kind's own
+  // would be one frame of the wrong idle at full weight damping out under it.
+  const idle = (skin && !skin.borrow) ? skin.K.clips.idle : CLIPS.idle;
   s.cw = {}; s.cw[idle] = 1; rig.cw = s.cw;
   const a = rig.actions[idle]; if (a) { a.play(); a.setEffectiveWeight(1); }
   player.mphK = skin ? skin.K : null;
   player.mphH = s.h;
   paintKit();
 }
-// **HIS HANDS ARE EMPTY AND EVERY VERB IS OFF.** Not because the states would break -- they are
-// gated -- but because there is no clip for any of them on a borrowed skin, and a state with no
-// clip is a body sliding about in its walk pose. `mphOn()` is the one predicate they all read.
+// **HIS HANDS ARE EMPTY, AND THE VERBS ARE OFF ONLY WHILE THERE IS NOTHING TO PLAY (m119).**
+// m112 turned all seven off because a state with no clip is a body sliding about in its walk
+// pose -- true, and it stopped being true the moment `mphBorrow` put zap's own pool on the
+// skin. `mphBare()` is what they read now; the KIT stays on `mphOn()`, because a borrowed rig
+// genuinely has no weapon mount and that is his own *"we could like ignore weapons for now"*.
 function morphGo(K) {
   const p = player;
   if (!MORPH.on || p.mphSt) return 0;                 // one transform at a time
@@ -12010,7 +12221,8 @@ function frame() {
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from
     // a phone. Silent when he is himself, `rollREC`'s rule.
     const mp = p.mphSt ? ' · DNA' + p.mphSt.toUpperCase() + p.mphT.toFixed(2)
-             : p.mphK ? ' · DNA ' + mphName(p.mphK) : '';
+             : p.mphK ? ' · DNA ' + mphName(p.mphK) +
+                        (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
@@ -12126,6 +12338,9 @@ async function init() {
   model.updateMatrixWorld(true);
   // measured on the BIND pose, before any clip has been played
   rig.faceOff = -measureFacing(rig.bones);
+  // AND SO IS THIS, FOR THE SAME REASON AND AT THE SAME MOMENT (m119). Every retarget in
+  // `mphBorrow` is expressed against it, and one frame later the mixer owns these bones.
+  rig.bind = bindPose(rig.bones, model);
 
   // ---- the clips ----
   const clips = deriveClips(normaliseClips(g.animations || []));
@@ -12223,7 +12438,7 @@ async function init() {
   // and after `STEP.clip` is measured, because those are the two things it has to carry back.
   rig.base = { model: rig.model, mixer: rig.mixer, actions: rig.actions, clips: rig.clips,
                cw: rig.cw, bones: rig.bones, faceOff: rig.faceOff, mounts: rig.mounts,
-               mats: mphMats(rig.model), h: RIG.height, stride: STEP.clip };
+               mats: mphMats(rig.model), h: RIG.height, stride: STEP.clip, bind: rig.bind };
   player.mphH = RIG.height;
 
   player.pos.y = groundAt(player.pos.x, player.pos.z, 0, MOVE.step);
