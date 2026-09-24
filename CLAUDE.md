@@ -1219,6 +1219,80 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **THE BIKE IN THE GROUND AND THE RIDER AT "PROPER HEIGHT" ARE ONE ARITHMETIC ERROR, TWICE
+  (m109, `motoLow`, `stepRide`'s drop).** *"He rides the motorcycle but the motorcycle is in the
+  ground. He has proper height but the motorcycle doesn't."*
+  **BOTH HALVES ARE A ROOT BEING TREATED AS A FLOOR, AND EACH ONE HID THE OTHER.** Measured off
+  the two files:
+      the bike   its root is the AXLE, 0.138 authored above the lowest geometry -> **0.279 m**
+                 scaled, and `stepMoto` put that root ON the ground -- so the tyres were buried
+                 a quarter of a metre and **the seat, and therefore the rider, went down with
+                 them**. That is exactly why a sunken bike read as a rider at the right height:
+                 he was correctly seated on a seat that was underground.
+      the rider  `driving_idle` sits his hips **0.373 m** above his own root (0.608 standing,
+                 and all three driving clips agree to four decimals), and `stepRide` wrote the
+                 ROOT to the seat -- so he stood in the air 37 cm over it.
+  Together those nearly cancel in the PICTURE and not in the world, which is the whole reason
+  the report named only one of them. **`buildShip`'s rule one vehicle over: sit a model on its
+  own measured bounds, never on its node origin.** Seat 0.652 m above the ground now, his hips
+  on it, his lowest foot at 0.381 -- a Fat Boy's peg is 0.30 to 0.38.
+  **AND THE OFFSET IS READ OFF THE POSED SKELETON RATHER THAN TYPED.** It is a property of
+  whichever driving clip is up, so it follows a re-export AND follows the blend -- and reading it
+  a frame late is EXACT, because the offset is a fact about the POSE and does not move with the
+  position it is measured against. **The bike's own marker is called `mixamorig_hips`**: he put a
+  HIPS where the rider's hips go, so hips-to-hips is the export saying what to do rather than
+  this code having an opinion, which is `weapFit`'s rule.
+  **A BOUNDING BOX IS NOT A SHAPE, AND THAT IS WHY `motoLow` TAKES A HULL.** Upright the box's
+  lowest corner IS the lowest vertex, so 0.279 is exact -- but rolled onto its side the lowest
+  CORNER is empty air beside the wheel at bar width, and a bike resting on it hovers. The convex
+  hull of the real (x, y) is a dozen points, exact at every roll, and computed once at load.
+  So **upright and on its side are ONE formula** rather than two numbers to keep in step.
+- **A RIDERLESS MOTORCYCLE RIDES A LITTLE AND THEN FALLS OVER (m109, `MOTO.st`).** *"And the
+  motorcycle drives without him even when I shoot him off. It should ride a little and then fall
+  over."* It did: `stepMoto` drove the ring on its own clock and had never heard of the rider.
+      ride -> coast -> fall -> down -> rise -> ride
+  **THE WHOLE MACHINE TURNS ON ONE READ, AND IT IS READ OFF THE MAN.** `manned` is
+  `rider.st === 'ride'`, and `dummyBlow` already takes him out of that state when he is shot --
+  so being blasted off, knocked down, fleeing and coming back are ONE fact with nothing to keep
+  in step and no flag for a future blow to forget to clear. `d.K`'s own dividend, one vehicle over.
+  **AND IT COASTS ALONG THE RING, NOT OFF DOWN THE TANGENT.** That is not a detail: the m107
+  circle is the only path here swept clear of fourteen boxes, two buildings and every body, so a
+  bike that leaves it is a bike that can come to rest **inside** something -- the m24 lesson,
+  where nothing on screen disagrees with anything and the player simply cannot walk there.
+  **THE STEER ANGLE IS UNCHANGED BY THE COAST, WHICH IS THE ARITHMETIC AGREEING WITH ITSELF.**
+  `delta = atan(L*w/v)` with `w = v/r` reduces to `atan(L/r)` -- independent of speed, which is
+  what a fixed-radius corner actually demands. So the bars hold their 6.5 degrees as it slows,
+  and the wheels alone wind down.
+  **IT GOES OVER INTO THE CORNER IT WAS ALREADY LEANING INTO**, the sign READ off the lean rather
+  than typed -- which is what a bike running out of speed mid-turn does -- and the topple is the
+  SAME `roll` the lean is, so the height cannot disagree with the picture and an interrupted rise
+  cannot jump.
+- **AND HE GOES BACK FOR IT (m109, `motoSeek`).** *"Then he should go try to find it again."*
+  It runs in the same line as `stepRide` and ABOVE the brain, `stepPack`'s own rule: a man walking
+  back to his own bike has no roam, no fight and nothing to be separated from. **`d.ride` is what
+  makes it HIS** -- set at build, survives being shot off -- so nothing has to be remembered
+  anywhere else and no second body can take it.
+  **AND `d.fleeT` IS WHY HE DOES NOT TURN ROUND MID-PANIC.** m38's pacifist runs when he is hit,
+  so a biker blasted off his bike flees FIRST and collects it afterwards, which is the order that
+  reads. One clause rather than a state.
+  **THE PICK-UP IS A STAND-IN AND IS MARKED AS ONE.** *"I don't have him picking it up animation
+  but I'll make one eventually."* So it rights itself over `riseDur` with him aboard from the
+  first frame -- name a clip and `motoSeek`'s board branch is the one line it goes on, which is
+  `CLIPS.block`'s pattern. Until then he sits upright while the hull rolls up under him for 0.9 s.
+  **AND `buildMoto` CALLS `stepMoto(0)` BEFORE `buildBikers` EXISTS**, so on that one frame there
+  is no rider and the coast would be entered from a standing start and never left. The clause
+  that closes it -- a coasting bike with somebody on it drives again -- is also the real case of
+  getting back onto a bike still rolling, which is why it is a transition rather than a guard.
+  **THE CHIP CARRIES THE STATE** (`MOTO12` riding, else `MOTOcoast` / `fall` / `down` / `rise`),
+  because *"it never fell over"*, *"it fell and he never went back for it"* and *"he got there and
+  it did not come up"* are three bugs and one picture from a phone.
+  **WHAT IS UNVERIFIED AND WHY:** the motorcycle is draco and nothing in this container can decode
+  a mesh or build a skin, so the HULL has never been computed outside a browser -- what is checked
+  here is that at roll 0 it provably equals the bounding-box minimum, which is the 0.279 m that
+  answers his report. Whether 77 degrees reads as fallen, whether 0.9 s of self-righting reads as
+  a man picking a bike up, and whether the coast is the right length are device questions.
+  `mel.MOTO.on = 0` parks the whole thing and `mel.MOTO.st` is live.
+
 - **I CLAIMED HIS `run_fwd` WAS AUTHORED BACKWARDS AND IT IS NOT (m108).** *"What are you
   talking about, I just checked the file, it looks normal."* He is right, and the fault is that
   **I asked a measurement a question it was never fitted to answer.**

@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m108</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m109</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m108</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m109</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -496,7 +496,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 
-const BUILD = 'm108';
+const BUILD = 'm109';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2781,6 +2781,24 @@ const MOTO = {
   // and reading it as a rate is a three-second steering response that reads as a broken joint.
   ease: .12,            // how fast the steering and the lean follow the corner
   lift: .02,            // it sits this far off the ground, so the tyres are not buried in it
+  // **A RIDERLESS MOTORCYCLE RIDES A LITTLE AND THEN FALLS OVER (m109).** *"The motorcycle
+  // drives without him even when I shoot him off."* It did -- `stepMoto` drove the ring on its
+  // own clock and had never heard of the rider. It coasts now and topples, and **it coasts ALONG
+  // THE RING rather than off down the tangent**, which is not a detail: that ring is the only
+  // path here swept clear of fourteen boxes, two buildings and every body, so a bike that leaves
+  // it is a bike that can come to rest inside something.
+  //     ride -> coast -> fall -> down -> rise -> ride, and the ONE fact it turns on is read
+  //     off the MAN (`rider.st === 'ride'`) rather than kept as a flag here: `dummyBlow`
+  //     already takes him out of that state when he is shot, so a bike with nobody on it
+  //     needs nothing told to it.
+  coastDrag: .55,       // 6 m/s down to the topple speed in about 3.3 s
+  fallV: 1.0,           // under this there is no gyroscope left and it goes over
+  fallDur: .55,
+  fallAng: 1.35,        // 77 degrees: a bike on its side rests on its bar end and its peg
+  // AND HE GOES BACK FOR IT. *"Then he should go try to find it again."*
+  seek: 2.8,            // he runs, because it is his bike
+  board: 1.8,           // how close he has to be to pick it up
+  riseDur: .9,          // **A STAND-IN**: no pick-up clip exists yet, so it rights itself
   on: 1,
 };
 
@@ -8969,7 +8987,7 @@ function buildBikers(g) {
 }
 
 // ---- the motorcycle -------------------------------------------------------------------------
-const _mv = new THREE.Vector3(), _mq = new THREE.Quaternion();
+const _mv = new THREE.Vector3(), _mv2 = new THREE.Vector3(), _mq = new THREE.Quaternion();
 const AX_X = new THREE.Vector3(1, 0, 0), AX_Y = new THREE.Vector3(0, 1, 0), AX_Z = new THREE.Vector3(0, 0, 1);
 
 // FOUND BY PATTERN, NEVER BY INDEX. He thought he had called the steering joint `turn` and it is
@@ -8990,11 +9008,18 @@ function buildMoto(g) {
   // right with no edit. GLTFLoader binds every skin with the IDENTITY matrix, so at rest a
   // vertex's geometry position IS its world position and these bounds are already metres.
   let lo = null, hi = null;
+  const side = [];
   model.traverse(o => {
     if (!o.isMesh && !o.isSkinnedMesh || !o.geometry) return;
     o.geometry.computeBoundingBox();
     const b = o.geometry.boundingBox;
     lo = lo ? lo.min(b.min) : b.min.clone(); hi = hi ? hi.max(b.max) : b.max.clone();
+    // ITS SIDE-ON SILHOUETTE, for `motoLow`. A BOUNDING BOX IS NOT A SHAPE: rolled onto its
+    // side the box's lowest CORNER is the empty air beside the wheel at bar width, so a bike
+    // resting on it hovers a good fifteen centimetres. The convex hull of the real (x, y) is
+    // exact at every roll and is a dozen points to test per frame.
+    const pa = o.geometry.getAttribute('position');
+    if (pa) for (let i = 0; i < pa.count; i++) side.push([pa.getX(i), pa.getY(i)]);
   });
   if (!lo) throw new Error('motorcycle has no geometry');
   const authored = hi.z - lo.z;                       // Z is the LENGTH: 1.088 against 0.65 wide
@@ -9014,6 +9039,14 @@ function buildMoto(g) {
     rad = Math.max(.02, f.y - lo.y);
   }
   MOTO.wb = wb * k; MOTO.rad = rad * k;
+  // **ITS ORIGIN IS NOT ITS WHEELS, WHICH IS THE WHOLE OF "THE MOTORCYCLE IS IN THE GROUND"
+  // (m109).** The root sits at axle height -- 0.138 authored above the lowest geometry, which is
+  // **0.275 m** once it is scaled -- so putting the ROOT on the ground buried the wheels a
+  // quarter of a metre and took the seat, and therefore the rider, down with them. That is why
+  // he read as the right height on a sunken bike: he was correctly seated on a buried seat.
+  // `buildShip`'s rule one vehicle over: sit the model on its own bounding-box min, measured.
+  MOTO.bx = { x0: lo.x * k, x1: hi.x * k, y0: lo.y * k, y1: hi.y * k };
+  MOTO.hull = hull2D(side).map(q => [q[0] * k, q[1] * k]);
   model.scale.setScalar(k);
   model.traverse(o => {
     if (o.isMesh || o.isSkinnedMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; }
@@ -9031,6 +9064,9 @@ function buildMoto(g) {
   scene.add(root);
   MOTO.root = root; MOTO.model = model; MOTO.scale = k;
   MOTO.a = 0; MOTO.steer = 0; MOTO.spin = 0; MOTO.h = 0; MOTO.lean0 = 0;
+  // `undefined -= dt` is NaN and a NaN clock is a bike that can never fall over or get
+  // back up -- silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time.
+  MOTO.st = 'ride'; MOTO.stT = 0; MOTO.v = MOTO.speed; MOTO.roll = 0; MOTO.roll0 = 0; MOTO.fallSide = 1;
   MOTO.up = 1;
   console.log('[melee] motorcycle: ' + authored.toFixed(3) + ' m authored -> x' + k.toFixed(3) +
               ', wheelbase ' + MOTO.wb.toFixed(3) + ' m, wheel radius ' + MOTO.rad.toFixed(3) + ' m, bones ' +
@@ -9041,12 +9077,80 @@ function buildMoto(g) {
   stepMoto(0);
 }
 
+// HOW FAR ITS LOWEST CORNER SITS BELOW THE ROOT AT A GIVEN ROLL. A roll is about the bike's own
+// +Z (its length), so `y' = x sin + y cos`, and the lowest of the four footprint corners is what
+// has to rest on the ground. **At roll 0 this returns the bounding-box min exactly**, so the
+// upright case and the fallen case are ONE formula rather than two numbers to keep in step -- and
+// a bike on its side comes to rest on its bars rather than hovering at axle height.
+function motoLow(roll) {
+  const s = Math.sin(roll), c = Math.cos(roll);
+  const H = MOTO.hull;
+  if (H && H.length) {
+    let m = 1e9;
+    for (let i = 0; i < H.length; i++) { const v = H[i][0] * s + H[i][1] * c; if (v < m) m = v; }
+    return m;
+  }
+  const B = MOTO.bx; if (!B) return 0;
+  return Math.min(B.x0 * s + B.y0 * c, B.x1 * s + B.y0 * c,
+                  B.x0 * s + B.y1 * c, B.x1 * s + B.y1 * c);
+}
+
+// MONOTONE CHAIN. One pass at load over a few thousand points; what comes back is the dozen or
+// so corners that can ever be the lowest thing, so the per-frame cost is a dozen multiplies.
+function hull2D(pts) {
+  if (pts.length < 3) return pts;
+  const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], hi = [];
+  for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (hi.length >= 2 && cr(hi[hi.length - 2], hi[hi.length - 1], q) <= 0) hi.pop(); hi.push(q); }
+  lo.pop(); hi.pop();
+  return lo.concat(hi);
+}
+
 // THE PATH IS PARAMETERISED BY ANGLE, NOT INTEGRATED, so it cannot drift into anything however
 // long it runs -- which matters, because the ring it drives was swept against every box, both
 // buildings and every body and has 2.02 m of clearance at its worst point.
+//
+// **AND THE WHOLE STATE MACHINE HANGS OFF ONE READ (m109).** *"The motorcycle drives without him
+// even when I shoot him off. It should ride a little and then fall over."* It did, because
+// `stepMoto` drove the ring on its own clock and had never heard of the rider. `manned` is read
+// off the MAN rather than stored here, so being shot off, knocked down, fleeing and coming back
+// are all one fact with nothing to keep in step.
 function stepMoto(dt) {
   if (!MOTO.up || !MOTO.on) return;
-  const R = MOTO.ring, r = Math.max(1, R.r), v = MOTO.speed;
+  const R = MOTO.ring, r = Math.max(1, R.r);
+  const manned = !!(MOTO.rider && MOTO.rider.st === 'ride' && MOTO.rider.ride === MOTO);
+  if ((MOTO.st === 'ride' || MOTO.st === 'rise') && !manned) { MOTO.st = 'coast'; MOTO.stT = 0; }
+  // AND A COASTING BIKE WITH SOMEBODY ON IT DRIVES AGAIN, which is not only tidy: `buildMoto`
+  // runs before `buildBikers` and calls `stepMoto(0)` to place the bike, so on that one frame
+  // there is no rider yet and the coast is entered from a standing start. One clause closes
+  // that and the real case -- getting back on a bike still rolling -- at the same time.
+  if (MOTO.st === 'coast' && manned) { MOTO.st = 'ride'; MOTO.stT = 0; }
+  if (MOTO.st === 'coast') {
+    // **IT COASTS ALONG THE RING, NOT OFF DOWN THE TANGENT**, which is not a detail: that circle
+    // is the only path here swept clear of fourteen boxes, two buildings and every body, so a
+    // bike that leaves it is a bike that can come to rest inside something -- the m24 lesson,
+    // where nothing on screen disagrees with anything and the player simply cannot walk there.
+    MOTO.v *= Math.exp(-MOTO.coastDrag * dt);
+    if (MOTO.v < MOTO.fallV) {
+      MOTO.st = 'fall'; MOTO.stT = 0; MOTO.roll0 = MOTO.roll;
+      // IT GOES OVER INTO THE CORNER IT WAS ALREADY LEANING INTO, which is what a bike running
+      // out of speed mid-turn does. The sign is READ off the lean rather than typed.
+      MOTO.fallSide = MOTO.roll <= 0 ? 1 : -1;
+    }
+  } else if (MOTO.st === 'fall') {
+    MOTO.stT += dt;
+    MOTO.v *= Math.exp(-4 * dt);
+    if (MOTO.stT >= MOTO.fallDur) { MOTO.st = 'down'; MOTO.stT = 0; MOTO.v = 0; }
+  } else if (MOTO.st === 'down') {
+    MOTO.v = 0;
+  } else if (MOTO.st === 'rise') {
+    MOTO.stT += dt;
+    if (MOTO.stT >= MOTO.riseDur) { MOTO.st = 'ride'; MOTO.stT = 0; }
+  }
+  if (MOTO.st === 'ride') MOTO.v = damp(MOTO.v, MOTO.speed, .35, dt);
+  const v = MOTO.v;
   const w = v / r;                                   // rad/s: a circle of radius r at speed v
   MOTO.a += w * dt;
   const x = R.cx + Math.cos(MOTO.a) * r, z = R.cz + Math.sin(MOTO.a) * r;
@@ -9054,8 +9158,6 @@ function stepMoto(dt) {
   // that matches the tangent (-sin a, cos a) * r ... is read straight off the velocity.
   const vx = -Math.sin(MOTO.a), vz = Math.cos(MOTO.a);
   MOTO.h = Math.atan2(vx, vz);
-  const y = groundAt(x, z, 0, .5) + MOTO.lift;
-  MOTO.root.position.set(x, y, z);
   // **THE STEER ANGLE FALLS OUT OF THE WHEELBASE.** A single-track vehicle turning at yaw rate w
   // while doing v has a turn radius v/w, so `delta = atan(L*w/v)` -- the handlebars answer the
   // corner rather than a mapping somebody invented. `lock` is his 20 degrees, as a CLAMP.
@@ -9066,7 +9168,19 @@ function stepMoto(dt) {
   // takes its top toward -X, and +X is LEFT here, so leaning INTO a left turn (a positive steer)
   // is a NEGATIVE roll. `mel.MOTO.lean = -.26` is the one word if it heels the wrong way.
   const lean = -(MOTO.steer / MOTO.lock) * MOTO.lean;
-  MOTO.root.quaternion.setFromAxisAngle(AX_Y, MOTO.h).multiply(_mq.setFromAxisAngle(AX_Z, lean));
+  // THE TOPPLE IS THE SAME NUMBER FURTHER ROUND -- one roll for the lean AND the fall, so the
+  // height below cannot disagree with the picture, and an interrupted rise cannot jump.
+  let roll = lean;
+  if (MOTO.st === 'fall') roll = MOTO.roll0 + (MOTO.fallSide * MOTO.fallAng - MOTO.roll0) * smooth(0, 1, MOTO.stT / MOTO.fallDur);
+  else if (MOTO.st === 'down') roll = MOTO.fallSide * MOTO.fallAng;
+  else if (MOTO.st === 'rise') roll = MOTO.roll0 + (lean - MOTO.roll0) * smooth(0, 1, MOTO.stT / MOTO.riseDur);
+  MOTO.roll = roll;
+  // **ITS ORIGIN IS AT AXLE HEIGHT, WHICH IS THE WHOLE OF "THE MOTORCYCLE IS IN THE GROUND".**
+  // `motoLow` is how far its lowest corner sits below the root AT THIS ROLL, so upright and on
+  // its side are ONE formula -- `buildShip`'s rule: sit a model on its own measured bounds.
+  const y = groundAt(x, z, 0, .5) - motoLow(roll) + MOTO.lift;
+  MOTO.root.position.set(x, y, z);
+  MOTO.root.quaternion.setFromAxisAngle(AX_Y, MOTO.h).multiply(_mq.setFromAxisAngle(AX_Z, roll));
   const B = MOTO.bones;
   // **THE WHEELS SPIN AT DISTANCE OVER THE MEASURED RADIUS, about each bone's own local X** --
   // the axle, because the mesh is 1.09 long in Z against 0.65 wide in X. Both wheel bones share
@@ -9096,7 +9210,26 @@ function stepRide(d, dt, t) {
   // answered it: `mixamorig_hips` is in the bike's own skin, 0.65 m over its lowest geometry,
   // which is a Harley Fat Boy's seat height to the centimetre.
   M.bones.seat.getWorldPosition(_mv);
-  d.root.position.set(_mv.x, _mv.y, _mv.z);
+  // **HIS ROOT IS NOT HIS HIPS, AND THAT IS THE OTHER HALF OF "THE MOTORCYCLE IS IN THE GROUND"
+  // (m109).** `driving_idle` sits his hips **0.373 m** above his own root against 0.608 standing,
+  // so writing the ROOT to the seat stood him in the air over it -- which is exactly why a buried
+  // bike read as a rider at *"proper height"*: he was correctly seated on a seat that was 27 cm
+  // underground, and the two faults hid each other.
+  // **THE OFFSET IS READ OFF THE POSED SKELETON, NEVER TYPED.** It is a property of whichever
+  // driving clip is up, so it follows a re-export AND follows the blend between the three -- and
+  // reading it a frame late is EXACT, because the offset is a fact about the pose and does not
+  // move with the position it is measured against.
+  // The bike's own marker is called `mixamorig_hips`: he put a HIPS where the rider's hips go,
+  // so hips-to-hips is the export saying what to do rather than this code having an opinion.
+  if (d.rideHips === undefined) {
+    let hb = null;
+    d.model.traverse(o => { if (!hb && o.isBone && /hips/i.test(o.name)) hb = o; });
+    d.rideHips = hb;
+    if (!hb) note('RIDER NO HIPS');
+  }
+  let drop = 0;
+  if (d.rideHips) { d.rideHips.getWorldPosition(_mv2); drop = _mv2.y - d.root.position.y; }
+  d.root.position.set(_mv.x, _mv.y - drop, _mv.z);
   d.h = M.h;
   // THE TURN CLIPS BLEND BY HOW HARD IT IS STEERING, and the three sum to exactly 1 -- a table
   // that dips below 1 bleeds the BIND pose in, which is the T-pose exactly.
@@ -9104,6 +9237,35 @@ function stepRide(d, dt, t) {
   const turn = s > 0 ? K.clips.rideL : K.clips.rideR;
   t[K.clips.ride] = 1 - a;
   if (turn && a > 0) t[turn] = a;
+  return 1;
+}
+
+// AND HE GOES BACK FOR IT (m109, `motoSeek`). *"Then he should go try to find it again. I
+// don't have him picking it up animation but I'll make one eventually."*
+// **IT RUNS IN THE SAME LINE AS `stepRide`, ABOVE THE BRAIN**, because a man walking back to his
+// own bike has no roam, no fight and nothing to be separated from -- and `d.ride` is what makes
+// it HIS: it is set at build and survives being shot off, so there is nothing to remember
+// anywhere else and no second body can take it.
+// **AND `d.fleeT` IS WHY HE DOES NOT TURN ROUND MID-PANIC.** m38's pacifist runs when hit, so a
+// biker blasted off his bike flees first and collects it afterwards -- which is the order that
+// reads, and it costs one clause rather than a state.
+function motoSeek(d, dt, t) {
+  const M = d.ride, K = d.K;
+  if (!M || !M.up || !M.on || M.st !== 'down' || d.st !== 'idle' || d.fleeT > 0) return 0;
+  const dx = M.root.position.x - d.root.position.x, dz = M.root.position.z - d.root.position.z;
+  if (Math.hypot(dx, dz) <= M.board) {
+    // **THE PICK-UP IS A STAND-IN AND IS MARKED AS ONE.** There is no clip for hauling a bike
+    // upright, so it rights itself over `riseDur` with him aboard from the first frame of it.
+    // Name one and this is the line it goes on -- `CLIPS.block`'s own pattern.
+    d.st = 'ride'; d.t = 0; d.cur = K.clips.ride;
+    M.st = 'rise'; M.stT = 0; M.roll0 = M.roll; M.rider = d;
+    return stepRide(d, dt, t);      // he is on it THIS frame, not next one
+  }
+  faceTo(d, Math.atan2(dx, dz), dt);
+  const sp = M.seek * (d.v ? d.v.pace : 1), nm = K.clips.run;
+  foeMove(d, d.h, sp, dt);
+  t[nm] = 1;
+  setSkinScale(d, nm, clamp(sp / K.runRef, K.tsLo, K.tsHi));
   return 1;
 }
 
@@ -10500,7 +10662,7 @@ function stepDummies(dt) {
     // without a gate in each of them.
     // AND THE MOTORCYCLE'S RIDER IS THE SAME SHAPE ONE VEHICLE OVER (m107) -- above the brain,
     // for the same reason: a man on a bike has no gait, no roam and nothing to be separated from.
-    if ((K.pal && stepPack(d, dt, t)) || stepRide(d, dt, t)) {
+    if ((K.pal && stepPack(d, dt, t)) || stepRide(d, dt, t) || motoSeek(d, dt, t)) {
       skinWeights(d, t, dt, .06, K.clips.idle);
       d.mixer.update(dt);
       d.root.rotation.y = d.h + d.faceOff + (d.spin || 0);
@@ -10807,8 +10969,12 @@ function frame() {
     // one picture from a phone -- and there is no console on one. `MOTO NO STEER` / `NO WHEEL` /
     // `NO SEAT` come out of `buildMoto` if a re-export renames a joint; `MOTO12` is the steer
     // angle in degrees, which is the number every part of this is derived from.
-    const mo = !MOTO.up ? '' : ' · MOTO' + Math.round(MOTO.steer * 180 / Math.PI) +
-      (MOTO.rider && MOTO.rider.st === 'ride' ? '' : '!');
+    // AND THE STATE, because *"it never fell over"*, *"it fell over and he never went back for
+    // it"* and *"he got there and it did not come up"* are three bugs and one picture from a
+    // phone. `MOTO12` is the steer angle in degrees while it is being ridden, which is the
+    // number every part of the geometry is derived from; anything else is the state's own name.
+    const mo = !MOTO.up ? '' : ' · MOTO' +
+      (MOTO.st === 'ride' ? Math.round(MOTO.steer * 180 / Math.PI) : MOTO.st);
     const pal = DUMMIES.find(d => d.K.pal);
     // `PACK?` is the seat being GUESSED off the spine rather than read off a named joint --
     // "he floats above the backpack" and "the joint never arrived" are one picture otherwise.
