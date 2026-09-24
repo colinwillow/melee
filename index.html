@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m109</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m110</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m109</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m110</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -495,10 +495,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
+import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm109';
+const BUILD = 'm110';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1747,6 +1748,53 @@ const TOWER = {
   tol: .45,
   full: .92,
 };
+
+// **STREETS: THE LAYOUT, PAINTED (m110).** *"I think you should try to build some procedural
+// streets, I'll make some more buildings and we can populate it."* What he needs first is the
+// ARMATURE -- where the roads run and where a building can stand -- so that is what this is:
+// a grid of carriageways with pavements and plots between them, generated from two lists of
+// centrelines and nothing else.
+//
+// **THE TEST SITE IS THE PLAZA.** One plot is skipped (`skip`), and the white floor, the grid
+// helpers, the ten boxes, the ledge stack, the motorcycle ring and every body spawn are inside
+// it, untouched. That is one line in the generator rather than a special case anywhere else.
+//
+// **AND IT IS FLAT ON PURPOSE -- A RAISED KERB WOULD EAT EVERY CHARGED SHOT.** The obvious
+// build is a 15 cm pavement pushed into `BOXES`, and `BOXES` is not only the collider: the
+// BOLT dies on it too, through `camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR)`. A charge ball
+// is up to 1.9 m across and leaves a muzzle under a metre up aimed at a point on the GROUND,
+// so it is under `0.15 + boltR` for its whole flight -- **every charged shot fired over a
+// pavement would detonate on the frame it left the barrel.** A kerb is not a wall, which is
+// the same sentence `wallFind` and `ledgeFind` already say ("a kerb is cover for nobody", "a
+// kerb is not a ledge"), and `camHit` is the one place that has not been told. Give it a
+// minimum height and the relief -- kerbs, lamps, crossings -- becomes a build; until then the
+// street is a PICTURE and the collider is untouched, which is also why nothing here had to be
+// checked against nine other systems.
+//
+// **CHECKED AS RECTANGLES, NEVER PLACED BY EYE** (m60's rule). Every slab and all sixteen
+// carriageway strips against the fourteen boxes, the building's plan, the tower's, the
+// motorcycle's ring and all nineteen body spawns plus the spawn point: **0 overlaps, tightest
+// clearance 5.00 m** (the road at x=-52 against the bike's ring). Plots come out 36 x 36 at
+// the corners and 84 x 36 / 36 x 80 on the sides -- his building is 20.9 m across, so the
+// smallest plot holds one with 7.5 m of pavement either side.
+const STREET = {
+  tag: 'STREET',
+  on: 1,
+  xs: [-96, -52, 40, 84],      // centrelines of the roads that run along Z
+  zs: [-80, -36, 52, 96],      // centrelines of the roads that run along X
+  skip: [1, 1],                // the plot the test site is. Left exactly as it was.
+  road: 8,                     // carriageway, kerb to kerb
+  walk: 2.5,                   // pavement either side
+  kerb: .22,                   // the painted line at the kerb
+  dash: [3.0, 3.5, .17],       // centre line: dash, gap, width
+  // The four coats are four merged meshes and therefore four draw calls, whatever the grid
+  // grows to. Everything is a flat quad; the y values only order them.
+  // 12 mm apart rather than 3, because these are 36 m quads and a depth buffer a hundred
+  // metres out does not separate three millimetres -- which is z-fight, not paint.
+  y: { road: .012, walk: .024, plot: .036, line: .048 },
+  col: { road: 0x39414d, walk: 0xbcc5d2, plot: 0xa9b8a6, line: 0xeef1f6 },
+};
+
 
 // ============================================================================================
 // SECONDARY MOTION -- a tail and six tentacles, simulated
@@ -4072,6 +4120,107 @@ scene.add(world);
   put( 26, 0, -22, 6,  9, 6, 4);
   put( 20, 0, -22, 6, 12, 6, 0);
 }
+
+// ---- the streets (m110) ----
+// A PLOT IS A ROAD GRID'S ONLY REAL OBJECT. The slab drawn for each one is the plot INFLATED
+// by the pavement, so the carriageway is simply the gap between slabs and a junction needs no
+// case of its own -- the corners fall out of the arithmetic rather than being built.
+// **THE Z-RUNNING ROADS RUN THE WHOLE LENGTH AND THE X-RUNNING ONES ARE CUT AT EACH JUNCTION.**
+// Drawing both full length would put two quads at the same height on the same square metre at
+// every crossing, which is a z-fight; cutting one family is one loop bound and nothing else.
+const streets = new THREE.Group();
+world.add(streets);
+
+function buildStreets() {
+  for (const o of streets.children.slice()) {
+    streets.remove(o); o.geometry.dispose(); o.material.dispose();
+  }
+  const S = STREET;
+  if (!S.on) return 0;
+  const xs = S.xs, zs = S.zs, h = S.road / 2, walk = S.walk, half = h + walk;
+  const X0 = xs[0] - half, X1 = xs[xs.length - 1] + half;
+  const Z0 = zs[0] - half, Z1 = zs[zs.length - 1] + half;
+  const G = { road: [], walk: [], plot: [], line: [] };
+  const quad = (k, x0, z0, x1, z1, y) => {
+    if (x1 - x0 < .01 || z1 - z0 < .01) return;
+    const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0);
+    g.rotateX(-Math.PI / 2);
+    g.translate((x0 + x1) / 2, y, (z0 + z1) / 2);
+    G[k].push(g);
+  };
+  // the kerb line is the OUTLINE of a slab, and only on the edges that actually face a road --
+  // the border strips have three edges facing nothing and the plaza rim has one facing the
+  // test site, and a kerb painted round those reads as a box rather than as a pavement.
+  const edge = (x0, z0, x1, z1, m) => {
+    const k = S.kerb;
+    if (m & 1) quad('line', x0, z0, x0 + k, z1, S.y.line);
+    if (m & 2) quad('line', x1 - k, z0, x1, z1, S.y.line);
+    if (m & 4) quad('line', x0, z0, x1, z0 + k, S.y.line);
+    if (m & 8) quad('line', x0, z1 - k, x1, z1, S.y.line);
+  };
+
+  for (const X of xs) quad('road', X - h, zs[0] - h, X + h, zs[zs.length - 1] + h, S.y.road);
+  for (const Z of zs) for (let i = 0; i < xs.length - 1; i++)
+    quad('road', xs[i] + h, Z - h, xs[i + 1] - h, Z + h, S.y.road);
+
+  let plots = 0;
+  for (let i = 0; i < xs.length - 1; i++) for (let j = 0; j < zs.length - 1; j++) {
+    if (i === S.skip[0] && j === S.skip[1]) continue;
+    const x0 = xs[i] + h, z0 = zs[j] + h, x1 = xs[i + 1] - h, z1 = zs[j + 1] - h;
+    quad('walk', x0, z0, x1, z1, S.y.walk);
+    quad('plot', x0 + walk, z0 + walk, x1 - walk, z1 - walk, S.y.plot);
+    edge(x0, z0, x1, z1, 15);
+    plots++;
+  }
+  // the four border strips, so the outermost roads have a kerb on their outer side as well
+  quad('walk', X0, Z0, xs[0] - h, Z1, S.y.walk);                            edge(X0, Z0, xs[0] - h, Z1, 2);
+  quad('walk', xs[xs.length - 1] + h, Z0, X1, Z1, S.y.walk);                edge(xs[xs.length - 1] + h, Z0, X1, Z1, 1);
+  quad('walk', xs[0] - h, Z0, xs[xs.length - 1] + h, zs[0] - h, S.y.walk);  edge(xs[0] - h, Z0, xs[xs.length - 1] + h, zs[0] - h, 8);
+  quad('walk', xs[0] - h, zs[zs.length - 1] + h, xs[xs.length - 1] + h, Z1, S.y.walk);
+  edge(xs[0] - h, zs[zs.length - 1] + h, xs[xs.length - 1] + h, Z1, 4);
+
+  // THE PLAZA GETS A RIM AND NOT A SLAB. Painting the skipped plot would bury the white floor,
+  // the two grid helpers and the ten boxes under a pavement; a 2.5 m rim gives the four roads
+  // round it a kerb to stop against and leaves the test site exactly as it was.
+  const px0 = xs[S.skip[0]] + h, pz0 = zs[S.skip[1]] + h;
+  const px1 = xs[S.skip[0] + 1] - h, pz1 = zs[S.skip[1] + 1] - h;
+  quad('walk', px0, pz0, px0 + walk, pz1, S.y.walk);          edge(px0, pz0, px0 + walk, pz1, 1);
+  quad('walk', px1 - walk, pz0, px1, pz1, S.y.walk);          edge(px1 - walk, pz0, px1, pz1, 2);
+  quad('walk', px0 + walk, pz0, px1 - walk, pz0 + walk, S.y.walk);   edge(px0 + walk, pz0, px1 - walk, pz0 + walk, 4);
+  quad('walk', px0 + walk, pz1 - walk, px1 - walk, pz1, S.y.walk);   edge(px0 + walk, pz1 - walk, px1 - walk, pz1, 8);
+
+  // the centre line, broken at every junction -- a dash painted across a crossing is a dash
+  // nobody would paint, and it is the one thing that says which way a road runs from above.
+  const [dl, dg, dw] = S.dash, pitch = dl + dg;
+  const dashes = (a0, a1, cross, alongZ, c) => {
+    for (let a = a0 + dg; a + dl < a1; a += pitch) {
+      const mid = a + dl / 2;
+      let clear = 1;
+      for (const q of cross) if (Math.abs(mid - q) < h + dl / 2) { clear = 0; break; }
+      if (!clear) continue;
+      if (alongZ) quad('line', c - dw / 2, a, c + dw / 2, a + dl, S.y.line);
+      else quad('line', a, c - dw / 2, a + dl, c + dw / 2, S.y.line);
+    }
+  };
+  for (const X of xs) dashes(zs[0] - h, zs[zs.length - 1] + h, zs, 1, X);
+  for (const Z of zs) dashes(xs[0] + h, xs[xs.length - 1] - h, xs, 0, Z);
+
+  let tris = 0;
+  for (const k of ['road', 'walk', 'plot', 'line']) {
+    if (!G[k].length) continue;
+    const g = mergeGeometries(G[k]);
+    for (const q of G[k]) q.dispose();
+    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
+      color: STREET.col[k], roughness: k === 'road' ? .95 : .9, metalness: 0 }));
+    m.receiveShadow = true;
+    streets.add(m);
+    tris += (g.index ? g.index.count : g.getAttribute('position').count) / 3;
+  }
+  console.log('STREET ' + plots + ' plots, ' + streets.children.length + ' draw calls, ' + Math.round(tris) + ' tris');
+  return plots;
+}
+buildStreets();
+
 
 // The highest box top under (x,z) at or a step above `y`, else the floor at 0.
 function groundAt(x, z, y, step) {
@@ -11247,6 +11396,9 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // the buildings built from its own table: `mel.tower(48)` is the triple he floated.
   bld: h => bldSize(BLD, h),
   tower: h => bldSize(TOWER, h),
+  // AND THE STREETS REBUILD FROM THE TABLE, so the grid is a thing to move on the phone
+  // rather than a thing to push. `mel.streets(0)` takes the whole layout away.
+  STREET, streets: on => { if (on !== undefined) STREET.on = on ? 1 : 0; return buildStreets(); },
   kit: () => cycleKit(),
   clips: () => Object.keys(rig.clips).map(n => n + ' ' + rig.clips[n].duration.toFixed(3) + 's').join('\n'),
   where: () => `${player.pos.x.toFixed(1)}, ${player.pos.y.toFixed(2)}, ${player.pos.z.toFixed(1)}`,

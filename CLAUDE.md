@@ -1219,6 +1219,75 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **THE STREETS ARE THE LAYOUT, AND THEY ARE PAINT (m110, `STREET`, `buildStreets`).** *"Yes I
+  think you should try to build some procedural streets, I'll make some more buildings and we
+  can populate it."* What he needs first is the ARMATURE -- where a road runs and where a
+  building can stand -- so the whole generator is two lists of centrelines and one rule.
+  **A PLOT IS A ROAD GRID'S ONLY REAL OBJECT.** The slab drawn for each plot is the plot
+  INFLATED by the pavement, so the carriageway is simply the gap between slabs: a junction
+  needs no case of its own and the corners fall out of the arithmetic rather than being built.
+  Four merged meshes, **4 draw calls and 520 triangles for the whole city**, whatever the grid
+  grows to.
+  **THE TEST SITE IS THE PLAZA.** `skip` leaves one plot unpainted, and the white floor, both
+  grid helpers, the fourteen boxes, the ledge stack, the motorcycle ring and every body spawn
+  are inside it, untouched. It gets a 2.5 m RIM rather than a slab, so the four roads round it
+  have a kerb to stop against and nothing underneath is buried.
+  **AND IT IS FLAT ON PURPOSE -- A RAISED KERB WOULD EAT EVERY CHARGED SHOT.** The obvious
+  build is a 15 cm pavement pushed into `BOXES`, and `BOXES` is not only the collider: the BOLT
+  dies on it too, through `camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR)`. A full charge ball
+  is 1.9 m across and leaves a muzzle under a metre up aimed at a point on the GROUND, so it is
+  under `0.15 + boltR` for its whole flight -- **every charged shot fired over a pavement would
+  detonate on the frame it left the barrel.** A kerb is not a wall, which is the same sentence
+  `wallFind` and `ledgeFind` already say (*"a kerb is cover for nobody"*, *"a kerb is not a
+  ledge"*), and `camHit` is the one place that has never been told. **Give it a minimum height
+  and the relief -- kerbs, lamps, crossings -- becomes a build**; until then the street is a
+  PICTURE, the collider is untouched, and nothing here had to be checked against nine other
+  systems. That is also why there are no lamp posts: a post is either in `BOXES` (and stops
+  bolts across the whole map, and offers wall cover behind an 18 cm pole) or it is not (and he
+  walks through it), and both answers want the `camHit` change first.
+  **CHECKED AS RECTANGLES, NEVER PLACED BY EYE** (m60's rule): every slab and all sixteen
+  carriageway strips against the fourteen boxes, the building's plan, the tower's, the bike's
+  ring and all nineteen body spawns plus the spawn point -- **0 overlaps, tightest clearance
+  5.00 m** (the road at x=-52 against the motorcycle's ring). Plots come out 36 x 36 at the
+  corners and 84 x 36 / 36 x 80 on the sides; his building is 20.9 m across, so the smallest
+  plot holds one with 7.5 m of pavement either side.
+  **THE Z-RUNNING ROADS RUN THE WHOLE LENGTH AND THE X-RUNNING ONES ARE CUT AT EACH JUNCTION.**
+  Drawing both full length puts two quads at the same height on the same square metre at every
+  crossing, which is a z-fight; cutting one family is a loop bound and nothing else. **And the
+  four coats are 12 mm apart rather than 3**, because these are 36 m quads and a depth buffer a
+  hundred metres out does not separate three millimetres.
+  **`mel.streets(0)` takes the whole layout away and `mel.STREET` is live**, so where the grid
+  sits is a thing to move on the phone rather than a thing to push.
+
+- **AND HIS STREETS KIT CANNOT BE ASSEMBLED FROM THIS SIDE, WHICH IS A FACT ABOUT THE FILE AND
+  NOT ABOUT THE IDEA (m110).** `models/streets/modular_streets_kit.glb` was read before a line
+  was written: **321 nodes, 198,528 triangles, 2 materials, 2 images** (`modularkit`, a 1401 KB
+  WebP; the second is 0 KB and belongs to a plain grey material used by exactly ONE primitive),
+  draco + `EXT_texture_webp` + specular + ior, 0 skins, 0 animations, and both materials
+  `doubleSided: true` -- which has to be forced to `FrontSide` the day anything loads it, the
+  standing rule for every generated asset here.
+  **IT IS A CATALOGUE, NOT A SCENE.** The one primitive on the grey material is `Rectangle001`,
+  a 132 x 208 m flat plane -- a BACKDROP -- and 244 pieces are laid out on it in a regular
+  field, 69% of a 190 x 210 m area occupied. In one corner (x -90..-32, z 125..175) sit 75
+  pieces assembled into something, with geometry up to 20 m above the road plane.
+  **AND EVERY HANDLE FOR TELLING ONE PIECE FROM ANOTHER IS MISSING:**
+      names      all 321 are `modular kit00` .. `modular kit320`. Nothing semantic at all.
+      UVs        `TEXCOORD_0` accessors carry no min/max (draco), so which patch of the atlas
+                 a piece samples -- the one honest way to tell tarmac from brick -- is unreadable
+      geometry   draco, and nothing in this container can decode a mesh
+      shapes     263 DISTINCT footprints. The road-plane family is not a tile set: it is big
+                 irregular slabs 7 to 26 m across in GRADED SERIES (0.18 x 6.03, 0.32 x 6.34,
+                 0.48 x 6.63 ... 1.90 x 7.99), which is a swept curve discretised, not a grid
+  So all I have per piece is an axis-aligned bounding box and a triangle count, and **a kerb, a
+  bench, a wall and a road slab are the same box from here.** Any layout built on that is
+  placing art by eye, which is the one thing this account's rules say over and over not to do.
+  **WHAT WOULD MAKE IT USABLE, cheapest first:** name the pieces by kind in the export (`road_*`,
+  `kerb_*`, `lamp_*` -- `weapFit`'s rule, a named thing IS the placement); or export the
+  assembled corner on its own as one GLB, which drops in as a prop with nothing guessed; or
+  export a handful of SQUARE tiles on one module size, which tiles with no classification at
+  all. Until one of those, m110's grid is generated geometry and the kit is in `bump.mjs`'s
+  `DIRS` waiting (**eighth time** that tax has been paid).
+
 - **THE BIKE IN THE GROUND AND THE RIDER AT "PROPER HEIGHT" ARE ONE ARITHMETIC ERROR, TWICE
   (m109, `motoLow`, `stepRide`'s drop).** *"He rides the motorcycle but the motorcycle is in the
   ground. He has proper height but the motorcycle doesn't."*
@@ -5186,7 +5255,10 @@ means anything you can carry from one situation to the next.
   which is what the four clips support. A dedicated sprint gesture is a slot, not a clip.
 - `weapon_root_left` is unused. Dual wield is a weapon file exported onto it and one roster line.
 - No audio at all.
-- The world is a white floor and ten boxes. It is a test site, not a level.
+- The world is a white floor and ten boxes, with a painted street grid round it (m110). It is
+  a test site, not a level. **The streets have no relief** -- no kerb, no lamp, no crossing --
+  and the one thing standing between them and all three is `camHit` having a minimum height,
+  so that a bolt is stopped by a wall and not by a pavement. That is the next build.
 - `MOVE.hardLand` (8.0 m/s) picks `landing_hard` over `landing_soft` by IMPACT SPEED, not by how
   long he was in the air — a long float onto a box top is a soft landing and a short drop off a
   ledge at pace is not. The number is a guess and wants a look on the phone.
