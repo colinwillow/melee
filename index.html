@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m115</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m116</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m115</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m116</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm115';
+const BUILD = 'm116';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2222,7 +2222,10 @@ const PACK = {
   // WHERE HE SITS, relative to the spine bone. `up` and `back` are fractions of `RIG.height`,
   // so a change to how big the player is moves the seat with him rather than leaving a small
   // man hovering -- m52's rule, and the reason nothing here is typed in metres.
-  seat: { up: .30, back: .17 },
+  seat: { up: .22, back: .21 },
+  // COMING OFF (m116). `offApex` is how far he rises ABOVE the seat before he falls, and
+  // `offGap` is how far from you he lands; the flight time is solved between them.
+  offApex: .30, offGap: 1.25,
   // **THE EXPORT DECIDES WHERE HE SITS, THE MOMENT IT SAYS SO (m105).** *"I'm wondering if it
   // would be helpful for me to put in a root or a joint where Clancy should go, because he just
   // sort of looks like he's standing floating slightly above the backpack."* It is, and it is
@@ -10882,12 +10885,44 @@ function packSit(d) {
   d.cur = (Array.isArray(pool) ? pool.find(n => d.actions[n]) || pool[pool.length - 1] : pool);
   skinPlay(d, d.cur, skinLen(d, d.cur) / Math.max(.2, PACK.leap * 1.6));
 }
-// AND COMING OFF IS A DROP, NOT A TELEPORT. He keeps the seat's height and falls out of it
-// through the same integrator he arrived by, so there is one description of a body in the air.
+// **HE JUMPS OFF, AND THE NOTE THAT USED TO SIT HERE CLAIMED HE ALREADY DID (m116).** *"When
+// you tell him to go back to roam he just like teleports down to the ground. I want him to
+// literally jump off your backpack."* Exactly what it did: it set `st = 'idle'`, and `idle` is
+// the brain -- `foeWander` ends in `foeMove`, which SNAPS `P.y` to the ground on the very next
+// frame. So he was on your back and then he was standing on the road, in one frame, with no
+// flight in between. **A comment describing an intent the code does not have** is this
+// account's own tell, and it is the fourth time; the old one said "a drop, not a teleport" and
+// the thing under it was the teleport.
+//
+// **THE MACHINERY WAS ALREADY THERE AND IT IS THE HOP.** `'hop'` owns nothing but a velocity
+// and hands the whole arc to `bodyFly` -- the integrator every knock-down and every stuck-hop
+// has used since m37 -- so the fall, the wall bounce, the ground stop and the landing thump all
+// come with it, it sits ABOVE `foeWander` so nothing snaps him down, and it holds `clips.air`
+// while he is off the ground and lets go the moment he is not. What is added here is a
+// velocity, and the arithmetic to choose it.
+//
+// **THE APEX IS THE NUMBER AND `vy` FALLS OUT OF IT** (m21/m74's rule): `offApex` is how far
+// ABOVE the seat he rises, so the push off your back is a push and not a step off a kerb. The
+// flight time is then the whole arc down to the real ground under him -- solved, not typed,
+// because how high the seat is depends on how tall YOU are and the ground under you can be a
+// box top -- and the travel falls out of that so he lands `offGap` away however high he started.
 function packOff(d) {
   if (d.st !== 'ride') return;
-  d.st = 'idle'; d.t = 0; d.vy = 0;
-  d.root.position.y = Math.max(d.root.position.y, groundAt(d.root.position.x, d.root.position.z, d.root.position.y, .5));
+  const P = d.root.position, g = d.K.flyG || 20;
+  const gy = groundAt(P.x, P.z, P.y, .5);
+  const up = Math.sqrt(2 * g * Math.max(.02, PACK.offApex));
+  const T = (up + Math.sqrt(up * up + 2 * g * Math.max(.02, P.y - gy))) / g;
+  // **OFF THE BACK OF YOU, WHICH IS WHERE HE ALREADY IS.** Forward would send him through you.
+  const h = player.faceH + Math.PI;
+  d.vy = up;
+  d.vx = Math.sin(h) * PACK.offGap / T;
+  d.vz = Math.cos(h) * PACK.offGap / T;
+  // AND `hopT` IS LEFT ALONE. That is the stuck-hop's own cooldown and this is not one of those;
+  // clearing it here would let a body that jumped off also hop on the next frame it snagged.
+  d.st = 'hop'; d.t = 0; d.h = h; d.stuckT = 0;
+  d.cur = d.K.clips.jump || d.K.clips.idle;
+  skinPlay(d, d.cur, skinLen(d, d.cur) / Math.max(.12, T));
+  bodyWhoosh(d);
 }
 // THE STATE ITSELF. It runs ABOVE everything else a body does, because a passenger has no brain,
 // no gait, no dive and nothing to separate him from -- he is furniture on somebody else's back.

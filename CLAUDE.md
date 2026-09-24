@@ -1220,6 +1220,36 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **HE TELEPORTED OFF YOUR BACK, AND THE NOTE ABOVE THE LINE CLAIMED HE DID NOT (m116,
+  `packOff`).** *"When you tell him to go back to roam he just like teleports down to the ground.
+  I want him to literally jump off your backpack."* Exactly what it did. `packOff` set
+  `st = 'idle'` -- and `idle` is the BRAIN: `foeWander` ends in `foeMove`, which SNAPS `P.y` to
+  the ground on the very next frame. So he was on your back and then he was standing on the
+  road, in one frame, with no flight in between.
+  **AND THE COMMENT SAID "A DROP, NOT A TELEPORT."** Fourth time in this account that a comment
+  has described an intent the code does not have (after `blast0`, the 40 cm cube and `CLIPS.block`)
+  -- and the tell each time is the same: the sentence is in the imperative and the line under it
+  is doing something else. **A behaviour asserted only in a comment is not a behaviour.**
+  **THE MACHINERY WAS ALREADY THERE AND IT IS THE HOP.** `'hop'` owns nothing but a velocity and
+  hands the whole arc to `bodyFly`, so the fall, the wall bounce, the ground stop and the landing
+  thump come with it; it sits ABOVE `foeWander` so nothing snaps him down; and it holds
+  `clips.air` (`falling_idle`, which he has) while he is off the ground and lets go the moment he
+  is not. What this adds is a velocity and the arithmetic to choose it.
+  **THE APEX IS THE NUMBER AND `vy` FALLS OUT OF IT**, m21/m74's rule: `offApex` is how far he
+  rises ABOVE the seat, so leaving is a PUSH off your back rather than a step off a kerb. The
+  flight time is then solved for the whole arc down to the real ground under him -- not typed,
+  because how high the seat is depends on how tall YOU are and what is under you can be a box
+  top -- and the travel falls out of that, so he lands `offGap` away however high he started.
+  `leapDrag` 0 on his table is what keeps that exact.
+  **AND `hopT` IS LEFT ALONE.** That is the STUCK-hop's cooldown and this is not one of those;
+  clearing it would let a body that jumped off also hop on the next frame it snagged.
+  **THE SEAT IS STILL A GUESS AND THE EXPORT IS STILL THE ANSWER.** *"I should probably put a
+  joint in for where he goes -- I wanted him to be kind of hanging onto your backpack."* m105
+  wired exactly that and it needs no code change on the day it lands: name a joint matching
+  `PACK.mark` in the PLAYER's skin and it IS the seat, with no offset applied at all (`_exact`).
+  Until then `seat.up` came .30 -> .22 and `back` .17 -> .21, which is lower and further onto
+  his back -- a nudge to a number nothing in the file can measure, and said as one.
+
 - **A SMOOTH GLOWING LUMP IS THE THING THAT READS AS NOTHING (m115).** *"I still would just love
   like a better particle effect. It just doesn't look that great -- I just wanna do a few passes
   to make the transition look way cooler."* m113 and m114 were both about the SHAPE being right,
