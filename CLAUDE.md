@@ -1220,6 +1220,34 @@ same picture from a phone.
   **`models/vehicles` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive, so a
   new asset folder is a new entry there or every file in it goes stale silently. **Seventh time.**
 
+- **A BODY'S ROOT IS AT ITS SOLES, SO WRITING IT TO A SEAT PUTS HIS FEET ON THE BACKPACK
+  (m120, `P.hipY`).** *"This also shows how Clancy sits so far above the backpack."* -- with a
+  screenshot of him riding at head height. Measured off the two files rather than nudged a third
+  time, composing each rig's bind chain out of the GLB JSON:
+      zap     `mixamorig_Spine2` at **0.742 m**, 59% of his 1.25 m   crown 1.25, head bone 0.910
+      Clancy  hips **0.156 m** above his own root, head bone 0.337, crown 0.62
+      seat    0.742 + RIG.height * .22 = **1.017 m**, and his ROOT went there
+      so      his crown landed at **1.64 m** -- 0.39 m OVER zap's own head
+  **EVERY NUDGE TO `up` WAS MOVING A NUMBER THAT COULD NOT BE RIGHT**, because the error is the
+  rider's own HEIGHT and not an offset: m105 wrote .30 and called the seat a guess, m116 took it
+  to .22 and called it a nudge, and neither could ever have closed 39 cm without burying him in
+  zap's spine. `packSeat` returns where his ROOT goes now, with his HIPS landing on the seat and
+  `P.hipY` saying how far that is -- measured off the proto, which is provably at its bind pose
+  because nothing ever animates it, so a bigger sidekick lands right with nothing edited.
+  `buildBoard`'s rule one body over: read where the joint actually is and slide the root by the
+  difference.
+  **AND `up` IS SMALL AND NEGATIVE NOW, WHICH IS WHAT THE MEASUREMENT SAYS.** Spine2 is already
+  at 59% of his height, so a rider's hips belong a touch UNDER it rather than a quarter of a
+  body above: -.034 puts Clancy's hips at 0.700, his root at 0.544 and his own head at **0.881
+  against zap's 0.910** -- a creature on his back rather than one hovering over it. He drops
+  **0.47 m**.
+  **AND A NAMED JOINT TAKES THE CORRECTION TOO**, which is a change from m105's note: a joint
+  marks a point ON THE BACKPACK, and that is still where his hips belong rather than where his
+  feet do. The export decides the PLACE and this decides which part of him arrives at it -- which
+  is the only reading that makes `PACK.mark` drop in with nothing to re-tune.
+  **THE POSE IS STILL A STAND-IN AND IS STILL HIS.** `stand_to_cover` is a man taking cover, not
+  a man holding on, and it is why he reads as standing to attention on a moving back. `PACK.clips
+  .ride` is an ordered list, so drawing one and exporting it as `pack_ride` is the whole change.
 - **A BORROWED SKIN WEARS HIS WHOLE MOVESET NOW, ROTATION-ONLY (m119, `mphBorrow`, `mphBare`).**
   *"Once you transform, obviously the new characters don't have all of the same things my hero
   does -- but we could just implement a rotation based borrow of the animation so you can still

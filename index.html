@@ -441,10 +441,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m119</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m120</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m119</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m120</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
@@ -497,7 +497,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm119';
+const BUILD = 'm120';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
 /* ASSETS:END */
@@ -2219,10 +2219,12 @@ const PACK = {
   on: 1,
   near: 1.25,       // how close he gets before he leaps -- a bit over his own radius plus yours
   leap: .30,        // and how long the leap takes. `bodyFly` does the arc; this is the clock
-  // WHERE HE SITS, relative to the spine bone. `up` and `back` are fractions of `RIG.height`,
-  // so a change to how big the player is moves the seat with him rather than leaving a small
-  // man hovering -- m52's rule, and the reason nothing here is typed in metres.
-  seat: { up: .22, back: .21 },
+  // WHERE HIS HIPS GO, relative to the spine bone, as fractions of `RIG.height` -- so a change
+  // to how big the PLAYER is moves the seat with him (m52's rule) and `P.hipY` handles how big
+  // the RIDER is. **`up` IS SMALL AND NEGATIVE ON PURPOSE (m120)**: zap's `Spine2` is already
+  // at 59% of his height, so a rider's hips belong a touch UNDER it -- which puts Clancy's own
+  // head at 0.88 m against zap's at 0.91, a creature on his back rather than one over it.
+  seat: { up: -.034, back: .21 },
   // COMING OFF (m116). `offApex` is how far he rises ABOVE the seat before he falls, and
   // `offGap` is how far from you he lands; the flight time is solved between them.
   offApex: .30, offGap: 1.25,
@@ -9183,6 +9185,15 @@ function bodyProto(g, K) {
   proto.updateMatrixWorld(true);
   const pb = {}; proto.traverse(o => { if (o.isBone) pb[o.name] = o; });
   const faceOff = -measureFacing(pb);
+  // **HOW FAR HIS OWN HIPS SIT ABOVE HIS OWN ROOT (m120).** A body's root is at its SOLES (every
+  // export here reads 0.000 there), so writing a root to a seat puts his FEET on it and his
+  // whole body above -- which is the whole of why Clancy rode a foot over the backpack. Read off
+  // the BIND pose, which this proto is provably at (nothing ever animates it), so a re-export at
+  // any size lands right with no edit. `buildBoard`'s rule one body over.
+  let hipY = 0;
+  const _hp = new THREE.Vector3();
+  for (const n in pb) if (/Hips$/.test(n)) { hipY = pb[n].getWorldPosition(_hp).y; break; }
+  if (!(hipY > 0)) hipY = authored * .30;    // no Hips bone: a plausible fraction, never zero
   let clips = normaliseClips(g.animations || []);
   if (K.drop) clips = clips.filter(c => !K.drop.test(c.name));
   // **ONLY THE LOOPING ONES, AND ONLY ONCE PER KIND.** `bodyLoops` already derives which clips
@@ -9202,11 +9213,11 @@ function bodyProto(g, K) {
                        worst.toFixed(1) + ' units on ' + who);
   }
   console.log('[melee] ' + K.file + ': ' + authored.toFixed(4) + ' m authored -> x' + scale.toFixed(3) +
-              ', ' + clips.length + ' clips');
+              ', ' + clips.length + ' clips, hips ' + (hipY * scale).toFixed(3) + ' m above his root');
   // **AND IT IS STASHED ON THE KIND (m112).** The DNA gun wears a clone of this, and a proto
   // that only exists as a local inside a builder is a proto nothing else can reach -- which is
   // the one line between "a table and a load line" and a second loader.
-  const P = { proto, scale, faceOff, clips };
+  const P = { proto, scale, faceOff, clips, hipY: hipY * scale };
   K.P = P;
   return P;
 }
@@ -11119,7 +11130,20 @@ function setPal(i) {
 // position, so a rig with no spine at all still carries him rather than dropping him at the
 // origin.
 const _pk = new THREE.Vector3();
-function packSeat(o) {
+// **IT RETURNS WHERE HIS ROOT GOES, NOT WHERE THE SEAT IS (m120).** *"This also shows how
+// Clancy sits so far above the backpack."* Measured off the two files rather than nudged again:
+//     zap    Spine2 at **0.742 m**, 59% of his 1.25 m      Clancy   hips 0.156 above his root
+//     seat   0.742 + RIG.height * .22 = **1.017 m**, and his ROOT went there
+//     so     his crown landed at 1.64 m against zap's own at 1.25 -- **0.39 m over his head**
+// A body's root is at its SOLES, so writing a root to a seat puts his FEET on it and his whole
+// body above -- and every nudge to `up` (m105 .30, m116 .22) was moving a number that could
+// never be right, because the error is his own height and not an offset. His HIPS go on the
+// seat and `P.hipY` says how far that is, so the fix is measured and a bigger sidekick lands
+// right with nothing edited.
+// **AND A NAMED JOINT TAKES THE CORRECTION TOO.** A joint marks a point ON THE BACKPACK, which
+// is still where his hips belong rather than where his feet do -- so the export decides the
+// PLACE and this decides which part of him arrives at it.
+function packSeat(o, d) {
   const p = player;
   if (PACK._b === undefined) {
     PACK._b = null; PACK._exact = 0;
@@ -11130,18 +11154,19 @@ function packSeat(o) {
   // A NAMED SEAT IS THE PLACEMENT AND TAKES NO OFFSET. The fractions below exist only because
   // nothing in the file knows where his back is; a joint knows, so applying them on top would be
   // this code having an opinion about an export that has already answered.
-  if (PACK._exact) { o.x = _pk.x; o.y = _pk.y; o.z = _pk.z; return o; }
+  const hip = (d && d.K && d.K.P && d.K.P.hipY) || 0;
+  if (PACK._exact) { o.x = _pk.x; o.y = _pk.y - hip; o.z = _pk.z; return o; }
   const fx = Math.sin(p.faceH), fz = Math.cos(p.faceH);
   o.x = _pk.x - fx * (RIG.height * PACK.seat.back);
   o.z = _pk.z - fz * (RIG.height * PACK.seat.back);
-  o.y = _pk.y + RIG.height * PACK.seat.up;
+  o.y = _pk.y + RIG.height * PACK.seat.up - hip;
   return o;
 }
 const _ps = { x: 0, y: 0, z: 0 };
 // THE LEAP IS `bodyFly`'s, SOLVED FOR THE GAP -- m21's rule: the apex is the number somebody
 // chose and the velocity falls out of it, so he arrives ON the seat rather than near it.
 function packGo(d) {
-  const S = packSeat(_ps);
+  const S = packSeat(_ps, d);
   const T = Math.max(.08, PACK.leap);
   const g = d.K.flyG || 20;
   // **THE SEAT IS THE TARGET, SO `vy` IS SOLVED FOR IT** rather than for an apex somebody typed:
@@ -11206,13 +11231,13 @@ function packOff(d) {
 function stepPack(d, dt, t) {
   if (d.st === 'leap') {
     t[d.cur] = 1;
-    const S = packSeat(_ps);
+    const S = packSeat(_ps, d);
     if (d.t >= PACK.leap || (d.vy <= 0 && d.root.position.y >= S.y - .25)) packSit(d);
     return 1;
   }
   if (d.st !== 'ride') return 0;
   if (!packOK()) { packOff(d); return 0; }
-  const S = packSeat(_ps);
+  const S = packSeat(_ps, d);
   // component writes, the way `foeMove` does it -- a body's root is a plain position everywhere
   d.root.position.x = S.x; d.root.position.y = S.y; d.root.position.z = S.z;
   d.h = player.faceH;
