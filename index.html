@@ -554,7 +554,7 @@ import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
 const BUILD = 'm137';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -3838,11 +3838,18 @@ const SFX = {
     // recordings -- a man arriving flat, which six times a second is a drum rather than a stride
     // -- and m68 wrote down that its own key is what would make the swap free. **This is that
     // swap, and it is the one line it was promised to be.**
-    // **THE ORDER IS [LEFT, RIGHT] AND `footSnd` INDEXES IT WITH THE FOOT**, because he recorded
-    // two files rather than one and which one plays is the whole reason there are two. Keep
-    // them in that order.
+    // **THE LIST IS WHOLE [LEFT, RIGHT] PAIRS AND `footSnd` INDEXES IT WITH THE FOOT**, because
+    // he recorded a file PER FOOT and which one plays is the whole reason there is more than
+    // one. **Keep it in pairs and keep each pair in that order** -- the ordering is the only
+    // thing saying which file is which foot, exactly as `SFX.files.plasma` is lightest-first.
+    // **AND A SECOND PAIR IS VARIETY RATHER THAN A SECOND FOOT (m137).** `footSnd` rolls which
+    // PAIR per footfall, so a left foot is always a left recording and two consecutive left
+    // feet are not the same file -- which is what `STEP.jit` was standing in for while there
+    // was only one of each. A third pair is two more entries and no code change.
     foot: ['audio/footsteps/footstep_l.mp3',
-           'audio/footsteps/footstep_r.mp3'],
+           'audio/footsteps/footstep_r.mp3',
+           'audio/footsteps/footstep_2_l.mp3',
+           'audio/footsteps/footstep_2_r.mp3'],
     shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
     big: ['audio/plasma_canon.mp3'],
     boom: ['audio/explosion_small.mp3'],
@@ -4093,7 +4100,23 @@ function footSnd(sp, top, x, z, left, gk, rk) {
   // reading its length here is not a second source of truth -- and a bank that came back with
   // ONE buffer (a failed decode, or a future single recording) falls through to `snd`'s own
   // random roll rather than silencing every right foot, which `list[i]` undefined would do.
-  const n = (SFX.buf.foot && SFX.buf.foot.length) || 0;
+  // **AND THE PAIR IS ROLLED OVER WHAT HAS ACTUALLY DECODED.** The bank arrives
+  // asynchronously and `SFX.buf[k][i] = b` leaves a SPARSE array until it does, so a pair
+  // picked before its file lands is a silent footfall -- `snd` returns on `!list[i]`. A
+  // reservoir pick is one pass and allocates nothing, which matters six times a second; and
+  // with nothing decoded for this foot `i` stays undefined and `snd`'s own random roll takes
+  // over, which is m136's fallback generalised rather than a second rule.
+  const buf = SFX.buf.foot, n = (buf && buf.length) || 0, pairs = n >> 1;
+  let pick, seen = 0;
+  if (pairs) {
+    const f = left ? 0 : 1;
+    for (let q = 0; q < pairs; q++) {
+      const k = q * 2 + f;
+      if (!buf[k]) continue;
+      seen++;
+      if (Math.random() * seen < 1) pick = k;
+    }
+  }
   // **AND IT PLAYS WHOLE.** `cut`/`att`/`dec` shaped a 0.34 s body impact into something
   // footstep-sized; his own are 0.264 s and 0.288 s and ARE the event, so `dec` .09 was about
   // to cut them in half. `SFX.edge` still trims the silence off the front, which is the only
@@ -4102,7 +4125,7 @@ function footSnd(sp, top, x, z, left, gk, rk) {
                 r: (STEP.r0 + (STEP.r1 - STEP.r0) * u) * (left ? 1 + STEP.alt : 1 - STEP.alt)
                    * (rk == null ? 1 : rk)
                    * (1 + (Math.random() - .5) * STEP.jit),
-                i: n > 1 ? (left ? 0 : 1) : undefined, x, z });
+                i: pick, x, z });
 }
 // **AND THEIR STRIDE IS THE SAME ARITHMETIC ON THEIR OWN CLIPS (m66).** `duration * ref` is how
 // far one authored cycle carries a body whatever speed it is played at, and `perCycle` footfalls

@@ -1144,6 +1144,22 @@ same picture from a phone.
   impact and would throw away a scuff on a recording that has one). `mel.STEP` is live --
   `r0`/`r1`, `g0`/`g1` and `jit` are the dials, and `mel.STEP.on = 0` is still the one word off.
 
+- **A SECOND PAIR OF FOOTSTEPS IS VARIETY, NOT A SECOND FOOT (m137).** He pushed
+  `footstep_2_l.mp3` / `footstep_2_r.mp3` beside m136's pair, and the index m136 wrote was the
+  FOOT itself (`left ? 0 : 1`) -- so four files would have played as two and **his two new
+  recordings would have been hashed, downloaded and never once heard.** The list is whole
+  [left, right] PAIRS now and `footSnd` rolls which pair per footfall, so a left foot is always
+  a left recording and two consecutive left feet are not the same file. A third pair is two more
+  entries and no code change.
+  **AND THE PAIR IS ROLLED OVER WHAT HAS DECODED.** `SFX.buf[k][i] = b` leaves a SPARSE array
+  while the bank is still arriving, and `snd` returns on `!list[i]` -- so a pair picked before
+  its file lands is a silent footfall. A **reservoir pick** is one pass and allocates nothing,
+  which matters six times a second, and with nothing decoded for that foot the index stays
+  `undefined` and `snd`'s own random roll takes over: m136's fallback generalised rather than a
+  second rule.
+  **THE ORDERING IS THE ONLY THING SAYING WHICH FILE IS WHICH FOOT**, exactly as
+  `SFX.files.plasma` is lightest-first. Keep it in pairs and keep each pair [left, right].
+
 - **THE WORLD IS WHITE AND EVERY ATMOSPHERIC EFFECT IN IT WAS ALSO WHITE (m137).** *"I don't see
   what shaft does and I don't see what dust does. I still just see a white background -- do you
   need me to add an HDRI? You can't see the sun at all because there's just a white haze in the
