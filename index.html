@@ -453,10 +453,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m124</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m125</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m124</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m125</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 
@@ -510,7 +510,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm124';
+const BUILD = 'm125';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1788,6 +1788,55 @@ const WP = {
   inst: 1,              // batch the inst_ nodes into InstancedMesh -- 368 draws become 40
   cast: 0,              // see `sun` below: the city RECEIVES shadows and does not cast them
   sun: 1,               // and the shadow camera follows him, because it is 44 m in a 280 m city
+
+  // **FORTY-ONE OF HIS HUNDRED AND FIFTY MATERIALS CARRY NO BASE COLOUR AT ALL, AND glTF's
+  // DEFAULT IS WHITE (m125).** *"None of the roads or buildings are coming in."* They are all
+  // there and they are all `#ffffff`, on a background and a fog of `0xe7edf5` -- which is what
+  // a road you cannot see looks like. Read straight out of the file: every one of those 41 has
+  // a roughness and/or a metalness set and NO `baseColorFactor` and NO `baseColorTexture`, so
+  // somebody set the surface and the colour did not survive the export. His own note says the
+  // ground materials "export as flat colors for now"; they do not, they export with none.
+  //     visible      41 textured materials on the 368 `inst_` nodes -- trees, cars, benches,
+  //                  street assets -- plus every `vis_` material that DID keep a factor
+  //     invisible    Asphalt, Sidewalk, Curb/Lot/DIY/Seawall concrete, both grasses, Soil,
+  //                  Riverbank_Dirt, the pavers and steps, Brick_Red, both stuccos, both
+  //                  roofs, Timber, Stone_Trim, both window frames, the awnings, the carts
+  // **THE TEST IS STRUCTURAL AND IT HAS NO FALSE POSITIVES**, which was measured rather than
+  // assumed: not ONE material in the file carries an explicit white `baseColorFactor`, so "no
+  // map and the colour is exactly white" names those 41 and nothing else. It is also
+  // self-disarming -- the day he re-exports with real colours a material stops matching, one
+  // material at a time, with nothing here to remove.
+  // **IT IS A STAND-IN AND IT IS MARKED AS ONE.** The chip says `WPPAINT<n>` while any of it is
+  // in use and goes quiet the moment it is not, which is `rollREC`'s rule: the silence IS the
+  // confirmation that the export landed. The hexes are read off HIS OWN NAMES -- `Brick_Red`,
+  // `Stucco_Lavender`, `Tile_Mint` -- rather than art-directed from here; a colourless material
+  // with no row takes `paint0` so nothing is ever left blown out. `mel.WP.paint = null` is the
+  // one word back to what he is looking at now.
+  paint0: 0x9b9890,
+  paint: {
+    Asphalt: 0x4a4d52, Sidewalk: 0xb6b2a8, Lot_Concrete: 0x9e9a92, DIY_Concrete: 0x8f8b83,
+    Seawall_Concrete: 0x9a968d, Plaza_Pavers: 0xa89e90, Square_Brick_Pavers: 0xa8705a,
+    Square_Brick_Steps: 0x9c6852, Granite_Ledge: 0x7d7d80, Grass: 0x6f9451,
+    Hill_Grass: 0x678c4c, Soil: 0x6b5340, Riverbank_Dirt: 0x8a7458,
+    Brick_Red: 0xa4543f, Stucco_Lavender: 0xb6a6c6, Stucco_Warm: 0xd6bc98,
+    TerraCotta_Cream: 0xe0cba4, Timber: 0x9b6e45, Wood_WaterTower: 0x8a6440,
+    Roof_Tar: 0x3c3c40, Roof_Shingle_Dark: 0x4a4650, Stone_Trim: 0xc4bdb0,
+    Window_Frame_Cream: 0xe8dfc8, Window_Frame_Bronze: 0x6e5738, Storefront_Teal: 0x2f7d7a,
+    Canopy_Cream: 0xe6d8b4, Awning_Cream: 0xe6d8b4, Awning_Pink: 0xdb8ea6,
+    Trim_HotPink: 0xe8508f, Tile_Mint: 0x8fd6c0, Metal_Grey: 0x8d9298,
+    Metal_Black: 0x2b2d31, Portland_Green_Metal: 0x2f6b4f, Van_Teal: 0x2f8a99,
+    Sprinkle_0: 0xf2c14e, Steam: 0xe8ecef,
+    Cart_ABDUCTO_DOGS: 0xd9534f, Cart_BEAM_ME_UP_BAO: 0x3f8fd6,
+    Cart_CROP_CIRCLE_PIZZA: 0xe0a63a, Cart_MOTHERSHIP_THAI: 0x7a5fb0,
+    Cart_UFO_TACOS: 0x46a06a,
+  },
+  // **AND THE HAZE IS TUNED FOR A TEST SITE YOU CAN SEE ACROSS.** 40 m to fully opaque at 150
+  // is right for a white floor and ten boxes and hides half of a 280 x 250 m city -- the far
+  // edge of the slice is 140 m from the spawn and downtown is further. This is a SECOND and
+  // separate fault from the palette above and is changed as its own variable, because a change
+  // that moves two things at once is a change neither of which can be judged. `camera.far` is
+  // already 400 and needs nothing. `mel.WP.fog = null` keeps the test site's range.
+  fog: { col: 0xe7edf5, near: 70, far: 320 },
   // WHAT A SOLID CONTRIBUTES. Its own table, never `BLD`'s (m60): these meshes are a different
   // shape entirely and reading the building's numbers here would be a silently wrong answer.
   cols: { tag: 'WEIRDPORT', cols: 1, cell: 1.0, maxCells: 4096, tol: .45, full: .92,
@@ -9476,7 +9525,8 @@ function buildWpVisual(g, trim) {
   //    `InstancedMesh` each and the originals come out of the scene.
   //    **GROUPED BY GEOMETRY *AND* MATERIAL**, because two nodes sharing a mesh but not a
   //    material are not one draw call, and an InstancedMesh has exactly one of each.
-  let trimmed = 0, beam = 0, mats = 0;
+  let trimmed = 0, beam = 0, mats = 0, painted = 0;
+  const bare = [];
   const seen = new Set();
   root.traverse(o => {
     if (!o.isMesh) return;
@@ -9485,6 +9535,14 @@ function buildWpVisual(g, trim) {
       if (!m || seen.has(m)) continue;
       seen.add(m); mats++;
       if (m.map) { m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); m.map.needsUpdate = true; }
+      // A MATERIAL WITH NO MAP AND AN EXACTLY WHITE COLOUR NEVER GOT ONE -- see `WP.paint`.
+      // `setHex` decodes sRGB into working space, which is what an eye-picked hex wants.
+      if (WP.paint && !m.map && m.color && m.color.r === 1 && m.color.g === 1 && m.color.b === 1) {
+        const hx = WP.paint[m.name];
+        if (hx === undefined) bare.push(m.name || '?');
+        m.color.setHex(hx === undefined ? WP.paint0 : hx);
+        m.needsUpdate = true; painted++;
+      }
       if (m.name === 'City_Trim') {
         const mask = m.map;
         if (trim) { trim.flipY = false; trim.colorSpace = THREE.SRGBColorSpace;
@@ -9563,8 +9621,11 @@ function buildWpVisual(g, trim) {
   //    tests `City_Trim_Export` and this export calls the material `City_Trim`**, so on this
   //    file it would have matched nothing at all.
   wpRoot.add(root);
+  WP.painted = painted;
   console.log('[melee] weirdport visual: ' + mats + ' materials, ' + inst + ' instanced meshes for ' +
-    instN + ' nodes, trim ' + trimmed + (trim ? '' : ' (NO SHEET)') + ', beam ' + beam);
+    instN + ' nodes, trim ' + trimmed + (trim ? '' : ' (NO SHEET)') + ', beam ' + beam +
+    ', stand-in paint on ' + painted + ' of ' + mats +
+    (bare.length ? ' (no row for: ' + bare.join(', ') + ')' : ''));
   if (!trimmed) note('WP NO TRIM MAT');
   if (!trim) note('WP NO TRIM PNG');
 }
@@ -12941,7 +13002,7 @@ function frame() {
     // loaded and I fall through the road" and "it loaded and I cannot move" are three bugs and
     // one picture from a phone, and only these two numbers tell them apart: no triangles is no
     // ground, no boxes is no buildings. Silent in the test site, `rollREC`'s rule.
-    const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b' : '';
+    const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b' + (WP.painted ? ' · WPPAINT' + WP.painted : '') : '';
     // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from
     // a phone. Silent when he is himself, `rollREC`'s rule.
@@ -13132,6 +13193,7 @@ async function init() {
     e => { PROG.done++; console.warn('[melee] ' + tag.name + ' did not load', e); note('NO ' + tag.name + ' GLB'); });
   if (inWP()) {
     PROG.total = 5;
+    if (WP.fog) { scene.fog.color.setHex(WP.fog.col); scene.fog.near = WP.fog.near; scene.fog.far = WP.fog.far; }
     // **THE COLLISION FIRST, AND IT IS THE ONE THERE IS NO WORLD WITHOUT.** The visual is a
     // picture; the collision is the ground he stands on, so a slice with no picture is a man
     // walking round an invisible city and a slice with no collision is a man falling through a

@@ -1041,6 +1041,47 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **FORTY-ONE MATERIALS CARRY NO BASE COLOUR AT ALL, AND glTF'S DEFAULT IS WHITE (m125,
+  `WP.paint`).** *"None of the roads or buildings are coming in. Is that something we're missing?
+  Everything else looks good so far as I can tell."* They are all there and they are all
+  `#ffffff`, against a background and a fog of `0xe7edf5` -- which is exactly what a road you
+  cannot see looks like. Read straight out of `weirdport_slice_visual_draco.glb`:
+      150 materials   7 with a baseColorTexture   102 with a baseColorFactor   **41 with NEITHER**
+      and every one of those 41 has a roughness and/or a metalness set
+  **SO IT IS AN EXPORT FAULT AND NOT A DESIGN, WHICH IS WHAT THE ROUGHNESS SAYS.** Somebody set
+  the surface and the colour did not survive the write. His own note says the ground materials
+  *"export as flat colors for now until baked to textures"*; they do not export as flat colours,
+  they export with none -- so the one thing he believed was already true is the thing that was
+  missing, which is why the report reads as geometry rather than as paint.
+  **AND THE SPLIT IS EXACTLY WHAT HE CAN AND CANNOT SEE.** What is textured is the 368 `inst_`
+  nodes -- trees, cars, benches, street assets, tree wells -- plus every `vis_` material that did
+  keep a factor (the neon, the murals, the lit glass). What is colourless is Asphalt, Sidewalk,
+  Lot/DIY/Seawall concrete, both grasses, Soil, Riverbank_Dirt, the pavers and the steps,
+  Brick_Red, both stuccos, both roofs, Timber, Stone_Trim, both window frames, the awnings and
+  the five food carts. **The roads and the low-rise buildings, and nothing else.**
+  **THE TEST IS STRUCTURAL AND IT HAS NO FALSE POSITIVES**, measured rather than assumed: **not
+  one material in the file carries an explicit white `baseColorFactor`**, so "no map and the
+  colour is exactly white" names those 41 and nothing else -- 41 rows against 41 materials,
+  checked both ways round. `stripPoses`' rule (the property that makes the thing what it is,
+  never a name) applied to a material.
+  **AND IT IS SELF-DISARMING, WHICH IS WHY IT IS SAFE TO SHIP A STAND-IN AT ALL.** The day he
+  re-exports with real colours a material stops matching, **one material at a time**, with
+  nothing here to remove and no second source of truth to keep in step -- `weapFit`'s rule, one
+  asset along. **The chip says `WPPAINT<n>` while any of it is in use and goes quiet the moment
+  it is not**, so the silence IS the confirmation that the export landed (`rollREC`'s rule).
+  **THE HEXES ARE READ OFF HIS OWN NAMES, NOT ART-DIRECTED FROM HERE** -- `Brick_Red`,
+  `Stucco_Lavender`, `Tile_Mint`, `Portland_Green_Metal` -- and a colourless material with no row
+  takes `paint0`, so nothing can ever be left blown out. `setHex` decodes sRGB into working
+  space, which is what an eye-picked hex wants (the Portland repo's own vertex-colour lesson).
+  `mel.WP.paint = null` is the one word back to what he is looking at now.
+- **AND THE HAZE WAS TUNED FOR A TEST SITE YOU CAN SEE ACROSS (m125, `WP.fog`).** 40 m to fully
+  opaque at 150 is right for a white floor and ten boxes and hides half of a 280 x 250 m city:
+  the far edge of the slice is 140 m from the spawn and downtown is further. 70 to 320 leaves
+  the far edge at 21% and 200 m out at 39%, which is depth rather than a wall. **`camera.far` is
+  already 400 and needed nothing.**
+  **IT IS A SECOND AND SEPARATE FAULT AND IS CHANGED AS ITS OWN VARIABLE**, because a build that
+  moves two things at once is a build neither of which can be judged -- and with a white city he
+  could not have judged the fog anyway. `mel.WP.fog = null` keeps the test site's range.
 - **WEIRDPORT: A SECOND WORLD, AND THE FIRST THING IN THIS GAME A BOX COLLIDER CANNOT EXPRESS
   (m124, `WORLD`, `WP`, `TRI`, `BGRID`, `buildWpCollision`, `buildWpVisual`).** *"There's a
   folder called Portland. It's a slice of a map I've been creating in Blender... let's make a
