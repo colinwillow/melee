@@ -468,10 +468,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m131</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m132</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m131</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m132</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -526,7 +526,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm131';
+const BUILD = 'm132';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -10523,6 +10523,30 @@ function bindPose(bones, model) {
 const mphName = K => String(K.file).split('/').pop().replace(/\.glb$/i, '')
   .replace(/^alien[ _-]+/i, '').replace(/[ _-]*\d+$/, '').replace(/[_-]+/g, ' ').toUpperCase();
 
+// **HOW TALL A DRAWN BODY ACTUALLY IS, IN WORLD METRES (m132).** *"When I transform into the
+// characters I'm actually a bigger version of themselves -- I should match them."*
+// **THE TWO SCALES ARE PROVABLY THE SAME LINE**, which is why this is a measurement rather than
+// a fix: `bodySpawn` writes `P.scale` and `mphSkin` writes `P.scale * h / K.h`, and with
+// `MORPH.tall` 1 that `h` IS `K.h`, so it reduces to `P.scale` exactly. Nothing writes
+// `rig.root.scale` or `rig.model.scale` anywhere in the file -- checked, not assumed -- and
+// `mphWear` only ever swaps which model hangs off the root. So there is no code path here that
+// draws a disguise larger than the kind it is a disguise for, and saying that without a number
+// on screen is an argument rather than an answer.
+// **`setFromObject` IS THE RIGHT TOOL FOR THIS ONE QUESTION, AND THE STANDING RULE SAYS IT IS
+// NOT.** That rule (*"measure him with GEOMETRY bounds, never `Box3.setFromObject`"*) is about
+// AUTHORED height: a skinned mesh ignores its node transform at bind, so applying it there gives
+// a hundredth of his size. What is wanted HERE is the opposite -- the geometry bounds WITH the
+// whole chain applied, which is drawn height, which is what that function computes. Measuring it
+// off the proto instead would be a tautology: both paths share one proto, so it would report
+// agreement by construction and could never catch a disagreement. `normGeo`'s rule.
+// It walks bounding BOXES rather than vertices, so it is a handful of them per call.
+const _dhB = new THREE.Box3();
+function drawnH(model) {
+  if (!model) return 0;
+  _dhB.makeEmpty(); _dhB.setFromObject(model);
+  return _dhB.isEmpty() ? 0 : _dhB.max.y - _dhB.min.y;
+}
+
 function mphMats(model) {
   const out = [], seen = new Set();
   model.traverse(o => {
@@ -13889,8 +13913,26 @@ function frame() {
     const cv = BOXV.on ? ' \u00b7 COLLIDERS' : '';
     const wn = p.mphK && (() => { const w = WEAP.worn[slotNow().key];
       return w && w.root && !rig.mounts[w.root] ? ' NOHAND' : ''; })();
+    // **AND HOW TALL HE IS DRAWN, AGAINST A REAL ONE OF THE SAME KIND (m132).** His drawn
+    // height and the nearest NPC of that kind's, both in centimetres, both through `drawnH`.
+    // "the disguise is scaled wrong" and "the disguise is nearer the lens than the man beside
+    // it" are two bugs and ONE picture from a phone, and only two numbers tell them apart --
+    // and the second one is not a bug at all, which is exactly why it must not be guessed at.
+    // Equal means the size is right and what is left is the shot; unequal names its own fault.
+    // `--` means there is no body of that kind near enough to compare against.
+    let dh = '';
+    if (p.mphK) {
+      const mine = drawnH(rig.model);
+      let best = 0, bd = 1e9;
+      for (const d of DUMMIES) {
+        if (d.K !== p.mphK || !d.model) continue;
+        const q = Math.hypot(d.root.position.x - p.pos.x, d.root.position.z - p.pos.z);
+        if (q < bd) { bd = q; best = drawnH(d.model); }
+      }
+      dh = ' ' + (mine * 100).toFixed(0) + '/' + (best ? (best * 100).toFixed(0) : '--');
+    }
     const mp = p.mphSt ? ' · DNA' + p.mphSt.toUpperCase() + p.mphT.toFixed(2)
-             : p.mphK ? ' · DNA ' + mphName(p.mphK) +
+             : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + cl + vs + mo + fl + wp + mp +

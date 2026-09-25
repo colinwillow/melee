@@ -1050,6 +1050,41 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A DISGUISE IS THE SAME SCALE AS THE MAN IT IS A DISGUISE FOR, AND I COULD NOT FIND A CODE
+  PATH THAT MAKES IT BIGGER (m132, `drawnH`).** *"When I transform into the characters I'm
+  actually a bigger version of themselves -- I should match them. I don't wanna be bigger than
+  anything smaller but same size is probably good."*
+  **THE TWO SCALES ARE PROVABLY ONE LINE, WHICH IS WHY THIS BUILD IS A MEASUREMENT AND NOT A
+  FIX.** Read straight off both paths:
+      bodySpawn   model.scale.setScalar(P.scale)              P.scale = K.h / authored
+      mphSkin     model.scale.setScalar(P.scale * h / K.h)    h = MORPH.tall ? K.h : RIG.height
+      MORPH.tall is 1, so `h` IS `K.h`, so the second reduces to the first EXACTLY
+  Both clone the same `K.P.proto`, so `authored` is the same bounding box; `mphWear` only swaps
+  which model hangs off `rig.root`; and **nothing anywhere in the file writes `rig.root.scale` or
+  `rig.model.scale`** -- grepped, not assumed. So there is no scale to be wrong.
+  **SAYING THAT WITHOUT A NUMBER ON SCREEN IS AN ARGUMENT, NOT AN ANSWER**, and he is the one
+  watching it move. The chip carries his DRAWN height and the nearest NPC of that kind's, in
+  centimetres: `DNA WARRIOR 185/185`. Equal means the size is right and what is left is the SHOT;
+  unequal names its own fault and I was wrong. `--` means no body of that kind is near enough.
+  **AND THE HONEST CANDIDATE, STATED AS ONE: `CAM.dist` IS 5.0 AND DOES NOT SCALE WITH THE BODY.**
+  At a five-metre boom an NPC standing two metres further back reads **5/7 = 0.71** -- the near
+  body is 40% bigger for no other reason than depth -- and in both screenshots the NPC is behind
+  and to one side, feet higher on screen. m122 already scales `CAM.look` by `bodyK()` and
+  deliberately leaves `dist` alone, so a 1.85 m disguise also fills 48% more of the frame than
+  zap's 1.25 m body does. Scaling the boom by `bodyK()` would flatten both (7.4 m puts that ratio
+  at 0.79) and is the change to reach for IF the chip reads equal. **It is NOT shipped here**,
+  because a build that changes the lens and the diagnostic at once is a build neither of which
+  can be judged.
+  **`setFromObject` IS THE RIGHT TOOL FOR THIS ONE QUESTION AND THE STANDING RULE SAYS IT IS
+  NOT.** That rule is about AUTHORED height -- a skinned mesh ignores its node transform at bind,
+  so applying it there gives a hundredth of his size. Drawn height is the opposite question:
+  geometry bounds WITH the chain applied, which is exactly what that function computes. And
+  measuring off the PROTO instead would be a tautology -- both paths share one proto, so it would
+  report agreement by construction and could never catch a disagreement, which is `normGeo`'s own
+  mistake wearing a tape measure.
+  **WHAT IS UNVERIFIED AND WHY:** `p.mphK` is never set headless, so neither gate executes the
+  new branch -- what they cover is that the module still evaluates and the line parses. Both pass.
+
 - **THE 12-TRIANGLE SHORTCUT WAS THE WHOLE VEHICLE-COLLIDER FAULT, AND MY FIRST DIAGNOSIS OF THE
   OTHER HALF WAS WRONG (m131, `boxSkew`, `WP.cols.skew`).** *"The colliders for the cars in
   general are pretty big. The van's one is like skewed cockeye offset."*
