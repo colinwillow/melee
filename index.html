@@ -190,6 +190,31 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   padding: 4px 9px 5px; border-radius: 3px; pointer-events: auto; cursor: pointer;
   -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 #dbgKey.on { border-color: #39ff8899; color: #b6ffd8; }
+/* THE FX KEYS (m135). *"I have no idea what this means or how to try it."* Four builds of
+   `mel.shafts(0)` and `mel.tint(1)` handed to a man holding a PHONE, which has no console --
+   so every one of those A/Bs was a control that does not exist, which is this file's own
+   m128 sentence about `mel.boxes()` and I broke it four times running. The switches that
+   cost frames belong where his thumb is.
+   ONE ROW RATHER THAN FOUR KEYS, because these four are one kind of thing -- an effect on or
+   off -- and a row says that where a column of separate keys says four unrelated controls.
+   It shares the other two keys' rule and adds only a position and the segments, because two
+   independently written chips in one gutter eventually disagree about where the gutter is. */
+#fxKey { position: fixed; z-index: 6;
+  top: calc(var(--gut3, 120px) + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left));
+  font-family: var(--ui); font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  color: #cfe8ff; background: #0b0d12cc; border: 1px solid #ffffff33;
+  padding: 3px 5px 4px 8px; border-radius: 3px; pointer-events: none;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+#fxKey b { font-family: var(--disp); font-size: 12px; color: var(--sky); font-weight: 400; }
+/* `pointer-events` is on the SEGMENTS and not on the row, so the label and the gaps between
+   them are not tap targets -- a thumb that lands between two switches must do nothing rather
+   than the nearer thing. */
+#fxKey i { font-style: normal; display: inline-block; margin-left: 4px; padding: 2px 6px 3px;
+  border: 1px solid #ffffff2b; border-radius: 3px; color: #cfe8ff99;
+  pointer-events: auto; cursor: pointer; }
+#fxKey i.on { border-color: #39ff8899; color: #b6ffd8; }
+#fxKey i:active { background: #16202ecc; }
+#fxKey i.hide { display: none; }
 #wep { top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right));
   font-family: var(--disp); font-size: 15px; color: var(--sun); text-align: right; }
 #wep small { display: block; font-family: var(--ui); font-size: 11px; color: #cfe8ff; opacity: .7; letter-spacing: .08em; }
@@ -468,13 +493,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m134</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m135</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m134</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m135</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
+<div id="fxKey"><b>FX</b><i data-fx="shafts">SHAFTS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -526,7 +552,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm134';
+const BUILD = 'm135';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -8041,6 +8067,62 @@ function setBoxes(on) {
   });
 }
 
+// THE FX SWITCHES, UNDER HIS THUMB (m135). *"I have no idea what this means or how to try
+// it."* Every A/B this file has shipped since m129 -- `mel.ibl(0)`, `mel.shafts(0)`,
+// `mel.dust(0)`, `mel.tint(1)` -- is a console handle, and **he plays on a phone, which has
+// no console.** m128 wrote that sentence down about `mel.boxes()` and built a key for it, and
+// then four builds running handed him four more things he cannot type. A frame-rate hunt is
+// exactly the case that needs switches ON THE DEVICE: nothing in this container has a GPU, so
+// which of these costs the frames is a question only his phone can answer, one variable at a
+// time -- which is why they are four switches and not one "effects" toggle.
+//
+// **NOTHING HERE RESTATES A RULE.** Each one moves the same field the console handle moves and
+// calls the same rebuild, so the key and `mel` cannot disagree about what "off" means.
+function fxOn(k) {
+  return k === 'shafts' ? (SHAFT.on ? 1 : 0)
+       : k === 'ibl'    ? (SKY.env ? 1 : 0)
+       : k === 'dust'   ? (DUST.on ? 1 : 0)
+       :                  (WP.tintLin ? 1 : 0);
+}
+function fxSet(k, on) {
+  on = on ? 1 : 0;
+  // **THE REBUILD IS THE POINT AND IT IS NOT FREE ON THE IBL.** `skyBake` re-prefilters and
+  // three then recompiles every material in the city, so expect a hitch ON THE PRESS -- that
+  // is the toggle, not the feature, and it is worth saying out loud because a hitch at the
+  // moment you are counting frames reads as the thing you just switched off costing more.
+  if (k === 'shafts') { SHAFT.on = on; shaftDrop(); }
+  else if (k === 'ibl') { SKY.env = on; skyBake(); }
+  else if (k === 'dust') { DUST.on = on; dustDrop(); }
+  else { WP.tintLin = on; WPTINT.value = on; }
+  return on;
+}
+// **AND THE KEYS ARE REPAINTED WHEN THE STATE MOVES, NOT WHEN ONE IS PRESSED** -- `setBoxes`'
+// own rule, and it is what keeps a key reading `off` over an effect that is plainly running.
+// One packed compare a frame, so it is a DOM write when something actually changed and
+// nothing at all the rest of the time.
+let fxLit = -1;
+function fxKeys() {
+  const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3);
+  const w = inWP() ? 1 : 0;
+  if (m === fxLit >> 1 && w === (fxLit & 1)) return;
+  fxLit = (m << 1) | w;
+  for (const el of document.querySelectorAll('#fxKey i')) {
+    el.classList.toggle('on', !!fxOn(el.dataset.fx));
+    // THE TINT SWITCH ONLY EXISTS WHERE IT MEANS SOMETHING, which is `paintKit`'s rule: the
+    // vertex tint is Weirdport's, so on the test site that segment would be a control that
+    // does nothing, and a control that does nothing is worse than no control.
+    if (el.dataset.fx === 'tint') el.classList.toggle('hide', !inWP());
+  }
+}
+{
+  for (const el of document.querySelectorAll('#fxKey i')) {
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation();
+      fxSet(el.dataset.fx, !fxOn(el.dataset.fx));
+    });
+  }
+}
+
 // AND THE WORLD KEY SWAPS THE WORLD (m124). It RELOADS, and that is not a shortcut: the test
 // site is built at module scope and Weirdport is ten megabytes of GLB, so the two cannot both
 // be standing at once and tearing one down to raise the other would be a second build path to
@@ -13688,6 +13770,23 @@ const SHAFT = {
   pow: 3.2,          // how tightly it keys on that. Higher = only near the sun.
 };
 let shaftMesh = null;
+// THE TWO REBUILDS ARE NAMED, BECAUSE THERE ARE TWO CALLERS NOW (m135). `mel.dust(0)` from a
+// laptop and the FX key under his thumb ask the identical question, and a second copy of
+// "how do you take this pool down" is a second place for them to disagree -- which is
+// `setBoxes`' own rule (ONE place moves it) one pool over. Both are a DROP and not a hide:
+// `n`, the sizes, the speeds and the blend mode are baked into the pool at construction, and
+// the blend mode is a define, so changing it recompiles.
+function dustDrop() {
+  if (!dust.P) return;
+  scene.remove(dust.P.pts); dust.P.geo.dispose(); dust.P.mat.dispose();
+  dust.P = null; dust.vx.length = dust.vy.length = dust.vz.length = 0;
+  dust.ph.length = dust.rt.length = dust.a0.length = 0;
+}
+function shaftDrop() {
+  if (!shaftMesh) return;
+  scene.remove(shaftMesh); shaftMesh.geometry.dispose();
+  shaftMesh.material.dispose(); shaftMesh = null;
+}
 const _shX = new THREE.Vector3(), _shY = new THREE.Vector3(), _shZ = new THREE.Vector3(),
       _shT = new THREE.Vector3(), _shM = new THREE.Matrix4();
 function shaftBuild() {
@@ -13813,6 +13912,7 @@ function frame() {
   // wire a frame behind the body it is describing is the second-thing-to-be-wrong this view
   // exists not to become.
   stepBoxView();
+  fxKeys();
   paintRetic();
   sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
   sun.target.position.copy(player.pos);
@@ -13987,6 +14087,7 @@ function frame() {
         const g = Math.round(12 + h + 6);
         document.documentElement.style.setProperty('--gut', g + 'px');
         document.documentElement.style.setProperty('--gut2', (g + 32) + 'px');
+        document.documentElement.style.setProperty('--gut3', (g + 64) + 'px');
       }
     }
   }
@@ -14429,16 +14530,11 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   DUST, SHAFT,
   dust: o => { if (typeof o === 'object' && o) Object.assign(DUST, o);
     else if (o != null) DUST.on = o ? 1 : 0;
-    // A REBUILD, because `n`, the sizes, the speeds and the blend mode are all baked into the
-    // pool at construction -- and the blend mode is a define, so changing it recompiles.
-    if (dust.P) { scene.remove(dust.P.pts); dust.P.geo.dispose(); dust.P.mat.dispose();
-      dust.P = null; dust.vx.length = dust.vy.length = dust.vz.length = 0;
-      dust.ph.length = dust.rt.length = dust.a0.length = 0; }
+    dustDrop();
     return { on: DUST.on, n: DUST.n, add: DUST.add, r: DUST.r }; },
   shafts: o => { if (typeof o === 'object' && o) Object.assign(SHAFT, o);
     else if (o != null) SHAFT.on = o ? 1 : 0;
-    if (shaftMesh) { scene.remove(shaftMesh); shaftMesh.geometry.dispose();
-      shaftMesh.material.dispose(); shaftMesh = null; }
+    shaftDrop();
     return { on: SHAFT.on, n: SHAFT.n, gain: SHAFT.gain, pow: SHAFT.pow }; },
   emis: v => { for (const m of Object.values(rig.mats || {})) m.emissiveIntensity = v; RIG.emissive = v; return v; },
 };

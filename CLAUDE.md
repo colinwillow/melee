@@ -1085,6 +1085,52 @@ same picture from a phone.
   **WHAT IS UNVERIFIED AND WHY:** `p.mphK` is never set headless, so neither gate executes the
   new branch -- what they cover is that the module still evaluates and the line parses. Both pass.
 
+- **I HANDED HIM FOUR CONSOLE COMMANDS AND HE PLAYS ON A PHONE (m135, `#fxKey`, `fxSet`).**
+  *"I have no idea what this means or how to try it."* `mel.tint(1)`, `mel.shafts(0)`,
+  `mel.ibl(0)`, `mel.dust(0)` -- four A/Bs shipped across m126..m133 and every one of them is a
+  CONSOLE HANDLE. **There is no console on a phone**, which is m128's own sentence about
+  `mel.boxes()`, written after Shredworld was asked three times for a collider view; I wrote it
+  down, built a key for that one, and then spent four builds handing him things he cannot type.
+  **A control he cannot find is a control that does not exist**, and an A/B he cannot reach is
+  a build wasted, because the question every one of them asks is a DEVICE question -- nothing
+  in this container has a GPU or a touchscreen, so his phone is the only instrument there is.
+  **AND A FRAME-RATE HUNT IS THE CASE THAT MOST NEEDS THEM.** 37 fps at m128 and 24 now, across
+  a span that added an IBL (m129), the dust and the shafts (m130) and moved the sun (m133) --
+  so the answer is one of four things and the only way to learn which is to move ONE VARIABLE
+  at a time on the device. That is why it is four switches and not one "effects" toggle.
+      SHAFTS   nine additive quads near the lens -- fill by definition
+      IBL      an env lookup per fragment on every PBR surface in the city
+      DUST     220 points, one draw call. Almost certainly not it; the control that rules a
+               suspect OUT is worth as much as the one that catches it
+      TINT     the m126 colour space, lit = sRGB. Weirdport only
+  **AND THE SHAFTS' COST MOVED AT m133 WITH NOTHING SAYING SO.** Alpha is free -- the fragment
+  blends either way -- so those quads always paid their fill whenever they drew, and what m133
+  changed is HOW OFTEN. `stepShafts` bails under `a < .004`, which is a cone about the sun's
+  bearing, and lowering the sun widened it:
+      sun 56.9   drew within +/-31 deg of the sun's bearing   17% of a turn, at opacity .009
+      sun 12.0   draws within +/-71 deg                       39% of a turn, at opacity .192
+  **More than twice as often, and now actually filling.** That is a real cost this side put in
+  at m133 and did not cost, and it is the first thing the SHAFTS key is there to settle.
+  **NOTHING IN THE KEYS RESTATES A RULE.** Each moves the same field its console handle moves
+  and calls the same rebuild -- `dustDrop` and `shaftDrop` came OUT of `mel.dust`/`mel.shafts`
+  for exactly that reason, because two callers and two copies of "how do you take this pool
+  down" is `setBoxes`' own ONE-PLACE rule one pool over.
+  **AND THEY ARE REPAINTED WHEN THE STATE MOVES, NOT WHEN ONE IS PRESSED** -- one packed
+  compare a frame, so a key can never read `off` over an effect that is plainly running, which
+  is the disagreement m128 built `bvLit` to prevent.
+  **THE TINT SEGMENT HIDES OUTSIDE WEIRDPORT** (`paintKit`'s rule): the vertex tint is that
+  world's, so on the test site it would be a switch that does nothing, which is worse than no
+  switch. **And `pointer-events` is on the SEGMENTS, not on the row** -- a thumb landing in a
+  gap must do nothing rather than the nearer thing.
+  **THE IBL PRESS HITCHES AND THAT IS STATED RATHER THAN HIDDEN.** `skyBake` re-prefilters and
+  three recompiles every material, so the frame it is pressed on is expensive -- which, at the
+  one moment he is counting frames, reads as the thing he just switched OFF costing more.
+  **VERIFIED THE m130 WAY**: a throw put inside `fxKeys` makes `check:boot` fail out of
+  `frame()`, so the gate genuinely reaches it -- then removed and the file diffed. A gate that
+  is green because the code never ran is the thing that discipline exists to catch.
+  **WHAT IS UNVERIFIED:** which switch moves the number. That is the whole point of shipping
+  them rather than guessing, and it is his to read off the chip.
+
 - **THE SUN WAS 40 DEGREES ABOVE THE TOP OF THE FRAME, AND THAT IS WHY NOTHING LOOKED DIFFERENT
   (m133).** *"I'm on 129 and I don't really see any changes. Did you put in the sun or the
   background? I'm wondering if the fog is just covering up the background."* **It is not the fog
