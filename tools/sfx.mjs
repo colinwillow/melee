@@ -20,17 +20,29 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const src = html.slice(html.indexOf('function sfxEdge'), html.indexOf('// EDGE:END'));
 if (!src.startsWith('function sfxEdge')) { console.error('EDGE markers not found'); process.exit(1); }
 // the constants the lifted text reads, out of the file rather than retyped
-const hit = +(/^\s*hit:\s*([\d.]+)/m.exec(html) || [])[1];
-const pre = +(/^\s*pre:\s*([\d.]+)/m.exec(html) || [])[1];
-const punch = +(/^\s*punch:\s*([\d.]+)/m.exec(html) || [])[1];
-// **AND `skipMax` HAS TO COME ACROSS TOO (m139).** The lifted `sfxEdge` reads it, so leaving it
-// out makes it `undefined`, the cap never fires, and the tool measures a rule the game does not
-// have -- which is this repo's oldest mistake and the one these markers exist to prevent.
-const skipMax = +(/^\s*skipMax:\s*([\d.]+)/m.exec(html) || [])[1];
-if (!(hit > 0) || !(pre >= 0) || !(punch > 0) || !(skipMax >= 0)) {
-  console.error('could not read SFX.hit / SFX.pre / SFX.punch / SFX.skipMax'); process.exit(1);
+// **AND THEY ARE READ OUT OF THE `SFX` BLOCK, NOT OUT OF THE FILE (m140).** A bare
+// `/^\s*lead:/m` found `HURT.lead` .92 four hundred lines earlier and this tool duly reported
+// that `align` "puts every one at 920 ms" -- a field name is not unique in a file this size,
+// and a tool reading another system's constant is the exact mistake the `EDGE:` markers exist
+// to prevent, made one line outside them. Scoped from the declaration, so the first match
+// after it is the right one.
+const sfxAt = html.indexOf('const SFX = {');
+if (sfxAt < 0) { console.error('SFX block not found'); process.exit(1); }
+const sfxBlk = html.slice(sfxAt);
+const num = k => +((new RegExp('^\\s*' + k + ':\\s*([\\d.]+)', 'm')).exec(sfxBlk) || [])[1];
+const hit = num('hit');
+const pre = num('pre');
+const punch = num('punch');
+// **EVERY CONSTANT THE LIFTED TEXT READS HAS TO COME ACROSS (m139, m140).** One it does not
+// know about arrives `undefined`, that branch silently does nothing, and the tool measures a
+// rule the game does not have -- this repo's oldest mistake and the one these markers exist to
+// prevent. `lead` is not read by `sfxEdge` itself, but the ALIGNED lead-in below is what this
+// tool now reports, so it is parsed here for the same reason rather than retyped.
+const lead = num('lead');
+if (!(hit > 0) || !(pre >= 0) || !(punch > 0) || !(lead >= 0)) {
+  console.error('could not read SFX.hit / SFX.pre / SFX.punch / SFX.lead'); process.exit(1);
 }
-globalThis.SFX = { hit, pre, punch, skipMax };
+globalThis.SFX = { hit, pre, punch, lead };
 const sfxEdge = (0, eval)(src + '\nsfxEdge');
 
 let Dec;
@@ -38,7 +50,17 @@ try { ({ MPEGDecoder: Dec } = await import('mpg123-decoder')); }
 catch { console.error('needs a decoder:  npm i -D mpg123-decoder'); process.exit(1); }
 
 const args = process.argv.slice(2);
-const dirs = args.length ? args : ['audio', 'audio/plasma_sounds'];
+// **AND THE FOLDER LIST IS DERIVED, NOT TYPED (m140).** It was `['audio', 'audio/plasma_sounds']`
+// and had been since m58, so every bank added after it -- the footsteps, the jetpack, the orc
+// grunts, the creature noises -- was silently not measured by a default run. That is
+// `bump.mjs`'s `DIRS` tax exactly, and a list somebody has to remember is not a mechanism.
+const dirs = args.length ? args : (() => {
+  const a = path.join(root, 'audio'), out = ['audio'];
+  if (fs.existsSync(a))
+    for (const e of fs.readdirSync(a, { withFileTypes: true }).sort((x, y) => x.name < y.name ? -1 : 1))
+      if (e.isDirectory()) out.push('audio/' + e.name);
+  return out;
+})();
 const files = [];
 for (const d of dirs) {
   const abs = path.join(root, d);
@@ -122,6 +144,36 @@ for (const r of rows)
               `${((r.p - r.a) * 1000).toFixed(0).padStart(4)}ms ` +
               `${r.p0.toFixed(4).padStart(6)} ${r.p1.toFixed(4).padStart(6)} ` +
               `${('x' + r.gain.toFixed(0)).padStart(6)}`);
+// **AND THE SPREAD OF `skip` ACROSS A BANK IS ITS OWN FAULT (m140).** That column has printed
+// the lead-in since m59 and was only ever read as "how much swell is in front of the punch" --
+// per file, for loudness. Across a BANK it is a timing spread, and on the footsteps it was
+// 94 ms between four files that are alternatives for one event. `align` (see `SFX.lead`) is the
+// answer and this is the number that says whether a bank CAN use it.
+// **IT ONLY MATTERS FOR A BANK THAT PLAYS AS A RHYTHM, AND THIS TOOL CANNOT KNOW WHICH ONE
+// DOES.** `plasma_sounds` spreads 77 ms and is right to: it fires one round at a time, and
+// m58's `plasmaPick` ranks it by intensity, of which LENGTH is a term -- aligning it would
+// change what that ranking means. The footsteps are the bank where six a second makes the
+// spread a second clock. Read the number; do not read the arrow as an instruction.
+{
+  const by = new Map();
+  for (const r of rows) {
+    const k = path.dirname(r.rel);
+    if (!by.has(k)) by.set(k, []);
+    by.get(k).push(r);
+  }
+  for (const [k, list] of by) {
+    // `audio/` itself is not a bank -- it is the swooshes, the clangs, the hits and the drops
+    // in one folder, and a spread across those describes nothing. Only a subdirectory is one.
+    if (list.length < 2 || !k.includes('/')) continue;
+    const ld = list.map(r => (r.p - r.a) * 1000);
+    const lo = Math.min(...ld), hi = Math.max(...ld);
+    const al = SFX.lead * 1000;
+    console.log(`\n${k}: raw lead-in ${lo.toFixed(0)}..${hi.toFixed(0)} ms ` +
+                `= a ${(hi - lo).toFixed(0)} ms SPREAD` +
+                (hi - lo > 25 ? `  <- \`align\` would put every one at ${al.toFixed(0)} ms`
+                              : `  -- tight`));
+  }
+}
 console.log(`\nskip/raw25/cut25/punch: how much SWELL sits in front of the transient, and what` +
             `\nthe first 25 ms carries played from the onset vs from \`snd\`'s \`cut\`. That ratio` +
             `\nIS punch, and it is bought by starting later -- no sample is touched.`);

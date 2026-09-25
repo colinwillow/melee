@@ -204,6 +204,11 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   font-family: var(--ui); font-size: 11px; font-weight: 600; letter-spacing: .1em;
   color: #cfe8ff; background: #0b0d12cc; border: 1px solid #ffffff33;
   padding: 3px 5px 4px 8px; border-radius: 3px; pointer-events: none;
+  /* A KEY ADDED TOMORROW MUST NOT PUSH ONE OFF THE EDGE. `#fxKey` is last in the gutter stack
+     (`--gut3`) so there is nothing under it to collide with, and the segments are inline-block
+     with no `nowrap` -- so a width bound is the whole mechanism, rather than a per-key budget
+     somebody has to remember. `hudGutter`'s own rule, one row along. */
+  max-width: calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right));
   -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 #fxKey b { font-family: var(--disp); font-size: 12px; color: var(--sky); font-weight: 400; }
 /* `pointer-events` is on the SEGMENTS and not on the row, so the label and the gaps between
@@ -493,14 +498,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m139</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m140</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m139</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m140</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">SHAFTS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -552,9 +557,9 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm139';
+const BUILD = 'm140';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/fat_activist_01.glb":"b4f87d81","models/fat_biker_01.glb":"576b7cf5","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1907,7 +1912,16 @@ const WP = {
   // `pow(c, 2.2)` -- a uniform, so it is an A/B on the phone with no recompile and no rebuild,
   // which is where a look-at-it decision belongs.
   tint: 1,              // 0 leaves the colour sets exactly as m125 had them
-  tintLin: 0,           // 1 treats the vertex colours as sRGB. `mel.tint(1)`.
+  // **AND THE TINT KEY DID NOT MEAN WHAT ITS LABEL SAID (m140).** *"I'm thinking tint off,
+  // it's a little too colorful."* `tintLin` was a COLOUR SPACE switch -- the tint applied
+  // either way and the key only chose whether the vertex colours were read raw or through
+  // `pow(c, 2.2)` -- so "tint off" was not a state the key could reach, and the unlit one he
+  // was looking at is the MORE colourful of the two. A control whose label names something it
+  // cannot do is worse than no control, which is this file's own sentence about `mel.boxes()`.
+  // 0 OFF, 1 raw linear (m125's shipped default), 2 sRGB -- quieter, because `pow` on a value
+  // under 1 darkens and desaturates. **The key is OFF/2**, since he has already said the raw
+  // one is too much; `mel.tint(1)` is the third state and the A/B between them.
+  tintMode: 0,
 
   // **WHO IS IN THE CITY, AND HOW MANY (m127).** *"Let's populate the world with the other
   // characters... right now we can just put them in kind of really randomly just to get a feel
@@ -1942,7 +1956,7 @@ const WP = {
 
 // THE TINT'S COLOUR SPACE, LIVE. One object shared by every City_Trim program, so `mel.tint(1)`
 // moves all of them and nothing recompiles -- a uniform is a value, not a define.
-const WPTINT = { value: 0 };
+const WPTINT = { value: 0 };   // 0 off, 1 raw, 2 sRGB -- see `WP.tintMode`
 
 // **WHERE A BODY CAN STAND, SWEPT AGAINST THE REAL COLLIDER (m127).** The spawn was searched
 // rather than typed at m124 -- OFFLINE, with a probe -- and this is that search living in the
@@ -3734,19 +3748,34 @@ const SFX = {
   //     from the onset   rms .001 to .034      from the 90% point   rms .125 to .296
   // -- between **5x and 242x** more energy arriving at once, without touching a single sample.
   punch: .90,
-  // **AND HOW MUCH OF A FILE THE ONSET GATE MAY THROW AWAY IS CAPPED (m139, `SFX.skipMax`).**
-  // *"There's this metallic tap dance noise... it's like every other one, like maybe it's one
-  // of the samples."* It is one of the samples and it is one of the LEFT ones, which is what
-  // "every other" names. `SFX.hit` .25 is an ONSET gate fitted at m59 for IMPACTS, where the
-  // quiet climb in front of the peak is a delay bolted onto a hit. On a recording whose peak is
-  // a sharp transient the reverse is true: a quarter of that peak sits WELL into the file, and
-  // the soft scuff in front of it -- which is the sound of a foot -- is thrown away. Measured
-  // at m138, `footstep_2_l` opened at **0.144 s of 0.312**, so the game played 168 ms of hot
-  // back half where the other three play 230-262 ms with their bodies intact: loudest AND
-  // shortest, which is a TAP by construction. The cap is a fraction of the file's own length,
-  // so it names nothing and is self-disarming -- it catches that one (46%) and is a no-op on
-  // every other file in the game (9-13%).
-  skipMax: .20,
+  // **A BANK OF ALTERNATIVES FOR ONE EVENT HAS TO ARRIVE AT ONE TIME (m140, `SFX.lead`).**
+  // *"The footsteps still kill me and I don't even know what to do about that. There's like
+  // this metallic click sound."* -- and m138's gain evening and m139's `skipMax` were both
+  // aimed at the WRONG AXIS. Measured over his own four, where the footfall actually sits in
+  // each file and how long after the trigger the game therefore plays it:
+  //     footstep_l     event at  70 ms of 264   ->  played  48 ms late
+  //     footstep_r                79 ms of 288   ->          53 ms
+  //     footstep_2_l             174 ms of 312   ->         **142 ms**
+  //     footstep_2_r             139 ms of 288   ->          112 ms
+  // **A 94 ms SPREAD ACROSS FOUR FILES THAT ARE MEANT TO BE INTERCHANGEABLE**, and at a sprint
+  // a footfall is about 167 ms -- so more than half a step interval. The pair is rolled per
+  // footfall (m137), so roughly every other step lands late: *"I can hear the nice footsteps
+  // but there's like a tap too... it's like every other one."* That is not a recording that
+  // sounds metallic, it is a rhythm with two clocks in it.
+  // **AND m139 MADE THE WORST ONE WORSE.** `SFX.hit` .25 had found `footstep_2_l`'s event at
+  // 144 ms and `skipMax` overruled it back to 62 -- so the gate was RIGHT and the cap put the
+  // lead-in back. That constant is gone; a number built on a wrong diagnosis goes with it.
+  // **THE FIX IS AN ALIGNMENT, NOT A TRIM.** An aligned call starts `lead` seconds before the
+  // file's OWN peak (`e.p`, which `cut` already measures), so every file in the bank puts its
+  // event at the same offset from the trigger BY CONSTRUCTION: 12 / 15 / 12 / 12 ms. That is
+  // `SFX.even`'s argument one axis over -- how loud and how DELAYED a recording is, is where
+  // it happened to be cut rather than a decision anybody made about the game.
+  // **AND IT THROWS AWAY A PRE-TAP NO GATE COULD REACH.** `footstep_2_r` carries a real second
+  // transient at 65 ms, 70 ms IN FRONT of its footfall at 35% of peak -- so the onset gate
+  // latches onto THAT and can never help. Aligned, the window opens past it.
+  // **12 ms KEEPS THE ATTACK**, which is the whole reason this is not `cut` (which starts AT
+  // the peak, right for an impact and wrong for a foot).
+  lead: .012,
   // **A BANK IS ONLY AS EVEN AS ITS LOUDEST FILE, AND NOTHING IN `snd` EVENED IT (m138).**
   // *"There's like a tap too... I don't know why one of them sounds like this weird tap. The
   // second footsteps is soft and sounds right, but there's just annoying tap thing."*
@@ -4161,15 +4190,17 @@ function footSnd(sp, top, x, z, left, gk, rk) {
       if (Math.random() * seen < 1) pick = k;
     }
   }
-  // **AND IT PLAYS WHOLE.** `cut`/`att`/`dec` shaped a 0.34 s body impact into something
-  // footstep-sized; his own are 0.264 s and 0.288 s and ARE the event, so `dec` .09 was about
-  // to cut them in half. `SFX.edge` still trims the silence off the front, which is the only
-  // trimming a real recording wants -- m58's own sentence about `plasma_hit`, one bank over.
+  // **IT PLAYS WHOLE AND IT PLAYS ALIGNED (m136, m140).** `dec` .09 was about to cut a 0.288 s
+  // recording in half and it is still gone -- his files ARE the event, and the only trimming a
+  // real recording wants is the silence. What m136 got wrong is that the silence is not all at
+  // the FRONT: these four put their footfall 70 to 174 ms in, so trimming to the onset leaves a
+  // 94 ms spread across a bank whose whole job is to be interchangeable. `align` starts each
+  // one `SFX.lead` before its own peak instead, and `att` is the 3 ms ramp that costs.
   snd('foot', { g: (STEP.g0 + (STEP.g1 - STEP.g0) * u) * (gk == null ? 1 : gk),
                 r: (STEP.r0 + (STEP.r1 - STEP.r0) * u) * (left ? 1 + STEP.alt : 1 - STEP.alt)
                    * (rk == null ? 1 : rk)
                    * (1 + (Math.random() - .5) * STEP.jit),
-                i: pick, x, z });
+                i: pick, align: 1, att: .003, x, z });
 }
 // **AND THEIR STRIDE IS THE SAME ARITHMETIC ON THEIR OWN CLIPS (m66).** `duration * ref` is how
 // far one authored cycle carries a body whatever speed it is played at, and `perCycle` footfalls
@@ -4304,8 +4335,6 @@ function sfxEdge(b) {
   const gate = peak * SFX.hit;
   let a = 0;
   for (let i = 0; i < n; i++) if (Math.abs(d[i]) > gate) { a = i; break; }
-  // the cap -- see `SFX.skipMax`. A recording that opens on its own event is untouched.
-  if (SFX.skipMax > 0) a = Math.min(a, Math.floor(n * SFX.skipMax));
   let z = n - 1;
   const tail = peak * .012;
   for (let i = n - 1; i > a; i--) if (Math.abs(d[i]) > tail) { z = i; break; }
@@ -4477,7 +4506,14 @@ function snd(key, o) {
   // The waveform is fine; what is in the way is the RUN-UP in front of it. Starting at `e.p`
   // rather than `e.a` throws away the swell and the sound begins at its own peak -- see
   // `SFX.punch`. Nothing is resampled and no sample is touched; it is a different start offset.
-  const from = (o && o.cut && e.p != null) ? Math.max(e.a, e.p) : e.a;
+  // **AND `align` IS THE THIRD THING A START OFFSET CAN MEAN (m140).** `cut` starts AT the
+  // peak, which is right for an impact and throws a foot's attack away; `align` starts
+  // `SFX.lead` BEFORE it, so every file in a bank puts its event at the same offset from the
+  // trigger whatever the recording's own lead-in happens to be. See `SFX.lead`. Floored at
+  // `e.a`, so a file whose peak is already early keeps its silence trim and nothing else.
+  const from = (o && o.align && e.p != null) ? Math.max(e.a, e.p - SFX.lead)
+             : (o && o.cut   && e.p != null) ? Math.max(e.a, e.p)
+             : e.a;
   const full = Math.max(.02, e.b - from);
   src.start(0, from, full);
   // **AND `dec` IS THE OTHER HALF: A PERCUSSIVE ENVELOPE.** An impact is a transient and a
@@ -4492,6 +4528,15 @@ function snd(key, o) {
     g.gain.linearRampToValueAtTime(gv, t + at);
     g.gain.setTargetAtTime(0, t + at, Math.max(.01, o.dec) / 3);
     src.stop(t + at + o.dec * 1.6);
+  }
+  // **AND `att` ON ITS OWN, BECAUSE AN ALIGNED START IS NOT A SILENT ONE (m140).** The window
+  // opens `SFX.lead` before the peak, which on his footsteps is 11 to 17 per cent of peak --
+  // a gain that STEPS onto that is a click, which is the very thing this build is removing.
+  // Two or three milliseconds is inaudible and there is nothing left to step.
+  else if (o && o.att) {
+    const at = Math.max(.002, o.att);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(gv, t + at);
   }
   // **`dur` CUTS A LONG FILE SHORT, AND THE RAMP IS NOT OPTIONAL.** `SFX.edge` trims the
   // SILENCE off a recording; it has nothing to say about a sound that is simply longer than the
@@ -4568,8 +4613,44 @@ const sun = new THREE.DirectionalLight(0xfff3e0, 2.4);
 // **THE SHADING MOVES WITH IT AND THAT IS THE POINT, NOT A SIDE EFFECT** -- a sun you can see
 // is a low sun, and a low sun is long shadows: a 1.25 m body casts 0.81 m at 57 degrees and
 // **5.9 m** at 12, well inside the 44 m shadow box either way.
-sun.position.set(10.76, 2.98, 8.97);
+// **30 DEGREES, WHICH IS WHERE HE SETTLED (m140).** *"I think sun at 30."* Same BEARING and
+// same length as m133's 12 (L 14.32, so the shadow box and `stepSun`'s offset are untouched);
+// only the pitch moves, and `SUNC.i` is the index of 30 so the key and the light agree from
+// the first frame rather than the key reading one number while the light sits at another.
+//     y = 14.32 sin 30 = 7.160,  horizontal = 14.32 cos 30 = 12.401, split on the old bearing
+sun.position.set(9.525, 7.160, 7.941);
 sun.castShadow = true;
+// **FLAT IS LOW CONTRAST, AND IT IS THE THING HE ASKED FOR BY NAME (m140, `FLAT`, `flatSet`).**
+// *"I kinda like almost like sun off -- it just gives it a more like flat look and I kinda like
+// the flat look. I feel like we're mixing styles right now... I need to figure out how to get
+// this game more painted and then settle on a painted style, because the procedural Blender
+// environment mixed with the characters being nice textures and painted, they kind of clash."*
+// **There is no sun-off**: the SUN key cycles 12 / 30 / 57 and every one of them is a hard
+// directional. What he is describing liking is the SHAPING going away -- and that is three
+// intensities and a shadow flag, with no shader, no render target and nothing to get wrong.
+// **IT IS NOT "PAINTED" AND IT IS NOT SOLD AS ONE.** A painted look is a toon ramp on the
+// diffuse plus Shredworld's `paintPatch` threshold pass, and that is its own build with a known
+// catastrophic failure mode (a ramp fed into the SPECULAR blows V up on every silhouette --
+// fourteen builds over there). This is the half that is free, safe and reversible, and it is
+// the one that answers the word he actually used.
+// **THE AMBIENT TAKES BACK WHAT THE DIRECTIONAL GIVES UP**, or "flat" reads as "darker" and
+// the two cannot be judged apart -- a hemisphere lights every surface whatever it faces, so it
+// buys back more per unit than the sun gives up.
+const FLAT = { on: 0, sun: .30, fill: .55, hemi: 1.70, shadow: 0,
+               sun0: sun.intensity, fill0: fill.intensity, hemi0: hemi.intensity, cast0: true };
+function flatSet(on) {
+  FLAT.on = on ? 1 : 0;
+  sun.intensity  = FLAT.sun0  * (FLAT.on ? FLAT.sun  : 1);
+  fill.intensity = FLAT.fill0 * (FLAT.on ? FLAT.fill : 1);
+  hemi.intensity = FLAT.hemi0 * (FLAT.on ? FLAT.hemi : 1);
+  // a shadow IS directional shaping, so flat has none -- and it is the cheapest frame in here.
+  // **THE PRESS HITCHES**, because changing `castShadow` moves a shader define and three then
+  // recompiles every material that receives one. That is the toggle, not the feature -- the
+  // IBL key's own sentence, and worth saying out loud because a hitch at the moment you are
+  // counting frames reads as the thing you just switched ON costing more.
+  sun.castShadow = FLAT.on ? !!FLAT.shadow : FLAT.cast0;
+  return FLAT.on;
+}
 sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.camera.near = 1; sun.shadow.camera.far = 60;
 sun.shadow.camera.left = -22; sun.shadow.camera.right = 22;
@@ -8372,7 +8453,9 @@ function setBoxes(on) {
 // **THE LABEL IS THE STATE.** A lit/unlit segment would have to decide which elevation counts
 // as "on", which is a decision nobody made -- so it carries the number instead and there is
 // nothing to be in without knowing it.
-const SUNC = { list: [12, 30, 57], i: 0 };
+// **AND 30 IS WHERE HE SETTLED (m140).** *"I think sun at 30."* The index rather than a
+// reordered list, so `mel.sun(12)` and the key's own cycle still mean what they meant.
+const SUNC = { list: [12, 30, 57], i: 1 };
 function sunCycle() {
   SUNC.i = (SUNC.i + 1) % SUNC.list.length;
   sunSet(SUNC.list[SUNC.i]);
@@ -8388,7 +8471,8 @@ function fxOn(k) {
        // wire, and unlit for ever if it never arrives -- so *"is that his sky"* is answered by
        // the key rather than by comparing it to a memory of the gradient.
        : k === 'sky'    ? (SKY.src === 'img' && skyImg ? 1 : 0)
-       :                  (WP.tintLin ? 1 : 0);
+       : k === 'flat'   ? (FLAT.on ? 1 : 0)
+       :                  (WP.tintMode ? 1 : 0);
 }
 function fxSet(k, on) {
   on = on ? 1 : 0;
@@ -8400,7 +8484,8 @@ function fxSet(k, on) {
   else if (k === 'shafts') { SHAFT.on = on; shaftDrop(); }
   else if (k === 'ibl') { SKY.env = on; skyBake(); }
   else if (k === 'dust') { DUST.on = on; dustDrop(); }
-  else { WP.tintLin = on; WPTINT.value = on; }
+  else if (k === 'flat') flatSet(on);
+  else { WP.tintMode = on ? 2 : 0; WPTINT.value = WP.tintMode; }
   return on;
 }
 // **AND THE KEYS ARE REPAINTED WHEN THE STATE MOVES, NOT WHEN ONE IS PRESSED** -- `setBoxes`'
@@ -8410,7 +8495,7 @@ function fxSet(k, on) {
 let fxLit = -1;
 function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
-          | (fxOn('sky') << 4) | (SUNC.i << 5);
+          | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -10331,17 +10416,18 @@ function buildWpVisual(g, trim) {
         m.vertexColors = true;
         if (mask) {
           mask.colorSpace = THREE.NoColorSpace;
-          WPTINT.value = WP.tintLin ? 1 : 0;
+          WPTINT.value = WP.tintMode;
           m.onBeforeCompile = sh => {
             sh.uniforms.tintMask = { value: mask };
-            sh.uniforms.uTintLin = WPTINT;
+            sh.uniforms.uTintMode = WPTINT;
             sh.fragmentShader = sh.fragmentShader
               .replace('#include <common>',
-                '#include <common>\nuniform sampler2D tintMask;\nuniform float uTintLin;')
+                '#include <common>\nuniform sampler2D tintMask;\nuniform float uTintMode;')
               .replace('#include <color_fragment>', [
                 '#ifdef USE_COLOR',
                 '  float wpTint = texture2D(tintMask, vMapUv).r;',
-                '  vec3 wpC = mix(vColor.rgb, pow(vColor.rgb, vec3(2.2)), uTintLin);',
+                '  vec3 wpC = mix(vColor.rgb, pow(vColor.rgb, vec3(2.2)), clamp(uTintMode - 1.0, 0.0, 1.0));',
+                '  wpC = mix(vec3(1.0), wpC, step(0.5, uTintMode));',
                 '  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * wpC, wpTint);',
                 '#endif'].join('\n'));
           };
@@ -14779,7 +14865,8 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   WORLD, WP, TRI, BGRID, triGround, boxesNear, wpRoot,
   // THE TINT'S COLOUR SPACE, LIVE (m126). `mel.tint(1)` reads the vertex colours as sRGB and
   // `mel.tint(0)` raw -- a uniform, so it is an A/B on the phone with no rebuild. See `WP.tint`.
-  tint: v => { WP.tintLin = v ? 1 : 0; WPTINT.value = WP.tintLin; return WP.tintLin ? 'sRGB' : 'raw'; },
+  tint: v => { WP.tintMode = clamp(v | 0, 0, 2); WPTINT.value = WP.tintMode;
+               return ['off', 'raw', 'sRGB'][WP.tintMode]; },
   world: k => { if (!k) return WORLD.now;
     if (!WORLD.list[k]) return 'worlds: ' + Object.keys(WORLD.list).join(', ');
     try { localStorage.setItem(WORLD.store, k); } catch (e) {}
@@ -14907,6 +14994,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // `mel.sun()` says where it is. The BEARING and the distance are kept, so only the pitch
   // moves; `skyBake` re-runs because `_sunOff` is what it measures the disc's direction from,
   // and without it the sky would go on drawing a sun the shading no longer has.
+  flat: v => flatSet(v == null ? !FLAT.on : v),
   sun: d => { if (d != null) sunSet(d);
     return { elev: +sunElev().toFixed(1),
              topOfFrame: +((CAM.fov / 2) - CAM.el * 180 / Math.PI).toFixed(1) }; },

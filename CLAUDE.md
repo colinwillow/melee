@@ -1241,6 +1241,95 @@ same picture from a phone.
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
 
+- **THE FOOTSTEPS ARE A RHYTHM WITH TWO CLOCKS IN IT, AND BOTH EARLIER FIXES WERE ON THE WRONG
+  AXIS (m140, `SFX.lead`, `snd`'s `align`).** *"The footsteps still kill me and I don't even know
+  what to do about that. There's like this metallic click sound."* Third report, and the first
+  one that was measured rather than reasoned about -- m138 evened the bank's GAINS and m139
+  capped how much of a file the onset gate may discard, and neither touched what is wrong.
+  **WHERE THE FOOTFALL ACTUALLY SITS IN EACH FILE, AND HOW LATE THE GAME THEREFORE PLAYS IT:**
+      footstep_l     event at  70 ms of 264 ms   ->  played  48 ms after the trigger
+      footstep_r                79 ms of 288                 53 ms
+      footstep_2_l             174 ms of 312                **142 ms**
+      footstep_2_r             139 ms of 288                 112 ms
+  **A 94 ms SPREAD ACROSS FOUR FILES THAT ARE ALTERNATIVES FOR ONE EVENT.** At a sprint a
+  footfall is about 167 ms, so that is more than half a step interval -- and the pair is rolled
+  per footfall (m137), so roughly every other step lands late. *"I can hear the nice footsteps
+  but there's like a tap too... it's like every other one."* **His sentence is two events
+  because there ARE two events**, and neither is metallic: it is one sound on the beat and one
+  a tenth of a second behind it.
+  **AND m139 MADE THE WORST ONE WORSE.** `SFX.hit` .25 had found `footstep_2_l`'s event at
+  144 ms; `skipMax` overruled it back to 62 and put 80 ms of lead-in back. **The gate was
+  right and the cap was a fix for a diagnosis that was wrong.** That constant is gone -- m63's
+  rule, that a number which exists to rescue a mistake goes when the mistake does.
+  **THE FIX IS AN ALIGNMENT, NOT A TRIM.** An `align` call starts `SFX.lead` before the file's
+  OWN peak (`e.p`, which `cut` has measured since m59), so every file in the bank puts its event
+  at the same offset from the trigger **by construction**: 12 / 15 / 12 / 12 ms. That is
+  `SFX.even`'s argument one axis over -- **how loud and how DELAYED a recording is, is where it
+  happened to be cut rather than a decision anybody made about the game.**
+  **AND IT REACHES A PRE-TAP NO GATE COULD.** `footstep_2_r` carries a real second transient at
+  65 ms, **70 ms in front of its footfall, at 35% of peak** -- so the onset gate latches onto
+  THAT and can never help however it is tuned. Aligned, the window opens past it. `footstep_r`
+  has seven transients and is a scuffy multi-contact step, which is fine and is in one file.
+  **`align` IS NOT `cut`.** That one starts AT the peak, which is right for an impact and throws
+  a foot's attack away. 12 ms keeps it.
+  **AND `att` HAD TO WORK WITHOUT `dec`.** The aligned window opens at 11 to 17 per cent of peak,
+  and a gain that STEPS onto that is a click -- which is the very thing this build removes. Three
+  milliseconds, inaudible, and there is nothing left to step.
+  **THE NUMBER THAT NAMES THIS HAS BEEN IN `npm run sfx` SINCE m59 AND WAS READ AS SOMETHING
+  ELSE.** The `skip` column is the lead-in; it was framed per file as *how much swell sits in
+  front of the punch*, for LOUDNESS. Across a bank it is a timing spread, and nobody had ever
+  looked at it that way. It prints the per-bank spread now. **It only matters for a bank that
+  plays as a RHYTHM and the tool cannot know which one does** -- `plasma_sounds` spreads 77 ms
+  and is right to, because `plasmaPick` ranks it by intensity and LENGTH is a term in that.
+  **AND THAT TOOL WAS MEASURING TWO RULES THE GAME DOES NOT HAVE.** Its default folder list was
+  `['audio', 'audio/plasma_sounds']`, typed at m58 -- so the footsteps, the jetpack, the orc
+  grunts and the creature noises have never once been in a default run. Derived now, which is
+  `bump.mjs`'s `DIRS` tax and the eleventh time it has been paid. And a bare `/^\s*lead:/m`
+  found **`HURT.lead` .92** four hundred lines earlier, so the first report read *"align puts
+  every one at 920 ms"*. **A field name is not unique in a file this size**; the constants are
+  read out of the `SFX` block now. Both are the mistake the `EDGE:` markers exist to prevent,
+  made one line outside them.
+- **THE TINT KEY COULD NOT REACH THE STATE ITS LABEL NAMES (m140, `WP.tintMode`).** *"I'm
+  thinking tint off, it's a little too colorful."* `tintLin` was a COLOUR SPACE switch (m126):
+  the tint applied either way and the key only chose raw linear against `pow(c, 2.2)` -- so
+  **"tint off" was not a state the key had**, and the unlit one he was looking at is the MORE
+  colourful of the two, because `pow` on a value under 1 darkens and desaturates. **A control
+  whose label names something it cannot do is worse than no control**, which is this file's own
+  sentence about `mel.boxes()` being buried on badge tap twelve.
+  Three states: 0 off, 1 raw (m125's shipped), 2 sRGB. **The key is OFF/2 and defaults off** --
+  his preset, and 2 rather than 1 because he has already said the raw one is too much. One
+  uniform, so all three are an A/B on the phone with no recompile: `mel.tint(0|1|2)`.
+- **HIS PRESET IS THE DEFAULT NOW (m140).** *"I think sun at 30, IBL, dust, HDRI, and I'm
+  thinking tint off."* SUN 30 is `SUNC.i` 1 **and the initial `sun.position`**, because `sunSet`
+  is only ever called from the key -- moving the index alone would have left the light at 12
+  with the key reading 12 and the first press cycling to 57. Same bearing and same length
+  (L 14.32, so the shadow box and `stepSun`'s offset are untouched); only the pitch moves, and
+  `skyBake`'s own check still reads **sun dot 1.000**.
+- **FLAT IS LOW CONTRAST, AND IT IS NOT SOLD AS PAINTED (m140, `FLAT`, `flatSet`).** *"I kinda
+  like almost like sun off -- it just gives it a more flat look and I kinda like the flat look.
+  I feel like we're mixing styles right now... the procedural Blender environment mixed with the
+  characters being nice textures and painted, they kind of clash and I can't really settle on a
+  style."* **There is no sun-off**: the SUN key cycles 12 / 30 / 57 and all three are a hard
+  directional. What he is describing liking is the SHAPING going away, and that is three
+  intensities and a shadow flag -- no shader, no render target, nothing to get wrong.
+  **THE AMBIENT TAKES BACK WHAT THE DIRECTIONAL GIVES UP**, or "flat" reads as "darker" and the
+  two cannot be judged apart. A hemisphere lights every surface whatever it faces, so it buys
+  back more per unit than the sun gives up: sun x.30, fill x.55, hemi x1.70, no shadow.
+  **AND THE PRESS HITCHES**, because `castShadow` moves a shader define and three recompiles
+  every material that receives one -- the IBL key's own sentence.
+  **WHAT THIS IS NOT IS THE PAINTED LOOK, AND THAT IS STATED RATHER THAN DRESSED UP.** A painted
+  world is Shredworld's two passes: a TOON RAMP on the diffuse (c-whatever's fourteen builds of
+  white balls, because **the ramp must never feed the SPECULAR** -- three's `V_GGX` collapses
+  onto EPSILON on a silhouette and returns ~500000, and the ramp's `floor` keeps the irradiance
+  at a third of full sun where the true `dotNL` is zero) and `paintPatch` (c127), whose trick is
+  **the THRESHOLD and not the noise**: areas of one flat colour with a DARKENED SEAM where two
+  meet, domain-warped because value noise on an integer lattice draws graph paper. Both are
+  procedural and cost zero asset bytes, which is why they are the right answer for a phone.
+  **THE BLOCKER HERE IS THAT AN INSTANCE `onBeforeCompile` SHADOWS THE PROTOTYPE'S COMPLETELY**,
+  and melee has two (`hueGlow` and the City_Trim tint) -- so a prototype patch would paint the
+  roads, the ground and the props and leave the BUILDINGS and the WEAPONS out, which is a
+  partial application that looks like a bug. The port has to chain through both hooks. It is
+  its own build and it is the next one.
 - **THE SUN HAD TWO WRITERS AND THE OLDER ONE WON EVERY FRAME FOR FOURTEEN BUILDS (m138,
   `stepSun`).** Twenty-two lines below the call to `stepSun`, at the bottom of `frame()` and two
   statements above `renderer.render`, sat the ORIGINAL follow:
