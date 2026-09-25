@@ -1144,6 +1144,106 @@ same picture from a phone.
   impact and would throw away a scuff on a recording that has one). `mel.STEP` is live --
   `r0`/`r1`, `g0`/`g1` and `jit` are the dials, and `mel.STEP.on = 0` is still the one word off.
 
+- **THE SUN HAD TWO WRITERS AND THE OLDER ONE WON EVERY FRAME FOR FOURTEEN BUILDS (m138,
+  `stepSun`).** Twenty-two lines below the call to `stepSun`, at the bottom of `frame()` and two
+  statements above `renderer.render`, sat the ORIGINAL follow:
+      sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
+  unconditional, in both worlds, every frame. `atan2(14, hypot(7, 6))` is **56.6 degrees** -- so
+  m124 added `stepSun` for Weirdport and left the line it replaced, and from that build on the
+  light has been pinned where it was.
+  **WHAT IT COST IS m133 ENTIRELY.** That build dropped the sun 56.9 -> 12 degrees to put the
+  disc inside the **16.4 degrees** of sky this camera can see, and it moved `_sunOff`, which is
+  what `skyBake` and `stepShafts` read -- so the DISC came down, the SHAFTS came down and **the
+  light and every shadow in the game stayed at 56.6**. Its own stated consequence, *"a low sun
+  is long shadows, 5.9 m against 0.81"*, never once happened; m137's sky was then recoloured and
+  judged against shading that disagreed with it by forty-five degrees.
+  **AND `mel.sun(deg)` HAS BEEN HALF-CONNECTED SINCE IT WAS WRITTEN** -- it moved the picture of
+  the sun and not the light, so every A/B offered on it answered half the question.
+  **FOURTH TIME FOR THIS SHAPE**, after `cam.az`, `KIT.on` and `p.rHold`: two writers on one
+  value and whichever runs last wins. This one hid for fourteen builds because the thing it
+  broke is invisible unless you already know where the sun is supposed to be -- which is an
+  argument for m129's "all three read `_sunOff`" being worth MORE than it looked, not less: it
+  was right, and the fourth writer was simply not counted.
+- **AND THE SHADOW CAMERA SNAPS TO WHOLE MAP TEXELS NOW (m138, `SHADOW.snap`).** *"There's some
+  weird artifact happening on this brick texture, like when you move it glitches."* A 44 m box
+  across a 2048 map is **21.5 mm per texel**, and the camera was placed at his exact continuous
+  position every frame -- so every surface re-sampled at a different sub-texel offset on every
+  frame and the quantisation boundary of every shadow edge CRAWLED. Still when you stand,
+  swimming when you walk.
+  **THE SNAP IS IN THE LIGHT'S OWN FRAME, NEVER IN WORLD SPACE.** The map's texel grid lies
+  along the shadow camera's axes, so rounding world x and z pins it to a grid the map has not
+  got unless the sun happens to lie down an axis. Only the two LATERAL components are snapped;
+  the along-light one stays exact, because that is depth and `near`/`far` still have to bracket
+  him. **And the reference vector must not be parallel to the light** -- at `mel.sun(89)`
+  `cross(dir, up)` is zero-length and a normalised zero is NaN in every position the shadow
+  camera is handed from then on, which is not a wrong shadow but no shadow at all.
+  **THIS IS NOT THE BRICK AND THAT IS STATED RATHER THAN DRESSED UP.** `WP.cast` is 0 -- the
+  city receives shadows and does not cast them -- so the only casters near that wall are the
+  player and the bodies, and the stepped blocks in his shot are metres across. The snap is a
+  real fault in the shadows that DO exist and it is not the artifact he circled. Nothing in this
+  container has a GPU, so the remaining candidates (z-fighting between two coplanar faces in his
+  export; the trim sheet's filtering at a grazing angle) cannot be told apart from here -- which
+  is what the SUN key is for.
+- **A BANK IS ONLY AS EVEN AS ITS LOUDEST FILE, AND NOTHING IN `snd` EVENED IT (m138,
+  `SFX.even`, `sfxEven`).** *"There's like a tap too... I don't know why one of them sounds like
+  this weird tap. The second footsteps is soft and sounds right, but there's just annoying tap
+  thing."* Measured with `npm run sfx` over his own four, peak of the window the game plays:
+      footstep_2_l **0.829**   footstep_l 0.601   footstep_2_r 0.589   footstep_r **0.368**
+  a **7 dB** spread inside one bank -- and `STEP.g0/g1` is ONE gain for all four, so the loud
+  one arrives 2.25x the quiet one every time it is drawn, which is every other left foot.
+  **AND `footstep_2_l` IS ALSO THE SHORTEST BY HALF.** `sfxEdge` opens it at **0.144 s** of a
+  0.312 s file -- 144 ms of lead-in sits under a quarter of its own (hot) peak -- so the game
+  plays 168 ms of it where the other three play 230 to 262. Loudest and shortest is a TAP by
+  construction, and that half is in the recording rather than in the code.
+  **THE PEAK OF A RECORDING IS NOT A DECISION ANYBODY MADE ABOUT THE GAME.** It is where the
+  file happened to land when it was cut. Files in one bank are ALTERNATIVES FOR ONE EVENT: they
+  are meant to differ in character, and how loud the event is belongs to the caller -- the speed
+  ramp, the mood table, the charge, the power -- which is how every one of these systems is
+  already designed. So each file is scaled to its bank's own MEDIAN peak, capped on the way up
+  (`evenMax`) because a nearly-silent file would otherwise be handed a huge multiplier and
+  amplify its own noise floor.
+  **IT IS SELF-DISARMING, WHICH IS WHAT MAKES IT SAFE TO APPLY EVERYWHERE** rather than to a
+  list somebody has to keep in step. Measured over all nine banks:
+      drop   x1.00..x1.00   swoosh x0.96..x1.05   clang    x0.98..x1.23
+      pbody  x0.99..x1.01   hit    x1.00..x1.24   grunt    x0.99..x1.43
+      plasma x0.75..x1.48   foot   x0.72..x1.60   creature x0.65..x1.60
+  **The one it genuinely changes is `plasma`**: m58 ranks that bank lightest-first and
+  `plasmaPick` takes a window in it by charge, so plasma_06 coming up 1.48x narrows the score
+  spread from x2.76 to about x1.9. That is the right trade by m58's own sentence (*"the FILE
+  gives the character and the GAIN gives the charge"*) -- the length, the body and the spectrum
+  still differ, and what it stops giving is a few free decibels from how a file was cut.
+  `creature_noise_04` is the worst spread in the game at x2.84 and nobody had noticed, because a
+  creature noise has no rhythm to be out of. `mel.SFX.even = 0` is the one word back.
+- **THE SUN IS A KEY NOW, AND IT IS THE ONLY INSTRUMENT THERE IS FOR A LOOK QUESTION (m138,
+  `SUNC`, `sunCycle`).** m133 chose 12 degrees and `mel.sun(57)` has been the stated A/B ever
+  since -- **on a phone, which has no console**, which is m135's own finding walked straight past
+  for three builds running. 12 / 30 / 57 on the FX row, and **the LABEL is the state**: a
+  lit/unlit segment would have to decide which elevation counts as "on", which is a decision
+  nobody made.
+  **`sunSet` AND `sunElev` ARE LIFTED OUT OF `mel.sun` SO THERE IS ONE COPY.** The key and the
+  console handle ask the identical question, and a second copy of that arithmetic is a second
+  place for the disc, the shafts and the shading to drift apart -- which is the bug three notes
+  up, in miniature.
+- **THE FLOATIES, AND THE BOX WAS WHY HE COULD NOT FIND THEM (m138, `DUST.back`).** *"I don't
+  wanna do like a render pass because it would be expensive, but I do think putting in some of
+  the floaties, those like dragonfly looking points, would be nice."* Right on the first half:
+  real volumetric rays and a bloom both need this game's FIRST render target, which m130
+  declined for a phone already at 27 fps. **Specks need none of it** -- one `Points`, one draw
+  call -- which is why they are the one thing on that list that ports for nothing.
+  **THE DENSITY IS MATCHED TO HIS OWN STUDY RATHER THAN GUESSED.** Kasumigawa's petal field is
+  1800 motes in a 90 x 30 x 120 m box = **0.0056 per cubic metre**; 520 in a 44 m cube is 0.0061.
+  m130's 220 in a 26 m cube was **denser** at 0.0125 and invisible anyway, because the box was
+  13 m across and the edge fade starts at .72 of that: **every mote in the game lived within
+  9.4 m of the lens.** A field you have to stand inside is not an atmosphere.
+  **AND A MOTE BETWEEN YOU AND THE SUN CATCHES IT.** That back-lit term is what separates a
+  speck from noise over there -- its petals carry `pow(max(dot(V, sun), 0), 4)`.
+  **IT IS ALPHA AND NOT BRIGHTNESS, WHICH IS m137's CORRECTION HOLDING**: against a bright sky a
+  whitened or additive mote has no headroom and washes out, so catching the light means being
+  more THERE rather than being paler. **And it is per mote on the CPU, not in the shader**,
+  because `puffPool` is shared with the smoke and a back-lit term on a cigarette plume is wrong.
+  520 dot products a frame against a second material and a second draw call.
+  **It reads `_sunOff`**, so a mote cannot catch a sun the sky has not got -- and since the note
+  three up, that vector is finally the one the shading uses too.
 - **A SECOND PAIR OF FOOTSTEPS IS VARIETY, NOT A SECOND FOOT (m137).** He pushed
   `footstep_2_l.mp3` / `footstep_2_r.mp3` beside m136's pair, and the index m136 wrote was the
   FOOT itself (`left ? 0 : 1`) -- so four files would have played as two and **his two new

@@ -493,14 +493,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m137</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m138</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m137</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m138</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="shafts">SHAFTS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="shafts">SHAFTS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -552,7 +552,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm137';
+const BUILD = 'm138';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -3734,6 +3734,37 @@ const SFX = {
   //     from the onset   rms .001 to .034      from the 90% point   rms .125 to .296
   // -- between **5x and 242x** more energy arriving at once, without touching a single sample.
   punch: .90,
+  // **A BANK IS ONLY AS EVEN AS ITS LOUDEST FILE, AND NOTHING IN `snd` EVENED IT (m138).**
+  // *"There's like a tap too... I don't know why one of them sounds like this weird tap. The
+  // second footsteps is soft and sounds right, but there's just annoying tap thing."*
+  // Measured with `npm run sfx` over his own four, peak of the window the game actually plays:
+  //     footstep_2_l  **0.829**   footstep_l 0.601   footstep_2_r 0.589   footstep_r **0.368**
+  // -- a **7 dB** spread inside one bank, and `STEP.g0/g1` is ONE gain for all four, so the
+  // loud one arrives 2.25x the quiet one every time it is drawn. That is the tap, and it is
+  // every other left foot, which is exactly the report.
+  // **THE PEAK OF A RECORDING IS NOT A DECISION ANYBODY MADE ABOUT THE GAME.** It is where the
+  // file happened to land when it was cut. Two files that are ALTERNATIVES FOR ONE EVENT are
+  // meant to differ in character, and how loud the event is belongs to the caller -- the speed
+  // ramp, the mood table, the charge, the power -- which is how every one of these systems is
+  // already designed. So each file is scaled to its bank's own MEDIAN peak: the typical file
+  // does not move, the bank's overall level is unchanged, and only the outliers are pulled in.
+  // **AND IT IS SELF-DISARMING**: a bank cut at one level reads every gain as ~1 and nothing
+  // happens. Measured over all nine, which is the check that says this cannot have disturbed
+  // eight banks to fix one:
+  //     drop    x1.00..x1.00      swoosh  x0.96..x1.05      clang   x0.98..x1.23
+  //     pbody   x0.99..x1.01      hit     x1.00..x1.24      grunt   x0.99..x1.43
+  //     plasma  x0.75..x1.48      foot    x0.72..x1.60      creature x0.65..x1.60
+  // Two banks reach `evenMax`: `footstep_r` (a **x2.25** spread) and `creature_noise_04` (x2.84,
+  // the worst in the game and nobody had noticed, because a creature noise has no rhythm to be
+  // out of). Everything from `drop` to `grunt` is inside a decibel and a half of where it was.
+  // **THE ONE IT GENUINELY CHANGES IS `plasma`, AND THAT IS STATED RATHER THAN HIDDEN.** m58
+  // ranks that bank lightest-first and `plasmaPick` takes a window in it by charge -- so
+  // plasma_06 coming up 1.48x narrows the score spread from x2.76 to about x1.9. That is the
+  // right trade by m58's own sentence (*"the FILE gives the character and the GAIN gives the
+  // charge"*): the length, the body and the spectrum still differ, and what it stops giving is
+  // a few free decibels from how the file was cut. `mel.SFX.even = 0` is the one word back.
+  even: 1,
+  evenMax: 1.6,     // and the ceiling on a BOOST, or a nearly-silent file amplifies its own hiss
   files: {
     swoosh: ['audio/swoosh_01.mp3', 'audio/swoosh_02.mp3', 'audio/swoosh_03.mp3', 'audio/swoosh_04.mp3'],
     clang: ['audio/metal_clang_01.mp3', 'audio/metal_clang_02.mp3', 'audio/metal_clang_03.mp3'],
@@ -4242,6 +4273,7 @@ function sfxWake() {
       SFX.ctx.decodeAudioData(ab.slice(0)).then(b => {
         SFX.buf[k][i] = b;
         SFX.edge[k][i] = sfxEdge(b);
+        sfxEven(k);
         SFX.ready = 1;
       }).catch(() => {});
     });
@@ -4271,10 +4303,30 @@ function sfxEdge(b) {
   let q = a;
   const hi = peak * SFX.punch;
   for (let i = a; i < n; i++) if (Math.abs(d[i]) > hi) { q = i; break; }
+  // `pk` is the file's own peak, which this function has always computed and always thrown
+  // away. `sfxEven` is what reads it -- see `SFX.even`.
   return { a: Math.max(0, a / sr - SFX.pre), b: Math.min(b.duration, z / sr + .04),
-           p: Math.min(b.duration, q / sr) };
+           p: Math.min(b.duration, q / sr), pk: peak };
 }
 // EDGE:END
+// **AND WHAT THAT PEAK IS FOR (m138, `SFX.even`).** The bank's MEDIAN is the target, so a bank
+// already cut at one level reads every gain as 1 and this is a no-op -- which is what makes it
+// safe to apply everywhere rather than to a list somebody has to keep in step. A boost is
+// capped (`evenMax`) because a nearly-silent file would otherwise be handed a huge multiplier
+// and amplify nothing but its own noise floor; a CUT needs no cap, since quieter is always
+// safe. Re-run on every decode, because a bank arrives one file at a time and the median of
+// two is not the median of seven.
+function sfxEven(k) {
+  const E = SFX.edge[k];
+  if (!E) return;
+  const pk = [];
+  for (const e of E) if (e && e.pk > 0) pk.push(e.pk);
+  if (!SFX.even || pk.length < 2) { for (const e of E) if (e) e.k = 1; return; }
+  pk.sort((a, b) => a - b);
+  const h = pk.length >> 1;
+  const med = pk.length & 1 ? pk[h] : (pk[h - 1] + pk[h]) * .5;
+  for (const e of E) if (e) e.k = e.pk > 0 ? Math.min(SFX.evenMax, med / e.pk) : 1;
+}
 // ============================================================================================
 // THE CHARGE IS A SYNTH, NOT A SAMPLE -- and it has to be.
 // `powerup_01.mp3` was the first try and it is the wrong SHAPE even though it is the right
@@ -4399,7 +4451,8 @@ function snd(key, o) {
   const e = (SFX.edge[key] && SFX.edge[key][i]) || { a: 0, b: b.duration };
   const src = SFX.ctx.createBufferSource(); src.buffer = b;
   src.playbackRate.value = (o && o.r) || 1;
-  const gv = ((o && o.g != null) ? o.g : 1) * dk;
+  // `e.k` is the bank-evening gain -- 1 on every bank cut at one level. See `SFX.even`.
+  const gv = ((o && o.g != null) ? o.g : 1) * dk * (e.k || 1);
   const g = SFX.ctx.createGain(); g.gain.value = gv;
   src.connect(g); g.connect(SFX.bus);
   SFX.voices++;
@@ -4524,11 +4577,82 @@ scene.add(sun, sun.target);
 // it covers moves; writing a position without moving the target would swing the sun round the
 // sky as he walked.
 const _sunOff = sun.position.clone();
+// **AND `stepSun` WAS DEAD CODE, WHICH IS WHY `mel.sun` HAS NEVER MOVED A SHADOW (m138).**
+// Twenty-two lines below the call to it, at the bottom of `frame()` and two statements above
+// `renderer.render`, sat the ORIGINAL follow:
+//     sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
+// unconditional, in both worlds, every frame. `hypot(7, 6)` against 14 is an elevation of
+// **56.6 degrees** -- so m124 added `stepSun` for Weirdport and left the line it replaced, and
+// from that build on there have been TWO WRITERS on the sun and the older one has won every
+// single frame. This file has a note about that shape for `cam.az`, for `KIT.on` and for
+// `p.rHold`; it is the fourth time, and this one hid for fourteen builds because the thing it
+// broke is invisible unless you know where the sun is SUPPOSED to be.
+// **WHAT IT COST IS m133 ENTIRELY.** That build dropped the sun 56.9 -> 12 degrees to put the
+// disc inside the 16.4 degrees of sky this camera can see, and it moved `_sunOff`, which is
+// what `skyBake` and `stepShafts` read -- so the DISC came down and the SHAFTS came down and
+// **the light and every shadow in the game stayed at 56.6**. Its own stated consequence, *"a
+// low sun is long shadows -- 5.9 m against 0.81"*, never once happened. m137's sky was then
+// judged against shading that disagreed with it by forty-five degrees.
+// **AND `mel.sun(deg)` AND THE FX ROW HAVE BEEN HALF-CONNECTED THE WHOLE TIME**: they moved
+// the picture of the sun and not the light. One writer now, in both worlds.
+const SHADOW = { snap: 1 };
+const _snR = new THREE.Vector3(), _snU = new THREE.Vector3(), _snD = new THREE.Vector3(),
+      _snC = new THREE.Vector3(),
+      _snUp = new THREE.Vector3(0, 1, 0), _snAlt = new THREE.Vector3(1, 0, 0);
+// **AND THE SHADOW CAMERA SNAPS TO WHOLE MAP TEXELS (m138, `SHADOW.snap`).** *"There's some
+// weird artifact happening on this brick texture -- when you move it glitches."* A 44 m box
+// across a 2048 map is **21.5 mm per texel**, and the camera was being placed at his exact
+// continuous position every frame -- so every surface in the city re-sampled at a different
+// sub-texel offset on every frame, and the quantisation boundary of every shadow edge (and of
+// every acne stipple) CRAWLED across the geometry. It is still when you stand and it swims when
+// you walk, which is the report word for word.
+// **AND A TEXEL IS NOT 21.5 mm ON A WALL THE LIGHT IS NEARLY PARALLEL TO.** Projected onto a
+// surface at a grazing angle it stretches by `1 / sin(grazing)`, so on a facade a low sun
+// barely touches one texel covers tens of centimetres -- which is the scale of the stair-steps
+// in his shot, and why this reads as blocks rather than as a fine stipple.
+// **THE SNAP IS IN THE LIGHT'S OWN FRAME, NEVER IN WORLD SPACE.** The map's texel grid is laid
+// out along the shadow camera's axes, so rounding world x and z pins it to a grid the map does
+// not have unless the sun happens to lie down an axis. Only the two LATERAL components are
+// snapped; the along-light one stays exact, because that is depth and `near`/`far` still have
+// to bracket him.
+// **AND THE REFERENCE VECTOR HAS TO NOT BE PARALLEL TO THE LIGHT.** `mel.sun(89)` would make
+// `cross(dir, up)` zero-length, and a normalised zero vector is NaN in every position the
+// shadow camera is given from then on -- which is not a wrong shadow, it is no shadow at all.
 function stepSun() {
-  if (!WP.sun || !inWP()) return;
-  sun.target.position.copy(player.pos);
-  sun.position.copy(player.pos).add(_sunOff);
+  if (!WP.sun) return;
+  const p = player.pos;
+  _snC.copy(p);
+  if (SHADOW.snap) {
+    const cam = sun.shadow.camera;
+    const t = (cam.right - cam.left) / (sun.shadow.mapSize.x || 1);   // metres per shadow texel
+    _snD.copy(_sunOff).normalize();
+    _snR.crossVectors(_snD, Math.abs(_snD.y) > .99 ? _snAlt : _snUp).normalize();
+    _snU.crossVectors(_snR, _snD).normalize();
+    const a = Math.round(p.dot(_snR) / t) * t;
+    const b = Math.round(p.dot(_snU) / t) * t;
+    const d = p.dot(_snD);
+    _snC.copy(_snR).multiplyScalar(a).addScaledVector(_snU, b).addScaledVector(_snD, d);
+  }
+  sun.target.position.copy(_snC);
+  sun.position.copy(_snC).add(_sunOff);
   sun.target.updateMatrixWorld();
+}
+// WHERE THE SUN IS, AS ONE NUMBER -- lifted out of `mel.sun` because the FX key asks the
+// identical question and a second copy of this arithmetic is a second place for the disc, the
+// shafts and the shading to drift apart. The BEARING and the distance are kept; only the pitch
+// moves. `skyBake` re-runs because `_sunOff` is what it measures the disc's direction from.
+function sunSet(d) {
+  const L = Math.hypot(_sunOff.x, _sunOff.y, _sunOff.z) || 1,
+        h = Math.hypot(_sunOff.x, _sunOff.z) || 1, t = d * Math.PI / 180;
+  _sunOff.set(_sunOff.x / h * L * Math.cos(t), L * Math.sin(t), _sunOff.z / h * L * Math.cos(t));
+  sun.position.copy(_sunOff);
+  sun.target.position.set(0, 0, 0);
+  sun.target.updateMatrixWorld();
+  skyBake();
+}
+function sunElev() {
+  const L = Math.hypot(_sunOff.x, _sunOff.y, _sunOff.z) || 1;
+  return Math.asin(_sunOff.y / L) * 180 / Math.PI;
 }
 
 
@@ -8131,10 +8255,31 @@ function setBoxes(on) {
 //
 // **NOTHING HERE RESTATES A RULE.** Each one moves the same field the console handle moves and
 // calls the same rebuild, so the key and `mel` cannot disagree about what "off" means.
+// **AND THE SUN IS A CYCLE, NOT A SWITCH -- WHICH IS THE ONE THING IT HAS TO BE (m138).**
+// *"The sun makes these nice rays... I do think putting in some of the floaties would be
+// nice."* m133 chose 12 degrees to put the disc inside the 16.4 degrees of sky this camera can
+// see, and `mel.sun(57)` has been the stated A/B for that ever since -- **on a phone, which has
+// no console**, which is m135's whole finding and which I then walked straight past for three
+// builds by shipping another console handle.
+// **IT IS ALSO THE ONLY INSTRUMENT THERE IS FOR THE BRICK.** Nothing in this container has a
+// GPU, so whether an artifact on a facade is the lighting or the export is a question only the
+// device can answer -- and one tap that moves the sun forty-five degrees separates those two
+// outright. `missing()`'s rule, one system over: put the thing that tells the cases apart where
+// he can see it.
+// **THE LABEL IS THE STATE.** A lit/unlit segment would have to decide which elevation counts
+// as "on", which is a decision nobody made -- so it carries the number instead and there is
+// nothing to be in without knowing it.
+const SUNC = { list: [12, 30, 57], i: 0 };
+function sunCycle() {
+  SUNC.i = (SUNC.i + 1) % SUNC.list.length;
+  sunSet(SUNC.list[SUNC.i]);
+  return SUNC.list[SUNC.i];
+}
 function fxOn(k) {
   return k === 'shafts' ? (SHAFT.on ? 1 : 0)
        : k === 'ibl'    ? (SKY.env ? 1 : 0)
        : k === 'dust'   ? (DUST.on ? 1 : 0)
+       : k === 'sun'    ? 1
        :                  (WP.tintLin ? 1 : 0);
 }
 function fxSet(k, on) {
@@ -8155,11 +8300,13 @@ function fxSet(k, on) {
 // nothing at all the rest of the time.
 let fxLit = -1;
 function fxKeys() {
-  const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3);
+  const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
+          | (SUNC.i << 4);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
   for (const el of document.querySelectorAll('#fxKey i')) {
+    if (el.dataset.fx === 'sun') { el.textContent = 'SUN ' + Math.round(sunElev()); continue; }
     el.classList.toggle('on', !!fxOn(el.dataset.fx));
     // THE TINT SWITCH ONLY EXISTS WHERE IT MEANS SOMETHING, which is `paintKit`'s rule: the
     // vertex tint is Weirdport's, so on the test site that segment would be a control that
@@ -8171,7 +8318,8 @@ function fxKeys() {
   for (const el of document.querySelectorAll('#fxKey i')) {
     el.addEventListener('pointerdown', e => {
       e.preventDefault(); e.stopPropagation();
-      fxSet(el.dataset.fx, !fxOn(el.dataset.fx));
+      if (el.dataset.fx === 'sun') sunCycle();
+      else fxSet(el.dataset.fx, !fxOn(el.dataset.fx));
     });
   }
 }
@@ -13743,20 +13891,43 @@ function stepBoxView() {
 // they cover a white room, and nothing is allocated as he walks.
 const DUST = {
   on: 1,
-  n: 220,
-  r: 13,                 // the half-width of the box kept round him
+  // **THE FLOATIES, AND THE COUNT AND THE BOX WERE BOTH WHY HE COULD NOT FIND THEM (m138).**
+  // *"I don't wanna do like a render pass because it would be expensive -- but I do think
+  // putting in some of the floaties, those like dragonfly looking points, would be nice."*
+  // Right on the first half: real volumetric rays or a bloom need this game's FIRST render
+  // target, and m130 declined that for a phone already at 27 fps. **Specks need none of it** --
+  // they are one `Points` and one draw call, which is why they are the one thing on his
+  // Kasumigawa list that ports for nothing.
+  // **AND THE DENSITY IS MATCHED TO HIS OWN STUDY RATHER THAN GUESSED.** Its petal field is
+  // 1800 motes in a 90 x 30 x 120 m box = **0.0056 per cubic metre**; 520 in a 44 m cube is
+  // 0.0061. m130's 220 in a 26 m cube was 0.0125 -- DENSER, and invisible anyway, because the
+  // box was only 13 m across and the edge fade starts at .72 of that: **every mote in the game
+  // lived within 9.4 m of the lens.** A field you have to stand inside is not an atmosphere.
+  n: 520,
+  r: 22,                 // the half-width of the box kept round him
   // **A MOTE IS SEEN AGAINST WHATEVER IS BEHIND IT, AND EVERYTHING HERE IS PALE (m137).**
   // 0xfff4de at alpha .16 on a near-white sky and a white floor is invisible by construction,
   // and .020 m at 13 m is **1.2 CSS px** -- under the threshold of being an effect (m99).
   // A warm mid-tone is darker than the sky AND lighter than tarmac, which is the one value
   // that reads in both halves of this world.
-  size: [.028, .075],    // metres -- `aSize` is world units, see `puffFlush`
+  size: [.045, .13],     // metres -- `aSize` is world units, see `puffFlush`
   col: 0xa89572,
   drift: [.10, .40],     // m/s sideways
   rise: [-.08, .20],     // and vertically, so they do not all fall or all climb
   glim: [.5, 2.2],       // the glimmer, in cycles a second
   deep: .55,             // how much of the alpha the glimmer actually swings
   alpha: [.25, .70],
+  // **AND A MOTE BETWEEN YOU AND THE SUN CATCHES IT.** That back-lit term is what separates a
+  // speck from noise in Kasumigawa -- its petals carry `pow(max(dot(V, sun), 0), 4)` -- and it
+  // is the whole difference between dust that is there and dust you look at.
+  // **IT IS ALPHA AND NOT BRIGHTNESS, WHICH IS m137's CORRECTION HOLDING.** Against a bright
+  // sky an additive or whitened mote has no headroom and washes out; a warm mid-tone with MORE
+  // of itself present is what reads. So catching the light means being more THERE.
+  // **AND IT IS COMPUTED PER MOTE ON THE CPU, NOT IN THE SHADER**, because `puffPool` is shared
+  // with the smoke and a back-lit term on a cigarette plume is wrong. 520 dot products a frame
+  // against a second material and a second draw call.
+  back: 2.2,             // how much alpha a mote dead in front of the sun gains
+  backPow: 5,            // and how tightly it keys on it. Higher = only very near the sun.
   add: 0,                // 0 alpha-blends, 1 is additive. `mel.dust({add:1})` -- see below.
                          // **AND m130's NOTE HAD THAT POLARITY BACKWARDS**: additive against a
                          // BRIGHT sky has almost no headroom (it clips to white), and what reads
@@ -13792,6 +13963,10 @@ function stepDust(dt) {
   // ROUND THE LENS, NOT ROUND HIM. What you see is what is near the CAMERA, and on a boom
   // several metres behind him those are different boxes.
   const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  // THE SUN, AS A DIRECTION. `_sunOff` is the one answer to where it is -- the same vector the
+  // disc, the shafts and the shading read, so a mote cannot catch a sun the sky does not have.
+  const sl = Math.hypot(_sunOff.x, _sunOff.y, _sunOff.z) || 1;
+  const snx = _sunOff.x / sl, sny = _sunOff.y / sl, snz = _sunOff.z / sl;
   for (let i = 0; i < n; i++) {
     const o = i * 3;
     P.pos[o] += dust.vx[i] * dt; P.pos[o + 1] += dust.vy[i] * dt; P.pos[o + 2] += dust.vz[i] * dt;
@@ -13807,7 +13982,11 @@ function stepDust(dt) {
     // THE GLIMMER IS THE WHOLE POINT, so it is its own rate and its own phase per mote -- one
     // shared clock is 220 motes pulsing together, which is a strobe and not dust.
     const g = 1 - DUST.deep * .5 * (1 - Math.sin(dustT * dust.rt[i] + dust.ph[i]));
-    P.alp[i] = dust.a0[i] * g * edge;
+    // BACK-LIT: how nearly the line from the lens THROUGH this mote points at the sun.
+    const dl = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+    const face = (dx * snx + dy * sny + dz * snz) / dl;
+    const lit = 1 + DUST.back * Math.pow(Math.max(0, face), DUST.backPow);
+    P.alp[i] = Math.min(1, dust.a0[i] * g * edge * lit);
   }
   puffFlush(P, n);
 }
@@ -13976,9 +14155,8 @@ function frame() {
   stepBoxView();
   fxKeys();
   paintRetic();
-  sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
-  sun.target.position.copy(player.pos);
-  sun.target.updateMatrixWorld();
+  // (the sun is `stepSun`'s and only `stepSun`'s -- see its note. The line that used to sit
+  // here overwrote it with a hard-coded 56.6-degree offset, every frame, since m124.)
 
   renderer.render(scene, camera);
 
@@ -14579,14 +14757,10 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // `mel.sun()` says where it is. The BEARING and the distance are kept, so only the pitch
   // moves; `skyBake` re-runs because `_sunOff` is what it measures the disc's direction from,
   // and without it the sky would go on drawing a sun the shading no longer has.
-  sun: d => { if (d != null) { const L = Math.hypot(_sunOff.x, _sunOff.y, _sunOff.z) || 1,
-      h = Math.hypot(_sunOff.x, _sunOff.z) || 1, t = d * Math.PI / 180;
-      _sunOff.set(_sunOff.x / h * L * Math.cos(t), L * Math.sin(t), _sunOff.z / h * L * Math.cos(t));
-      sun.position.copy(_sunOff); sun.target.position.set(0, 0, 0); sun.target.updateMatrixWorld();
-      skyBake(); }
-    const L2 = Math.hypot(_sunOff.x, _sunOff.y, _sunOff.z) || 1;
-    return { elev: +(Math.asin(_sunOff.y / L2) * 180 / Math.PI).toFixed(1),
+  sun: d => { if (d != null) sunSet(d);
+    return { elev: +sunElev().toFixed(1),
              topOfFrame: +((CAM.fov / 2) - CAM.el * 180 / Math.PI).toFixed(1) }; },
+  SHADOW,
   // THE AIR (m130). Two switches, because they are two costs: the dust is a second `Points` and
   // 220 motes, the shafts are additive overdraw near the lens. `mel.dust(0)` / `mel.shafts(0)`.
   DUST, SHAFT,
