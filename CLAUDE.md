@@ -1041,6 +1041,75 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **A SCREENSHOT CANNOT TELL A COLLIDER BOX FROM A HOLE IN THE ART, SO THE GAME DRAWS THEM NOW
+  (m128, `BOXV`, `stepBoxView`, the `COLLIDERS` key).** *"There's like these weird collider
+  geometry, visible geometry that I'm just like floating on -- I can't tell if it's the vehicle
+  or what's going on there. Do I need to edit that in Blender?"*
+  **THE CHIP IN THAT SHOT ALREADY SAID WHAT IT WAS: `LEDGE`, AND `0.0 m/s`.** He was not floating
+  ON anything, he was HANGING off it -- m102's ledge grab, which searches `BOXES` for the top edge
+  of anything over `LEDGE.tall`. That feature was built against TEN boxes on a white floor plus a
+  stack put there on purpose; Weirdport is **4,086 boxes** rasterised out of his collision meshes
+  by `solidColumns`, so every column-run top edge in the city is a candidate lip. And it is the
+  one world where the picture and the thing you walk into are two separate meshes by his own
+  design, so a lip can sit where nothing is drawn.
+  **BUT WHICH BOX IS NOT ANSWERABLE FROM A PHOTOGRAPH, BY EITHER OF US** -- and shipping a
+  `LEDGE.tall` nudge at a box nobody has seen is guessing dressed as a fix. Shredworld earned this
+  lesson after being asked three times (*"I need to see the collider"*) and wrote down the other
+  half of it: **a debug view that disagrees with the thing it draws is worse than none**, because
+  it is a second thing to be wrong. So every number here is read off the SAME fields the resolver
+  reads -- `b.minx..maxy` through `boxesNear`, the collider's own broad phase; `K.r`; `p.r`/`p.hh`
+  -- and nothing is restated.
+  **NOT DEPTH TESTED, AND THAT IS THE WHOLE POINT.** The question it exists to answer is *there is
+  a collider where there is no picture*, so a view the picture can hide is a view that cannot
+  answer it.
+  **A BODY IS TWO RINGS AND NOT A BOX**, because `pushBodies` tests `r + d.K.r` in PLAN with **no
+  height term at all** -- so what a body actually is to the collider is an infinite vertical
+  cylinder, and a wire box round a man would be drawing a rule the game has not got. His own
+  cylinder is drawn in its own colour beside them, so the two can be COMPARED rather than one of
+  them described.
+  **AND WHATEVER HAS HOLD OF HIM IS DRAWN LAST, IN ITS OWN COLOUR.** `ledgeFind` and `wallFind`
+  carry the box they picked (`best.b`, one field, read here and nowhere else) -- because
+  recovering it afterwards from the grip point would be a SECOND search that could disagree with
+  the first, which is the whole failure this view exists not to become.
+  **ONLY THE BOXES ROUND HIM (`BOXV.r` 20 m, `max` 700).** A buffer holding all 4,086 is a buffer
+  nobody can read anyway, and the question is always about the one he is standing on.
+  **ONE `LineSegments`, ALLOCATED ONCE, REBUILT ONLY WHILE IT IS ON** -- a fresh `BufferGeometry`
+  every frame is garbage on the one frame something is already happening, and `setDrawRange` over
+  a fixed buffer costs nothing. `frustumCulled = false`, because the buffer holds WORLD positions
+  and a bounding sphere computed from them would cull the whole view the moment he walked away.
+  **THE CONTROL IS A KEY, NOT A CONSOLE HANDLE.** There is no settings panel in this game and no
+  console on a phone, so `mel.boxes()` alone is a control he cannot find, which is a control that
+  does not exist. It sits under the world key in the top-left DIAGNOSTIC gutter -- out of the play
+  area, so it takes no thumb -- and it says which state it is in by being lit, so it is not a mode
+  you can be in without knowing it. **And the badge tap was NOT taken**: that one is m104's pad
+  toggle, and the stats line beside it is deliberately `pointer-events: none` so it cannot eat a
+  thumb.
+  **THE KEY IS REPAINTED WHEN THE STATE MOVES, NOT WHEN THE KEY IS PRESSED.** `BOXV` is on the
+  `mel` handle, so `mel.BOXV.on = 1` from a laptop is a second owner -- and a key reading `off`
+  over a screen full of wire boxes is exactly the disagreement this must not have. One tracked
+  value in `stepBoxView`, so it is a DOM write when something changes and nothing per frame.
+  **AND THE CHIP SAYS `· COLLIDERS`**, because "did the toggle take" must not be something he
+  infers from whether boxes appeared -- that is the very question the view is here to settle, and
+  a diagnostic you have to diagnose is not one.
+  **WHAT IS UNVERIFIED:** there is no GPU in this container, so whether the wires read at all is a
+  device question. Both gates pass in both worlds.
+- **THE CHIP HAS BEEN CRYING WOLF ABOUT A DELIBERATE GAP SINCE m54 (m128).** `NO CLIP ,` in his
+  screenshot -- a comma with nothing either side of it -- is `CLIPS.turnL` and `CLIPS.turnR`, which
+  are `''` ON PURPOSE: he has no turn clips and m54 wired the hook for the day he draws them.
+  **m88 put exactly this guard on the NPC table check and never on the player's own**, so the two
+  have disagreed for forty builds. It is the same one word (`n &&`), and what it buys is not
+  tidiness: a real missing clip was hiding behind a false one, and a missing clip leaves a bone at
+  zero total weight, which is the T-pose exactly.
+- **THE CHIP IS THE ONE HUD ELEMENT THAT GROWS, AND THE KEYS UNDER IT HAD A TYPED `top` (m128).**
+  In his m127 screenshot the WEIRDPORT key is sitting **ON TOP of the chip's second line**, over
+  the very numbers this file keeps telling him to read -- because `#worldKey`'s `top: 56px` was
+  right for a one-line chip and is wrong the moment `missing()` has anything to say. That is
+  Shredworld's `hudGutter` finding one gutter over: **a constant somebody has to remember to update
+  when a line is added is not a mechanism.** `--gut`/`--gut2` come off the chip's measured height.
+  **MEASURED ONLY WHEN THE TEXT CHANGES**, because `offsetHeight` forces a layout and this runs
+  inside the frame -- a few reads a second when something actually moved, never one per frame. A
+  zero rect (hidden, or mid-orientation-change) leaves the last good value rather than stacking
+  every key back on the chip.
 - **WEIRDPORT HAS PEOPLE IN IT, AND THE WHOLE BUILD IS THE SWEEP THAT MAKES A COORDINATE HONEST
   (m127, `WP.crowd`, `WPSPOT`, `wpStand`, `wpPool`, `wpSpread`, `wpLoop`, `wpPopulate`).** *"Let's
   populate the world with the other characters. Eventually they will have different jobs,
@@ -6282,7 +6351,9 @@ means anything you can carry from one situation to the next.
   could. See the landmine.
 - **AND THE BUILD NUMBER IS NOT THE ONLY TAP TARGET ANY MORE (m124).** The world key sits under
   it, in the same top-left gutter and out of the play area, and swaps between the test site and
-  Weirdport. It RELOADS, and it says which world it is in by having the name on it.
+  Weirdport. It RELOADS, and it says which world it is in by having the name on it. **The
+  `COLLIDERS` key is under that again (m128)** and draws the boxes; both stack off the chip's
+  MEASURED height, so a chip that grows a line pushes them down rather than being sat on.
 - **THE PADS CAN FLOAT (`STICK.dyn`, tap the build number).** Fixed they are 148 px; floating they
   are 132 and appear where the thumb lands. Everything downstream reads the pad's own rect, so a
   gesture means the same thing in both.
@@ -6322,6 +6393,12 @@ means anything you can carry from one situation to the next.
   threshold and a standoff rather than a placement -- so a box that is cover for zap is cover for
   a body a head taller, which is arguable and is stated rather than assumed. `MORPH.tall = 0`
   draws him at zap's height and is the A/B; changing the collider mid-game is m52's whole build.
+- **THE LEDGE GRAB IS A TEST-SITE FEATURE LOOSE IN A 4,086-BOX CITY (m128).** m102 built
+  `ledgeFind` against ten boxes on a white floor plus a stack put there on purpose; in Weirdport
+  every column-run top edge over `LEDGE.tall` is a candidate lip, including ones with nothing
+  drawn on them. He has already caught one in mid-street. **Nothing is changed about it yet, on
+  purpose** -- the collider view went in first so the next fix is aimed at a box somebody has
+  actually seen rather than at a threshold that looked about right.
 - **THE TEST SITE IS ONE OF TWO WORLDS NOW (m124).** Weirdport -- his Blender slice of downtown
   Portland -- is the other. **It has people in it as of m127** -- placed by a sweep of the real
   collider rather than typed -- and it still has **no grind rails on its ten metal nodes, no

@@ -168,13 +168,28 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
    out of the way, taking one tap, and saying which state it is in by having the name on it.
    `top` is the chip's 12 plus its own two lines. */
 #worldKey { position: fixed; z-index: 6;
-  top: calc(56px + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left));
+  top: calc(var(--gut, 56px) + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left));
   font-family: var(--ui); font-size: 11px; font-weight: 600; letter-spacing: .1em;
   color: #cfe8ff; background: #0b0d12cc; border: 1px solid #ffffff33;
   padding: 4px 9px 5px; border-radius: 3px; pointer-events: auto; cursor: pointer;
   -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
-#worldKey b { font-family: var(--disp); font-size: 12px; color: var(--sky); font-weight: 400; }
-#worldKey:active { background: #16202ecc; }
+#worldKey b, #dbgKey b { font-family: var(--disp); font-size: 12px; color: var(--sky); font-weight: 400; }
+#worldKey:active, #dbgKey:active { background: #16202ecc; }
+/* THE COLLIDER KEY (m128). *"I can't tell if it's the vehicle or what's going on there."* From
+   a screenshot a collider box and a hole in the art are the same picture, and there is no
+   settings panel in this game and no console on a phone -- so the view needs a control that
+   can be FOUND, which is Shredworld's own lesson after being asked for one three times.
+   It shares `#worldKey`'s rule entirely and adds only a position, because two independently
+   written chips in one gutter eventually disagree about where the gutter is. Same top-left
+   diagnostic corner as the build chip and the world key, so it takes no thumb from the play
+   area; `top` is the world key's 56 plus its own line. */
+#dbgKey { position: fixed; z-index: 6;
+  top: calc(var(--gut2, 88px) + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left));
+  font-family: var(--ui); font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  color: #cfe8ff; background: #0b0d12cc; border: 1px solid #ffffff33;
+  padding: 4px 9px 5px; border-radius: 3px; pointer-events: auto; cursor: pointer;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+#dbgKey.on { border-color: #39ff8899; color: #b6ffd8; }
 #wep { top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right));
   font-family: var(--disp); font-size: 15px; color: var(--sun); text-align: right; }
 #wep small { display: block; font-family: var(--ui); font-size: 11px; color: #cfe8ff; opacity: .7; letter-spacing: .08em; }
@@ -453,12 +468,13 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m127</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m128</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m127</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m128</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
+<div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -510,7 +526,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm127';
+const BUILD = 'm128';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -3623,6 +3639,8 @@ const bootMsg = document.getElementById('bootMsg');
 const bootBar = document.getElementById('bootBar');
 const bootCard = document.getElementById('boot');
 const buildI = document.getElementById('buildI');
+const buildEl = document.getElementById('build');
+let chipLast = '';
 document.getElementById('bootBuild').textContent = BUILD;
 
 // THE CARD SPEAKS WHEN A LOAD *STARTS*, not from the progress callback. `e.total` is the
@@ -4818,7 +4836,7 @@ function wallFind(px, py, pz, R) {
     const cx = clamp(px, b.minx, b.maxx), cz = clamp(pz, b.minz, b.maxz);
     const dx = px - cx, dz = pz - cz, d = Math.hypot(dx, dz);
     if (d < 1e-4 || d > R || d >= bd) continue;
-    bd = d; best = { nx: dx / d, nz: dz / d, d, cx, cz };
+    bd = d; best = { nx: dx / d, nz: dz / d, d, cx, cz, b };   // `b` for the collider view (m128)
   }
   return best;
 }
@@ -4853,7 +4871,11 @@ function ledgeFind(px, py, pz, R) {
     // body up, which is where the mantle would put his chest: a lip with a wall over it is a
     // lip he would climb into, and there is no graceful way out of that once he is committed.
     if (camHit(cx - nx * LEDGE.inset, b.maxy + LEDGE.clear * .5, cz - nz * LEDGE.inset, 0)) continue;
-    bd = d; best = { nx, nz, cx, cz, y: b.maxy };
+    // **AND IT CARRIES THE BOX IT PICKED (m128).** One field, read by the collider view and
+    // by nothing else: *"which box am I hanging on"* is the one question a screenshot cannot
+    // answer, and recovering it afterwards from the grip point would be a second search that
+    // could disagree with this one.
+    bd = d; best = { nx, nz, cx, cz, y: b.maxy, b };
   }
   return best;
 }
@@ -7799,6 +7821,25 @@ document.getElementById('buildN').addEventListener('pointerdown', e => {
   e.preventDefault(); e.stopPropagation();
   setDyn(!STICK.dyn);
 });
+
+// AND THE COLLIDER KEY DRAWS THE BOXES (m128). One tap, and it says which state it is in by
+// being lit -- so it is not a mode you can be in without knowing it, which is the argument that
+// killed every hidden gesture in this file. `setBoxes` is the ONE place that moves it, so the
+// key, the chip line and what is actually drawn cannot disagree about whether it is on.
+function setBoxes(on) {
+  BOXV.on = on ? 1 : 0;
+  const k = document.getElementById('dbgKey'), st = document.getElementById('dbgState');
+  if (k) k.classList.toggle('on', !!BOXV.on);
+  if (st) st.textContent = BOXV.on ? 'on' : 'off';
+  return BOXV.on;
+}
+{
+  const dk = document.getElementById('dbgKey');
+  if (dk) dk.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation();
+    setBoxes(!BOXV.on);
+  });
+}
 
 // AND THE WORLD KEY SWAPS THE WORLD (m124). It RELOADS, and that is not a shortcut: the test
 // site is built at module scope and Weirdport is ten megabytes of GLB, so the two cannot both
@@ -13149,6 +13190,136 @@ function stepCam(dt) {
 }
 
 // ============================================================================================
+// THE COLLIDER VIEW (m128, `BOXV`, `stepBoxView`)
+//
+// *"There's like these weird collider geometry, visible geometry that I'm just like floating on
+// -- I can't tell if it's the vehicle or what's going on there. Do I need to edit that in
+// Blender?"* **And the honest answer was that neither of us could tell**, which is what this is
+// for. The chip in that screenshot read `LEDGE`, so he was HANGING off a box -- and from a
+// photograph a collider box and a hole in the art are the same picture.
+//
+// Shredworld got one of these after he asked three times (*"I need to see the collider"*), and
+// the note it earned is that a debug view which disagrees with the thing it draws is worse than
+// none, because it is a second thing to be wrong. So every number here is read off the SAME
+// fields the resolver reads -- `b.minx..maxy`, `K.r`, `p.r`/`p.hh` -- and nothing is restated.
+//
+// **NOT DEPTH TESTED, AND THAT IS THE WHOLE POINT.** The question it exists to answer is *there
+// is a collider where there is no picture*, so a view the picture can hide is a view that
+// cannot answer it.
+// ============================================================================================
+const BOXV = {
+  on: 0,
+  r: 20,        // how far round him the static boxes are drawn. Weirdport has 4,086 and a
+                // buffer holding all of them is a buffer nobody can read -- the question is
+                // always about the one he is standing on or hanging from.
+  max: 700,     // and the ceiling, so a dense block cannot run off the end of the buffer
+  seg: 20,      // segments in a body ring
+  // Bright and saturated rather than eye-picked: three treats a vertex colour as LINEAR, so a
+  // hex chosen by eye comes out a stop and a half light -- and on a wire overlay that is not
+  // worth a conversion, it is worth picking values that read.
+  grid: [.18, 1, .48],    // a static solid
+  held: [1, .72, .12],    // whatever the ledge or the wall has hold of
+  body: [1, .26, .46],    // a body -- a CIRCLE, because a circle is what `pushBodies` tests
+  me:   [.30, .74, 1],    // and his own
+};
+let bvMesh = null, bvPos = null, bvCol = null, bvN = 0, bvCap = 0;
+const _bvL = [];
+
+function bvBuild() {
+  bvCap = BOXV.max * 24 + 120 * BOXV.seg * 2 + 256;
+  bvPos = new Float32Array(bvCap * 3);
+  bvCol = new Float32Array(bvCap * 3);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(bvPos, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(bvCol, 3));
+  bvMesh = new THREE.LineSegments(g, new THREE.LineBasicMaterial({
+    vertexColors: true, depthTest: false, depthWrite: false, transparent: true, opacity: .92 }));
+  // THE BUFFER HOLDS WORLD POSITIONS, so its origin means nothing and a bounding sphere
+  // computed from it would cull the whole view the moment he walked away from wherever it
+  // happened to be built.
+  bvMesh.frustumCulled = false;
+  bvMesh.renderOrder = 999;
+  scene.add(bvMesh);
+}
+
+function bvSeg(x0, y0, z0, x1, y1, z1, c) {
+  if (bvN + 2 > bvCap) return;
+  let i = bvN * 3;
+  bvPos[i] = x0; bvPos[i + 1] = y0; bvPos[i + 2] = z0;
+  bvCol[i] = c[0]; bvCol[i + 1] = c[1]; bvCol[i + 2] = c[2];
+  i += 3;
+  bvPos[i] = x1; bvPos[i + 1] = y1; bvPos[i + 2] = z1;
+  bvCol[i] = c[0]; bvCol[i + 1] = c[1]; bvCol[i + 2] = c[2];
+  bvN += 2;
+}
+
+// AXIS-ALIGNED, because that is what `BOXES` is (m24 keeps every placement on a quarter turn
+// for exactly this reason). A yawed wire box here would be drawing a rule the game has not got.
+function bvBox(b, c) {
+  const x0 = b.minx, x1 = b.maxx, y0 = b.miny, y1 = b.maxy, z0 = b.minz, z1 = b.maxz;
+  for (let k = 0; k < 2; k++) {
+    const y = k ? y1 : y0;
+    bvSeg(x0, y, z0, x1, y, z0, c); bvSeg(x1, y, z0, x1, y, z1, c);
+    bvSeg(x1, y, z1, x0, y, z1, c); bvSeg(x0, y, z1, x0, y, z0, c);
+  }
+  bvSeg(x0, y0, z0, x0, y1, z0, c); bvSeg(x1, y0, z0, x1, y1, z0, c);
+  bvSeg(x1, y0, z1, x1, y1, z1, c); bvSeg(x0, y0, z1, x0, y1, z1, c);
+}
+
+function bvRing(x, y, z, r, c) {
+  const n = BOXV.seg;
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2, a2 = (i + 1) / n * Math.PI * 2;
+    bvSeg(x + Math.sin(a) * r, y, z + Math.cos(a) * r,
+          x + Math.sin(a2) * r, y, z + Math.cos(a2) * r, c);
+  }
+}
+
+// REBUILT ONLY WHILE IT IS ON, and the geometry is allocated once -- a fresh BufferGeometry
+// every frame is garbage on the one frame something is already happening.
+let bvLit = -1;
+function stepBoxView() {
+  // **THE KEY IS REPAINTED WHEN THE STATE MOVES, NOT WHEN THE KEY IS PRESSED.** `BOXV` is on
+  // the `mel` handle, so `mel.BOXV.on = 1` from a laptop is a second owner -- and a key saying
+  // `off` over a screen full of wire boxes is exactly the disagreement this view must not have.
+  // One tracked value, so it is a DOM write when something changes and nothing per frame.
+  if (bvLit !== BOXV.on) { bvLit = BOXV.on; setBoxes(BOXV.on); }
+  if (!BOXV.on) { if (bvMesh) bvMesh.visible = false; return; }
+  if (!bvMesh) bvBuild();
+  bvMesh.visible = true;
+  bvN = 0;
+  const p = player, R = BOXV.r;
+  // THROUGH `boxesNear`, THE COLLIDER'S OWN BROAD PHASE, so the view cannot be looking at a
+  // different set of boxes than the resolver is.
+  let n = 0;
+  for (const b of boxesNear(p.pos.x - R, p.pos.x + R, p.pos.z - R, p.pos.z + R, _bvL)) {
+    if (n++ >= BOXV.max) break;
+    bvBox(b, BOXV.grid);
+  }
+  // WHATEVER HAS HOLD OF HIM, LAST so it wins the overlap. This is the line the whole view was
+  // built for: `LEDGE` in the chip and a man in mid-air is one box, and this is which.
+  const held = (p.ledge && p.ledge.b) || (p.wall && p.wall.b) || null;
+  if (held) bvBox(held, BOXV.held);
+  // A BODY IS A CIRCLE AND NOT A BOX. `pushBodies` tests `r + d.K.r` in PLAN with no height
+  // term at all, so what a body actually is to the collider is an infinite vertical cylinder --
+  // two rings say that honestly where a box would be a flattering lie.
+  for (const d of DUMMIES) {
+    const q = d.root.position;
+    if (Math.abs(q.x - p.pos.x) > R || Math.abs(q.z - p.pos.z) > R) continue;
+    bvRing(q.x, q.y + .02, q.z, d.K.r, BOXV.body);
+    bvRing(q.x, q.y + (d.K.h || 1.7), q.z, d.K.r, BOXV.body);
+  }
+  // AND HIS OWN, so the two can be COMPARED rather than one of them described. `hh` is the full
+  // height above his feet -- `resolveBoxes` tests `p.y + hh < b.miny` -- not a half extent.
+  bvRing(p.pos.x, p.pos.y + .02, p.pos.z, p.r, BOXV.me);
+  bvRing(p.pos.x, p.pos.y + p.hh, p.pos.z, p.r, BOXV.me);
+  const g = bvMesh.geometry;
+  g.attributes.position.needsUpdate = true;
+  g.attributes.color.needsUpdate = true;
+  g.setDrawRange(0, bvN);
+}
+
+// ============================================================================================
 // THE FRAME
 // ============================================================================================
 let last = performance.now(), fps = 0, fpsT = 0, frames = 0;
@@ -13196,6 +13367,10 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
+  // AFTER `stepDummies` and after the player, because it draws where they ACTUALLY are -- a
+  // wire a frame behind the body it is describing is the second-thing-to-be-wrong this view
+  // exists not to become.
+  stepBoxView();
   paintRetic();
   sun.position.set(player.pos.x + 7, player.pos.y + 14, player.pos.z + 6);
   sun.target.position.copy(player.pos);
@@ -13321,15 +13496,39 @@ function frame() {
     // "the mount was never made", "it was made and the gun is in the wrong place" and "the kit
     // is switched off" are three bugs and one picture from a phone, and only the host answers
     // the first. Silent when it has one, which is every rig in the repo.
+    // **AND THE CHIP SAYS THE VIEW IS ON (m128).** "did the toggle take" must not be something
+    // he infers from whether boxes appeared -- that is the very question the view is here to
+    // answer, and a diagnostic you have to diagnose is not one. Silent when it is off.
+    const cv = BOXV.on ? ' \u00b7 COLLIDERS' : '';
     const wn = p.mphK && (() => { const w = WEAP.worn[slotNow().key];
       return w && w.root && !rig.mounts[w.root] ? ' NOHAND' : ''; })();
     const mp = p.mphSt ? ' · DNA' + p.mphSt.toUpperCase() + p.mphT.toFixed(2)
              : p.mphK ? ' · DNA ' + mphName(p.mphK) +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
-    buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl + wp + mp +
+    const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + cl + vs + mo + fl + wp + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
+    // **THE KEYS SIT UNDER THE CHIP, AND THE CHIP IS THE ONE HUD ELEMENT THAT GROWS (m128).**
+    // Its `top` was typed at 56, which was right for a one-line chip and is wrong the moment
+    // `missing()` has anything to say -- and in his m127 screenshot the WEIRDPORT key is sitting
+    // ON TOP of the chip's second line, over the very numbers I keep asking him to read. That is
+    // Shredworld's `hudGutter` finding one gutter over: **a constant somebody has to remember to
+    // update when a line is added is not a mechanism.** The chip's real height decides it.
+    // **MEASURED ONLY WHEN THE TEXT CHANGES**, because `offsetHeight` forces a layout and this
+    // runs inside the frame -- a few reads a second when something actually moved, never one
+    // per frame. The `||` fallbacks mean a zero rect (hidden, or mid-orientation-change) leaves
+    // the last good value rather than stacking every key on the chip.
+    if (line !== chipLast) {
+      chipLast = line;
+      buildI.textContent = line;
+      const h = buildEl ? buildEl.offsetHeight : 0;
+      if (h > 0) {
+        const g = Math.round(12 + h + 6);
+        document.documentElement.style.setProperty('--gut', g + 'px');
+        document.documentElement.style.setProperty('--gut2', (g + 32) + 'px');
+      }
+    }
   }
 }
 
@@ -13488,7 +13687,12 @@ async function init() {
   for (const k in CLIPS) { const v = CLIPS[k]; Array.isArray(v) ? want.push(...v) : want.push(v); }
   for (const k of SPLIT.up) want.push(CLIPS[k] + UP);
   for (const k of SPLIT.legs) want.push(CLIPS[k] + LEGS);
-  const gone = want.filter(n => !rig.actions[n]);
+  // **AN EMPTY NAME IS A HOOK, NOT A MISSING CLIP (m128).** `CLIPS.turnL`/`turnR` are `''` on
+  // purpose -- he has no turn clips and m54 wired the hook for the day he draws them -- so the
+  // chip has read `NO CLIP ,` ever since, which is the chip crying wolf about a deliberate gap
+  // AND a real missing clip hiding behind a false one. m88 put this exact guard on the NPC
+  // table check and never on his own; it is the same one word.
+  const gone = want.filter(n => n && !rig.actions[n]);
   if (gone.length) note('NO CLIP ' + gone.join(','));
 
   // ---- the weapons. They are not on the critical path: a missing one costs that weapon and
@@ -13728,6 +13932,9 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // electrical or as a tune), `lp0`/`lp1` how far the filter opens, `g` the level.
   chg: o => { if (o) Object.assign(CHARGE, o); return { f0: CHARGE.f0, f1: CHARGE.f1, det: CHARGE.det, lp0: CHARGE.lp0, lp1: CHARGE.lp1, q: CHARGE.q, g: CHARGE.g }; },
   mute: v => { SFX.on = v == null ? (SFX.on ? 0 : 1) : (v ? 1 : 0); return SFX.on; },
+  // THE COLLIDER VIEW. The KEY is the control -- a phone has no console -- and this is the
+  // desktop half plus the dials: `mel.BOXV.r` is how far round him the boxes are drawn.
+  BOXV, boxes: v => setBoxes(v == null ? !BOXV.on : v),
   emis: v => { for (const m of Object.values(rig.mats || {})) m.emissiveIntensity = v; RIG.emissive = v; return v; },
 };
 
