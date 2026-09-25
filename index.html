@@ -493,14 +493,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m138</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m139</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m138</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m139</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="shafts">SHAFTS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">SHAFTS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -552,7 +552,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm138';
+const BUILD = 'm139';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -3734,6 +3734,19 @@ const SFX = {
   //     from the onset   rms .001 to .034      from the 90% point   rms .125 to .296
   // -- between **5x and 242x** more energy arriving at once, without touching a single sample.
   punch: .90,
+  // **AND HOW MUCH OF A FILE THE ONSET GATE MAY THROW AWAY IS CAPPED (m139, `SFX.skipMax`).**
+  // *"There's this metallic tap dance noise... it's like every other one, like maybe it's one
+  // of the samples."* It is one of the samples and it is one of the LEFT ones, which is what
+  // "every other" names. `SFX.hit` .25 is an ONSET gate fitted at m59 for IMPACTS, where the
+  // quiet climb in front of the peak is a delay bolted onto a hit. On a recording whose peak is
+  // a sharp transient the reverse is true: a quarter of that peak sits WELL into the file, and
+  // the soft scuff in front of it -- which is the sound of a foot -- is thrown away. Measured
+  // at m138, `footstep_2_l` opened at **0.144 s of 0.312**, so the game played 168 ms of hot
+  // back half where the other three play 230-262 ms with their bodies intact: loudest AND
+  // shortest, which is a TAP by construction. The cap is a fraction of the file's own length,
+  // so it names nothing and is self-disarming -- it catches that one (46%) and is a no-op on
+  // every other file in the game (9-13%).
+  skipMax: .20,
   // **A BANK IS ONLY AS EVEN AS ITS LOUDEST FILE, AND NOTHING IN `snd` EVENED IT (m138).**
   // *"There's like a tap too... I don't know why one of them sounds like this weird tap. The
   // second footsteps is soft and sounds right, but there's just annoying tap thing."*
@@ -4291,6 +4304,8 @@ function sfxEdge(b) {
   const gate = peak * SFX.hit;
   let a = 0;
   for (let i = 0; i < n; i++) if (Math.abs(d[i]) > gate) { a = i; break; }
+  // the cap -- see `SFX.skipMax`. A recording that opens on its own event is untouched.
+  if (SFX.skipMax > 0) a = Math.min(a, Math.floor(n * SFX.skipMax));
   let z = n - 1;
   const tail = peak * .012;
   for (let i = n - 1; i > a; i--) if (Math.abs(d[i]) > tail) { z = i; break; }
@@ -4729,8 +4744,36 @@ const SKY = {
   envInt: .35,       // and how much. **THIS IS THE ONE THAT COSTS FRAMES** -- see below.
   fog: 1,            // the fog takes the horizon colour, so the far distance is ONE colour
   w: 512, h: 256,    // the equirect. 1 MB, and the sun is about six texels across at this width
+  // **HIS OWN SKY, AND WHAT IT COSTS SAID OUT LOUD (m139, `SKY.src`).** *"I do wanna see that
+  // sky in there. The gray sky is just not very appealing."* `images/hdri_game.png` is
+  // **1774 x 887, 8-bit RGB, 2.3 MB on the wire and about 8.4 MB resident** as RGBA with mips
+  // -- against the generated gradient's 512 x 256 half-float, which is 1 MB and **zero asset
+  // bytes**. Against a 22 MB trim sheet neither of those is the thing that costs frames, so
+  // the real price is not memory:
+  //   1. **AN 8-BIT SKY HAS NO SUN IN ITS IBL.** The generated one puts the disc at `sunK` 7 --
+  //      seven times brighter than white -- and the prefilter integrates that, which is what
+  //      makes `scene.environment` a DIRECTION to bounce from. A PNG clamps at 1.0, so its
+  //      brightest texel measures **0.999** and the IBL becomes a flat coloured dome. The
+  //      directional `sun` light is separate and does all the shaping, and `envInt` is only .35
+  //      of bounce, so what is actually lost is small -- but it is lost and cannot be recovered
+  //      from this side. A real .hdr or .exr is what fixes it.
+  //   2. **THE EXPOSURE BELONGS TO THE IMAGE AND HAS TO BE MEASURED**, which is Shredworld's
+  //      `npm run sky` rule. Decoded and integrated over the only band this camera can see --
+  //      the horizon to 16.4 deg -- his sky reads **mean linear 0.336**, warm pink at the
+  //      horizon (.53 .27 .43) going deep blue overhead (.21 .19 .60): a dusk sky. The
+  //      generated one reads **0.46** across that same band, so `imgK` 1.35 lands it exactly
+  //      where the fog, the palette and every other number were tuned. **Re-measure on every
+  //      re-upload** -- he repaints under the same filename and the exposure moves with it.
+  //   3. **`colorSpace` GOES ON BEFORE THE PREFILTER, NEVER AFTER.** `TextureLoader` hands one
+  //      back tagged linear and `PMREMGenerator` reads the texture as it finds it, so every
+  //      sRGB value would go into the environment map undecoded -- invisible on a dark sky and
+  //      a white reflection on everything under a bright one.
+  src: 'img',        // 'img' is his file, 'gen' is the gradient. The HDRI key swaps them live.
+  img: 'images/hdri_game.png',
+  imgK: 1.35,        // measured, see above -- what it takes to match the gradient's own band
+  imgBand: .06,      // the fraction of the image either side of the centre row the fog samples
 };
-let skyTex = null, skyRT = null;
+let skyTex = null, skyRT = null, skyImg = null, skyImgFog = null;
 
 // LINEAR, because everything downstream of here is. An eye-picked hex is sRGB and three's own
 // `Color.setHex` decodes it for exactly this reason -- doing it by hand would be the Portland
@@ -4739,12 +4782,86 @@ let skyTex = null, skyRT = null;
 const _skC = new THREE.Color();
 function skyLin(hex) { _skC.setHex(hex, THREE.SRGBColorSpace); return [_skC.r, _skC.g, _skC.b]; }
 
+// **ONE PLACE PUTS A SKY IN, WHICHEVER OF THE TWO MADE IT.** The backdrop, the prefilter, the
+// exposure and the fog are four things that must describe ONE sky, and two branches each doing
+// all four is four chances for them to describe two.
+function skyApply(tex, k, fogLin) {
+  scene.background = tex;
+  scene.backgroundIntensity = k;
+  // **AND THE OLD RENDER TARGET IS DISPOSED, because `mel.sky()` re-bakes.** A PMREM target is
+  // a cubemap with a full mip chain; leaking one per tweak is how a live dial turns into a
+  // memory bug that only shows after twenty presses.
+  if (skyRT) { skyRT.dispose(); skyRT = null; }
+  if (SKY.env) {
+    try {
+      const pm = new THREE.PMREMGenerator(renderer);
+      skyRT = pm.fromEquirectangular(tex);
+      scene.environment = skyRT.texture;
+      pm.dispose();
+    } catch (e) { console.warn('[melee] sky prefilter failed', e); scene.environment = null; note('NO SKY IBL'); }
+  } else scene.environment = null;
+  // the exposure has to reach the BOUNCE as well, or the picture and the light it casts are
+  // two different skies -- which is the whole reason this function exists.
+  scene.environmentIntensity = SKY.envInt * k;
+  // ONE COLOUR IN THE DISTANCE. A blue sky behind pale fog is two horizons, and the eye reads
+  // the seam long before it reads either.
+  if (SKY.fog && scene.fog && fogLin) scene.fog.color.setRGB(fogLin[0], fogLin[1], fogLin[2], THREE.LinearSRGBColorSpace);
+}
+// **THE FOG'S COLOUR IS SAMPLED OFF THE PICTURE, NOT TYPED BESIDE IT.** With a gradient the
+// horizon IS `SKY.hor` by construction; with a photograph it is a measurement, and a typed one
+// would stop being true the first time he repaints. The mean of the band either side of the
+// centre row is what the far distance actually is.
+// **AVERAGED IN LINEAR, NEVER IN BYTES.** An sRGB mean of a band that runs from bright sky to
+// dark land is the Portland vertex-colour lesson one buffer over: it lands a stop light and
+// takes the saturation with it.
+function skyBandLin(img) {
+  try {
+    const W = 128, H = 64;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d', { willReadFrequently: true });
+    if (!g) return null;
+    g.drawImage(img, 0, 0, W, H);
+    const d = g.getImageData(0, 0, W, H).data;
+    const y0 = Math.max(0, Math.round(H * (.5 - SKY.imgBand))),
+          y1 = Math.min(H, Math.round(H * (.5 + SKY.imgBand)));
+    const lin = v => { v /= 255; return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
+    let r = 0, gg = 0, b = 0, n = 0;
+    for (let y = y0; y < y1; y++) for (let x = 0; x < W; x++) {
+      const o = (y * W + x) * 4; r += lin(d[o]); gg += lin(d[o + 1]); b += lin(d[o + 2]); n++;
+    }
+    if (!n) return null;
+    return [r / n, gg / n, b / n];
+  } catch (e) { return null; }
+}
+// **AND HIS SKY ARRIVES OVER THE TOP OF THE GRADIENT, NEVER IN FRONT OF IT.** 2.3 MB is not
+// something to hold the first frame on, and a session where the fetch fails has to still have
+// a sky -- so `skyBake` puts the generated one up immediately and this re-bakes when the file
+// lands. The splash's own rule, one asset along.
+function skyLoad() {
+  if (SKY.src !== 'img' || !SKY.img || skyImg) return;
+  new THREE.TextureLoader().load(A(SKY.img), t => {
+    t.colorSpace = THREE.SRGBColorSpace;          // BEFORE the prefilter -- see `SKY.src`
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping;
+    t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter;
+    t.generateMipmaps = true; t.needsUpdate = true;
+    skyImg = t;
+    skyImgFog = skyBandLin(t.image);
+    console.log('[melee] sky image ' + (t.image.width | 0) + 'x' + (t.image.height | 0) +
+      ' x' + SKY.imgK + (skyImgFog ? ' | fog ' + skyImgFog.map(v => v.toFixed(3)).join(' ') : ''));
+    skyBake();
+  }, undefined, () => { console.warn('[melee] sky image did not arrive'); note('NO SKY IMG'); });
+}
 function skyBake() {
   if (!SKY.on) {
     scene.background = new THREE.Color(SKY.hor);
+    scene.backgroundIntensity = 1;
     if (SKY.env) { scene.environment = null; }
     return 0;
   }
+  // HIS FILE IF IT IS HERE, and the gradient underneath it until it is -- so a slow fetch, a
+  // failed one and `src: 'gen'` all come out as a sky rather than as a hole.
+  if (SKY.src === 'img' && skyImg) { skyApply(skyImg, SKY.imgK, skyImgFog || skyLin(SKY.hor)); return 1; }
   const W = SKY.w | 0, H = SKY.h | 0;
   const hor = skyLin(SKY.hor), zen = skyLin(SKY.zen), gnd = skyLin(SKY.gnd), sc = skyLin(SKY.sunCol);
   // THE SUN'S OWN DIRECTION, normalised off the light's offset rather than typed a second time.
@@ -4806,23 +4923,7 @@ function skyBake() {
   skyTex.wrapS = THREE.RepeatWrapping;   // longitude wraps; latitude must NOT, or the poles bleed
   skyTex.wrapT = THREE.ClampToEdgeWrapping;
   skyTex.needsUpdate = true;
-  scene.background = skyTex;
-  // **AND THE OLD RENDER TARGET IS DISPOSED, because `mel.sky()` re-bakes.** A PMREM target is
-  // a cubemap with a full mip chain; leaking one per tweak is how a live dial turns into a
-  // memory bug that only shows after twenty presses.
-  if (skyRT) { skyRT.dispose(); skyRT = null; }
-  if (SKY.env) {
-    try {
-      const pm = new THREE.PMREMGenerator(renderer);
-      skyRT = pm.fromEquirectangular(skyTex);
-      scene.environment = skyRT.texture;
-      pm.dispose();
-    } catch (e) { console.warn('[melee] sky prefilter failed', e); scene.environment = null; note('NO SKY IBL'); }
-  } else scene.environment = null;
-  scene.environmentIntensity = SKY.envInt;
-  // ONE COLOUR IN THE DISTANCE. A blue sky behind pale fog is two horizons, and the eye reads
-  // the seam long before it reads either.
-  if (SKY.fog && scene.fog) scene.fog.color.setHex(SKY.hor);
+  skyApply(skyTex, 1, skyLin(SKY.hor));
   // WHAT IT ACTUALLY BAKED. **`sun dot` IS THE FLIP CHECK AND THE LUMINANCES ARE NOT** -- the
   // brightest texel is the disc, so its direction against the light's own has to be 1.00, and a
   // `v` upside down would put it at roughly the negative of that. The two row luminances are
@@ -4840,6 +4941,8 @@ function skyBake() {
 // ONCE, HERE, so the backdrop exists before anything is loaded -- and the prefilter is a
 // one-off of a few milliseconds on a 512 x 256 source rather than anything per frame.
 skyBake();
+// and his own, on the wire at once rather than three awaits into the boot.
+skyLoad();
 
 // ---- the world: a white floor and some boxes to run at, jump on and hide the camera behind ----
 // BOXES ARE AABBs and they are the whole collider. Their tops are floors, which is how you
@@ -8280,6 +8383,11 @@ function fxOn(k) {
        : k === 'ibl'    ? (SKY.env ? 1 : 0)
        : k === 'dust'   ? (DUST.on ? 1 : 0)
        : k === 'sun'    ? 1
+       // **AND THE HDRI KEY READS WHETHER HIS SKY IS ACTUALLY UP, NOT WHETHER IT WAS ASKED
+       // FOR.** `src` is the request and `skyImg` is the file; unlit while it is still on the
+       // wire, and unlit for ever if it never arrives -- so *"is that his sky"* is answered by
+       // the key rather than by comparing it to a memory of the gradient.
+       : k === 'sky'    ? (SKY.src === 'img' && skyImg ? 1 : 0)
        :                  (WP.tintLin ? 1 : 0);
 }
 function fxSet(k, on) {
@@ -8288,7 +8396,8 @@ function fxSet(k, on) {
   // three then recompiles every material in the city, so expect a hitch ON THE PRESS -- that
   // is the toggle, not the feature, and it is worth saying out loud because a hitch at the
   // moment you are counting frames reads as the thing you just switched off costing more.
-  if (k === 'shafts') { SHAFT.on = on; shaftDrop(); }
+  if (k === 'sky') { SKY.src = on ? 'img' : 'gen'; if (on) skyLoad(); skyBake(); }
+  else if (k === 'shafts') { SHAFT.on = on; shaftDrop(); }
   else if (k === 'ibl') { SKY.env = on; skyBake(); }
   else if (k === 'dust') { DUST.on = on; dustDrop(); }
   else { WP.tintLin = on; WPTINT.value = on; }
@@ -8301,7 +8410,7 @@ function fxSet(k, on) {
 let fxLit = -1;
 function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
-          | (SUNC.i << 4);
+          | (fxOn('sky') << 4) | (SUNC.i << 5);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -13910,13 +14019,23 @@ const DUST = {
   // and .020 m at 13 m is **1.2 CSS px** -- under the threshold of being an effect (m99).
   // A warm mid-tone is darker than the sky AND lighter than tarmac, which is the one value
   // that reads in both halves of this world.
-  size: [.045, .13],     // metres -- `aSize` is world units, see `puffFlush`
-  col: 0xa89572,
+  // **AND m137's WARM MID-TONE WAS MY CALL AND HE HAS TURNED IT DOWN (m139).** *"The little
+  // floating dust look like little football balls. I thought they would be white. They're
+  // like dark, just kind of odd."* Both halves are mine: the colour is m137's headroom
+  // argument (a mote DARKER than a bright sky is the one value that reads against both halves
+  // of this world) and the size is m138's answer to their being invisible. The argument is
+  // still sound and it is not what he wants to look at -- **which settles it, because what a
+  // speck should look like is a taste question and those are his.** Near-white with a little
+  // warmth in it, and fine: at 13 m, .026 m is about 3 CSS px and .062 is 7 -- specks rather
+  // than balls, and still well over m99's threshold of being visible at all.
+  size: [.026, .062],    // metres -- `aSize` is world units, see `puffFlush`
+  col: 0xe9e2d4,
   drift: [.10, .40],     // m/s sideways
   rise: [-.08, .20],     // and vertically, so they do not all fall or all climb
   glim: [.5, 2.2],       // the glimmer, in cycles a second
   deep: .55,             // how much of the alpha the glimmer actually swings
-  alpha: [.25, .70],
+  // and a pale mote needs LESS of itself present than a dark one, or a field of them is a haze
+  alpha: [.16, .50],
   // **AND A MOTE BETWEEN YOU AND THE SUN CATCHES IT.** That back-lit term is what separates a
   // speck from noise in Kasumigawa -- its petals carry `pow(max(dot(V, sun), 0), 4)` -- and it
   // is the whole difference between dust that is there and dust you look at.
@@ -13926,7 +14045,9 @@ const DUST = {
   // **AND IT IS COMPUTED PER MOTE ON THE CPU, NOT IN THE SHADER**, because `puffPool` is shared
   // with the smoke and a back-lit term on a cigarette plume is wrong. 520 dot products a frame
   // against a second material and a second draw call.
-  back: 2.2,             // how much alpha a mote dead in front of the sun gains
+  back: 1.6,             // how much alpha a mote dead in front of the sun gains. Lower than
+                         // m138's 2.2 because a NEAR-WHITE mote taken to alpha 1 is a glare
+                         // rather than a catch -- the same headroom, one colour brighter.
   backPow: 5,            // and how tightly it keys on it. Higher = only very near the sun.
   add: 0,                // 0 alpha-blends, 1 is additive. `mel.dust({add:1})` -- see below.
                          // **AND m130's NOTE HAD THAT POLARITY BACKWARDS**: additive against a
@@ -14007,7 +14128,29 @@ const SHAFT = {
   w: [1.1, 4.8],     // and how wide
   spread: 11,        // how far off that axis they are scattered
   col: 0xffe9c0,
-  gain: .26,         // the ceiling, when you are looking straight at the sun
+  // **THE WHITE THING IN THE BACKGROUND IS THESE (m139).** *"I don't know what this white thing
+  // we introduced is."* Nine additive cards, and every one of the three things that made them
+  // a shape rather than rays only became true at m138:
+  //   1. **`gain` HAD NEVER ONCE BEEN SEEN.** m130 typed .26 against a 57 deg sun, where
+  //      `pow(camFwd . sunDir, 3.2)` could reach at best .35 and the material drew at **opacity
+  //      0.009** -- m135's own measurement. m133 brought the sun to 12 deg and m138 finally let
+  //      the light agree with it, so the first build in which this number meant anything is the
+  //      build he is looking at. At .19, nine cards deep, the seam adds ~.4 linear on a sky
+  //      already near .65 and it clips.
+  //   2. **THE SET WAS CENTRED ON HIM AND EACH CARD IS 64 m LONG.** At a high sun that is right
+  //      -- the cards stand UP and you look through them. At 12 deg they lie DOWN, so a card
+  //      reaches ~32 m *behind* him, which is past a lens only `CAM.dist` back: a card through
+  //      the near plane is a full-screen wash, and nine of them converging on the sun's
+  //      vanishing point is a bright wedge rising off the horizon. `ahead` pushes the whole set
+  //      along the sun axis so the nearest card end clears the camera, which is also what makes
+  //      them read as light in the middle distance rather than as an object in your face.
+  //   3. **AND `toneMapped: false` MEANT THEY COULD NOT SHARE THE SKY'S HEADROOM.** Everything
+  //      else in the frame rolls off through `NeutralToneMapping` and this alone went straight
+  //      to the framebuffer, so it clipped where the sky it sits on top of does not. That is
+  //      the DUST's own m137 correction -- additive against a bright sky has nowhere to go --
+  //      one effect over.
+  ahead: 46,         // pushed along the sun axis, so the near end of every card clears the lens
+  gain: .12,         // the ceiling, when you are looking straight at the sun
   pow: 3.2,          // how tightly it keys on that. Higher = only near the sun.
 };
 let shaftMesh = null;
@@ -14061,7 +14204,7 @@ function shaftBuild() {
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   shaftMesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({
     vertexColors: true, blending: THREE.AdditiveBlending, transparent: true,
-    depthWrite: false, side: THREE.DoubleSide, toneMapped: false, opacity: 0 }));
+    depthWrite: false, side: THREE.DoubleSide, toneMapped: true, opacity: 0 }));
   // THE BUFFER IS LOCAL but the group is written every frame, so its bounds move with it --
   // culling it is fine and is left ON, unlike the world-space pools.
   shaftMesh.renderOrder = 2;
@@ -14086,7 +14229,8 @@ function stepShafts() {
   // AND THE CARDS ROLL ABOUT THE SUN AXIS TO FACE THE LENS. A shaft is a cylinder of light, so
   // the card standing in for it has to keep its long axis on the sun and turn about THAT --
   // a full billboard would swing it off the sun and stop it being a shaft at all.
-  shaftMesh.position.copy(player.pos);
+  // AHEAD OF HIM ALONG THE SUN, never centred on him -- see `SHAFT.ahead`.
+  shaftMesh.position.copy(player.pos).addScaledVector(_shY, SHAFT.ahead);
   _shZ.copy(camera.position).sub(shaftMesh.position);
   _shZ.addScaledVector(_shY, -_shZ.dot(_shY));      // the part of it across the sun axis
   // DEGENERATE WHEN YOU LOOK STRAIGHT DOWN THE SUN, which is exactly when this is brightest --
@@ -14745,10 +14889,16 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // THE SKY. Every field is live and `mel.sky({...})` re-bakes -- so the gradient, the sun and
   // how much bounce it throws are look-at-it decisions taken on the phone rather than in a
   // commit, which is what a generated sky buys over a file.
-  SKY, sky: o => { if (o) Object.assign(SKY, o); skyBake();
-    return { hor: '#' + SKY.hor.toString(16), zen: '#' + SKY.zen.toString(16),
+  SKY, sky: o => { if (o) Object.assign(SKY, o); skyLoad(); skyBake();
+    return { src: SKY.src, img: SKY.src === 'img' ? (skyImg ? 'up x' + SKY.imgK : 'waiting') : '-',
+             hor: '#' + SKY.hor.toString(16), zen: '#' + SKY.zen.toString(16),
              gnd: '#' + SKY.gnd.toString(16), bend: SKY.bend, sunK: SKY.sunK,
              env: SKY.env, envInt: SKY.envInt }; },
+  // AND WHICH OF THE TWO SKIES IS UP. `mel.hdri(0)` is the gradient, `mel.hdri(1)` his file --
+  // the same thing the HDRI key does, for a laptop.
+  hdri: v => { SKY.src = (v == null ? (SKY.src === 'img' ? 0 : 1) : (v ? 1 : 0)) ? 'img' : 'gen';
+    if (SKY.src === 'img') skyLoad();
+    skyBake(); return SKY.src + (SKY.src === 'img' && !skyImg ? ' (waiting)' : ''); },
   // AND THE ONE THAT COSTS FRAMES, ON ITS OWN SWITCH. `env` 0 keeps the backdrop and drops the
   // image-based lighting, which is an env lookup per fragment on every PBR surface in the city.
   ibl: v => { SKY.env = v == null ? (SKY.env ? 0 : 1) : (v ? 1 : 0); skyBake(); return SKY.env; },

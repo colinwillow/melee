@@ -1144,6 +1144,103 @@ same picture from a phone.
   impact and would throw away a scuff on a recording that has one). `mel.STEP` is live --
   `r0`/`r1`, `g0`/`g1` and `jit` are the dials, and `mel.STEP.on = 0` is still the one word off.
 
+- **THE WHITE THING IN THE BACKGROUND IS THE SUN SHAFTS, AND ALL THREE REASONS ONLY BECAME TRUE
+  AT m138 (m139, `SHAFT.ahead`).** *"I don't know what this white thing we introduced is in the
+  background."* Nine additive cards, and every one of the faults is a number nobody had ever been
+  in a position to look at:
+  1. **`gain` HAD NEVER ONCE DRAWN AT A VISIBLE OPACITY.** m130 typed .26 against a 57 deg sun,
+     where `pow(camFwd . sunDir, 3.2)` tops out at .35 and the material therefore drew at
+     **opacity 0.009** -- m135's own measurement, written down and not acted on. m133 brought the
+     sun into the visible band and **m138 is the first build where the LIGHT agreed with it**, so
+     the first frame in which .26 meant anything is the one in his screenshot. At the 12 deg
+     sun's best case (.191), nine cards deep, the seam adds about **.4 linear on a sky already
+     near .65** and it clips to white.
+  2. **THE SET WAS CENTRED ON HIM AND EACH CARD IS 64 m LONG.** At a high sun that is right --
+     the cards stand UP and you look through them. At 12 deg they LIE DOWN, so a card reaches
+     ~32 m *behind* him past a lens only `CAM.dist` back: **a card through the near plane is a
+     full-screen wash**, and nine of them converging on the sun's vanishing point is a bright
+     wedge rising off the horizon, which is the shape in the shot. `ahead` 46 pushes the whole
+     set along the sun axis (nearest card end at +3 m with `oy`'s own +/-12.8 spent), which is
+     also what makes them read as light in the middle distance rather than as an object.
+  3. **AND `toneMapped: false` MEANT THEY COULD NOT SHARE THE SKY'S HEADROOM.** Everything else
+     rolls off through `NeutralToneMapping`; this alone went straight to the framebuffer, so it
+     clipped exactly where the sky it sits on cannot. **That is the DUST's own m137 correction
+     one effect over** -- additive against a bright sky has nowhere to go -- and it had been
+     sitting in the shaft material since m130 unnoticed because the shafts were never visible.
+  `gain` .12 with tone mapping on. **The SHAFTS key is the A/B** and it is what settles this in
+  one tap, which is the whole reason m135 exists.
+- **AND m137's DARK MOTE WAS MY CALL AND HE HAS TURNED IT DOWN (m139).** *"The little floating
+  dust look like little football balls. I thought they would be white. They're like dark, just
+  kind of odd."* Both halves are mine: the colour is m137's headroom argument (a mote DARKER than
+  a bright sky is the one value that reads against both halves of this world) and the size is
+  m138's answer to their being invisible at 1.2 px. **The argument is still sound and it is not
+  what he wants to look at, which settles it** -- what a speck should look like is a taste
+  question and those are his, which is this file's oldest standing rule about the settings panel.
+  0xe9e2d4, size [.026, .062] (about 3 to 7 CSS px at 13 m -- specks, and still well over m99's
+  threshold), alpha [.16, .50], `back` 2.2 -> 1.6 because a NEAR-WHITE mote taken to alpha 1 is a
+  glare rather than a catch.
+- **HIS OWN SKY IS IN, AND WHAT IT COSTS IS SAID RATHER THAN HIDDEN (m139, `SKY.src`).** *"Cost
+  out the HDRI swap... I do wanna see that sky in there, the gray sky is just not very
+  appealing."* `images/hdri_game.png` is **1774 x 887, 8-bit RGB, 2.3 MB on the wire and about
+  8.4 MB resident** as RGBA with mips, against the generated gradient's 512 x 256 half-float:
+  1 MB and **zero asset bytes**. Beside a 22 MB trim sheet neither is what costs frames, so the
+  price is not memory:
+  1. **AN 8-BIT SKY HAS NO SUN IN ITS IBL.** `sunK` puts the generated disc at **7x white** and
+     the prefilter integrates that, which is what makes `scene.environment` a DIRECTION to bounce
+     from. A PNG clamps at 1.0 -- **his brightest texel measures 0.999** -- so the IBL becomes a
+     flat coloured dome. The directional `sun` does all the shaping and `envInt` is only .35 of
+     bounce, so what is lost is small; it is lost all the same and **cannot be recovered from
+     this side.** A real .hdr or .exr is the fix, and it is his to export.
+  2. **THE EXPOSURE BELONGS TO THE IMAGE AND WAS MEASURED, NOT GUESSED** -- Shredworld's
+     `npm run sky` rule, and this repo has no equivalent tool, so the PNG was decoded here
+     (zlib + an un-filter pass) and integrated over the only band this camera can see. His sky
+     reads **mean linear 0.336** across the horizon-to-16.4-deg band, warm pink at the horizon
+     (.53 .27 .43) going deep blue overhead (.21 .19 .60) -- a dusk sky. The generated one reads
+     **0.46** across that same band, so **`imgK` 1.35** lands it exactly where the fog, the
+     palette and every other number were tuned. **Re-measure on every re-upload**: he repaints
+     under the same filename and the exposure moves with it.
+  3. **`colorSpace` GOES ON BEFORE `fromEquirectangular`, NEVER AFTER.** `TextureLoader` hands
+     one back tagged linear and the prefilter reads the texture as it finds it, so every sRGB
+     value would go in undecoded -- invisible on a dark sky and a white reflection on everything
+     under a bright one. Shredworld's own landmine, first time it has been reachable here.
+  **THE FOG'S COLOUR IS SAMPLED OFF THE PICTURE, NOT TYPED BESIDE IT.** `SKY.fog`'s whole
+  argument is that a sky and the haze in front of it are ONE colour; with a gradient that is
+  `SKY.hor` by construction and with a photograph it is a measurement -- **and it is averaged in
+  LINEAR**, because an sRGB mean of a band running from bright sky to dark land lands a stop
+  light and takes the saturation with it (the Portland vertex-colour lesson, one buffer over).
+  **AND THE GRADIENT GOES UP FIRST, EVERY TIME.** 2.3 MB is not something to hold the first frame
+  on and a session whose fetch fails still has to have a sky, so `skyBake` puts the generated one
+  up at module scope and `skyLoad` re-bakes when the file lands -- the splash's own rule.
+  **`skyApply` IS ONE PLACE, because the backdrop, the prefilter, the exposure and the fog are
+  four things that must describe ONE sky** and two branches each doing all four is four chances
+  for them to describe two. The exposure reaches `environmentIntensity` as well for exactly that
+  reason: a picture and the light it casts must not be two different skies.
+  **AND THE HDRI KEY READS WHETHER HIS SKY IS UP, NOT WHETHER IT WAS ASKED FOR** -- `src` is the
+  request and `skyImg` is the file, so it is unlit while the fetch is out and unlit for ever if
+  it never arrives, plus `NO SKY IMG` in the chip. *"Is that his sky"* stops being a comparison
+  against a memory of the gradient. `mel.hdri(0)` is the same switch for a laptop.
+- **THE METALLIC TAP IS ONE FILE, AND IT IS IN THE PAIR HE PREFERS (m139, `SFX.skipMax`).**
+  *"There's this metallic tap dance noise... it's like every other one, like maybe it's one of
+  the samples."* It is one of the samples and it is a LEFT one, which is what "every other"
+  names. m138 evened the bank's gains and brought `footstep_2_l` down only **x0.718 (-2.9 dB)**,
+  which was the loudness half; the other half is LENGTH and no gain can reach it.
+  **`SFX.hit` .25 IS AN ONSET GATE FITTED AT m59 FOR IMPACTS**, where the quiet climb in front of
+  the peak is a delay bolted onto a hit. On a recording whose peak is a sharp transient the
+  reverse is true: a quarter of that peak sits WELL into the file, and the soft scuff in front of
+  it -- which is the sound of a foot -- is thrown away. Measured at m138:
+      footstep_2_l   opens at **0.144 s of 0.312** -- 46% discarded, 168 ms played
+      the other three                                9-13% discarded, 230-262 ms played
+  Loudest AND shortest is a TAP by construction. The cap is a fraction of the file's own length,
+  so it **names nothing and is self-disarming**: it catches that one and is a no-op on every
+  other file in the game. `SFX.skipMax` 0 is m138 exactly.
+  **AND DROPPING THE FIRST PAIR WOULD NOT HAVE HELPED**, which is worth saying because he offered
+  to: *"Do you wanna try the second ones that I did I uploaded instead."* **The outlier is in the
+  second pair.** The first pair measures clean.
+  **`npm run sfx` HAD TO BE TAUGHT THE NEW CONSTANT.** It lifts `sfxEdge` between the `EDGE:`
+  markers and parses `SFX.hit`/`pre`/`punch` out of `index.html`; a key it does not know about
+  arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
+  **This repo's oldest mistake, and the markers exist to prevent exactly it.**
+
 - **THE SUN HAD TWO WRITERS AND THE OLDER ONE WON EVERY FRAME FOR FOURTEEN BUILDS (m138,
   `stepSun`).** Twenty-two lines below the call to `stepSun`, at the bottom of `frame()` and two
   statements above `renderer.render`, sat the ORIGINAL follow:

@@ -23,10 +23,14 @@ if (!src.startsWith('function sfxEdge')) { console.error('EDGE markers not found
 const hit = +(/^\s*hit:\s*([\d.]+)/m.exec(html) || [])[1];
 const pre = +(/^\s*pre:\s*([\d.]+)/m.exec(html) || [])[1];
 const punch = +(/^\s*punch:\s*([\d.]+)/m.exec(html) || [])[1];
-if (!(hit > 0) || !(pre >= 0) || !(punch > 0)) {
-  console.error('could not read SFX.hit / SFX.pre / SFX.punch'); process.exit(1);
+// **AND `skipMax` HAS TO COME ACROSS TOO (m139).** The lifted `sfxEdge` reads it, so leaving it
+// out makes it `undefined`, the cap never fires, and the tool measures a rule the game does not
+// have -- which is this repo's oldest mistake and the one these markers exist to prevent.
+const skipMax = +(/^\s*skipMax:\s*([\d.]+)/m.exec(html) || [])[1];
+if (!(hit > 0) || !(pre >= 0) || !(punch > 0) || !(skipMax >= 0)) {
+  console.error('could not read SFX.hit / SFX.pre / SFX.punch / SFX.skipMax'); process.exit(1);
 }
-globalThis.SFX = { hit, pre, punch };
+globalThis.SFX = { hit, pre, punch, skipMax };
 const sfxEdge = (0, eval)(src + '\nsfxEdge');
 
 let Dec;
