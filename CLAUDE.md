@@ -1041,6 +1041,51 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE BUILDING TINT IS IN `COLOR_1`, AND THREE NEVER READS THAT ATTRIBUTE (m126, `wpTintSet`,
+  `WP.tint`).** *"I meant tints. The roads are building. The buildings and roads aren't tinted."*
+  Two faults and m125 only answered one: the ROADS were the forty-one colourless materials, and
+  the BUILDINGS are this -- **the City_Trim tint has never once been drawn, and could not have
+  been.** His exporter wrote a flat white `COLOR_0` and put the real per-building colour in a
+  SECOND colour set; `GLTFLoader`'s `ATTRIBUTES` map has a row for `COLOR_0` and none for
+  `COLOR_1`, so it falls through to `gltfAttributeName.toLowerCase()` and lands as
+  `geometry.attributes.color_1` -- **a name three has never heard of.** `vColor` was therefore
+  white on every vertex and `mix(d, d * vColor, mask)` is an exact no-op on every texel of every
+  building. Decoded out of the draco geometry rather than argued:
+      COLOR_0   1.000, 1.000, 1.000 on **100% of 43,310 vertices** -- ONE distinct value
+      COLOR_1   33 distinct colours -- periwinkle .447/.447/.890 (11.4%), brick .478/.216/.133
+                (7.2%), dark red (4.2%), near-black (3.3%), mint, teal: the CITY
+  **AND THE OTHER TWELVE CITY_TRIM GEOMETRIES ARE CORRECTLY FLAT, WHICH IS WHAT SAYS THIS IS AN
+  EXPORT FAULT AND NOT A GUESS.** Of the 13: **0 have a varying COLOR_0**, exactly **1 has a
+  varying COLOR_1** (`vis_city_trim`, 43,310 of 45,578 verts, **95%**), and the twelve props --
+  AC fans, garden beds -- are white in both sets, which is right, because a prop keeps its
+  painted texture untinted. **His own reference shader says the tint lives in `COLOR_0`**
+  (`models/portland/three/weirdportCity.js`, line 2), so this is the export disagreeing with his
+  own note rather than a convention anybody chose.
+  **THE TEST IS STRUCTURAL AND SELF-DISARMING**, `WP.paint`'s rule one attribute over: a geometry
+  is promoted only when it HAS a `color_1` that varies AND its `color` is absent or flat white.
+  A re-export that puts the tint back in `COLOR_0` stops matching **one geometry at a time**,
+  with nothing here to remove and no material name to keep in step -- `stripPoses`' own test
+  (the property that makes the thing what it is, never a name).
+  **ONCE PER GEOMETRY, NEVER ONCE PER NODE.** 368 of the 510 visual nodes share 40 meshes, so a
+  per-node pass would scan the same 43,310 vertices over and over; deduped by `geometry.uuid` it
+  is one scan at load. **`getX` DENORMALIZES in r180**, so the ushort-normalized attribute reads
+  back 0..1 and "is it flat white" is the same question either way; itemSize 4 defines
+  `USE_COLOR_ALPHA` and makes `vColor` a vec4, which the splice already reads as `.rgb`.
+  **AND THE COLOUR SPACE IS AN OPEN QUESTION, SO IT IS A SWITCH RATHER THAN A DECISION.** glTF
+  says `COLOR_n` is LINEAR and his reference shader multiplies it raw, which is what ships --
+  but .447 is 114/255 and the palette reads like sRGB bytes an eye picked. `mel.tint(1)` puts
+  `pow(c, 2.2)` in front of it. **A uniform, not a define**, so it is an A/B on the phone with
+  no recompile, no rebuild and no push: a look-at-it decision belongs where he can look at it,
+  which is this file's oldest standing rule about taste.
+  **AND THE CHIP SAYS WHICH OF THE TWO BUGS IT IS.** *"The buildings aren't tinted"* is the
+  material never getting the mask OR getting it and `vColor` being white, and those are one
+  picture from a phone: `WP NO TRIM MAT` answers the first and **`WP NO TINT`** the second, with
+  `WPTINT<n>` counting the geometries promoted. It goes quiet the day a re-export makes it
+  unnecessary, which is `rollREC`'s rule -- the silence IS the confirmation.
+  **WHAT IS UNVERIFIED AND WHY:** the GLB is draco and there is no GPU here, so **whether the
+  city now reads as tinted is a device question**, and so is which colour space is right. What
+  CAN be checked here was: the attribute names, the 13 geometries' colour sets, the distinct
+  values in each, and that both gates pass in both worlds. `mel.WP.tint = 0` is m125 exactly.
 - **FORTY-ONE MATERIALS CARRY NO BASE COLOUR AT ALL, AND glTF'S DEFAULT IS WHITE (m125,
   `WP.paint`).** *"None of the roads or buildings are coming in. Is that something we're missing?
   Everything else looks good so far as I can tell."* They are all there and they are all

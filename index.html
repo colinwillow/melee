@@ -453,10 +453,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m125</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m126</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m125</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m126</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 
@@ -510,7 +510,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm125';
+const BUILD = 'm126';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1837,6 +1837,36 @@ const WP = {
   // that moves two things at once is a change neither of which can be judged. `camera.far` is
   // already 400 and needs nothing. `mel.WP.fog = null` keeps the test site's range.
   fog: { col: 0xe7edf5, near: 70, far: 320 },
+
+  // **THE TINT IS IN `COLOR_1`, AND THREE NEVER READS THAT ATTRIBUTE (m126).** *"I meant
+  // tints. The roads are building. The buildings and roads aren't tinted."* The roads were
+  // m125's forty-one colourless materials; the BUILDINGS are this, and the tint has never once
+  // been drawn. His exporter wrote a flat white `COLOR_0` and put the real per-building colour
+  // in a SECOND colour set -- and `GLTFLoader`'s `ATTRIBUTES` map has rows for `COLOR_0` and
+  // nothing else, so `COLOR_1` falls through to `gltfAttributeName.toLowerCase()` and lands as
+  // `geometry.attributes.color_1`, which three has never heard of. `vColor` was therefore
+  // **white on every vertex** and `mix(d, d * vColor, mask)` is an exact no-op on every texel
+  // of every building. Decoded out of the draco geometry rather than argued:
+  //     COLOR_0   1.000, 1.000, 1.000 on **100% of 43,310 vertices** -- ONE distinct value
+  //     COLOR_1   33 distinct colours: periwinkle .447/.447/.890 (11.4%), brick .478/.216/.133
+  //               (7.2%), dark red (4.2%), near-black (3.3%), mint, teal ... the CITY
+  // **AND THE OTHER TWELVE CITY_TRIM GEOMETRIES ARE CORRECTLY FLAT**, which is what says this
+  // is one export fault and not a guess: of the 13, **0 have a varying COLOR_0** and exactly
+  // **1 has a varying COLOR_1** -- `vis_city_trim`, 43,310 of 45,578 verts, 95% -- while the
+  // twelve props (AC fans, garden beds) are white in both sets, which is right, because a prop
+  // keeps its painted texture untinted.
+  // **THE TEST IS STRUCTURAL AND SELF-DISARMING**, `WP.paint`'s own rule one attribute over: a
+  // geometry is promoted only when it HAS a `color_1` that varies AND its `color` is absent or
+  // flat white, so a re-export that puts the tint back in `COLOR_0` stops matching -- one
+  // geometry at a time, with nothing here to remove and no name to keep in step.
+  // **AND THE COLOUR SPACE IS AN OPEN QUESTION, SO IT IS A SWITCH.** glTF says `COLOR_n` is
+  // LINEAR and his reference shader multiplies it raw, which is what ships; but .447 is 114/255
+  // and the palette reads like sRGB bytes an eye picked. `mel.tint(1)` re-reads them through
+  // `pow(c, 2.2)` -- a uniform, so it is an A/B on the phone with no recompile and no rebuild,
+  // which is where a look-at-it decision belongs.
+  tint: 1,              // 0 leaves the colour sets exactly as m125 had them
+  tintLin: 0,           // 1 treats the vertex colours as sRGB. `mel.tint(1)`.
+
   // WHAT A SOLID CONTRIBUTES. Its own table, never `BLD`'s (m60): these meshes are a different
   // shape entirely and reading the building's numbers here would be a silently wrong answer.
   cols: { tag: 'WEIRDPORT', cols: 1, cell: 1.0, maxCells: 4096, tol: .45, full: .92,
@@ -1851,6 +1881,10 @@ const WP = {
           // **ABSENT IT IS EXACTLY THE OLD RULE**, so the building and the tower are untouched.
           fill: .5 },
 };
+
+// THE TINT'S COLOUR SPACE, LIVE. One object shared by every City_Trim program, so `mel.tint(1)`
+// moves all of them and nothing recompiles -- a uniform is a value, not a define.
+const WPTINT = { value: 0 };
 
 const BLD = {
   tag: 'BUILDING',      // what the chip calls it when something about it goes wrong
@@ -9506,6 +9540,28 @@ function buildWpCollision(g) {
   if (!nBox) note('WP NO SOLIDS');
 }
 
+// IS EVERY VERTEX OF THIS COLOUR SET PURE WHITE. `getX` DENORMALIZES in r180, so a ushort
+// attribute reads back 0..1 and this is the same question either way. Early out, because the
+// answer is no on the first vertex of the one geometry that matters.
+function wpFlatWhite(a) {
+  for (let i = 0; i < a.count; i++)
+    if (a.getX(i) !== 1 || a.getY(i) !== 1 || a.getZ(i) !== 1) return false;
+  return true;
+}
+
+// PROMOTE THE COLOUR SET THAT ACTUALLY CARRIES THE TINT -- see `WP.tint`. Structural: it asks
+// what the DATA is rather than what the material is called, and it disarms itself the day an
+// export puts the tint back where three looks for it.
+function wpTintSet(geo) {
+  const b = geo.attributes.color_1;
+  if (!b) return 0;
+  const a = geo.attributes.color;
+  if (a && !wpFlatWhite(a)) return 0;      // COLOR_0 already carries it -- leave it alone
+  if (wpFlatWhite(b)) return 0;            // and COLOR_1 carries nothing either
+  geo.setAttribute('color', b);
+  return 1;
+}
+
 // THE PICTURE. Three things it has to do that a plain `scene.add` does not.
 function buildWpVisual(g, trim) {
   const root = g.scene;
@@ -9525,12 +9581,16 @@ function buildWpVisual(g, trim) {
   //    `InstancedMesh` each and the originals come out of the scene.
   //    **GROUPED BY GEOMETRY *AND* MATERIAL**, because two nodes sharing a mesh but not a
   //    material are not one draw call, and an InstancedMesh has exactly one of each.
-  let trimmed = 0, beam = 0, mats = 0, painted = 0;
+  let trimmed = 0, beam = 0, mats = 0, painted = 0, tinted = 0;
   const bare = [];
   const seen = new Set();
+  const geos = new Set();
   root.traverse(o => {
     if (!o.isMesh) return;
     o.castShadow = !!WP.cast; o.receiveShadow = true;
+    // ONCE PER GEOMETRY, NOT ONCE PER NODE: 368 of the 510 nodes share 40 meshes, so a pass per
+    // node would scan the same 43,310 vertices over and over.
+    if (WP.tint && !geos.has(o.geometry.uuid)) { geos.add(o.geometry.uuid); tinted += wpTintSet(o.geometry); }
     for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
       if (!m || seen.has(m)) continue;
       seen.add(m); mats++;
@@ -9552,14 +9612,18 @@ function buildWpVisual(g, trim) {
         m.vertexColors = true;
         if (mask) {
           mask.colorSpace = THREE.NoColorSpace;
+          WPTINT.value = WP.tintLin ? 1 : 0;
           m.onBeforeCompile = sh => {
             sh.uniforms.tintMask = { value: mask };
+            sh.uniforms.uTintLin = WPTINT;
             sh.fragmentShader = sh.fragmentShader
-              .replace('#include <common>', '#include <common>\nuniform sampler2D tintMask;')
+              .replace('#include <common>',
+                '#include <common>\nuniform sampler2D tintMask;\nuniform float uTintLin;')
               .replace('#include <color_fragment>', [
                 '#ifdef USE_COLOR',
                 '  float wpTint = texture2D(tintMask, vMapUv).r;',
-                '  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vColor.rgb, wpTint);',
+                '  vec3 wpC = mix(vColor.rgb, pow(vColor.rgb, vec3(2.2)), uTintLin);',
+                '  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * wpC, wpTint);',
                 '#endif'].join('\n'));
           };
           // A MATERIAL CARRYING A CUSTOM HOOK NEEDS ITS OWN CACHE KEY or three can hand it a
@@ -9621,13 +9685,18 @@ function buildWpVisual(g, trim) {
   //    tests `City_Trim_Export` and this export calls the material `City_Trim`**, so on this
   //    file it would have matched nothing at all.
   wpRoot.add(root);
-  WP.painted = painted;
+  WP.painted = painted; WP.tinted = tinted;
   console.log('[melee] weirdport visual: ' + mats + ' materials, ' + inst + ' instanced meshes for ' +
     instN + ' nodes, trim ' + trimmed + (trim ? '' : ' (NO SHEET)') + ', beam ' + beam +
     ', stand-in paint on ' + painted + ' of ' + mats +
-    (bare.length ? ' (no row for: ' + bare.join(', ') + ')' : ''));
+    (bare.length ? ' (no row for: ' + bare.join(', ') + ')' : '') +
+    ', tint set promoted on ' + tinted + ' of ' + geos.size + ' geometries');
   if (!trimmed) note('WP NO TRIM MAT');
   if (!trim) note('WP NO TRIM PNG');
+  // "THE BUILDINGS AREN'T TINTED" IS TWO BUGS AND ONE PICTURE FROM A PHONE -- the material
+  // never got the mask, or it got it and `vColor` is white. `WP NO TRIM MAT` answers the first
+  // and this answers the second, and it is SILENT once a re-export makes it unnecessary.
+  if (WP.tint && trimmed && !tinted) note('WP NO TINT');
 }
 
 const BUILDINGS = [];
@@ -13002,7 +13071,8 @@ function frame() {
     // loaded and I fall through the road" and "it loaded and I cannot move" are three bugs and
     // one picture from a phone, and only these two numbers tell them apart: no triangles is no
     // ground, no boxes is no buildings. Silent in the test site, `rollREC`'s rule.
-    const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b' + (WP.painted ? ' · WPPAINT' + WP.painted : '') : '';
+    const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
+      (WP.tinted ? ' · WPTINT' + WP.tinted : '') : '';
     // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from
     // a phone. Silent when he is himself, `rollREC`'s rule.
@@ -13276,6 +13346,9 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // THE WORLD, LIVE (m124). `mel.world('weirdport')` is the key without the key, which is what
   // a desktop wants; `mel.WP` and `mel.TRI` and `mel.BGRID` are the dials.
   WORLD, WP, TRI, BGRID, triGround, boxesNear, wpRoot,
+  // THE TINT'S COLOUR SPACE, LIVE (m126). `mel.tint(1)` reads the vertex colours as sRGB and
+  // `mel.tint(0)` raw -- a uniform, so it is an A/B on the phone with no rebuild. See `WP.tint`.
+  tint: v => { WP.tintLin = v ? 1 : 0; WPTINT.value = WP.tintLin; return WP.tintLin ? 'sRGB' : 'raw'; },
   world: k => { if (!k) return WORLD.now;
     if (!WORLD.list[k]) return 'worlds: ' + Object.keys(WORLD.list).join(', ');
     try { localStorage.setItem(WORLD.store, k); } catch (e) {}
