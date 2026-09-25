@@ -1041,6 +1041,96 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **WEIRDPORT HAS PEOPLE IN IT, AND THE WHOLE BUILD IS THE SWEEP THAT MAKES A COORDINATE HONEST
+  (m127, `WP.crowd`, `WPSPOT`, `wpStand`, `wpPool`, `wpSpread`, `wpLoop`, `wpPopulate`).** *"Let's
+  populate the world with the other characters. Eventually they will have different jobs,
+  different behaviors -- the police and like human character got scared of you unless you look
+  like a human -- eventually they'll have different zones. But right now we can just put them in
+  kind of really randomly just to get a feel of it."*
+  **m124 LEFT THEM OUT FOR ONE STATED REASON AND THIS IS THAT REASON ANSWERED.** *"Every warrior,
+  drunk, skater, biker and Clancy is placed at a coordinate chosen against the TEST SITE, and a
+  body spawned inside a tower is the m24 lesson."* So none of this is a builder: `buildFoes`,
+  `buildHicks` and the rest still loop `K.at` and **never learn which world they are in** --
+  `wpPopulate` rewrites every one of those tables after the collider and before a single body is
+  fetched, which is the only window where both halves are true (the ground exists, and nothing has
+  been placed on it yet). `d.K`'s own dividend, one table further out.
+  **NOTHING IN THE SWEEP RESTATES A RULE.** The ground is `triGround` and the clearance is
+  `resolveBoxes` -- **the PLAYER'S OWN resolver** -- so a spot this accepts is a spot his body
+  agrees it can occupy, and there is no second answer to keep in step. A harness with its own copy
+  of a rule measures a game that does not exist, and this is that sentence applied to a placer.
+  **AND IT IS `triGround`, NEVER `groundAt`.** That one takes a BOX TOP as ground, which is right
+  for a man walking onto a roof and exactly wrong for a spawn: it would stand somebody on a bench,
+  on a parapet, on the hull of a parked car. The triangles are the deck and nothing else.
+  **ONE CEILING KEEPS THEM OFF THE ROOFS AND IT IS A NUMBER, NOT A LIST.** The I-405 deck is at
+  9.2 m and every roof in the slice is higher, so `WPSPOT.top` 8 is "the street, the park, the
+  plaza and the lower hill" with **not one coordinate typed** to say so.
+  **A SPOT IS LEVEL ACROSS HIS OWN WIDTH, NOT AT A POINT.** Four probes at `WPSPOT.r` .50 -- the
+  warrior's .46 and a little -- and **one sweep serves every kind**, because a patch clear for the
+  widest body is clear for a .28 m sidekick. `hh` 1.7 means the resolver is asked about his HEAD
+  and not only his feet.
+  **FARTHEST-POINT, NOT THE FIRST N (m80's rule).** The darts are random, so the first thirty of
+  them are a random scatter -- and a random scatter CLUMPS. Taking the one furthest from
+  everything already taken spreads them over the whole slice by construction, which is what makes
+  three of a kind read as three streets rather than as a queue.
+  **AND THEY ARE DEALT ROUND-ROBIN, NEVER SLICED.** The spread returns them furthest-first, so a
+  slice hands one kind the far edge of the city and another the middle. One to each in turn means
+  every kind is spread over the whole slice -- the half of "randomly" a spread alone does not buy.
+  **THE SAME CITY EVERY RELOAD (`WPSPOT.seed`).** A coin per body is a different street each time,
+  so a coordinate stops being quotable and *"he is stuck at -40, 88"* stops being a bug report --
+  Shredworld's `TRAF.share` rule, one roster over. **And the pool excludes `near` 14 m of the
+  spawn**: you are not born inside a crowd.
+  **THE SIDEKICK IS THE ONE THING NOT SCATTERED, WHICH IS WHAT HE IS FOR.** `foeWander`'s leash
+  would walk him back across the city from wherever he was dropped, so he takes the nearest clear
+  spot to the spawn -- a ring search outward from 2.5 m, which is the one question the pool cannot
+  answer because `near` deliberately excludes that ground.
+  **AND SHE IS THE ONE CHARACTER WITH NO COLLIDER AT ALL.** `stepShe` writes `p.x`/`p.z` straight
+  and only snaps `p.y`, so a circuit made of clear POINTS is a woman walking through a wall. Every
+  SEGMENT is sampled at `WPSPOT.r` (`wpWalk`) and **the last leg back to the first has to be clear
+  too** -- a loop with one bad leg is a loop she walks into a building once per lap for ever. No
+  loop and she is simply not loaded, with `WP NO CIRCUIT` in the chip.
+  **THE CIRCUIT SEARCH IS SORTED AND BUDGETED, WHICH IS WHAT KEEPS IT OFF THE BOOT PATH.** The
+  obvious version asks `wpWalk` about every candidate nearer than the best so far, and `wpWalk` is
+  about seventy `wpStand` calls on a long leg -- five triangle lookups and a `resolveBoxes` each.
+  Sorted by distance and broken on the first clear one, the typical leg costs ONE of them;
+  unsorted and unlucky it is one per candidate, per leg, per restart -- millions of grid lookups
+  while the card sits there. `WPSPOT.legs` 900 is the backstop under it, because **a bound you can
+  reason about beats a shape you hope is fast**.
+  **AND `bodySpawn` ASKED `groundAt(x, z, 0)`, WHICH BURIES A BODY ON A HILL.** That function
+  answers *the highest surface at or a step above `y`*, so asking at 0 on Weirdport's 17 m terrain
+  returns the 0 floor and puts a man twelve metres under the ground he was placed on. It takes the
+  spot's own height as a third column now -- and **absent it is provably the line it always was**,
+  so every test-site table is untouched. `foeMove` tracks the slope from wherever he starts, so
+  the start is the whole of it. `buildShe` had the identical fault and the identical fix.
+  **THE BODIES MOVED OUT OF THE TEST SITE'S BRANCH, WHICH IS THE CHANGE THAT ACTUALLY RUNS ANY OF
+  THIS.** They were inside the `else`, so Weirdport was a city with nobody in it however good the
+  placer was -- the fourth time across these repos that a feature did nothing because of WHERE it
+  was called rather than what it did. `BLD`, `TOWER` and `MOTO` stay test-site-only.
+  **AND THE MOTORCYCLE IS A STATED GAP RATHER THAN AN OVERSIGHT.** `MOTO.ring` was swept clear
+  against ten boxes on a white floor (m107), and a fixed-radius circuit through a real city has to
+  be SEARCHED the way the crowd's spots are -- which is its own build. With no bike `MOTO.up` is 0
+  and `buildBikers` correctly leaves its rider on foot, with no case of its own.
+  **`PROG.total` WAS 4 AGAINST A TEST SITE THAT LOADS FIFTEEN FILES**, so the bar was home before
+  half the city had arrived -- and the old fix set it INSIDE the world branch, which makes the bar
+  RETREAT from 100% the moment the branch is reached. A bar that retreats reads as a failure. It
+  is the real count, decided at the top of `init()` before anything is fetched.
+  **AND `wpPopulate` IS IN A TRY, because a crowd is not worth a boot that hangs.** Every other
+  line in that branch is `side()`-wrapped for exactly that reason and `init()` is called bare, so
+  a throw there is `rig.ready` never set and a card stuck for ever on the text it was born with --
+  the one failure he cannot look at and correct.
+  **THE CHIP CARRIES `WPCROWD<n>`**, because *"the street is empty"* is three bugs and one picture
+  from a phone: the sweep found nothing, it found spots and the GLBs never arrived, or they
+  arrived and are somewhere he has not walked to. Only the first has a number and this is it;
+  `WP NO SPOTS`, `WP CROWD n/m` and `WP CROWD FAILED` carry the rest.
+  **WHAT IS UNVERIFIED AND WHY:** the collision GLB is draco and nothing in this container can
+  decode a mesh, so **the sweep has never run outside a browser** -- whether 27 bodies read as a
+  populated city, whether they land on pavements rather than in the middle of the freeway, and
+  whether her circuit closes at all are device questions. Both gates pass in both worlds
+  (`MEL_WORLD=weirdport npm run check:boot`), and headless the sweep correctly finds nothing and
+  says `WP NO SPOTS` rather than throwing. `mel.WP.crowd` is live and wants a reload.
+  **NOT DONE, AND EACH BECAUSE HE SAID SO:** different jobs, different behaviours, zones, and the
+  rule that humans are afraid of you unless you look like one. That last is `foeTarget`'s aggro
+  rule and has been a stated gap since m112; it is the same sentence pointed at a city rather than
+  at a test site.
 - **THE BUILDING TINT IS IN `COLOR_1`, AND THREE NEVER READS THAT ATTRIBUTE (m126, `wpTintSet`,
   `WP.tint`).** *"I meant tints. The roads are building. The buildings and roads aren't tinted."*
   Two faults and m125 only answered one: the ROADS were the forty-one colourless materials, and
@@ -6233,8 +6323,9 @@ means anything you can carry from one situation to the next.
   a body a head taller, which is arguable and is stated rather than assumed. `MORPH.tall = 0`
   draws him at zap's height and is the A/B; changing the collider mid-game is m52's whole build.
 - **THE TEST SITE IS ONE OF TWO WORLDS NOW (m124).** Weirdport -- his Blender slice of downtown
-  Portland -- is the other, and it has **no NPCs, no grind rails on its ten metal nodes and flat
-  colours on its ground** until he bakes those surfaces. Every one of those is written up above
+  Portland -- is the other. **It has people in it as of m127** -- placed by a sweep of the real
+  collider rather than typed -- and it still has **no grind rails on its ten metal nodes, no
+  motorcycle circuit, and flat colours on its ground** until he bakes those surfaces. Every one of those is written up above
   with why. What it does have is 3,684 walkable triangles, 4,086 collider boxes, ramps you can
   ride, a deck you can walk on and under, and a spawn that was searched rather than typed.
 - The test site is a white floor and ten boxes, with a painted street grid round it (m110). It is

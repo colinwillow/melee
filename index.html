@@ -453,10 +453,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m126</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m127</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m126</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m127</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 
@@ -510,7 +510,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm126';
+const BUILD = 'm127';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1867,6 +1867,17 @@ const WP = {
   tint: 1,              // 0 leaves the colour sets exactly as m125 had them
   tintLin: 0,           // 1 treats the vertex colours as sRGB. `mel.tint(1)`.
 
+  // **WHO IS IN THE CITY, AND HOW MANY (m127).** *"Let's populate the world with the other
+  // characters... right now we can just put them in kind of really randomly just to get a feel
+  // of it."* m124 left this out for one stated reason -- every spawn in this game is a
+  // coordinate chosen against the TEST SITE, and a body spawned inside a tower is m24's lesson
+  // (nothing on screen disagrees with anything and the player simply cannot walk there) -- so
+  // the whole of this build is the SWEEP that makes a coordinate honest. See `WPSPOT`.
+  // **27 BODIES AGAINST THE TEST SITE'S 19**, on a slice ten times its area: enough that a
+  // street has somebody on it and not so many that a phone pays for a crowd nobody asked for.
+  // Read at LOAD, so a change wants a reload.
+  crowd: { FOE: 5, HICK: 5, HOBO: 5, SKATER: 4, BIKER: 3, DUMMY: 3 },
+
   // WHAT A SOLID CONTRIBUTES. Its own table, never `BLD`'s (m60): these meshes are a different
   // shape entirely and reading the building's numbers here would be a silently wrong answer.
   cols: { tag: 'WEIRDPORT', cols: 1, cell: 1.0, maxCells: 4096, tol: .45, full: .92,
@@ -1885,6 +1896,32 @@ const WP = {
 // THE TINT'S COLOUR SPACE, LIVE. One object shared by every City_Trim program, so `mel.tint(1)`
 // moves all of them and nothing recompiles -- a uniform is a value, not a define.
 const WPTINT = { value: 0 };
+
+// **WHERE A BODY CAN STAND, SWEPT AGAINST THE REAL COLLIDER (m127).** The spawn was searched
+// rather than typed at m124 -- OFFLINE, with a probe -- and this is that search living in the
+// game, which is what a roster of thirty needs. Nothing here restates a rule: the ground is
+// `triGround` and the clearance is `resolveBoxes`, which is the PLAYER'S OWN resolver, so a
+// spot this accepts is a spot his body agrees it can occupy.
+const WPSPOT = {
+  r: .50,        // the widest body's radius (the warrior's .46) and a little. ONE sweep serves
+                 // every kind, because a patch clear for him is clear for a .28 m sidekick.
+  hh: 1.7,       // and his height, so the test is head clearance and not only his feet
+  // **THE CEILING IS WHAT KEEPS THEM OFF THE ROOFS, AND IT IS ONE NUMBER RATHER THAN A LIST.**
+  // The I-405 deck is at 9.2 m and every roof is higher, so a candidate whose ground is under
+  // 8 m is the street, the park, the plaza and the lower hill -- and not one coordinate is
+  // typed to say so.
+  top: 8,
+  flat: .40,     // how far the four probes at his own radius may disagree with the middle
+  gap: 9,        // how near two of them may be placed
+  near: 14,      // and how near the player's own spawn -- you are not born inside a crowd
+  pool: 420,     // candidates kept before the spread picks from them
+  tries: 30000,  // how many darts are thrown at the slice to find that many
+  legs: 900,     // the ceiling on `wpWalk` calls across her whole circuit search -- see `wpLoop`
+  // THE SAME CITY EVERY RELOAD. A coin per body is a different street each time, so a
+  // coordinate stops being quotable and "he is stuck at -40, 88" stops being a bug report --
+  // which is Shredworld's `TRAF.share` rule, one roster over.
+  seed: 20260925,
+};
 
 const BLD = {
   tag: 'BUILDING',      // what the chip calls it when something about it goes wrong
@@ -9247,7 +9284,9 @@ function buildShe(g) {
   model.scale.setScalar(scale);
   const root = new THREE.Group();
   root.add(model);
-  root.position.set(SHE.path[0][0], 0, SHE.path[0][1]);
+  // ON THE GROUND SHE IS ACTUALLY ON (m127). Zero is right on a white floor and is a woman
+  // buried in a kerb anywhere else; `stepShe` tracks the slope from wherever she starts.
+  root.position.set(SHE.path[0][0], groundAt(SHE.path[0][0], SHE.path[0][1], 0, MOVE.step), SHE.path[0][1]);
   scene.add(root);
   model.updateMatrixWorld(true);
 
@@ -9699,6 +9738,199 @@ function buildWpVisual(g, trim) {
   if (WP.tint && trimmed && !tinted) note('WP NO TINT');
 }
 
+// ============================================================================================
+// POPULATING WEIRDPORT (m127, `wpStand`, `wpPool`, `wpSpread`, `wpLoop`, `wpPopulate`)
+//
+// One seeded stream, one pool of clear standing spots, and a farthest-point spread over it.
+// Every kind's `at` table is rewritten from that pool before a single body is loaded, so the
+// BUILDERS are untouched -- `buildFoes`, `buildHicks` and the rest still loop `K.at` and know
+// nothing about which world they are in, which is `d.K`'s own dividend one table further out.
+// ============================================================================================
+let _wpSeed = 0;
+function wpRand() { _wpSeed = (_wpSeed * 1664525 + 1013904223) >>> 0; return _wpSeed / 4294967296; }
+
+// The highest WALKABLE triangle under the ceiling, or null for "there is no ground here".
+// **THE TRIANGLES ONLY, NEVER `groundAt`.** That one takes a box top as ground, which is right
+// for a man walking onto a roof and wrong for a spawn: it would stand somebody on a bench.
+function wpGround(x, z) {
+  if (!TRI.on) return null;
+  const y = triGround(x, z, WPSPOT.top, MOVE.step);
+  return y < -1e29 ? null : y;
+}
+
+const _wpP = { x: 0, y: 0, z: 0 };
+// Is this a patch a body can stand on: real ground, level across his own width, and not inside
+// anything. Returns the height, or null.
+function wpStand(x, z) {
+  const y = wpGround(x, z);
+  if (y === null) return null;
+  const r = WPSPOT.r;
+  for (let i = 0; i < 4; i++) {
+    const a = i * Math.PI * .5;
+    const h = wpGround(x + Math.sin(a) * r, z + Math.cos(a) * r);
+    if (h === null || Math.abs(h - y) > WPSPOT.flat) return null;
+  }
+  _wpP.x = x; _wpP.y = y; _wpP.z = z;
+  if (resolveBoxes(_wpP, r, WPSPOT.hh)) return null;
+  return y;
+}
+
+// THROW DARTS AT THE SLICE AND KEEP THE ONES THAT LAND. The bounds are the triangle grid's own,
+// so this follows the export rather than a typed rectangle.
+function wpPool() {
+  _wpSeed = WPSPOT.seed >>> 0;
+  const out = [];
+  if (!TRI.on) return out;
+  const x0 = TRI.x0, x1 = TRI.x0 + TRI.nx * TRI.cell;
+  const z0 = TRI.z0, z1 = TRI.z0 + TRI.nz * TRI.cell;
+  const sx = player.pos.x, sz = player.pos.z;
+  for (let i = 0; i < WPSPOT.tries && out.length < WPSPOT.pool; i++) {
+    const x = x0 + wpRand() * (x1 - x0), z = z0 + wpRand() * (z1 - z0);
+    if (Math.hypot(x - sx, z - sz) < WPSPOT.near) continue;
+    const y = wpStand(x, z);
+    if (y !== null) out.push({ x, y, z });
+  }
+  return out;
+}
+
+// **FARTHEST-POINT, NOT THE FIRST N (m80's rule).** The darts are random, so the first thirty
+// are a random scatter -- which clumps, because a random scatter does. Taking the one furthest
+// from everything already taken spreads them across the whole slice by construction, and it is
+// what makes three of a kind read as three streets rather than as a queue.
+function wpSpread(pool, n, gap) {
+  const got = [];
+  if (!pool.length) return got;
+  // START FURTHEST FROM THE SPAWN, so the seed is a fact about the world and not about which
+  // dart happened to land first.
+  let bi = 0, bd = -1;
+  for (let i = 0; i < pool.length; i++) {
+    const d = Math.hypot(pool[i].x - player.pos.x, pool[i].z - player.pos.z);
+    if (d > bd) { bd = d; bi = i; }
+  }
+  got.push(pool[bi]); pool[bi].used = 1;
+  while (got.length < n) {
+    let best = -1, bestD = -1;
+    for (let i = 0; i < pool.length; i++) {
+      if (pool[i].used) continue;
+      let d = 1e9;
+      for (const g of got) { const t = Math.hypot(pool[i].x - g.x, pool[i].z - g.z); if (t < d) d = t; }
+      if (d > bestD) { bestD = d; best = i; }
+    }
+    if (best < 0 || bestD < gap) break;
+    pool[best].used = 1; got.push(pool[best]);
+  }
+  return got;
+}
+
+// A SEGMENT IS CLEAR IF EVERY METRE OF IT IS (`wpWalk`). She is the one character here with no
+// collider at all -- `stepShe` writes her position straight and never asks `resolveBoxes` --
+// so a circuit that is merely made of clear POINTS is a woman walking through a wall. Sampled
+// at `WPSPOT.r`, which is her own width and therefore the finest step that can say anything.
+function wpWalk(a, b) {
+  const d = Math.hypot(b.x - a.x, b.z - a.z), n = Math.max(2, Math.ceil(d / WPSPOT.r));
+  for (let i = 1; i < n; i++) {
+    const t = i / n;
+    if (wpStand(a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t) === null) return 0;
+  }
+  return 1;
+}
+
+// HER CIRCUIT, AND IT IS CLOSED OR IT IS NOTHING. A greedy walk over the pool: each next
+// waypoint is the nearest one in a distance band whose segment is clear, and the LAST leg back
+// to the first has to be clear too -- a loop with one bad leg is a loop she walks into a
+// building once per lap for ever.
+function wpLoop(pool, n, lo, hi, maxY) {
+  const flat = pool.filter(q => !q.used && Math.abs(q.y) <= maxY);
+  // **THE CANDIDATES ARE SORTED AND THE FIRST CLEAR ONE WINS, WHICH IS WHAT KEEPS THIS OFF THE
+  // BOOT PATH.** The obvious version asks `wpWalk` about every candidate nearer than the best
+  // so far, and `wpWalk` is about seventy `wpStand` calls on a long leg -- five triangle
+  // lookups and a `resolveBoxes` each. Sorted, the typical leg costs ONE of them; unsorted and
+  // unlucky it costs one per candidate, per leg, per restart, which is millions of grid lookups
+  // while the card sits there. `WPSPOT.legs` is the backstop under it, because a bound you can
+  // reason about beats a shape you hope is fast: out of budget it gives up, the chip says
+  // `WP NO CIRCUIT`, and the cost is her and nothing else.
+  let budget = WPSPOT.legs;
+  for (let s = 0; s < flat.length && s < 12; s++) {
+    const loop = [flat[s]];
+    const taken = new Set([flat[s]]);
+    while (loop.length < n) {
+      const cur = loop[loop.length - 1];
+      const band = flat.filter(q => !taken.has(q)).map(q =>
+        ({ q, d: Math.hypot(q.x - cur.x, q.z - cur.z) })).filter(o => o.d >= lo && o.d <= hi);
+      band.sort((u, v) => u.d - v.d);
+      let pick = null;
+      for (const o of band) {
+        if (budget-- <= 0) return null;
+        if (wpWalk(cur, o.q)) { pick = o.q; break; }
+      }
+      if (!pick) break;
+      taken.add(pick); loop.push(pick);
+    }
+    if (loop.length === n && budget-- > 0 && wpWalk(loop[n - 1], loop[0])) {
+      for (const q of loop) q.used = 1;
+      return loop;
+    }
+  }
+  return null;
+}
+
+// THE ONE PLACE EVERY `at` TABLE IS REWRITTEN. It runs after the collider and before any body
+// is fetched, which is the only window in which both halves are true: the ground exists, and
+// nothing has been placed on it yet.
+function wpPopulate() {
+  const KIND = { FOE, HICK, HOBO, SKATER, BIKER, DUMMY };
+  const pool = wpPool();
+  let want = 0;
+  for (const k in WP.crowd) if (KIND[k]) want += WP.crowd[k];
+  const spots = wpSpread(pool, want, WPSPOT.gap);
+  // **DEALT ROUND-ROBIN, NOT SLICED.** `wpSpread` returns them in the order it found them --
+  // furthest-first -- so a slice would hand one kind the far edge of the city and another the
+  // middle. Dealing one to each in turn means every kind is spread over the whole slice, which
+  // is the half of "randomly" that a spread alone does not buy.
+  const keys = Object.keys(WP.crowd).filter(k => KIND[k] && WP.crowd[k] > 0);
+  const left = {}; for (const k of keys) { left[k] = WP.crowd[k]; KIND[k].at = []; }
+  let i = 0;
+  while (i < spots.length) {
+    let dealt = 0;
+    for (const k of keys) {
+      if (!left[k] || i >= spots.length) continue;
+      const q = spots[i++]; KIND[k].at.push([q.x, q.z, q.y]); left[k]--; dealt++;
+    }
+    if (!dealt) break;
+  }
+  // **THE SIDEKICK IS NOT SCATTERED, WHICH IS WHAT HE IS FOR.** `foeWander`'s leash would walk
+  // him back across the city from wherever he was dropped, so he is placed beside you -- the
+  // nearest clear spot to the spawn, which is the one question the pool cannot answer because
+  // `near` deliberately excludes it.
+  CLANCY.at = [[player.pos.x, player.pos.z]];
+  for (let rr = 2.5; rr <= 9; rr += .75) {
+    let done = 0;
+    for (let a = 0; a < 12 && !done; a++) {
+      const th = a * Math.PI / 6;
+      const x = player.pos.x + Math.sin(th) * rr, z = player.pos.z + Math.cos(th) * rr;
+      const y = wpStand(x, z);
+      if (y !== null) { CLANCY.at = [[x, z, y]]; done = 1; }
+    }
+    if (done) break;
+  }
+  // HER CIRCUIT, or she is left out entirely and the chip says so -- see `wpLoop`.
+  const loop = wpLoop(pool, SHE.path.length, 12, 34, WPSPOT.flat * 2);
+  WP.she = !!loop;
+  if (loop) SHE.path = loop.map((q, n) => [q.x, q.z, n % 2 ? 'walk' : 'run']);
+  WP.bodies = spots.length;
+  console.log('[melee] weirdport crowd: ' + pool.length + ' clear spots pooled, ' + spots.length +
+    ' of ' + want + ' placed, ' + keys.map(k => k + ' ' + KIND[k].at.length).join(' ') +
+    ', clancy at ' + CLANCY.at[0][0].toFixed(1) + ',' + CLANCY.at[0][1].toFixed(1) +
+    (loop ? ', her circuit ' + loop.map(q => q.x.toFixed(0) + ',' + q.z.toFixed(0)).join(' -> ') : ', NO CIRCUIT'));
+  // "THE STREET IS EMPTY" IS THREE BUGS AND ONE PICTURE FROM A PHONE: the sweep found nothing,
+  // it found spots and the GLBs did not arrive, or they arrived and are somewhere you have not
+  // walked. Only the first has a number, and this is it.
+  if (!spots.length) note('WP NO SPOTS');
+  else if (spots.length < want) note('WP CROWD' + spots.length + '/' + want);
+  if (!loop) note('WP NO CIRCUIT');
+}
+
+
 const BUILDINGS = [];
 // **ONE BUILDER, A TABLE PER KIND (m60).** *"I added a towers folder. Towers are just like much
 // way taller buildings."* Which is exactly the shape `d.K` already has for bodies: the tower is
@@ -9899,7 +10131,7 @@ function bodyProto(g, K) {
   return P;
 }
 
-function bodySpawn(P, K, x, z) {
+function bodySpawn(P, K, x, z, y0) {
   const model = skeletonClone(P.proto);
   model.scale.setScalar(P.scale);
   // **HIS MATERIALS ARE HIS OWN.** `skeletonClone` SHARES them across every copy of a kind, so
@@ -9913,7 +10145,12 @@ function bodySpawn(P, K, x, z) {
   });
   const root = new THREE.Group();
   root.add(model);
-  root.position.set(x, groundAt(x, z, 0, MOVE.step), z);
+  // **THE SPOT'S OWN HEIGHT, NOT ZERO (m127).** `groundAt` answers "the highest surface at or
+  // a step above `y`", so asking at 0 on Weirdport's hill returns the FLOOR at 0 and buries a
+  // body twelve metres under the ground it was placed on. `foeMove` then tracks the slope from
+  // wherever he starts, so the start is the whole of it -- and absent, this is exactly the
+  // line it always was.
+  root.position.set(x, groundAt(x, z, y0 || 0, MOVE.step), z);
   scene.add(root);
   const mixer = new THREE.AnimationMixer(model);
   const d = { K, root, model, mats, mixer, actions: {}, clips: {}, cw: {}, faceOff: P.faceOff, flash: 0,
@@ -10928,7 +11165,7 @@ function bodyLoops(K) {
 function buildDummies(g) {
   DUMMY.loops = bodyLoops(DUMMY);
   const P = bodyProto(g, DUMMY);
-  for (const [x, z] of DUMMY.at) bodySpawn(P, DUMMY, x, z);
+  for (const [x, z, y] of DUMMY.at) bodySpawn(P, DUMMY, x, z, y);
 }
 
 // THE HICK. No mace, no mount, no brain to speak of -- so the builder is the shared pair and
@@ -10937,7 +11174,7 @@ function buildHicks(g) {
   HICK.loops = bodyLoops(HICK);
   const P = bodyProto(g, HICK);
   HICK.up = 0;
-  for (const [x, z] of HICK.at) { const d = bodySpawn(P, HICK, x, z); foeBar(d); HICK.up++; }
+  for (const [x, z, y] of HICK.at) { const d = bodySpawn(P, HICK, x, z, y); foeBar(d); HICK.up++; }
 }
 
 // THE HOBO. Same pair, same brain, a different table -- which is the whole claim m35 made.
@@ -10945,7 +11182,7 @@ function buildHobos(g) {
   HOBO.loops = bodyLoops(HOBO);
   const P = bodyProto(g, HOBO);
   HOBO.up = 0;
-  for (const [x, z] of HOBO.at) { const d = bodySpawn(P, HOBO, x, z); foeBar(d); HOBO.up++; }
+  for (const [x, z, y] of HOBO.at) { const d = bodySpawn(P, HOBO, x, z, y); foeBar(d); HOBO.up++; }
 }
 
 // THE SKATER. A third pacifist, and the builder is byte-for-byte the other two with a different
@@ -10954,7 +11191,7 @@ function buildSkaters(g) {
   SKATER.loops = bodyLoops(SKATER);
   const P = bodyProto(g, SKATER);
   SKATER.up = 0;
-  for (const [x, z] of SKATER.at) { const d = bodySpawn(P, SKATER, x, z); foeBar(d); SKATER.up++; }
+  for (const [x, z, y] of SKATER.at) { const d = bodySpawn(P, SKATER, x, z, y); foeBar(d); SKATER.up++; }
 }
 
 // THE FAT BIKER. The shared pair and a different table, which is m35's claim collected on for
@@ -10964,7 +11201,7 @@ function buildBikers(g) {
   BIKER.loops = bodyLoops(BIKER);
   const P = bodyProto(g, BIKER);
   BIKER.up = 0;
-  for (const [x, z] of BIKER.at) { const d = bodySpawn(P, BIKER, x, z); foeBar(d); BIKER.up++; }
+  for (const [x, z, y] of BIKER.at) { const d = bodySpawn(P, BIKER, x, z, y); foeBar(d); BIKER.up++; }
   // AND THE RIDER, only if there is something to ride. A man sitting on nothing is worse than
   // no rider at all, and `MOTO.up` is the one thing that says whether the bike arrived.
   if (MOTO.up) {
@@ -11267,7 +11504,7 @@ function motoSeek(d, dt, t) {
 function buildClancy(g) {
   CLANCY.loops = bodyLoops(CLANCY);
   const P = bodyProto(g, CLANCY);
-  for (const [x, z] of CLANCY.at) bodySpawn(P, CLANCY, x, z);
+  for (const [x, z, y] of CLANCY.at) bodySpawn(P, CLANCY, x, z, y);
   // **AND THE ROW EXISTS ONLY WHERE IT MEANS SOMETHING**, which is `paintKit`'s own rule for
   // the mode row: a control for a sidekick who never loaded is a HUD element in the play area
   // saying nothing. It is built and lit HERE, where the pal is confirmed, rather than at module
@@ -11279,8 +11516,8 @@ function buildFoes(g) {
   FOE.loops = bodyLoops(FOE);
   FOE.up = 0;
   const P = bodyProto(g, FOE);
-  for (const [x, z] of FOE.at) {
-    const d = bodySpawn(P, FOE, x, z);
+  for (const [x, z, y] of FOE.at) {
+    const d = bodySpawn(P, FOE, x, z, y);
     // THE MACE, ON HIS OWN JOINT, WITH IDENTITY. `npm run rig` reads his `weapon_root -> tip`
     // and the mace file's as the same vector to 8.6e-6, so there is nothing to correct and
     // nothing about the placement is typed -- the export decided it, which is the point.
@@ -13071,8 +13308,12 @@ function frame() {
     // loaded and I fall through the road" and "it loaded and I cannot move" are three bugs and
     // one picture from a phone, and only these two numbers tell them apart: no triangles is no
     // ground, no boxes is no buildings. Silent in the test site, `rollREC`'s rule.
+    // **AND HOW MANY BODIES THE SWEEP ACTUALLY PLACED (m127).** "the street is empty" is three
+    // bugs and one picture from a phone: the sweep found nothing, it found spots and the GLBs
+    // never arrived, or they arrived and are somewhere he has not walked to. `WPCROWD26` says
+    // the first two apart from the third, and `WP NO SPOTS` / `WP CROWD n/m` carry the rest.
     const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
-      (WP.tinted ? ' · WPTINT' + WP.tinted : '') : '';
+      (WP.tinted ? ' · WPTINT' + WP.tinted : '') + (WP.bodies ? ' · WPCROWD' + WP.bodies : '') : '';
     // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from
     // a phone. Silent when he is himself, `rollREC`'s rule.
@@ -13105,6 +13346,14 @@ addEventListener('orientationchange', () => setTimeout(resize, 120));
 resize();
 
 async function init() {
+  // **THE DENOMINATOR IS THE WORLD'S, AND IT IS SET BEFORE THE FIRST FETCH (m127).** It was 4
+  // against a test site that loads FIFTEEN files, so the bar was home before half the city had
+  // arrived -- and setting it inside the world branch, where it used to be, makes the bar
+  // RETREAT from 100% the moment the branch is reached, which reads as a failure. It is the
+  // real count of `loadGLB` calls each branch makes, decided up here where nothing has been
+  // fetched yet. If it ever drifts the bar is still clamped and `setBoot('go', 1)` forces it
+  // home, so the cost of being wrong is a bar that is a little off rather than a broken boot.
+  PROG.total = inWP() ? 14 : 15;
   // ---- the character. There is no game without him, so a failure here is reported on the
   //      card rather than warned to a console that does not exist on a phone.
   let g;
@@ -13262,7 +13511,6 @@ async function init() {
     g => { try { tag.build(g); } catch (e) { console.error('[melee] ' + tag.name + ' build failed', e); note(tag.name + ' FAILED'); } },
     e => { PROG.done++; console.warn('[melee] ' + tag.name + ' did not load', e); note('NO ' + tag.name + ' GLB'); });
   if (inWP()) {
-    PROG.total = 5;
     if (WP.fog) { scene.fog.color.setHex(WP.fog.col); scene.fog.near = WP.fog.near; scene.fog.far = WP.fog.far; }
     // **THE COLLISION FIRST, AND IT IS THE ONE THERE IS NO WORLD WITHOUT.** The visual is a
     // picture; the collision is the ground he stands on, so a slice with no picture is a man
@@ -13280,13 +13528,46 @@ async function init() {
     try { trim = await new THREE.TextureLoader().loadAsync(A(WP.trim)); }
     catch (e) { console.warn('[melee] weirdport trim sheet did not load', e); }
     await side(WP.vis, 'loading weirdport', { name: 'WPVIS', build: g => buildWpVisual(g, trim) });
+    // **AND THE SPAWN MOVES HERE, BECAUSE THE CROWD IS PLACED RELATIVE TO IT.** `wpPopulate`
+    // puts Clancy beside you and excludes the spawn's own `near` metres from the pool, and at
+    // this point in the old ordering `player.pos` was still (0, 0) -- which in Weirdport is
+    // inside `bld_dt_18_col`. The y is still taken further down, after every builder has had
+    // its say about what is under him.
+    player.pos.x = WP.spawn[0]; player.pos.z = WP.spawn[1];
+    // **AND THE CROWD IS PLACED BEFORE ANY BODY IS FETCHED.** Every `at` table in this file is
+    // a list of test-site coordinates, and a body spawned inside a tower is m24's lesson --
+    // nothing on screen disagrees with anything and the player simply cannot walk there. This
+    // rewrites them against the real collider, so the BUILDERS never learn which world they
+    // are in: they loop `K.at` exactly as they always did.
+    // **AND IT IS IN A TRY, because a crowd is not worth a boot that hangs.** Every other line
+    // in this branch is `side()`-wrapped for that reason and `init()` is called bare, so a
+    // throw here is `rig.ready` never set and a card stuck for ever on the text it was born
+    // with -- the one failure he cannot look at and correct. A city with nobody in it is still
+    // a game you can walk round, and the chip says which of the two it is.
+    try { wpPopulate(); }
+    catch (e) { console.error('[melee] weirdport crowd failed', e); note('WP CROWD FAILED'); }
   } else {
+    await side(BLD.file, 'loading a building', { name: 'BUILDING',
+               build: g => buildBuildings(g, BLD) });
+    await side(TOWER.file, 'loading a tower', { name: 'TOWER',
+               build: g => buildBuildings(g, TOWER) });
+    // THE BIKE BEFORE THE BIKER, because `buildBikers` seats one of him on it -- and a rider
+    // with no bike is the one thing worse than no rider, so `MOTO.up` is what that decision
+    // reads. **IT IS TEST-SITE ONLY AND THAT IS A STATED GAP (m127):** `MOTO.ring` was swept
+    // clear against ten boxes on a white floor, and a fixed-radius circuit through a real city
+    // has to be searched the way the crowd's spots are. With no bike `MOTO.up` is 0 and
+    // `buildBikers` correctly leaves its rider on foot, with no case of its own.
+    await side(MOTO.file, 'loading a motorcycle', { name: 'MOTO', build: buildMoto });
+  }
+
+  // ---- the bodies. BOTH WORLDS, which is the whole of m127: they used to sit inside the test
+  //      site's branch, so Weirdport was a city with nobody in it.
   await side(DUMMY.file, 'loading a body to hit', { name: 'DUMMY', build: buildDummies });
-  await side(BLD.file, 'loading a building', { name: 'BUILDING',
-             build: g => buildBuildings(g, BLD) });
-  await side(TOWER.file, 'loading a tower', { name: 'TOWER',
-             build: g => buildBuildings(g, TOWER) });
-  await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
+  // SHE HAS NO COLLIDER AT ALL -- `stepShe` writes x and z straight and only snaps y -- so she
+  // is only loaded where a circuit has been proved clear. In Weirdport that is `wpLoop`'s job
+  // and it may come back empty; the count is kept honest so the bar does not run short.
+  if (!inWP() || WP.she) await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
+  else PROG.done++;
   // THE MACE FIRST, because the warrior mounts it as he is built -- and it is only a weapon he
   // is missing if it does not arrive, not a warrior.
   await side(FOE.weapon, 'loading the mace', { name: 'MACE', build: buildMace });
@@ -13294,12 +13575,8 @@ async function init() {
   await side(HICK.file, 'loading the locals', { name: 'HICK', build: buildHicks });
   await side(HOBO.file, 'loading the locals', { name: 'HOBO', build: buildHobos });
   await side(SKATER.file, 'loading the locals', { name: 'SKATER', build: buildSkaters });
-  // THE BIKE BEFORE THE BIKER, because `buildBikers` seats one of him on it -- and a rider with
-  // no bike is the one thing worse than no rider, so `MOTO.up` is what that decision reads.
-  await side(MOTO.file, 'loading a motorcycle', { name: 'MOTO', build: buildMoto });
   await side(BIKER.file, 'loading the locals', { name: 'BIKER', build: buildBikers });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
-  }
 
   paintKit();
 
@@ -13324,10 +13601,9 @@ async function init() {
                mats: mphMats(rig.model), h: RIG.height, stride: STEP.clip, bind: rig.bind };
   player.mphH = RIG.height;
 
-  // **THE SPAWN, AFTER THE COLLIDER AND NOT BEFORE IT.** `player.pos` is (0, 0, 4) at module
-  // scope and in Weirdport the origin is inside `bld_dt_18_col`, so x and z move HERE -- where
-  // the ground he is about to stand on actually exists -- and `groundAt` does the rest.
-  if (inWP()) { player.pos.x = WP.spawn[0]; player.pos.z = WP.spawn[1]; }
+  // **THE SPAWN'S HEIGHT, AFTER EVERY BUILDER.** Its x and z are set in the world branch above,
+  // because the crowd is placed relative to them; the y is taken here, where everything that
+  // could be underneath him is already in the collider.
   player.pos.y = groundAt(player.pos.x, player.pos.z, 0, MOVE.step);
   rig.ready = true;
   setBoot('go', 1);
