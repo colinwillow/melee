@@ -498,10 +498,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m141</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m142</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m141</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m142</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -557,7 +557,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm141';
+const BUILD = 'm142';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"2516fcb8","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -3779,9 +3779,36 @@ const SFX = {
   // **AND IT THROWS AWAY A PRE-TAP NO GATE COULD REACH.** `footstep_2_r` carries a real second
   // transient at 65 ms, 70 ms IN FRONT of its footfall at 35% of peak -- so the onset gate
   // latches onto THAT and can never help. Aligned, the window opens past it.
-  // **12 ms KEEPS THE ATTACK**, which is the whole reason this is not `cut` (which starts AT
-  // the peak, right for an impact and wrong for a foot).
-  lead: .012,
+  // **AND 12 ms WAS THE WRONG END OF THAT TRADE (m142).** *"I jumped up in the air and landed
+  // on the ground and it made a noise when I hit the ground, and I think that might be the noise
+  // that's playing over and over when I run."* **His ear is right and his mechanism is not**, and
+  // the numbers say both halves. The landing CANNOT fire while running: `BODYSND.drop.at` 3
+  // against `me` .72 needs an impact of **4.17 m/s**, which at g 20 is 0.43 m of free fall, and
+  // going airborne at all needs the ground to drop away by more than `MOVE.step` 0.357 m -- so a
+  // kerb is silent and a run on the flat can never reach it. What he is hearing is a FOOTSTEP
+  // that m140 made sound like a small landing, which is mine. Measured, RMS over the first 25 ms
+  // of the window actually played:
+  //     m137, opening at the onset    .0220  .0121  .0769  .0400   -- and 48-142 ms of spread
+  //     m140-m141, lead 12 ms         .1472  .1487  .1542  .1382   -- 1.9x to **12.3x** harder
+  //     the LANDING bank, on `cut`    .3723  .3123
+  // At 12 ms the file opens ON its transient with the whole approach discarded, so all four
+  // became a uniform hard front -- which is what a metallic click IS, and it took them from 15
+  // to 30 times softer than a landing to about two.
+  // **THE ALIGNMENT IS NOT THE FAULT AND MUST NOT BE REVERTED** -- it is what removed the 94 ms
+  // spread, which was the rhythm fault. What was wrong is only how far before the peak it opens.
+  // **THIS IS A CEILING NOW AND THE USED VALUE IS MEASURED** -- see `bankLead`. Read through the
+  // SHIPPED `sfxEdge` (lifted at the `EDGE:` markers, because a harness with its own copy of the
+  // rule measures a different game), the foot bank's headroom -- `e.p` minus `e.a`, which is all
+  // the lead a file HAS -- is 37 / 50 / **30** / 101 ms, so `bankLead(foot)` resolves to **30**,
+  // set by `footstep_2_l`. That is the largest lead all four can take before one of them clamps
+  // and the spread reopens:
+  //     lead 12ms   spread 0ms    .1468 .1489 .1542 .1382   <- m140-m141. The click.
+  //     lead 30ms   spread 0ms    .0312 .0687 .0769 .0662   <- back inside the m137 band
+  //     lead 60ms   spread 30ms   .0220 .0121 .0769 .0717   <- the ceiling alone, unmeasured
+  // 60 is over the asset's own limit ON PURPOSE, so what binds is the recordings rather than
+  // this number -- and a fifth pair with less run-up moves the answer by itself, which a typed
+  // 30 would not. **`mel.SFX.lead = .012` is the A/B straight back to what he is hearing.**
+  lead: .060,
   // **A BANK IS ONLY AS EVEN AS ITS LOUDEST FILE, AND NOTHING IN `snd` EVENED IT (m138).**
   // *"There's like a tap too... I don't know why one of them sounds like this weird tap. The
   // second footsteps is soft and sounds right, but there's just annoying tap thing."*
@@ -4482,6 +4509,36 @@ function plasmaPick(chg, auto) {
   return Math.min(n - 1, (lo + Math.random() * span) | 0);
 }
 
+// **HOW FAR BEFORE ITS OWN PEAK AN ALIGNED FILE OPENS -- MEASURED PER BANK, NOT TYPED (m142).**
+// A lead is a compromise between two things that pull opposite ways, and m141 sat at the wrong
+// end of it. Too SHORT and the file opens on the transient with its whole approach thrown away,
+// which is a click; too LONG and it hits the floor of `e.a` on whichever recording has the least
+// run-up, at which point that one opens earlier than the rest and **the spread m140 removed
+// comes straight back**. So the number that is right is the largest lead every file in the bank
+// can actually take, which is the SMALLEST gap between an onset and its own peak -- a property
+// of the recordings and not a taste call. `SFX.lead` is a CEILING over it, so a bank of files
+// with long run-ups does not end up with a quarter of a second of latency.
+// **AND IT HAS TO BE A BANK NUMBER RATHER THAN A FILE NUMBER**, or files with different
+// headroom get different leads and the alignment is gone -- which is the whole point of it.
+// **RECOMPUTED WHILE THE BANK IS STILL ARRIVING.** Buffers decode asynchronously, so the first
+// seconds of a session legitimately have only some of them -- the answer is taken over what has
+// decoded and re-taken when that count changes, which is `sample()`'s own rule one repo over.
+const _lead = {};
+function bankLead(key) {
+  const list = SFX.buf[key], ed = SFX.edge[key];
+  if (!list || !ed) return SFX.lead;
+  let n = 0, lo = SFX.lead;
+  for (let i = 0; i < list.length; i++) {
+    const e = list[i] && ed[i];
+    if (!e || e.p == null) continue;
+    n++; lo = Math.min(lo, Math.max(0, e.p - e.a));
+  }
+  // the ceiling is in the cache key as well as the count, or `mel.SFX.lead` is a dead dial
+  const c = _lead[key];
+  if (c && c.n === n && c.cap === SFX.lead) return c.v;
+  _lead[key] = { n, cap: SFX.lead, v: lo };
+  return lo;
+}
 function snd(key, o) {
   if (!SFX.on || !SFX.ctx || SFX.voices >= SFX.max) return 1;
   const list = SFX.buf[key]; if (!list || !list.length) return 1;
@@ -4517,7 +4574,7 @@ function snd(key, o) {
   // `SFX.lead` BEFORE it, so every file in a bank puts its event at the same offset from the
   // trigger whatever the recording's own lead-in happens to be. See `SFX.lead`. Floored at
   // `e.a`, so a file whose peak is already early keeps its silence trim and nothing else.
-  const from = (o && o.align && e.p != null) ? Math.max(e.a, e.p - SFX.lead)
+  const from = (o && o.align && e.p != null) ? Math.max(e.a, e.p - bankLead(key))
              : (o && o.cut   && e.p != null) ? Math.max(e.a, e.p)
              : e.a;
   const full = Math.max(.02, e.b - from);

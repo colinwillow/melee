@@ -1241,6 +1241,57 @@ same picture from a phone.
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
 
+- **HIS EAR WAS RIGHT AND HIS MECHANISM WAS NOT, AND THE CLICK WAS MINE FROM m140 (m142,
+  `bankLead`).** *"I jumped up in the air and landed on the ground and it made a noise when I hit
+  the ground, and I think that might be the noise that's playing over and over when I run --
+  is it possible it's firing when I run even though it's the noise that's supposed to fire when
+  you hit the ground?"*
+  **THE LANDING CANNOT FIRE WHILE RUNNING, AND THE ARITHMETIC IS FLAT.** `bumpSnd` is gated on
+  `BODYSND.drop.at` 3 against the player's own `me` .72, so it needs an impact of **4.17 m/s** --
+  which at `MOVE.g` 20 is **0.43 m of free fall over 0.21 s** -- and going airborne at all needs
+  the ground to drop away by more than `MOVE.step` **0.357 m** in a frame. So a kerb is silent
+  and a run on the flat can never reach it, which is exactly what that field's comment claims
+  and, unlike several claims in this file, the numbers back it. `integrate` also has four call
+  sites and they are mutually exclusive branches, so it runs once a frame and cannot double-fire.
+  **BUT THE TWO SOUNDS REALLY HAD CONVERGED, AND m140 IS WHY.** `align` opened each footstep
+  `SFX.lead` **12 ms** before its own `e.p`, which is nearly what `cut` does to the LANDING bank
+  (it opens AT `e.p`) -- so a foot recording was being played from ON its transient with the
+  whole soft approach discarded. Measured, RMS over the first 25 ms of the window actually
+  played, through the SHIPPED `sfxEdge`:
+      m137, opening at `e.a`        .0220  .0121  .0769  .0400   and 48-142 ms of spread
+      m140-m141, lead 12 ms         .1468  .1489  .1542  .1382   **1.9x to 12.3x harder**
+      the LANDING bank on `cut`     .3723  .3123
+  That took a footstep from 15-to-30 times softer than a landing to about **two**, uniformly on
+  all four. **A uniform hard front IS what a metallic click is**, and it is a consequence of m140
+  I did not think about.
+  **THE ALIGNMENT IS NOT THE FAULT AND MUST NOT BE REVERTED.** It is what removed the 94 ms
+  spread, which was the rhythm half of this and is still fixed. What was wrong is only how far
+  before the peak it opens -- **one number, at the wrong end of a trade with two sides**: too
+  short and the file opens on its transient, too long and it hits the floor of `e.a` on whichever
+  recording has the least run-up, at which point that one opens earlier than the rest and the
+  spread comes straight back.
+  **SO THE LEAD IS MEASURED PER BANK AND `SFX.lead` IS ONLY A CEILING OVER IT.** The right value
+  is the largest lead EVERY file can take, which is the smallest `e.p - e.a` in the bank -- a
+  property of the recordings rather than a taste call. Headroom reads 37 / 50 / **30** / 101 ms,
+  so `bankLead(foot)` resolves to **30 ms**, set by `footstep_2_l`:
+      lead 12ms   spread 0ms    .1468 .1489 .1542 .1382   <- the click
+      lead 30ms   spread 0ms    .0312 .0687 .0769 .0662   <- back inside the m137 band
+      lead 60ms   spread 30ms   .0220 .0121 .0769 .0717   <- the ceiling alone, unmeasured
+  The ceiling is 60 **on purpose**, over the asset's own limit, so what binds is the recordings
+  and a fifth pair with less run-up moves the answer by itself. **A typed 30 would go stale the
+  next time he adds a pair, silently** -- which is the class this file keeps paying for, and he
+  has already said he will make a few more.
+  **AND IT HAS TO BE A BANK NUMBER RATHER THAN A FILE NUMBER**, or files with different headroom
+  get different leads and the alignment -- the whole point -- is gone. **Recomputed while the
+  bank is still arriving**, because buffers decode asynchronously and the first seconds of a
+  session legitimately have only some of them (`sample()`'s rule, one repo over), with the
+  ceiling in the cache key so `mel.SFX.lead` is not a dead dial.
+  **`mel.SFX.lead = .012` IS THE A/B STRAIGHT BACK TO WHAT HE IS HEARING**, which is the one
+  thing that settles this on the phone rather than here.
+  **THIS IS THE FOURTH PASS AT THE FOOTSTEPS AND THE THIRD OF MY OWN FIXES TO BE WRONG** -- m138
+  evened the gains, m139 capped the onset skip (and made the worst file worse), m140 aligned them
+  and made all four click. Each was on a real axis and only m140's was the rhythm. The thing that
+  has now worked twice is measuring the window the game ACTUALLY plays rather than the file.
 - **THE PAINTED PASSES, PORTED (m141, `TOON`/`toonPatch`, `PAINT`/`paintPatch`, the TOON and
   PAINT keys).** *"I need to figure out how to get this game more painted and then settle on a
   painted style, because the procedural kind of blender environment mixed with -- that's not
