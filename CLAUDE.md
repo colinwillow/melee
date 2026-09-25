@@ -48,6 +48,15 @@ card sits on the text it was born with and there is nothing on screen or in a ph
 say why. That is not a wrong guess he can judge; it is a round trip with nothing in it. Say the
 word and `check:boot` goes too.
 
+**AND THE COLLISION GLB IS NOT DRACO, WHICH WAS STATED WRONGLY TWICE (m129).**
+`weirdport_slice_collision.glb` is plain glTF -- only `weirdport_slice_visual_draco.glb` is
+compressed. m124 and m127 both say "the collision GLB is draco and nothing in this container can
+decode a mesh" and that is **false**: every collider vertex in Weirdport can be read here in a
+second with `fs.readFileSync` and a 20-line GLB chunk walk, which is how m129 measured the
+vehicle boxes. What genuinely cannot be decoded is the VISUAL mesh. Anything about the collider
+-- box sizes, orientations, `solidColumns`' output, where a body can stand -- is measurable
+offline and should be measured rather than reasoned about.
+
 **Do NOT run, unless he asks for it by name:**
 
 ```sh
@@ -1041,6 +1050,67 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THERE WAS NO SKY AND NO IMAGE-BASED LIGHTING AT ALL, AND THE FIX IS GENERATED RATHER THAN A
+  FILE (m129, `SKY`, `skyBake`).** *"Right now we don't actually have like any background sky or
+  HDRI that I know of."* Right, and worse: `scene.background` was a flat `0xe7edf5` and
+  **`scene.environment` was never set anywhere in the file**, so every surface in the city was
+  lit by three lights and had nothing whatever to reflect.
+  **ONE GRADIENT SERVES BOTH JOBS, WHICH IS THE WHOLE DESIGN.** It is baked into a small equirect
+  and that one texture is the visible backdrop AND, through `PMREMGenerator`, the IBL -- so the
+  sky and the light coming off it cannot disagree about what colour the sky is. **Zero asset
+  bytes**, nothing on the wire, about a megabyte resident against the ~22 MB a 2K panorama wants.
+  **AND IT DELETES A WHOLE CLASS OF BUG THIS ACCOUNT HAS PAID FOR REPEATEDLY.** Shredworld has
+  `npm run sky` because *"two skies four stops apart both look fine in a viewer and only one looks
+  like a sky in here"* -- the exposure belongs to the IMAGE, must be measured, and must be
+  re-measured every time he repaints under the same filename. Here the image is made out of
+  numbers already in linear working space, so its exposure is known by construction and there is
+  nothing to measure. Same for the colour space: the data is HALF FLOAT and therefore linear, so
+  there is no `t.colorSpace` to set before the prefilter and no way to get it backwards -- which
+  is a landmine that repo has a paragraph about.
+  **HALF FLOAT RATHER THAN BYTES, BECAUSE A 256-STEP GRADIENT BANDS** across a phone screen; and
+  rather than FULL float, because linear filtering of a float texture needs
+  `OES_texture_float_linear`, which is not universal on mobile, while half-float filtering is core
+  in WebGL2. `THREE.DataUtils.toHalfFloat` is three's own converter and is exported from the
+  vendored build (checked, along with `PMREMGenerator` and `scene.environmentIntensity`, before a
+  line was written).
+  **THE ROW MAPPING IS THREE'S OWN `equirectUv`, INVERTED, NOT GUESSED.** That function is
+  `v = 0.5 + asin(dir.y) / PI`, and a `DataTexture` is `flipY = false` -- so row 0 is v = 0 is the
+  NADIR and the last row is the zenith. Get it backwards and the ground colour is in the sky,
+  which looks deliberate and is not.
+  **SO THE BAKE CHECKS ITSELF, AND THE CHECK IS THE SUN AND NOT THE GRADIENT.** The brightest
+  texel is the disc, so its direction dotted against the light's own has to be **1.000** and a
+  flipped `v` would put it near the negative of that. It reads 1.000. **The two row luminances are
+  printed and are deliberately NOT an assertion**: the default ground is a pale warm grey and the
+  zenith a mid blue, so nadir legitimately reads BRIGHTER (0.426 against 0.366) -- a check written
+  on that ordering would fire on a sky that is perfectly correct, which is the wrong-claim-in-a-
+  comment mistake this file keeps paying for. I wrote that check, watched it be wrong, and
+  replaced it rather than shipping it.
+  **THE SUN IS THE SAME VECTOR THE LIGHT USES.** `_sunOff` is the directional light's own offset,
+  so the disc in the sky, the shading and (when the shafts land) the rays all come off ONE
+  direction rather than three numbers that drift apart -- and `sun dot` is what proves it.
+  **THE DEFAULT HORIZON IS THE COLOUR THE GAME ALREADY HAD**, on purpose: switching the sky on
+  should ADD a gradient and some bounce, not wrench the palette out from under the city he is
+  about to paint. The zenith, the ground and the disc are the new part.
+  **AND THE GROUND IS NEVER BLACK.** Below the horizon is a warm neutral, because in an IBL
+  everything facing down reflects it -- and a black lower hemisphere is every underside in the
+  city going dead.
+  **ONE COLOUR IN THE DISTANCE (`SKY.fog`).** Weirdport keeps its own fog RANGE (m125's 70..320,
+  which a 280 m city needs) and gives up its fog COLOUR to the horizon, because a blue sky behind
+  pale fog is two horizons and the eye reads the seam long before it reads either.
+  **THE OLD PMREM TARGET IS DISPOSED ON EVERY RE-BAKE.** `mel.sky({...})` re-bakes live, and a
+  PMREM target is a cubemap with a full mip chain -- leaking one per tweak is how a live dial
+  turns into a memory bug that only shows after twenty presses.
+  **AND THE IBL IS ON ITS OWN SWITCH BECAUSE IT IS THE PART THAT COSTS FRAMES.** `scene.environment`
+  is an env lookup per fragment on every PBR surface in the city, on a game already at 37 fps.
+  `mel.ibl(0)` keeps the backdrop and drops the lighting, which is the honest A/B. **It forces a
+  shader recompile on every material**, so expect a hitch on the toggle itself -- that is the
+  toggle, not the feature.
+  **WHAT IS UNVERIFIED:** there is no GPU here, so whether it reads as a sky, whether `envInt`
+  .35 is bounce or a wash, and whether the IBL is affordable at all are device questions. What
+  IS checked, every boot, is the line above. `SKY.on = 0` is the flat colour exactly as it was.
+- **AND THE ORDER MATTERS FOR THE PAINTING.** Colours picked against a flat `#e7edf5` background
+  read differently once there is a sky and IBL behind them, so the sky went in BEFORE the city is
+  painted rather than after -- otherwise they get chosen twice.
 - **A SCREENSHOT CANNOT TELL A COLLIDER BOX FROM A HOLE IN THE ART, SO THE GAME DRAWS THEM NOW
   (m128, `BOXV`, `stepBoxView`, the `COLLIDERS` key).** *"There's like these weird collider
   geometry, visible geometry that I'm just like floating on -- I can't tell if it's the vehicle
@@ -6374,6 +6444,28 @@ means anything you can carry from one situation to the next.
 - **No sprint control**: walk/run/sprint is a pure speed blend off the left stick's magnitude,
   which is what the four clips support. A dedicated sprint gesture is a slot, not a clip.
 - `weapon_root_left` is unused. Dual wield is a weapon file exported onto it and one roster line.
+- **THE SUN SHAFTS AND THE DUST ARE NOT BUILT YET, AND THE COSTS ARE KNOWN (m129).** *"The sun
+  makes these nice rays... and these little dust kind of particle things that glimmer."* The dust
+  is nearly free -- `SPK` is already a pooled `Points` with per-point size, colour and alpha in
+  ONE draw call and a `gl_PointSize` derived from the framebuffer, so an ambient drifting field is
+  a new emitter on machinery that exists. **The rays are the expensive one**: there is **no post
+  chain in this game at all** (one `renderer.render(scene, camera)`, no `EffectComposer`, no
+  render targets), so real volumetric shafts mean rendering the whole scene to a texture for the
+  first time -- which on a phone at dpr 2 is exactly the fill cost already suspected of costing
+  frames. **Billboard shafts** -- a few additive cones on the sun's own vector, one draw call, no
+  post -- are the mobile answer and are what to build first.
+- **THE VEHICLE COLLIDERS ARE THE AABB OF A ROTATED CAR (m129, measured, not fixed yet).** 55 of
+  them, mean plan-area inflation **x1.28** and worst **x2.13** -- a 2.25 x 4.00 m car at an angle
+  becomes a near-square 4.79 x 5.92 box, which is why it reads as cockeyed rather than merely big.
+  **The orientation is already gone from the collision export** (every node is at identity and the
+  boxes are baked axis-aligned), but the VISUAL file still has it: `inst_car_1_i_2` is at 64.8 deg
+  at (74, 36) and predicts 5.91 x 4.79, and `prop_car_1_i_col2` at that exact position measures
+  4.79 x 5.92. So it is fixable from this side by pairing on position and carrying `b.yaw` --
+  Shredworld's oriented-box answer -- or by his export emitting the rotated box.
+  **AND A SECOND, SEPARATE ONE THAT IS ENTIRELY MINE:** 62 of 202 `solid_`/`bld_` meshes have an
+  AABB bigger than their own geometry (worst x6.19, an archway; the streetcar x2.17). Those DO
+  still carry their true shape, so `solidColumns`' collapse test is what is throwing it away --
+  a diagonal box-shaped mesh sits right on the `fill` .5 threshold.
 - No audio at all.
 - **Nobody reacts to the disguise.** The DNA gun (m112) changes what he is DRAWN as and nothing
   else -- *"if people see you they get afraid of you, if cops see you they shoot at you, but if
