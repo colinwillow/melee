@@ -1,0 +1,72 @@
+{
+ "name": "weirdport_slice_downtown",
+ "units": "meters (1 unit = 1 m)",
+ "up_axis": "Y",
+ "origin": "slice centre. Blender world (x, y) -> glTF (x + 640, -(y + 65)); covers Blender x -780..-500, y -190..60",
+ "extent_gltf": {
+  "x": [
+   -140,
+   140
+  ],
+  "z": [
+   -125,
+   125
+  ]
+ },
+ "visual": {
+  "file": "weirdport_slice_visual.glb",
+  "mb": 22.08,
+  "tris": 376178,
+  "meshes": 182,
+  "nodes": 510,
+  "gpu_instanced_nodes": 0,
+  "images": 8,
+  "notes": [
+   "static geometry merged into one mesh per material (vis_<material>)",
+   "repeated assets are inst_* nodes (EXT_mesh_gpu_instancing)",
+   "City_Trim buildings: base + emissive + COLOR_0; apply tint mask with three/weirdportCity.js",
+   "tractor beam material needs additive + depthWrite:false",
+   "instancing: nodes named inst_<asset>_* share one mesh each; batch them into THREE.InstancedMesh at load (exporter did not emit EXT_mesh_gpu_instancing)"
+  ]
+ },
+ "collision": {
+  "file": "weirdport_slice_collision.glb",
+  "mb": 4.86,
+  "tris": 80250,
+  "nodes": 537,
+  "families": {
+   "solid": 100,
+   "bld": 75,
+   "ground": 22,
+   "deck": 2,
+   "prop": 333,
+   "ramp": 5
+  },
+  "ground_family": "road_ ground_ deck_ ramp_",
+  "solid_family": "bld_ solid_ prop_",
+  "grind": "prop_* nodes using material 'metal' (metal faces only)",
+  "props": "simple boxes; trees are 0.7 m trunk boxes 3 m tall",
+  "draco": false,
+  "negative_scale": false,
+  "materials": [
+   "collision",
+   "metal"
+  ],
+  "metal_nodes": 10,
+  "naming": "<family>_<source>_col, snake_case, unique"
+ },
+ "visual_draco": {
+  "file": "weirdport_slice_visual_draco.glb",
+  "mb": 3.88,
+  "needs": "THREE DRACOLoader (setDecoderPath) on the GLTFLoader"
+ },
+ "textures": {
+  "mobile_copies": "exports/textures_mobile/",
+  "asset_atlases": "1024 (street, trees, vehicles)",
+  "trim_basecolor": "2048 JPEG (window tiles need it)",
+  "trim_emissive": "1024",
+  "murals": "512",
+  "embedded_as": "JPEG q85",
+  "tint_mask": "load exports/textures/weirdport_trim_tintmask.png separately (loader)"
+ }
+}
