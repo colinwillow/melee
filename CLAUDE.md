@@ -1406,7 +1406,7 @@ same picture from a phone.
   and melee has two (`hueGlow` and the City_Trim tint) -- so a prototype patch would paint the
   roads, the ground and the props and leave the BUILDINGS and the WEAPONS out, which is a
   partial application that looks like a bug. The port has to chain through both hooks. It is
-  its own build and it is the next one.
+  its own build and it is the next one. **(m141 IS THAT BUILD -- see above.)**
 - **THE SUN HAD TWO WRITERS AND THE OLDER ONE WON EVERY FRAME FOR FOURTEEN BUILDS (m138,
   `stepSun`).** Twenty-two lines below the call to `stepSun`, at the bottom of `frame()` and two
   statements above `renderer.render`, sat the ORIGINAL follow:
@@ -4947,6 +4947,8 @@ same picture from a phone.
   and it is worth reaching for first every time: this repo's other failure mode is an EMPTY commit
   (m58: four of his five "fixed colin" pushes never left his machine), and "the file is somewhere
   else" and "the file never came" are one picture from a directory listing.
+  **(SUPERSEDED AT m141: he moved her into `models/characters/` himself in `29944ba`, so
+  `SKATER.file` followed. The reasoning below is why it was NOT moved unilaterally.)**
   **IT IS LEFT WHERE HE PUT IT.** `models` is already in `bump.mjs`'s `DIRS`, so `A()` hashes her
   contents and a re-export under the same name actually reaches his phone -- and moving it would
   be a 404 the next time he drops the same file in the same place, which is the audio filenames'
