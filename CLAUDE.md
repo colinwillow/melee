@@ -1144,6 +1144,60 @@ same picture from a phone.
   impact and would throw away a scuff on a recording that has one). `mel.STEP` is live --
   `r0`/`r1`, `g0`/`g1` and `jit` are the dials, and `mel.STEP.on = 0` is still the one word off.
 
+- **THE WORLD IS WHITE AND EVERY ATMOSPHERIC EFFECT IN IT WAS ALSO WHITE (m137).** *"I don't see
+  what shaft does and I don't see what dust does. I still just see a white background -- do you
+  need me to add an HDRI? You can't see the sun at all because there's just a white haze in the
+  far distant background. It doesn't look like fog at all, it just looks like a grayish white
+  background. There used to be fog you could actually see and that's how we'd see the sunrise."*
+  **FOUR SYMPTOMS, ONE CAUSE, AND NO, HE DOES NOT NEED TO ADD AN HDRI.** m129's argument stands
+  whole: a generated gradient serves the backdrop AND the IBL at **zero asset bytes**, its
+  exposure is known by construction because it is built from linear numbers, and there is no
+  `t.colorSpace` to get backwards. A 2K panorama would be ~22 MB resident and would re-open every
+  one of those. **The sky he already has was deliberately coloured to be indistinguishable from
+  the flat background it replaced**, and its halo is wider than the whole 16.4 degrees of sky this
+  camera can see. Measured through the shipped `NeutralToneMapping` at exposure 1:
+      hor 0xe7edf5  ->  rgb(223, 229, 237)     `SKY.fog` hands the FOG that same colour
+      top of band   ->  rgb(180, 203, 231)     near-white to near-white across the whole sky
+      sun disc      ->  rgb(254, 249, 241)     about **20 points** of contrast. On white.
+      the HALO      **.38 rad = 21.8 deg against a 16.4 deg band -- 1.33x the visible sky.**
+                    At the horizon under the sun it is +0.872 linear on a sky already near 0.8,
+                    so looking anywhere near the sun the WHOLE band blew out, and 90 degrees
+                    away it is exactly 0. m133 moved the sun into the band and nobody re-checked
+                    the halo's width against the band it had just been moved into.
+      the SHAFTS    additive `col` 0xffe9c0 x .35 x opacity .192 = about rgb(75, 68, 55) added
+                    onto rgb(223, 229, 237). **They ARE drawing; they saturate.**
+      the DUST      0xfff4de at alpha .16, NormalBlending, on a near-white sky and a white
+                    floor -- invisible by construction -- and `size` .020 m at 13 m is **1.2
+                    CSS px**, under the threshold of being an effect (m99's own rule).
+  **SO ONE CHANGE ANSWERS ALL FOUR: GIVE THE SKY REAL COLOUR AND THE ATMOSPHERE ROOM TO READ
+  AGAINST IT.** After, through the same tone map:
+      hor 0xd9bf9d  ->  rgb(211, 184, 148)   a warm sand haze, and **this IS the fog**
+      zen 0x3b8fd9, bend .45  ->  top of band rgb(146, 158, 187)
+      sunGlow .12 (6.9 deg, inside the band with room)  ->  disc rgb(254, 247, 238) against
+                    rgb(146..211) -- **about 90 points of contrast against about 20**
+      DUST  col 0xa89572, alpha [.25, .70], size [.028, .075]
+  **THE FOG COMES BACK FOR FREE AND THAT IS THE POINT.** `SKY.fog` has handed the fog the horizon
+  colour since m129 (*"a blue sky behind pale fog is two horizons"*), so warming the horizon warms
+  the haze with it -- one number, and the thing he misses arrives as a consequence rather than as
+  a second edit. **The fog RANGE is untouched** (m125's 70..320, which a 280 m city needs); only
+  its colour moved, which is one variable.
+  **AND THE SHAFT NUMBERS ARE UNTOUCHED, DELIBERATELY.** Killing the halo and colouring the sky
+  restores their headroom by themselves, so this build moves the sky and finds out what the shafts
+  look like against it -- rather than moving two things neither of which could then be judged.
+  **THE STATED COST: `scene.environment` IS BAKED FROM THIS SAME TEXTURE.** At `envInt` .35 a
+  warmer horizon warms the whole city's bounce, and he said the IBL is nice -- so that is a real
+  consequence of this line and not a side effect to be hidden. `mel.ibl(0)` is the A/B and
+  `mel.sky({ hor: 0xe7edf5, zen: 0x6ea8de, bend: .60, sunGlow: .38 })` is m136 exactly.
+  **AND m130's OWN NOTE HAD THE DUST POLARITY INVERTED**, corrected here rather than quietly
+  edited: it says *"alpha motes read on a dark road and additive ones read against a bright sky"*.
+  **Backwards.** Additive against a bright sky has almost no headroom left before it clips; what
+  reads against a bright backdrop is something DARKER, which is why the mote is a warm mid-tone
+  and stays on `NormalBlending`.
+  **WHAT IS UNVERIFIED AND WHY:** there is no GPU here, so whether a sand horizon reads as a
+  sunrise or as dust, whether the shafts are now visible, and whether the warmed IBL is an
+  improvement are all device questions -- which is the whole reason m135's four keys exist.
+  Both gates pass, and `skyBake` still self-checks at **sun dot 1.000**.
+
 - **I HANDED HIM FOUR CONSOLE COMMANDS AND HE PLAYS ON A PHONE (m135, `#fxKey`, `fxSet`).**
   *"I have no idea what this means or how to try it."* `mel.tint(1)`, `mel.shafts(0)`,
   `mel.ibl(0)`, `mel.dust(0)` -- four A/Bs shipped across m126..m133 and every one of them is a
@@ -1370,7 +1424,10 @@ same picture from a phone.
   as noise, whether 9 cards is rays or haze, and what either costs in frames are device questions.
   `mel.dust(0)` and `mel.shafts(0)` are the switches; `mel.dust({add:1})` is the additive A/B,
   which matters because alpha motes read on a dark road and additive ones read against a bright
-  sky, and this world has both.
+  sky, and this world has both. **-- THAT POLARITY IS BACKWARDS AND m137 CORRECTS IT:** additive
+  against a bright sky has almost no headroom before it clips, and what reads against a bright
+  backdrop is something DARKER. Left in place rather than edited, because the claim is what cost
+  a build.
 - **THERE WAS NO SKY AND NO IMAGE-BASED LIGHTING AT ALL, AND THE FIX IS GENERATED RATHER THAN A
   FILE (m129, `SKY`, `skyBake`).** *"Right now we don't actually have like any background sky or
   HDRI that I know of."* Right, and worse: `scene.background` was a flat `0xe7edf5` and

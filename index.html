@@ -493,10 +493,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m136</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m137</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m136</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m137</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -552,7 +552,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm136';
+const BUILD = 'm137';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -4541,11 +4541,17 @@ function stepSun() {
 // ============================================================================================
 const SKY = {
   on: 1,
-  // THE DEFAULT HORIZON IS THE COLOUR THE GAME ALREADY HAD, on purpose: switching the sky on
-  // should ADD a gradient and some bounce, not wrench the palette out from under the city he
-  // is about to paint. The zenith and the ground are the new part.
-  hor: 0xe7edf5,     // at the horizon
-  zen: 0x6ea8de,     // overhead
+  // **AND m129's "THE HORIZON IS THE COLOUR THE GAME ALREADY HAD" IS WHAT MADE THE WHOLE SKY
+  // INVISIBLE (m137).** That was the right call for switching a sky ON -- add a gradient, do not
+  // wrench the palette -- and it means the one thing he can actually SEE is, by deliberate
+  // choice, indistinguishable from the flat background it replaced. Through NeutralToneMapping
+  // at exposure 1: `hor` 0xe7edf5 renders rgb(223, 229, 237) and the TOP of the 16.4 deg band
+  // renders rgb(180, 203, 231) -- near-white to near-white, and `SKY.fog` hands the fog that
+  // same 0xe7edf5, which is *"a white haze in the far distant background"* exactly.
+  // So the horizon is a warm sand haze now and the zenith a real blue. That one line is also
+  // the FOG, which is the half he misses: *"there used to be fog you could actually see"*.
+  hor: 0xd9bf9d,     // at the horizon -- and this IS the fog colour (`SKY.fog`)
+  zen: 0x3b8fd9,     // overhead
   gnd: 0xb9ad9c,     // below it -- never black, or everything reflects a hole
   // **AND `bend` 1.35 SPENT THE WHOLE GRADIENT ABOVE THE SCREEN (m133).** It is a power on
   // sin(elevation), so at the TOP of the visible band (16.4 deg) it returned t = 0.181 -- the
@@ -4554,13 +4560,21 @@ const SKY = {
   // gradient really was in and really was indistinguishable from the flat background it
   // replaced, which is his report described exactly. At .60 that same top-of-band reads t =
   // 0.468, so half the blue is on screen: #e7edf5 -> **#b5cfeb**. >1 keeps the band low and
-  // <1 pulls it down into the only 16 degrees this camera can see.
-  bend: .60,         // how fast the horizon gives way to the zenith
+  // <1 pulls it down into the only 16 degrees this camera can see. **.45 (m137)** puts t at
+  // 0.566 at the top of the band, so the gradient spends most of its range where the camera
+  // is actually pointed: warm below, cool above, rather than near-white to near-white.
+  bend: .45,         // how fast the horizon gives way to the zenith
   gndFade: .10,      // how soft the ground meets the horizon, in units of elevation
   sun: 1,            // the disc and its halo
   sunCol: 0xfff0d8,
   sunSize: .055,     // the core, in radians of angular RADIUS (~3 deg)
-  sunGlow: .38,      // and the halo round it
+  // **AND THE HALO WAS WIDER THAN THE WHOLE SKY (m137).** .38 rad is 21.8 degrees against a
+  // visible band of 16.4, so at the horizon under the sun it contributed +0.87 linear on a sky
+  // already near 0.8 -- **the entire band blew to white** looking anywhere near the sun, and
+  // was exactly 0 ninety degrees away. m133 moved the sun INTO the band and nobody re-checked
+  // the halo's width against it. .12 is 6.9 degrees, which fits inside the band with room, and
+  // the disc then reads ~90 points of contrast against the sky rather than ~20.
+  sunGlow: .12,      // and the halo round it -- MUST stay well under the 16.4 deg visible band
   sunPow: 2.6,       // how fast the halo falls off -- higher is tighter
   sunK: 7,           // how much brighter than the sky the core is. This is the one number the
                      // IBL actually feels, because a bright spot is a direction to bounce from.
@@ -13708,14 +13722,23 @@ const DUST = {
   on: 1,
   n: 220,
   r: 13,                 // the half-width of the box kept round him
-  size: [.020, .055],    // metres -- `aSize` is world units, see `puffFlush`
-  col: 0xfff4de,
+  // **A MOTE IS SEEN AGAINST WHATEVER IS BEHIND IT, AND EVERYTHING HERE IS PALE (m137).**
+  // 0xfff4de at alpha .16 on a near-white sky and a white floor is invisible by construction,
+  // and .020 m at 13 m is **1.2 CSS px** -- under the threshold of being an effect (m99).
+  // A warm mid-tone is darker than the sky AND lighter than tarmac, which is the one value
+  // that reads in both halves of this world.
+  size: [.028, .075],    // metres -- `aSize` is world units, see `puffFlush`
+  col: 0xa89572,
   drift: [.10, .40],     // m/s sideways
   rise: [-.08, .20],     // and vertically, so they do not all fall or all climb
   glim: [.5, 2.2],       // the glimmer, in cycles a second
   deep: .55,             // how much of the alpha the glimmer actually swings
-  alpha: [.16, .55],
+  alpha: [.25, .70],
   add: 0,                // 0 alpha-blends, 1 is additive. `mel.dust({add:1})` -- see below.
+                         // **AND m130's NOTE HAD THAT POLARITY BACKWARDS**: additive against a
+                         // BRIGHT sky has almost no headroom (it clips to white), and what reads
+                         // against a bright backdrop is something DARKER. Alpha is the default
+                         // for the sky; additive is the one for a dark road.
 };
 const dust = { P: null, vx: [], vy: [], vz: [], ph: [], rt: [], a0: [] };
 function dustBuild() {
