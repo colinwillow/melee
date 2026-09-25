@@ -498,14 +498,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m140</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m141</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m140</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m141</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -557,7 +557,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm140';
+const BUILD = 'm141';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/fat_activist_01.glb":"b4f87d81","models/fat_biker_01.glb":"576b7cf5","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -4663,6 +4663,278 @@ sun.shadow.bias = -0.0009;
 // it is shipped as insurance against a predictable consequence of the line above rather than
 // as a fix for something seen -- `mel.sun(57)` puts the whole thing back for the A/B.
 sun.shadow.normalBias = 0.04;
+
+// ============================================================================================
+// THE PAINTED PASSES (m141) -- ported whole from Shredworld
+// ============================================================================================
+// *"I need to figure out how to get this game more painted and then settle on a painted style,
+// because the procedural kind of blender environment mixed with -- that's not painted -- and
+// then the characters being like nice textures and painted, they kind of clash."*
+// Two passes, both procedural, **zero asset bytes and zero download**, and they are what a
+// painted world is made of over there:
+//     TOON    the diffuse quantised into bands, plus a rim
+//     PAINT   flat patches of colour with a DARK SEAM between them
+// **THE VENDORED three IS BYTE-IDENTICAL TO SHREDWORLD'S** (md5 f5156dd8 / 55ff257d on both
+// files), so every splice target below is guaranteed to match here exactly as it does there --
+// which is the one thing about a shader port that can fail silently and the one thing there is
+// no GPU in this container to check.
+//
+// **THEY ARE TWO KEYS AND NOT ONE, and both are OFF by default.** A style question can only be
+// settled on the phone, and each toggle has to move ONE variable or neither can be judged --
+// this file's oldest standing rule about the settings panel, and the reason `mel.tint(1)` was
+// worth nothing until m135 gave it a key.
+//
+// **AND BOTH ARE UNIFORM FLIPS, SO NEITHER PRESS RECOMPILES ANYTHING.** `uToonK` at 0 makes
+// `toonRamp` return its own argument and takes the rim to zero; `uPaintK` at 0 skips the whole
+// block. That is a real difference from the IBL key, which re-prefilters and hitches -- these
+// cost one uniform write and the frame after a press is the frame before it.
+//
+// **WHAT IS DELIBERATELY NOT HERE IS THE PALETTE PASS.** Shredworld's `palPatch` is a third
+// thing -- a hue-vs-hue curve that pulls every primary toward a sampled art palette -- and he
+// has just turned the vertex TINT off with *"it's a little too colorful"*. Shipping a colour
+// remap in the same build as the thing it would be judged against is two variables at once.
+// ---------- the ramp ----------
+// **THE RAMP SHAPES THE DIFFUSE ONLY, AND THAT IS NOT A PREFERENCE -- IT IS FOURTEEN BUILDS.**
+// three's Smith visibility ends `0.5 / max( gv + gl, EPSILON )` and both terms carry a factor
+// of dotNV or dotNL, so on a silhouette both go to zero, the denominator collapses onto EPSILON
+// (1e-6) and V comes back at about half a million. Stock three is fine, because the same dotNL
+// multiplies the irradiance in front of it and cancels the blow-up exactly. Substitute a ramp
+// into the ONE dotNL feeding BOTH lobes and that cancellation is gone: where the true dotNL was
+// zero the irradiance is still `floor` of full sun while the visibility term has already
+// exploded, which is a red one-pixel contour tracing every curved silhouette in the game.
+// So `irradianceToon` is added ALONGSIDE `irradiance` and only the DIFFUSE line reads it.
+// There is a hard ceiling on both specular accumulators underneath, which costs nothing and is
+// right whether the ramp is on or off -- it stays live at `on: 0`.
+const TOON = {
+  on: 0, k: 1,
+  bands: 3,          // how many steps between the floor and full light
+  soft: .055,        // how sharp a band edge is. Lower is harder.
+  // **LOWER THAN SHREDWORLD'S .40, AND THAT IS ABOUT THIS GAME'S LIGHTING RATHER THAN TASTE.**
+  // The ramp shapes DIRECT light only, and melee runs hemi 1.75 + fill 0.85 against a sun of
+  // 2.4 -- so a much larger share of every surface is ambient here than over there (sun 3.4,
+  // hemi 1.6) and the bands have less to bite on. A lower floor gives the ramp more range to
+  // spend. **FLAT and TOON therefore pull opposite ways**: FLAT cuts the directional by 70%,
+  // which is exactly the term the ramp quantises, so the two together read as almost no bands.
+  // Worth knowing before judging either; they are meant to be tried one at a time.
+  floor: .28,
+  // **THE RIM IS DELIBERATELY LOW HERE FOR THE SAME REASON THE FLOOR IS.** Shredworld's .54 is
+  // a light edge against a dark city; melee's world is a near-white floor under a pale sky, and
+  // a white rim on a white wall is either invisible or mud. A dial, not a finding.
+  rim: .24, rimP: 3.4, rimCol: new THREE.Color('#dcefff'),
+  // 1 = the rim takes the colour of the surface it is on, 0 = flat white on everything. A rim
+  // IS light coming off a surface, so dark things get a dark rim.
+  rimTint: 1,
+  // how much specular survives overall, and at the GRAZING end. Schlick takes every dielectric
+  // to a mirror at grazing incidence -- F goes to 1.0 however rough the surface is -- so a
+  // 0.9-rough wall still hands back the whole sun along its own silhouette. Roughness cannot
+  // fix that; only turning the specular down there does.
+  spec: 1, specG: .06,
+};
+const TOON_UNI = { uToonK: { value: 0 }, uToonN: { value: 3 }, uToonSoft: { value: .055 },
+  uToonFloor: { value: .28 }, uRim: { value: 0 }, uRimP: { value: 3.4 },
+  uRimCol: { value: TOON.rimCol }, uSpec: { value: 1 }, uSpecG: { value: 1 }, uRimTint: { value: 1 } };
+function toonSync() {
+  const k = TOON.on ? TOON.k : 0;
+  TOON_UNI.uToonK.value = k;
+  TOON_UNI.uToonN.value = Math.max(1, TOON.bands);
+  TOON_UNI.uToonSoft.value = Math.max(.001, TOON.soft);
+  TOON_UNI.uToonFloor.value = TOON.floor;
+  TOON_UNI.uRim.value = TOON.rim; TOON_UNI.uRimP.value = TOON.rimP;
+  TOON_UNI.uRimTint.value = TOON.rimTint;
+  // **THE SPECULAR TAME RIDES THE KEY TOO.** It is part of the LOOK rather than part of the
+  // safety net -- the ceiling below is the safety net -- so at `on: 0` the material is stock.
+  TOON_UNI.uSpec.value = k > 0 ? TOON.spec : 1;
+  TOON_UNI.uSpecG.value = k > 0 ? TOON.specG : 1;
+}
+function toonPatch(sh) {
+  for (const k in TOON_UNI) sh.uniforms[k] = TOON_UNI[k];
+  // A SKINNED NORMAL CAN COME OUT AS ZERO. At a joint a vertex is weighted between two bones,
+  // and when those rotate against each other the two rotated copies of its normal can cancel to
+  // nothing -- three does not renormalise before this line, so normalize() gets a zero vector
+  // and returns NaN, and a NaN at ONE vertex is interpolated across the WHOLE triangle. It
+  // shades white, which is exactly the class of speck that cost Shredworld fourteen builds.
+  sh.vertexShader = sh.vertexShader.replace('#include <normal_vertex>', `#ifndef FLAT_SHADED
+    vNormal = dot( transformedNormal, transformedNormal ) > 1e-10 ? normalize( transformedNormal ) : vec3( 0.0, 0.0, 1.0 );
+    #ifdef USE_TANGENT
+      vTangent = normalize( transformedTangent );
+      vBitangent = normalize( cross( vNormal, vTangent ) * tangent.w );
+    #endif
+  #endif`);
+  sh.fragmentShader = 'uniform float uToonK, uToonN, uToonSoft, uToonFloor, uRim, uRimP, uSpec, uSpecG, uRimTint;\nuniform vec3 uRimCol;\n'
+    + 'float toonRamp(float x){\n  float s = x * uToonN, b = floor(s), f = s - b;\n'
+    + '  float q = (b + smoothstep(0.5 - uToonSoft, 0.5 + uToonSoft, f)) / uToonN;\n'
+    + '  q = uToonFloor + (1.0 - uToonFloor) * q;\n  return mix(x, q, uToonK);\n}\n'
+    + sh.fragmentShader
+      .replace('#include <lights_physical_pars_fragment>', THREE.ShaderChunk.lights_physical_pars_fragment
+        .replace('float dotNL = saturate( dot( geometryNormal, directLight.direction ) );\n\tvec3 irradiance = dotNL * directLight.color;',
+          'float dotNL = saturate( dot( geometryNormal, directLight.direction ) );\n\tvec3 irradiance = dotNL * directLight.color;\n\tvec3 irradianceToon = toonRamp( dotNL ) * directLight.color;')
+        .replace('reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );',
+          'reflectedLight.directDiffuse += irradianceToon * BRDF_Lambert( material.diffuseColor );'))
+      // and the same guard after interpolation, since a NaN varying stays NaN
+      .replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\n  if ( !( dot( normal, normal ) > 0.5 ) ) normal = vec3( 0.0, 0.0, 1.0 );')
+      .replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+      {
+        float _nv = saturate( dot( geometryNormal, geometryViewDir ) );
+        float _sk = uSpec * mix( uSpecG, 1.0, _nv );
+        reflectedLight.directSpecular *= _sk;
+        reflectedLight.indirectSpecular *= _sk;
+        // a hard ceiling, on whether the ramp is on or not: no highlight in this game is worth
+        // eight times the sun, and a grazing-angle singularity should never reach the frame.
+        reflectedLight.directSpecular = min( reflectedLight.directSpecular, vec3( 4.0 ) );
+        reflectedLight.indirectSpecular = min( reflectedLight.indirectSpecular, vec3( 4.0 ) );
+        float _rf = 1.0 - _nv;
+        totalEmissiveRadiance += uRimCol * mix( vec3( 1.0 ), diffuseColor.rgb, uRimTint ) * (pow(_rf, uRimP) * uRim * uToonK);
+      }`);
+}
+// ---------- the paint ----------
+// **IT IS NOT NOISE ADDED TO A COLOUR -- THAT READS AS DIRT.** A painted surface is areas of ONE
+// FLAT COLOUR with a drawn line where two of them meet, so the broad noise is THRESHOLDED into
+// patches (a smoothstep across a narrow band, which is nearly a step) AND THE BAND ITSELF IS
+// DARKENED. That dark seam is the ink, and it is the single thing that makes this read as paint
+// rather than as a dirty wall. Drop it and the rest of this is mottling.
+// **VALUE NOISE LIVES ON AN INTEGER LATTICE, AND A THRESHOLD ACROSS IT DRAWS THAT LATTICE** --
+// every patch edge comes out along a grid line and the mottle comes out as graph paper. So the
+// broad pattern is DOMAIN-WARPED before it is thresholded, and the mottle is two lattices at
+// different angles and scales whose overlap is an irregular mosaic. Both were paid for there.
+// **AND IT IS BAKED INTO A TILE, NOT EVALUATED PER FRAGMENT.** Shredworld shipped it as fourteen
+// `sin()` a fragment across the whole screen and he reported the frame rate for it (c139) --
+// a function of POSITION is a texture. It costs two fetches.
+// **TWO FETCHES RATHER THAN ONE, and the second is not waste**: a single tile repeating every
+// `tile` metres across a flat road is a visible grid, which is the graph-paper failure the
+// domain warp exists to prevent, reintroduced by the fix for it. The second sample is the same
+// tile at an irrational scale and an odd angle, so the two never line up again.
+// **AND THERE IS NO ROAD DIAL HERE.** Shredworld has `PAINT.road` because its roads carry an
+// `aRoad` vertex attribute its city bake writes; nothing in melee's geometry does, and a
+// declared attribute nobody supplies is a stale generic waiting to happen. One dial.
+const PAINT = {
+  on: 0, k: 1,
+  scale: .055,      // how big a patch is, in world units^-1 -- LOWER is broader
+  patch: .30,       // how far the two sides of a threshold drift apart in value
+  ink: .20,         // and how dark the seam between them is. THIS is the painted read.
+  cell: .13,        // the flagstone mottle inside a patch
+  cellS: .85,
+  warm: .035,       // a patch drifts in HUE as well as value: warm one side, cool the other
+  tile: 34,         // how many world metres the baked tile covers
+};
+// **MEASURED ON THE SHIPPED `paintBake`, which is the one half of this a headless box CAN
+// answer**: of the 65,536 texels, **78.0% sit flat at the dark side, 18.9% flat at the light
+// side and 3.1% are the transition between them**, with the ink channel near zero everywhere
+// except on those seams. That ratio IS the mechanism -- areas of one flat colour with a drawn
+// line where two meet -- and a tile that came back smooth would be mottling rather than paint.
+// It is also deliberately NOT symmetric, so the pass is a net darkening of roughly 9% of
+// `patch` over a surface. That is Shredworld's own shipped threshold and it is left verbatim
+// (the ported parts are the ones that are right; my additions are the first suspects) -- but on
+// a world this pale it is the thing to notice first, and `PAINT.patch` is the dial.
+const PAINT_UNI = { uPaintK: { value: 0 }, uPaintTile: { value: 34 }, uPaintP: { value: .30 },
+  uPaintI: { value: .20 }, uPaintC: { value: .13 }, uPaintW: { value: .035 }, uPaintT: { value: null } };
+const PAINT_T = { tex: null, n: 256 };
+// WHAT IS IN THE TILE: R the thresholded band (the patches), G the mosaic mottle, B the ink
+// seam. The threshold, the domain warp and the two-lattice mosaic are all baked; the shader
+// keeps only the parts that depend on the SURFACE rather than on the position.
+function paintBake() {
+  const N = PAINT_T.n, D = new Uint8Array(N * N * 4);
+  const ph = (x, y) => { const v = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453; return v - Math.floor(v); };
+  const pn = (x, y) => {
+    const ix = Math.floor(x), iy = Math.floor(y);
+    let fx = x - ix, fy = y - iy; fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy);
+    const a = ph(ix, iy), b = ph(ix + 1, iy), c = ph(ix, iy + 1), d = ph(ix + 1, iy + 1);
+    return (a + (b - a) * fx) + ((c + (d - c) * fx) - (a + (b - a) * fx)) * fy;
+  };
+  const span = PAINT.tile * PAINT.scale;
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    let px = (i / N) * span, py = (j / N) * span;
+    const w = pn(px * 2.1 + 17, py * 2.1 + 53);
+    px += (w - .5) * .52; py += (w - .5) * .36;
+    const gp = pn(px * .866 - py * .5, px * .5 + py * .866);
+    const qx = (i / N) * span * (PAINT.cellS / PAINT.scale), qy = (j / N) * span * (PAINT.cellS / PAINT.scale);
+    const qax = qx * .906 - qy * .423, qay = qx * .423 + qy * .906;
+    const qbx = (qx * .766 + qy * .643) * 1.31, qby = (-qx * .643 + qy * .766) * 1.31;
+    const cell = .5 * (ph(Math.floor(qax), Math.floor(qay)) + ph(Math.floor(qbx), Math.floor(qby)));
+    const t = Math.max(0, Math.min(1, (gp - .44) / .12));
+    const band = t * t * (3 - 2 * t) - .5;
+    const e = Math.max(0, Math.min(1, Math.abs(gp - .5) / .055));
+    const ink = 1 - (e * e * (3 - 2 * e));
+    const o = (j * N + i) * 4;
+    D[o] = Math.round((band + .5) * 255); D[o + 1] = Math.round(cell * 255);
+    D[o + 2] = Math.round(ink * 255); D[o + 3] = 255;
+  }
+  if (!PAINT_T.tex) {
+    PAINT_T.tex = new THREE.DataTexture(D, N, N, THREE.RGBAFormat);
+    PAINT_T.tex.wrapS = PAINT_T.tex.wrapT = THREE.RepeatWrapping;
+    PAINT_T.tex.magFilter = PAINT_T.tex.minFilter = THREE.LinearFilter;
+    PAINT_T.tex.generateMipmaps = false;
+  } else PAINT_T.tex.image.data.set(D);
+  PAINT_T.tex.needsUpdate = true;
+  PAINT_UNI.uPaintT.value = PAINT_T.tex;
+}
+// re-baked only when something the TILE depends on has actually moved. Compared as numbers
+// rather than as a joined string, because this runs every frame and a string is an allocation.
+let _pwS = -1, _pwC = -1, _pwT = -1;
+function paintSync() {
+  if (PAINT.scale !== _pwS || PAINT.cellS !== _pwC || PAINT.tile !== _pwT) {
+    _pwS = PAINT.scale; _pwC = PAINT.cellS; _pwT = PAINT.tile; paintBake();
+  }
+  PAINT_UNI.uPaintK.value = PAINT.on ? PAINT.k : 0;
+  PAINT_UNI.uPaintTile.value = Math.max(1, PAINT.tile);
+  PAINT_UNI.uPaintP.value = PAINT.patch; PAINT_UNI.uPaintI.value = PAINT.ink;
+  PAINT_UNI.uPaintC.value = PAINT.cell; PAINT_UNI.uPaintW.value = PAINT.warm;
+}
+function paintPatch(sh) {
+  for (const k in PAINT_UNI) sh.uniforms[k] = PAINT_UNI[k];
+  sh.vertexShader = 'varying vec3 vPW; varying vec3 vPN;\n' + sh.vertexShader
+    .replace('#include <project_vertex>', `#include <project_vertex>
+      vPW = (modelMatrix * vec4(transformed, 1.0)).xyz;
+      vPN = mat3(modelMatrix) * objectNormal;`);
+  sh.fragmentShader = `uniform float uPaintK, uPaintTile, uPaintP, uPaintI, uPaintC, uPaintW;
+    uniform sampler2D uPaintT;
+    varying vec3 vPW; varying vec3 vPN;
+  ` + sh.fragmentShader
+    .replace('#include <color_fragment>', `#include <color_fragment>
+      if (uPaintK > 0.002) {
+        // DOMINANT-AXIS PLANAR PROJECTION, not triplanar. This is a box city: its surfaces are
+        // within a few degrees of an axis nearly everywhere, so blending three samples would
+        // triple the cost to hide a seam that only exists at 45 degrees. Where the axis does
+        // flip it is a 90-degree corner -- a wall meeting a roof -- and those two wanting
+        // different patterns is correct rather than a fault.
+        vec3 an = abs(normalize(vPN));
+        vec2 P = (an.y > an.x && an.y > an.z) ? vPW.xz : (an.x > an.z ? vPW.zy : vPW.xy);
+        P /= uPaintTile;
+        vec4 t0 = texture2D(uPaintT, P);
+        vec2 Q = vec2(P.x * 0.643 - P.y * 0.766, P.x * 0.766 + P.y * 0.643) * 0.373;
+        vec4 t1 = texture2D(uPaintT, Q);
+        float band = (t0.r - 0.5) * 0.68 + (t1.r - 0.5) * 0.32;
+        float cell = t0.g * 0.6 + t1.g * 0.4;
+        float ink  = max(t0.b, t1.b * 0.7);
+        diffuseColor.rgb *= 1.0 + uPaintK * (band * uPaintP + (cell - 0.5) * uPaintC);
+        // THE HUE DRIFTS TOO, not just the value. A patch that is only lighter reads as
+        // LIGHTING; one that is lighter and a touch warmer reads as a different mix of paint.
+        diffuseColor.rgb += uPaintK * uPaintW * band * vec3(1.0, 0.25, -0.7);
+        // THE INK: the seam between two patches, darkened. Without it this is mottling.
+        diffuseColor.rgb *= 1.0 - uPaintK * ink * uPaintI;
+        diffuseColor.rgb = max(diffuseColor.rgb, vec3(0.0));
+      }`);
+}
+// **THE PROTOTYPE HOOK REACHES EVERYTHING WITH NO HOOK OF ITS OWN** -- the city, the ground, the
+// streets, the props, the vehicles, the NPCs -- one patch and no per-asset work. `userData
+// .noPaint` opts a material out, and every CHARACTER sets it: a threshold pass over a face
+// reads as dirt, and the mixed-media look he is after is a PAINTED WORLD with SHADED people in
+// it. They still take the ramp.
+// **AND MELEE HAS TWO MATERIALS WITH HOOKS OF THEIR OWN, WHICH IS WHY THIS IS NOT ONE LINE.**
+// An instance `onBeforeCompile` SHADOWS the prototype's completely, so a bare prototype patch
+// would paint the roads and the props and leave the WEAPONS and the BUILDINGS out -- a partial
+// application that looks like a bug rather than like a style. `hueGlow` and the City_Trim tint
+// both call these themselves; see each of them.
+THREE.MeshStandardMaterial.prototype.onBeforeCompile = function (sh) {
+  toonPatch(sh);
+  if (!this.userData.noPaint) paintPatch(sh);
+};
+// A MATERIAL CARRYING A CUSTOM HOOK NEEDS ITS OWN CACHE KEY or three can hand it a program
+// compiled for something else -- and `noPaint` genuinely produces a different program, so it
+// has to be in the key.
+THREE.MeshStandardMaterial.prototype.customProgramCacheKey = function () {
+  return 'paint:' + (this.userData.noPaint ? 0 : 1) + (this.userData.tag || '');
+};
+toonSync(); paintSync();
 scene.add(sun, sun.target);
 // **A 44 METRE SHADOW CAMERA IN A 280 METRE CITY WORKS IN ONE CORNER OF IT (m124).** Fixed at
 // the origin it is exactly right for a test site you can see across and covers about two and a
@@ -6351,7 +6623,13 @@ function measureHue(tex, label) {
 // the band's centre, TIMES its saturation, so a grey or a white can never light up however the
 // band is set. Two objects, one rule, one place to be wrong.
 function hueGlow(mat, u, tag) {
+  // **THIS HOOK SHADOWS THE PROTOTYPE'S COMPLETELY, so the ramp has to be called from inside
+  // it or the two things holding a weapon are the two things in the game that are not toon
+  // shaded.** No `paintPatch`: a threshold pass over a character's own texture reads as dirt,
+  // and a PAINTED WORLD with SHADED people in it is the mixed-media look he asked for.
+  mat.userData.noPaint = 1;
   mat.onBeforeCompile = sh => {
+    toonPatch(sh);
     sh.uniforms.uGK = u.k; sh.uniforms.uGH = u.hue; sh.uniforms.uGW = u.wid; sh.uniforms.uGC = u.rgb;
     sh.fragmentShader = sh.fragmentShader
       .replace('void main() {', `
@@ -8472,6 +8750,8 @@ function fxOn(k) {
        // the key rather than by comparing it to a memory of the gradient.
        : k === 'sky'    ? (SKY.src === 'img' && skyImg ? 1 : 0)
        : k === 'flat'   ? (FLAT.on ? 1 : 0)
+       : k === 'toon'   ? (TOON.on ? 1 : 0)
+       : k === 'paint'  ? (PAINT.on ? 1 : 0)
        :                  (WP.tintMode ? 1 : 0);
 }
 function fxSet(k, on) {
@@ -8484,6 +8764,10 @@ function fxSet(k, on) {
   else if (k === 'shafts') { SHAFT.on = on; shaftDrop(); }
   else if (k === 'ibl') { SKY.env = on; skyBake(); }
   else if (k === 'dust') { DUST.on = on; dustDrop(); }
+  // **NEITHER OF THESE RECOMPILES ANYTHING** -- both are a uniform going to zero, so unlike the
+  // IBL key there is no hitch on the press and what you see the frame after is the effect.
+  else if (k === 'toon') { TOON.on = on; toonSync(); }
+  else if (k === 'paint') { PAINT.on = on; paintSync(); }
   else if (k === 'flat') flatSet(on);
   else { WP.tintMode = on ? 2 : 0; WPTINT.value = WP.tintMode; }
   return on;
@@ -8495,7 +8779,8 @@ function fxSet(k, on) {
 let fxLit = -1;
 function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
-          | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7);
+          | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7)
+          | (fxOn('toon') << 8) | (fxOn('paint') << 9);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -9991,6 +10276,7 @@ function buildShe(g) {
       // channel at all, and a transparent skin sorts against ITSELF -- her far side drawing
       // over her near side. With the alpha opaque that flag buys nothing and risks that, so it
       // comes off. Nothing else about the material is touched.
+      m.userData.noPaint = 1; m.needsUpdate = true;   // a character is SHADED, not painted
       if (m.transparent) { m.transparent = false; m.depthWrite = true; }
       m.alphaTest = SHE.alphaTest;                 // 0. Raise it only if she needs cut-out hair.
       if (SHE.side === 'front') m.side = THREE.FrontSide;
@@ -10418,6 +10704,12 @@ function buildWpVisual(g, trim) {
           mask.colorSpace = THREE.NoColorSpace;
           WPTINT.value = WP.tintMode;
           m.onBeforeCompile = sh => {
+            // **SAME REASON AS `hueGlow`, and here it is the whole downtown.** The tint is
+            // patched LAST so it ends up FIRST in the shader: both it and the paint replace
+            // `#include <color_fragment>`, and the palette has to settle the base colour
+            // before the paint splotches it -- otherwise every patch edge is a different hue
+            // from its neighbour. Shredworld's own ordering rule, one pass along.
+            toonPatch(sh); paintPatch(sh);
             sh.uniforms.tintMask = { value: mask };
             sh.uniforms.uTintMode = WPTINT;
             sh.fragmentShader = sh.fragmentShader
@@ -10853,8 +11145,12 @@ function bodyProto(g, K) {
     const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
     for (const m of mats) {
       if (!m.isMeshStandardMaterial) continue;
+      m.userData.noPaint = 1;             // a character is SHADED, not painted -- see the passes
       if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffffff); }
       m.emissiveIntensity = RIG.emissive;
+      // `noPaint` is in the program cache key, so a material that had already compiled would
+      // otherwise keep the painted shader it was given.
+      m.needsUpdate = true;
     }
   });
   proto.updateMatrixWorld(true);
@@ -14383,6 +14679,10 @@ function frame() {
   // wire a frame behind the body it is describing is the second-thing-to-be-wrong this view
   // exists not to become.
   stepBoxView();
+  // the two painted passes, so every number in `mel.TOON` / `mel.PAINT` is live from a console.
+  // A handful of uniform writes and three number compares; the tile is re-baked only when one
+  // of the three things it actually depends on has moved.
+  toonSync(); paintSync();
   fxKeys();
   paintRetic();
   // (the sun is `stepSun`'s and only `stepSun`'s -- see its note. The line that used to sit
@@ -14995,6 +15295,11 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // moves; `skyBake` re-runs because `_sunOff` is what it measures the disc's direction from,
   // and without it the sky would go on drawing a sun the shading no longer has.
   flat: v => flatSet(v == null ? !FLAT.on : v),
+  // the two painted passes. `mel.TOON` and `mel.PAINT` are live -- every number in them is read
+  // by `toonSync`/`paintSync` every frame, so a console tweak takes on the next one.
+  toon:  v => { TOON.on  = (v == null ? !TOON.on  : (v ? 1 : 0)); toonSync();  return TOON.on; },
+  paint: v => { PAINT.on = (v == null ? !PAINT.on : (v ? 1 : 0)); paintSync(); return PAINT.on; },
+  TOON, PAINT,
   sun: d => { if (d != null) sunSet(d);
     return { elev: +sunElev().toFixed(1),
              topOfFrame: +((CAM.fov / 2) - CAM.el * 180 / Math.PI).toFixed(1) }; },

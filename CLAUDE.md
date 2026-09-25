@@ -1241,6 +1241,83 @@ same picture from a phone.
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
 
+- **THE PAINTED PASSES, PORTED (m141, `TOON`/`toonPatch`, `PAINT`/`paintPatch`, the TOON and
+  PAINT keys).** *"I need to figure out how to get this game more painted and then settle on a
+  painted style, because the procedural kind of blender environment mixed with -- that's not
+  painted -- and then the characters being like nice textures and painted, they kind of
+  clash."* Then: *"do the painted style port."*
+  **THE VENDORED three IS BYTE-IDENTICAL TO SHREDWORLD'S** -- md5 `f5156dd8` on `three.core.min
+  .js` and `55ff257d` on `three.module.min.js`, both files, both repos -- so every splice target
+  is guaranteed to match here exactly as it does there. **That is the one thing about a shader
+  port that fails SILENTLY and the one thing no gate in this container can check**, and it was
+  checked by reading the build rather than by arguing: the two lighting-chain targets exist
+  byte-exact inside `lights_physical_pars_fragment` (one occurrence, tabs and all) and all six
+  includes the two patches replace are present.
+  **TWO PASSES, AND THE PAINT'S TRICK IS THE THRESHOLD RATHER THAN THE NOISE.** Noise added to a
+  colour reads as DIRT. A painted surface is areas of ONE FLAT COLOUR with a drawn line where two
+  of them meet -- so the broad noise is thresholded into patches and **the band between them is
+  DARKENED**. That seam is the ink and it is the single thing that makes this read as paint.
+  **MEASURED ON THE SHIPPED `paintBake`, which is the half a headless box can answer**: of 65,536
+  texels, **78.0% flat dark, 18.9% flat light, 3.1% transition**, with the ink channel near zero
+  everywhere but those seams. A tile that came back SMOOTH would be mottling.
+  **AND IT IS NOT SYMMETRIC** -- a net darkening of about 9% of `patch` over a surface. Left
+  verbatim, because the ported parts are the ones that are right and my additions are the first
+  suspects (c101's rule, twice over); stated because on a world this pale it is the thing to
+  notice first, and `PAINT.patch` is the dial.
+  **THE RAMP SHAPES THE DIFFUSE ONLY, AND THAT IS FOURTEEN BUILDS RATHER THAN A PREFERENCE.**
+  three's Smith visibility ends `0.5 / max( gv + gl, EPSILON )` and both terms carry a factor of
+  dotNV or dotNL, so on a silhouette both go to zero, the denominator collapses onto EPSILON
+  (1e-6) and V comes back near half a million. Stock three cancels it exactly, because the same
+  dotNL multiplies the irradiance in front of it. **Substitute a ramp into the ONE dotNL feeding
+  BOTH lobes and that cancellation is gone**: where the true dotNL was zero the irradiance is
+  still `floor` of full sun while the visibility term has already exploded, which is a red
+  one-pixel contour tracing every curved silhouette in the game. `irradianceToon` is added
+  ALONGSIDE `irradiance` and only the DIFFUSE line reads it, with a hard `min(..., 4.0)` on both
+  specular accumulators underneath -- **and that ceiling stays live at `on: 0`**, because it
+  costs nothing and no highlight here is worth eight times the sun.
+  **THE BLOCKER WAS THE TWO INSTANCE HOOKS AND IT IS WHY THIS IS NOT ONE LINE.** An instance
+  `onBeforeCompile` SHADOWS the prototype's completely, and melee has exactly two -- `hueGlow`
+  (the alien and both weapons) and the City_Trim tint (the whole of downtown). A bare prototype
+  patch would paint the roads, the ground, the props and the vehicles and leave the WEAPONS and
+  the BUILDINGS out, which is a partial application that reads as a bug rather than as a style.
+  Both call the patches themselves now.
+  **AND THE TINT IS PATCHED LAST SO IT ENDS UP FIRST IN THE SHADER.** It and the paint both
+  replace `#include <color_fragment>`, and the colour has to be settled before the paint splotches
+  it -- otherwise every patch edge is a different hue from its neighbour. Shredworld's own
+  ordering rule between `palPatch` and `paintPatch`, one pass along.
+  **A CHARACTER IS SHADED, NOT PAINTED, AND THAT IS THE MIXED-MEDIA READ HE ASKED FOR.** A
+  threshold pass over a face is dirt. Every character material sets `userData.noPaint` --
+  `bodyProto`, `buildShe` and `hueGlow` -- and still takes the ramp. **`noPaint` is in the
+  program cache key**, so a material that had already compiled needs `needsUpdate` or it keeps
+  the painted shader it was given.
+  **TWO KEYS, NOT ONE, AND BOTH OFF BY DEFAULT.** A style question can only be settled on the
+  phone and each toggle has to move ONE variable or neither can be judged -- the settings
+  panel's own rule, and the reason `mel.tint(1)` was worth nothing until m135 gave it a key.
+  **AND NEITHER PRESS RECOMPILES ANYTHING**: `uToonK` at 0 makes `toonRamp` return its own
+  argument and takes the rim to zero, `uPaintK` at 0 skips the block, so unlike the IBL key
+  there is no hitch and the frame after a press is the frame before it.
+  **THE TWO DEFAULTS THAT DEVIATE FROM SHREDWORLD ARE ABOUT THIS GAME'S LIGHTING, AND THEY ARE
+  DIALS RATHER THAN FINDINGS.** The ramp shapes DIRECT light only, and melee runs hemi 1.75 +
+  fill 0.85 against a sun of 2.4 where Shredworld runs sun 3.4 against hemi 1.6 -- so a much
+  larger share of every surface here is ambient and the bands have less to bite on. `floor`
+  .40 -> .28 gives the ramp more range; `rim` .54 -> .24 because a white rim on a white wall
+  under a pale sky is either invisible or mud.
+  **AND FLAT AND TOON PULL OPPOSITE WAYS.** FLAT cuts the directional by 70%, which is exactly
+  the term the ramp quantises, so the two together read as almost no bands. One at a time.
+  **WHAT IS DELIBERATELY NOT HERE IS THE PALETTE PASS.** Shredworld's `palPatch` is a third
+  thing -- a hue-vs-hue curve pulling every primary toward a sampled art palette -- and he has
+  just turned the vertex TINT off with *"it's a little too colorful"*. Shipping a colour remap
+  in the same build as the thing it would be judged against is two variables at once.
+  **AND THERE IS NO ROAD DIAL.** Shredworld's `PAINT.road` rides an `aRoad` vertex attribute its
+  own city bake writes; nothing in melee's geometry carries one, and a declared attribute nobody
+  supplies is a stale generic waiting to happen (three SKIPS a missing attribute rather than
+  zeroing it). One dial.
+  **WHAT IS UNVERIFIED AND WHY:** there is no GPU here, so **whether any of it looks painted is
+  a device question** and so are both deviating defaults. What CAN be checked was: both gates
+  pass, every splice target exists byte-exact in the vendored build, and the baked tile is
+  provably bimodal. `mel.toon()` / `mel.paint()` are the switches and `mel.TOON` / `mel.PAINT`
+  are live -- every number in them is read every frame, and the tile is re-baked only when one
+  of the three things it actually depends on has moved.
 - **THE FOOTSTEPS ARE A RHYTHM WITH TWO CLOCKS IN IT, AND BOTH EARLIER FIXES WERE ON THE WRONG
   AXIS (m140, `SFX.lead`, `snd`'s `align`).** *"The footsteps still kill me and I don't even know
   what to do about that. There's like this metallic click sound."* Third report, and the first
