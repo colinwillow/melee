@@ -1085,6 +1085,65 @@ same picture from a phone.
   **WHAT IS UNVERIFIED AND WHY:** `p.mphK` is never set headless, so neither gate executes the
   new branch -- what they cover is that the module still evaluates and the line parses. Both pass.
 
+- **HIS OWN FOOTSTEPS, AND THE FILENAMES CARRY THE FOOT (m136, `SFX.files.foot`, `footSnd`).**
+  *"I added two new footsteps, one for left foot one for right foot... I just can't stand the
+  current footsteps so we're gonna use these footsteps instead."*
+  **m68 PROMISED THIS WOULD BE ONE LINE AND IT VERY NEARLY WAS.** That note stood the key up on
+  its own so the swap would cost nothing (*"drop real footstep files at this key, `npm run bump`,
+  and nothing else in the file moves"*) -- and what did have to move is the three numbers that
+  only ever existed to rescue the stand-in, which is m63's rule and is the half a bare path swap
+  would have got wrong.
+  **THE STAND-IN WAS A BODY IMPACT, SO EVERY NUMBER ROUND IT WAS LIFTING ONE.** `hit_sound_gound_01`
+  is a man arriving flat; three constants were bending it into a foot, and every one of them is
+  now bending a foot:
+      cut/att/dec   `dec` .09 stops the voice at `dec * 1.6` = **144 ms**. Measured off the real
+                    files (an mp3 frame walk, which is a file read and not a probe): his are
+                    **0.264 s and 0.288 s**, so the envelope was about to cut his recording in
+                    HALF. Gone -- `SFX.edge` still trims the silence off the front, which is the
+                    only trimming a real recording wants (m58's own sentence about `plasma_hit`)
+      r0/r1 1.34 -> 1.12   a 34% pitch-up at a walk, on a file that IS a foot: a chipmunk boot.
+                    **The IDEA is kept and the OFFSET goes** -- the same 1.20 ratio re-centred on
+                    1, so heavier-is-lower still reads across his speed range and the middle of
+                    that range is his own pitch. 1.09 -> .91
+      alt .07       a shade of pitch standing in for a left foot and a right foot on ONE
+                    recording. **There are two recordings.** 0, and `jit` stays, because two LEFT
+                    steps in a row still must not be identical
+  **AND WHICH FOOT PICKS THE FILE, WHICH IS THE WHOLE REASON THERE ARE TWO.** `p.stepL` and
+  `d.stepL` have alternated since m64 and were only ever shading the RATE; `snd` has taken an
+  explicit `o.i` since m58's `plasmaPick`, so the foot is an index and the bank is ordered
+  [left, right]. **Keep it in that order** -- that ordering is the only thing saying which is
+  which, exactly as `SFX.files.plasma` is lightest-first.
+  **AND A ONE-BUFFER BANK FALLS BACK TO A RANDOM ROLL RATHER THAN SILENCING EVERY RIGHT FOOT.**
+  `snd` does `const b = list[i]; if (!b) return 1;` -- so a failed decode, or a future single
+  recording, would drop half his steps with nothing on screen to say so. The length is read off
+  `SFX.buf.foot`, which is **the exact list `snd` indexes**, so it is not a second source of
+  truth; and `SFX.buf` is `{}` at module scope, so this is safe long before audio is up.
+  **AND `audio/footsteps` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- `readdirSync` is not recursive,
+  so a new asset folder is a new entry there or every file in it goes stale silently. **TENTH
+  time** across these repos, after `models/buildings`, `audio/plasma_sounds`, `models/towers`,
+  `audio/alien_orc_grunt_sounds`, `audio/creature_noises`, `models/vehicles`, `models/streets`
+  and Shredworld's own. The tell is always the same: the game asks for a path whose hash nobody
+  wrote, so it fetches whatever that URL had before.
+  **8.8 KB OF EACH 15 KB FILE IS ID3 TAG**, which is m58's finding arriving on a second bank and
+  is worth nothing more than a sentence: the browser's `decodeAudioData` handles it perfectly
+  well and there is nothing to fix in the asset. It is only `npm run sfx` (mpg123) that has to
+  skip it, and it already does.
+  **THE SURFACES ARE A STATED GAP, NOT A HOOK (m136).** *"I'm thinking about adding a few
+  variations so walking on grass would sound different than walking on street would sound
+  different than walking on something metal like a car."* That is a second axis on this bank and
+  the honest blocker is that **nothing in this game records what he is standing on**: `groundAt`
+  returns a HEIGHT, `triAdd` keeps a triangle and throws its source mesh's name away, and
+  `resolveBoxes` answers about a box rather than about a material. Weirdport's collider has the
+  names (`ground_asphalt_col`, the grass, the ramps) and the test site is a white floor with no
+  answer at all. So the build is: carry a surface tag on the triangle and on the box, return it
+  beside the height, and key the bank on it -- and **no line of it is written here**, because
+  m95 is the build where a branch written for an empty hook short-circuited the good path the
+  moment the clip landed. A branch that cannot fire yet is not a branch that works.
+  **WHAT IS UNVERIFIED:** whether his two recordings read as a stride at six a second, and
+  whether `cut` should come back (it plays a file from its own 90% peak, which is right for an
+  impact and would throw away a scuff on a recording that has one). `mel.STEP` is live --
+  `r0`/`r1`, `g0`/`g1` and `jit` are the dials, and `mel.STEP.on = 0` is still the one word off.
+
 - **I HANDED HIM FOUR CONSOLE COMMANDS AND HE PLAYS ON A PHONE (m135, `#fxKey`, `fxSet`).**
   *"I have no idea what this means or how to try it."* `mel.tint(1)`, `mel.shafts(0)`,
   `mel.ibl(0)`, `mel.dust(0)` -- four A/Bs shipped across m126..m133 and every one of them is a

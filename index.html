@@ -493,10 +493,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m135</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m136</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m135</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m136</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -552,9 +552,9 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm135';
+const BUILD = 'm136';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -3832,19 +3832,17 @@ const SFX = {
     // the next time he drops the same files in, and `A()` keys on the path.
     drop: ['audio/hit_sounds/hit_sound_gound_01.mp3',
            'audio/hit_sounds/hit_sound_ground_02.mp3'],
-    // **AND THE SAME TWO ARE HIS FOOTSTEPS (m64).** *"I think his footsteps, we could use the
-    // two ground sound effects that I just made, for each footstep."* Right -- a boot landing
-    // and a body landing are the same event at two weights, which is `HITSND`'s own rule.
-    // **ITS OWN KEY, pointing at the same two files**, so a footstep cannot gate out a body
-    // hitting the ground through `SFX.last`'s per-key gap and either can be re-pointed alone.
-    // The bytes come off the HTTP cache; only the decode is paid twice, on a short file.
-    // **AND IT IS A STAND-IN, WHICH ITS OWN KEY IS WHAT MAKES CHEAP (m68).** *"Get rid of it
-    // altogether and I'll put in a different footsteps sound."* These are BODY-IMPACT
-    // recordings -- a man arriving flat -- and six of them a second is a drum rather than a
-    // stride, whatever the rate is. Drop real footstep files at this key, `npm run bump`, and
-    // nothing else in the file moves.
-    foot: ['audio/hit_sounds/hit_sound_gound_01.mp3',
-           'audio/hit_sounds/hit_sound_ground_02.mp3'],
+    // **HIS OWN FOOTSTEPS, AND THE FILENAMES CARRY THE FOOT (m136).** *"I added two new
+    // footsteps, one for left foot one for right foot... I just can't stand the current
+    // footsteps so we're gonna use these instead."* m64 stood this key up on the two BODY-IMPACT
+    // recordings -- a man arriving flat, which six times a second is a drum rather than a stride
+    // -- and m68 wrote down that its own key is what would make the swap free. **This is that
+    // swap, and it is the one line it was promised to be.**
+    // **THE ORDER IS [LEFT, RIGHT] AND `footSnd` INDEXES IT WITH THE FOOT**, because he recorded
+    // two files rather than one and which one plays is the whole reason there are two. Keep
+    // them in that order.
+    foot: ['audio/footsteps/footstep_l.mp3',
+           'audio/footsteps/footstep_r.mp3'],
     shot: ['audio/blaster_sound_01.mp3', 'audio/blaster_sound_02.mp3'],
     big: ['audio/plasma_canon.mp3'],
     boom: ['audio/explosion_small.mp3'],
@@ -4035,8 +4033,17 @@ const STEP = {
   fallback: 1.4,          // metres, if a clip is missing -- never divide by zero or fire per frame
   at: .45,                // under this he is not walking (GAIT.idleAt's own edge)
   g0: .20, g1: .46,       // a walk is a scuff and a sprint is a stamp
-  r0: 1.34, r1: 1.12,     // and heavier means lower
-  alt: .07, jit: .05,     // left/right, and a shade of noise so two steps are never identical
+  // **AND THE PITCH RANGE IS CENTRED ON 1 NOW, WHICH THE STAND-IN COULD NOT BE (m136).**
+  // 1.34 -> 1.12 was a BODY IMPACT being lifted until it read as a foot; his recording IS a
+  // foot, so playing it 34% fast at a walk is a chipmunk boot. **The IDEA is kept and the
+  // OFFSET goes** -- the same ratio (1.20, about three semitones) re-centred on his own pitch,
+  // so heavier-is-lower still reads across his speed range and the middle of it is the file.
+  // m63's rule: a number that exists to rescue a stand-in goes when the stand-in does.
+  r0: 1.09, r1: .91,
+  // **AND `alt` IS 0, BECAUSE THE DISTINCTION IS IN THE ASSET NOW.** It was a shade of pitch
+  // standing in for a left foot and a right foot on ONE recording; there are two recordings.
+  // `jit` stays -- two LEFT steps in a row still must not be identical.
+  alt: 0, jit: .05,
   // **HIS OWN, THEIRS, AND A MASTER SWITCH (m68).** *"The footsteps are insane... either way we
   // need to fix it or just get rid of it altogether."* `mel.STEP.on = 0` is the one word, and
   // `npc = 0` keeps his and drops the other thirteen.
@@ -4082,11 +4089,20 @@ function strideNow(sp) {
 // term rather than a new one, which is the metal clangs' rule for the third time this week.
 function footSnd(sp, top, x, z, left, gk, rk) {
   const u = clamp((sp - STEP.at) / Math.max(.1, top - STEP.at), 0, 1);
+  // **WHICH FOOT PICKS THE FILE (m136).** `SFX.buf.foot` is the exact list `snd` indexes, so
+  // reading its length here is not a second source of truth -- and a bank that came back with
+  // ONE buffer (a failed decode, or a future single recording) falls through to `snd`'s own
+  // random roll rather than silencing every right foot, which `list[i]` undefined would do.
+  const n = (SFX.buf.foot && SFX.buf.foot.length) || 0;
+  // **AND IT PLAYS WHOLE.** `cut`/`att`/`dec` shaped a 0.34 s body impact into something
+  // footstep-sized; his own are 0.264 s and 0.288 s and ARE the event, so `dec` .09 was about
+  // to cut them in half. `SFX.edge` still trims the silence off the front, which is the only
+  // trimming a real recording wants -- m58's own sentence about `plasma_hit`, one bank over.
   snd('foot', { g: (STEP.g0 + (STEP.g1 - STEP.g0) * u) * (gk == null ? 1 : gk),
                 r: (STEP.r0 + (STEP.r1 - STEP.r0) * u) * (left ? 1 + STEP.alt : 1 - STEP.alt)
                    * (rk == null ? 1 : rk)
                    * (1 + (Math.random() - .5) * STEP.jit),
-                cut: 1, att: .003, dec: .09, x, z });
+                i: n > 1 ? (left ? 0 : 1) : undefined, x, z });
 }
 // **AND THEIR STRIDE IS THE SAME ARITHMETIC ON THEIR OWN CLIPS (m66).** `duration * ref` is how
 // far one authored cycle carries a body whatever speed it is played at, and `perCycle` footfalls
