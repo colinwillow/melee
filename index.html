@@ -468,10 +468,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m129</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m130</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m129</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m130</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -526,7 +526,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm129';
+const BUILD = 'm130';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -13483,6 +13483,173 @@ function stepBoxView() {
   g.setDrawRange(0, bvN);
 }
 
+
+// ============================================================================================
+// THE AIR: DUST AND SUN SHAFTS (m130, `DUST`, `SHAFT`)
+//
+// *"There's like these little dust kind of particle things that kind of glimmer and float
+// around"*, and *"the sun makes these like nice rays"*. Two separate switches, because they are
+// two separate costs and neither can be judged while the other is moving.
+// ============================================================================================
+
+// ---- the dust -------------------------------------------------------------------------------
+// **ITS OWN POOL, NOT `SPK`.** That one is 560 and m118's note says the morph already takes
+// about 190 of them at once; a field that lives FOR EVER would sit in it permanently and starve
+// every impact in the game. One more `Points` is one more draw call and no shared state.
+// **AND IT IS A LOCAL FIELD THAT WRAPS, NOT A WORLD FULL OF MOTES.** City's cloud rule: keep a
+// box of them round the lens and recycle, so 220 points cover a 280 m city exactly as well as
+// they cover a white room, and nothing is allocated as he walks.
+const DUST = {
+  on: 1,
+  n: 220,
+  r: 13,                 // the half-width of the box kept round him
+  size: [.020, .055],    // metres -- `aSize` is world units, see `puffFlush`
+  col: 0xfff4de,
+  drift: [.10, .40],     // m/s sideways
+  rise: [-.08, .20],     // and vertically, so they do not all fall or all climb
+  glim: [.5, 2.2],       // the glimmer, in cycles a second
+  deep: .55,             // how much of the alpha the glimmer actually swings
+  alpha: [.16, .55],
+  add: 0,                // 0 alpha-blends, 1 is additive. `mel.dust({add:1})` -- see below.
+};
+const dust = { P: null, vx: [], vy: [], vz: [], ph: [], rt: [], a0: [] };
+function dustBuild() {
+  const n = DUST.n;
+  dust.P = puffPool(n, DUST.add ? THREE.AdditiveBlending : THREE.NormalBlending);
+  const c = new THREE.Color().setHex(DUST.col, THREE.SRGBColorSpace);
+  const R = (a, b) => a + Math.random() * (b - a);
+  for (let i = 0; i < n; i++) {
+    dust.P.pos[i * 3] = R(-DUST.r, DUST.r);
+    dust.P.pos[i * 3 + 1] = R(-DUST.r, DUST.r);
+    dust.P.pos[i * 3 + 2] = R(-DUST.r, DUST.r);
+    dust.P.col[i * 3] = c.r; dust.P.col[i * 3 + 1] = c.g; dust.P.col[i * 3 + 2] = c.b;
+    dust.P.siz[i] = R(DUST.size[0], DUST.size[1]);
+    const ang = Math.random() * Math.PI * 2, sp = R(DUST.drift[0], DUST.drift[1]);
+    dust.vx.push(Math.sin(ang) * sp); dust.vz.push(Math.cos(ang) * sp);
+    dust.vy.push(R(DUST.rise[0], DUST.rise[1]));
+    dust.ph.push(Math.random() * Math.PI * 2);
+    dust.rt.push(R(DUST.glim[0], DUST.glim[1]) * Math.PI * 2);
+    dust.a0.push(R(DUST.alpha[0], DUST.alpha[1]));
+  }
+}
+let dustT = 0;
+function stepDust(dt) {
+  if (!DUST.on) { if (dust.P) dust.P.pts.visible = false; return; }
+  if (!dust.P) dustBuild();
+  dustT += dt;
+  const P = dust.P, n = DUST.n, R = DUST.r, W = R * 2;
+  // ROUND THE LENS, NOT ROUND HIM. What you see is what is near the CAMERA, and on a boom
+  // several metres behind him those are different boxes.
+  const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  for (let i = 0; i < n; i++) {
+    const o = i * 3;
+    P.pos[o] += dust.vx[i] * dt; P.pos[o + 1] += dust.vy[i] * dt; P.pos[o + 2] += dust.vz[i] * dt;
+    // **WRAPPED, WHICH IS WHY THE FIELD IS INFINITE AND COSTS NOTHING.** A mote that leaves the
+    // box comes back in the far side, so walking never runs out of dust and nothing is spawned.
+    let dx = P.pos[o] - cx, dy = P.pos[o + 1] - cy, dz = P.pos[o + 2] - cz;
+    if (dx > R) { P.pos[o] -= W; dx -= W; } else if (dx < -R) { P.pos[o] += W; dx += W; }
+    if (dy > R) { P.pos[o + 1] -= W; dy -= W; } else if (dy < -R) { P.pos[o + 1] += W; dy += W; }
+    if (dz > R) { P.pos[o + 2] -= W; dz -= W; } else if (dz < -R) { P.pos[o + 2] += W; dz += W; }
+    // AND FADED AT THE EDGE, or the wrap is a mote blinking out of one corner into another.
+    const d = Math.sqrt(dx * dx + dy * dy + dz * dz) / R;
+    const edge = 1 - smooth(.72, 1, d);
+    // THE GLIMMER IS THE WHOLE POINT, so it is its own rate and its own phase per mote -- one
+    // shared clock is 220 motes pulsing together, which is a strobe and not dust.
+    const g = 1 - DUST.deep * .5 * (1 - Math.sin(dustT * dust.rt[i] + dust.ph[i]));
+    P.alp[i] = dust.a0[i] * g * edge;
+  }
+  puffFlush(P, n);
+}
+
+// ---- the sun shafts --------------------------------------------------------------------------
+// **BILLBOARD CARDS, NOT A POST PASS, AND THAT IS THE WHOLE DECISION.** Real volumetric rays are
+// an occlusion buffer plus a radial blur, which means rendering the scene to a texture -- and
+// there is NO post chain in this game at all (one `renderer.render`, no `EffectComposer`, no
+// render targets). Adding one for this would put a full-screen blur on a phone already at 37 fps,
+// which is the fill cost m128 measured as the likely reason it is at 37. A handful of additive
+// cards is one draw call and no target.
+// **THEY ARE STILL FILL, THOUGH, AND THAT IS STATED RATHER THAN HIDDEN**: long additive quads
+// near the lens are overdraw by definition. `SHAFT.n` is the dial and it is deliberately small.
+const SHAFT = {
+  on: 1,
+  n: 9,
+  len: 64,           // how long each card is, along the sun's own axis
+  w: [1.1, 4.8],     // and how wide
+  spread: 11,        // how far off that axis they are scattered
+  col: 0xffe9c0,
+  gain: .26,         // the ceiling, when you are looking straight at the sun
+  pow: 3.2,          // how tightly it keys on that. Higher = only near the sun.
+};
+let shaftMesh = null;
+const _shX = new THREE.Vector3(), _shY = new THREE.Vector3(), _shZ = new THREE.Vector3(),
+      _shT = new THREE.Vector3(), _shM = new THREE.Matrix4();
+function shaftBuild() {
+  // ONE MERGED GEOMETRY, so N cards are one draw call. Each card is a plane in local XY, long
+  // along +Y -- which becomes the sun's direction once the group is oriented.
+  const pos = [], col = [];
+  const c = new THREE.Color().setHex(SHAFT.col, THREE.SRGBColorSpace);
+  const R = (a, b) => a + Math.random() * (b - a);
+  for (let k = 0; k < SHAFT.n; k++) {
+    const w = R(SHAFT.w[0], SHAFT.w[1]) * .5, L = SHAFT.len * R(.55, 1);
+    const ox = R(-SHAFT.spread, SHAFT.spread), oz = R(-SHAFT.spread, SHAFT.spread);
+    const oy = R(-SHAFT.len * .2, SHAFT.len * .2);
+    // **THE FALLOFF IS IN THE VERTEX COLOUR AND THE BLENDING IS ADDITIVE**, so the card's own
+    // intensity IS its colour and no custom shader is needed -- three's `vertexColors` on a
+    // `MeshBasicMaterial` does it. The two ends go to black, which under additive is invisible,
+    // so a shaft fades out at both ends rather than stopping at an edge.
+    // **THE LIGHT IS DOWN THE MIDDLE, WHICH A SINGLE QUAD CANNOT SAY.** Six vertices can only
+    // put the brightness at corners, so the card is split lengthways into two halves that share
+    // a bright SEAM -- dark at both long edges, bright up the centre, dark at both ends.
+    const seam = [[-w, -L / 2, 0, 0], [0, -L / 2, 0, .35], [0, L / 2, 0, .35],
+                  [-w, -L / 2, 0, 0], [0, L / 2, 0, .35], [-w, L / 2, 0, 0],
+                  [0, -L / 2, 0, .35], [w, -L / 2, 0, 0], [w, L / 2, 0, 0],
+                  [0, -L / 2, 0, .35], [w, L / 2, 0, 0], [0, L / 2, 0, .35]];
+    for (const v of seam) {
+      pos.push(v[0] + ox, v[1] + oy, v[2] + oz);
+      col.push(c.r * v[3], c.g * v[3], c.b * v[3]);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  shaftMesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({
+    vertexColors: true, blending: THREE.AdditiveBlending, transparent: true,
+    depthWrite: false, side: THREE.DoubleSide, toneMapped: false, opacity: 0 }));
+  // THE BUFFER IS LOCAL but the group is written every frame, so its bounds move with it --
+  // culling it is fine and is left ON, unlike the world-space pools.
+  shaftMesh.renderOrder = 2;
+  shaftMesh.userData.noHole = 1;
+  scene.add(shaftMesh);
+}
+function stepShafts() {
+  if (!SHAFT.on) { if (shaftMesh) shaftMesh.visible = false; return; }
+  if (!shaftMesh) shaftBuild();
+  // THE SUN'S OWN VECTOR, the same `_sunOff` the light and the sky's disc come off -- so all
+  // three agree by construction rather than by three numbers being kept in step.
+  _shY.copy(_sunOff).normalize();
+  // **ONLY WHEN YOU ARE LOOKING TOWARD IT.** That is what makes this read as sun rays rather
+  // than as slabs of fog standing in the street, and it is also most of what makes it cheap:
+  // pointed away, it does not draw at all.
+  camera.getWorldDirection(_shT);
+  const k = Math.max(0, _shT.dot(_shY));
+  const a = SHAFT.gain * Math.pow(k, SHAFT.pow);
+  if (a < .004) { shaftMesh.visible = false; return; }
+  shaftMesh.visible = true;
+  shaftMesh.material.opacity = a;
+  // AND THE CARDS ROLL ABOUT THE SUN AXIS TO FACE THE LENS. A shaft is a cylinder of light, so
+  // the card standing in for it has to keep its long axis on the sun and turn about THAT --
+  // a full billboard would swing it off the sun and stop it being a shaft at all.
+  shaftMesh.position.copy(player.pos);
+  _shZ.copy(camera.position).sub(shaftMesh.position);
+  _shZ.addScaledVector(_shY, -_shZ.dot(_shY));      // the part of it across the sun axis
+  // DEGENERATE WHEN YOU LOOK STRAIGHT DOWN THE SUN, which is exactly when this is brightest --
+  // so it needs a fallback rather than a normalise of nothing, which is a NaN and a black hole.
+  if (_shZ.lengthSq() < 1e-6) _shZ.set(_shY.y, -_shY.x, 0).normalize(); else _shZ.normalize();
+  _shX.crossVectors(_shY, _shZ).normalize();
+  _shM.makeBasis(_shX, _shY, _shZ);
+  shaftMesh.quaternion.setFromRotationMatrix(_shM);
+}
+
 // ============================================================================================
 // THE FRAME
 // ============================================================================================
@@ -13531,6 +13698,10 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
+  // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
+  // frame's lens is a field that lags every time he turns.
+  stepDust(dt);
+  stepShafts();
   // AFTER `stepDummies` and after the player, because it draws where they ACTUALLY are -- a
   // wire a frame behind the body it is describing is the second-thing-to-be-wrong this view
   // exists not to become.
@@ -14115,6 +14286,22 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // AND THE ONE THAT COSTS FRAMES, ON ITS OWN SWITCH. `env` 0 keeps the backdrop and drops the
   // image-based lighting, which is an env lookup per fragment on every PBR surface in the city.
   ibl: v => { SKY.env = v == null ? (SKY.env ? 0 : 1) : (v ? 1 : 0); skyBake(); return SKY.env; },
+  // THE AIR (m130). Two switches, because they are two costs: the dust is a second `Points` and
+  // 220 motes, the shafts are additive overdraw near the lens. `mel.dust(0)` / `mel.shafts(0)`.
+  DUST, SHAFT,
+  dust: o => { if (typeof o === 'object' && o) Object.assign(DUST, o);
+    else if (o != null) DUST.on = o ? 1 : 0;
+    // A REBUILD, because `n`, the sizes, the speeds and the blend mode are all baked into the
+    // pool at construction -- and the blend mode is a define, so changing it recompiles.
+    if (dust.P) { scene.remove(dust.P.pts); dust.P.geo.dispose(); dust.P.mat.dispose();
+      dust.P = null; dust.vx.length = dust.vy.length = dust.vz.length = 0;
+      dust.ph.length = dust.rt.length = dust.a0.length = 0; }
+    return { on: DUST.on, n: DUST.n, add: DUST.add, r: DUST.r }; },
+  shafts: o => { if (typeof o === 'object' && o) Object.assign(SHAFT, o);
+    else if (o != null) SHAFT.on = o ? 1 : 0;
+    if (shaftMesh) { scene.remove(shaftMesh); shaftMesh.geometry.dispose();
+      shaftMesh.material.dispose(); shaftMesh = null; }
+    return { on: SHAFT.on, n: SHAFT.n, gain: SHAFT.gain, pow: SHAFT.pow }; },
   emis: v => { for (const m of Object.values(rig.mats || {})) m.emissiveIntensity = v; RIG.emissive = v; return v; },
 };
 

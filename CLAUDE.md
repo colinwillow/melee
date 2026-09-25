@@ -1050,6 +1050,61 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE AIR: DUST THAT GLIMMERS AND SHAFTS OFF THE SUN (m130, `DUST`, `SHAFT`).** *"The sun makes
+  these like nice rays... and there's like these little dust kind of particle things that kind of
+  glimmer and float around."* Two switches, because they are two different costs and neither can
+  be judged while the other is moving.
+  **THE DUST HAS ITS OWN POOL, NOT `SPK`.** That one is 560 and m118 measured the morph taking
+  about 190 of them at once; a field that lives FOR EVER would sit in it permanently and starve
+  every impact in the game. One more `Points` is one more draw call and no shared state -- and it
+  reuses `puffPool`/`puffFlush`, so `gl_PointSize = aSize * uPx / -mv.z` with `uPx` derived from
+  the framebuffer comes with it and a mote is N world METRES at any lens.
+  **AND IT IS A LOCAL FIELD THAT WRAPS.** City's cloud rule: a box kept round the lens, and a mote
+  that leaves it comes back in the far side. So 220 points cover a 280 m city exactly as well as a
+  white room, nothing is spawned as he walks, and the count is a constant rather than a density.
+  **ROUND THE CAMERA, NOT ROUND HIM** -- on a boom several metres behind him those are different
+  boxes, and what you see is what is near the LENS.
+  **AND FADED AT THE EDGE**, or the wrap is a mote blinking out of one corner and into another.
+  **THE GLIMMER IS ITS OWN RATE AND ITS OWN PHASE PER MOTE.** One shared clock is 220 motes
+  pulsing together, which is a strobe and not dust -- the smoke plumes' rule (m41), one effect
+  over.
+  **THE SHAFTS ARE BILLBOARD CARDS, NOT A POST PASS, AND THAT IS THE WHOLE DECISION.** Real
+  volumetric rays are an occlusion buffer plus a radial blur, which means rendering the scene to a
+  texture -- and **there is no post chain in this game at all**: one `renderer.render(scene,
+  camera)`, no `EffectComposer`, no render targets. Adding one for this puts a full-screen blur on
+  a phone already at 37 fps, which is the fill cost m128 named as the likely reason it is at 37.
+  **They are still overdraw and that is stated rather than hidden**: long additive quads near the
+  lens are fill by definition, and `SHAFT.n` (9) is the dial.
+  **THEY ONLY DRAW WHEN YOU ARE LOOKING TOWARD THE SUN.** `pow(max(0, camFwd . sunDir), 3.2)` --
+  which is what makes it read as sun rays rather than as slabs of fog standing in the street, and
+  is also most of what makes it cheap: pointed away it returns before drawing anything.
+  **THE CARDS ROLL ABOUT THE SUN AXIS, NOT ABOUT THE CAMERA.** A shaft is a cylinder of light, so
+  the card standing in for it keeps its long axis ON the sun and turns about THAT; a full
+  billboard would swing it off the sun and stop it being a shaft. The basis is built directly
+  (`Y` = sun, `Z` = the part of camera-minus-player across it, `X` = `Y x Z`) rather than as two
+  chained rotations.
+  **AND THE DEGENERATE CASE IS EXACTLY WHEN IT IS BRIGHTEST.** Looking straight down the sun makes
+  `Z` zero-length, and normalising that is a NaN quaternion and a black hole where the effect was.
+  It falls back to any perpendicular.
+  **THE FALLOFF IS IN THE VERTEX COLOUR AND THE BLENDING IS ADDITIVE**, so a card's intensity IS
+  its colour and no custom shader is needed -- three's `vertexColors` on a `MeshBasicMaterial`
+  does it. Both ends go to black, which under additive is invisible, so a shaft fades out rather
+  than stopping at an edge. **And the light is down the MIDDLE**, which a single quad cannot say:
+  six vertices can only put brightness at corners, so each card is split lengthways into two
+  halves sharing a bright seam.
+  **THE SUN IS `_sunOff` IN ALL THREE PLACES** -- the directional light, m129's sky disc, and
+  these -- so they agree by construction rather than by three numbers being kept in step.
+  **AND THE GATE GENUINELY REACHES BOTH, WHICH WAS CHECKED RATHER THAN ASSUMED.**
+  `requestAnimationFrame` is stubbed to a no-op and `frame()` is called once at module scope, so
+  the first frame really does run -- verified the c167 way, by putting a throw in `stepDust` and
+  watching `check:boot` exit 1 with it, and a log in `stepShafts` and watching it print. Both were
+  then removed and the file diffed to confirm no residue. **A gate that is green because the code
+  never ran is the thing that discipline exists to catch.**
+  **WHAT IS UNVERIFIED:** there is no GPU here, so whether the motes read as glimmer rather than
+  as noise, whether 9 cards is rays or haze, and what either costs in frames are device questions.
+  `mel.dust(0)` and `mel.shafts(0)` are the switches; `mel.dust({add:1})` is the additive A/B,
+  which matters because alpha motes read on a dark road and additive ones read against a bright
+  sky, and this world has both.
 - **THERE WAS NO SKY AND NO IMAGE-BASED LIGHTING AT ALL, AND THE FIX IS GENERATED RATHER THAN A
   FILE (m129, `SKY`, `skyBake`).** *"Right now we don't actually have like any background sky or
   HDRI that I know of."* Right, and worse: `scene.background` was a flat `0xe7edf5` and
@@ -6444,7 +6499,8 @@ means anything you can carry from one situation to the next.
 - **No sprint control**: walk/run/sprint is a pure speed blend off the left stick's magnitude,
   which is what the four clips support. A dedicated sprint gesture is a slot, not a clip.
 - `weapon_root_left` is unused. Dual wield is a weapon file exported onto it and one roster line.
-- **THE SUN SHAFTS AND THE DUST ARE NOT BUILT YET, AND THE COSTS ARE KNOWN (m129).** *"The sun
+- **(m130 built both of these. Kept because the COST argument is the part that stays true.)**
+- **THE SUN SHAFTS AND THE DUST (m129's costing, m130's build).** *"The sun
   makes these nice rays... and these little dust kind of particle things that glimmer."* The dust
   is nearly free -- `SPK` is already a pooled `Points` with per-point size, colour and alpha in
   ONE draw call and a `gl_PointSize` derived from the framebuffer, so an ambient drifting field is
