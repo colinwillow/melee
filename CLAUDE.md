@@ -1050,6 +1050,62 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **THE 12-TRIANGLE SHORTCUT WAS THE WHOLE VEHICLE-COLLIDER FAULT, AND MY FIRST DIAGNOSIS OF THE
+  OTHER HALF WAS WRONG (m131, `boxSkew`, `WP.cols.skew`).** *"The colliders for the cars in
+  general are pretty big. The van's one is like skewed cockeye offset."*
+  **IT IS NOT SKEW, IT IS THE AXIS-ALIGNED BOX OF A ROTATED CAR.** Measured off the real
+  collision file: 55 vehicles, mean plan-area inflation **x1.28**, worst **x2.13**. A car parked
+  square gets 2.25 x 4.00; the same model at an angle gets a near-SQUARE 4.79 x 5.92, which is
+  why it reads as cockeyed rather than merely big -- the box is not turned with the car, it is
+  the smallest upright box containing it. **Proved by pairing**: `inst_car_1_i_2` is at 64.8 deg
+  at (74, 36) in the visual file, a 2.84 x 5.20 car at that yaw has an axis-aligned footprint of
+  5.91 x 4.79, and `prop_car_1_i_col2` at that exact position measures 4.79 x 5.92.
+  **AND I TOLD HIM THE BUILDINGS WERE A SECOND, SEPARATE FAULT OF MINE. THEY ARE NOT.** I said 62
+  of 202 `solid_`/`bld_` meshes have an AABB bigger than their geometry and that `solidColumns`
+  was collapsing them to it. The first half is true; the second is not -- run through the SHIPPED
+  function over the real file, only 21 meshes collapse at all, the biggest resulting box is a
+  legitimate 676 m2 building plan, and **exactly 4 meshes both collapse AND are inflated**, three
+  of them by 7-18% on plan areas of 1 to 5 m2. Raising `fill` from .5 to .8 moves 3737 boxes to
+  3752 and changes nothing that matters. **The collapse test is fine and the fix I was about to
+  ship for it would have done nothing.** The rasteriser follows the true shape; that was the
+  point of it.
+  **SO THE WHOLE FAULT IS IN ONE PLACE: the 12-triangle shortcut.** m124's claim -- *"a box and
+  its AABB is exact"* -- holds for 347 of the 349 twelve-triangle solids and fails for the two
+  turned 45 degrees: `prop_plaza_ledge_iron_a/b_col` are 14.51 x 0.06 m rails whose bounds are
+  10.30 x 10.30, so each was a **106 m2 invisible slab** across a plaza, **x121.86** its own area.
+  Diverted to the rasteriser they come out as ten boxes of 1 m2, and the whole change costs the
+  city **eighteen boxes**.
+  **AND THE OBVIOUS TEST IS WRONG, WHICH THE VERIFICATION IS WHAT CAUGHT.** My first version asked
+  whether every vertex sits on one of the two extremes in X and in Z -- exact for a box, and
+  **true of these rails**, because a 6 cm bar running corner to corner has all eight vertices
+  bunched at two OPPOSITE corners of its own bounding box. It diverted them offline only by
+  accident of a 2 cm tolerance and diverted **nothing** at the 45 cm one it shipped with. I found
+  that by re-running the measurement with the SHIPPED function instead of with the copy I had
+  tested -- which is this account's oldest rule finally being applied to my own fix rather than
+  to somebody else's harness. **A tolerance in metres cannot separate a 6 cm bar from a 10 m box
+  anyway.** `boxSkew` sweeps the footprint for the tightest rectangle and returns the area ratio,
+  which is scale-free: an axis-aligned box reads exactly **1.000** and needs no tolerance, and the
+  rails read 121.86. One degree of sweep resolution costs under 2% of area, well inside `skew`.
+  **IT IS STRUCTURAL AND SELF-DISARMING.** Nothing is named: a future export that rotates
+  something else is caught by the same line, and one that stops rotating these stops matching, one
+  mesh at a time.
+  **STILL NOT FIXED: THE 55 VEHICLES.** Their orientation is *already gone* from the collision
+  export -- every node is at identity and the boxes are baked axis-aligned -- so `boxSkew`
+  correctly passes them, because they ARE axis-aligned now. Recovering them means pairing each one
+  to its visual instance by position for the yaw and carrying `b.yaw` into `resolveBoxes`,
+  Shredworld's oriented-box answer. That is a real build and it is next. The other way is his
+  export emitting the rotated box, after which `boxSkew` picks it up with no code change at all.
+- **AND THE COLLISION GLB IS NOT DRACO, WHICH WAS STATED WRONGLY TWICE (m131).**
+  `weirdport_slice_collision.glb` is plain glTF -- only the VISUAL file is compressed. m124 and
+  m127 both say otherwise and both are wrong. Every collider vertex is readable here in a second
+  with `fs.readFileSync` and a 20-line GLB chunk walk, which is how all of the above was measured,
+  and `npm run bld`'s own note that it must use synthetic shells is now only true of the building
+  and the tower. **Anything about the Weirdport collider is measurable offline against the real
+  asset and should be measured rather than reasoned about.**
+  **AND THE FIRST PROBE MEASURED THE WRONG SET**, which nearly produced a second wrong finding: it
+  filtered `/^(solid|bld|ground|ramp)_/` where the game's `WP.solid` is `/^(bld|solid|prop)_/`, so
+  it fed the ROAD SURFACE to the rasteriser and duly reported a 62,675 m2 box the game does not
+  have. Use the game's own regexes.
 - **THE AIR: DUST THAT GLIMMERS AND SHAFTS OFF THE SUN (m130, `DUST`, `SHAFT`).** *"The sun makes
   these like nice rays... and there's like these little dust kind of particle things that kind of
   glimmer and float around."* Two switches, because they are two different costs and neither can
@@ -6510,7 +6566,8 @@ means anything you can carry from one situation to the next.
   first time -- which on a phone at dpr 2 is exactly the fill cost already suspected of costing
   frames. **Billboard shafts** -- a few additive cones on the sun's own vector, one draw call, no
   post -- are the mobile answer and are what to build first.
-- **THE VEHICLE COLLIDERS ARE THE AABB OF A ROTATED CAR (m129, measured, not fixed yet).** 55 of
+- **THE VEHICLE COLLIDERS ARE THE AABB OF A ROTATED CAR (m129 measured it, m131 fixed the OTHER
+  half of it -- the vehicles themselves are still open).** 55 of
   them, mean plan-area inflation **x1.28** and worst **x2.13** -- a 2.25 x 4.00 m car at an angle
   becomes a near-square 4.79 x 5.92 box, which is why it reads as cockeyed rather than merely big.
   **The orientation is already gone from the collision export** (every node is at identity and the
@@ -6518,10 +6575,10 @@ means anything you can carry from one situation to the next.
   at (74, 36) and predicts 5.91 x 4.79, and `prop_car_1_i_col2` at that exact position measures
   4.79 x 5.92. So it is fixable from this side by pairing on position and carrying `b.yaw` --
   Shredworld's oriented-box answer -- or by his export emitting the rotated box.
-  **AND A SECOND, SEPARATE ONE THAT IS ENTIRELY MINE:** 62 of 202 `solid_`/`bld_` meshes have an
-  AABB bigger than their own geometry (worst x6.19, an archway; the streetcar x2.17). Those DO
-  still carry their true shape, so `solidColumns`' collapse test is what is throwing it away --
-  a diagonal box-shaped mesh sits right on the `fill` .5 threshold.
+  **(THE SECOND FAULT I CLAIMED HERE WAS WRONG -- see m131.** 62 of 202 `solid_`/`bld_` meshes do
+  have an inflated AABB, but only 21 collapse to it at all and only 4 are both; the rasteriser
+  follows their true shape, which is what it is for. The real second fault was the 12-triangle
+  shortcut, and m131 fixed it.)
 - No audio at all.
 - **Nobody reacts to the disguise.** The DNA gun (m112) changes what he is DRAWN as and nothing
   else -- *"if people see you they get afraid of you, if cops see you they shoot at you, but if

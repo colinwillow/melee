@@ -468,10 +468,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m130</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m131</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m130</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m131</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -526,7 +526,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm130';
+const BUILD = 'm131';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1906,7 +1906,12 @@ const WP = {
           // been given and false of a beam. `fill` is the other half. Measured: it takes the
           // biggest box from 68,885 m2 to 676 (a real building plan) for 83 more boxes.
           // **ABSENT IT IS EXACTLY THE OLD RULE**, so the building and the tower are untouched.
-          fill: .5 },
+          fill: .5,
+          // **HOW MUCH A 12-TRIANGLE BOX MAY OVER-CLAIM BEFORE IT LOSES THE AABB SHORTCUT
+          // (m131).** Scale-free on purpose -- see `boxSkew`. An axis-aligned box reads exactly
+          // 1.000, so 1.05 is "essentially aligned" with room for float noise, and the two
+          // diagonal plaza rails read 121.86.
+          skew: 1.05 },
 };
 
 // THE TINT'S COLOUR SPACE, LIVE. One object shared by every City_Trim program, so `mel.tint(1)`
@@ -9578,6 +9583,50 @@ const DUMMIES = [];
 //      a full-height wall run (0..6.2), because it grows it by nothing -- and then the whole
 //      canopy comes out as one box reaching the ground. The test is on BOTH ends.
 // COLS:START
+// **A 12-TRIANGLE MESH IS ONLY ITS BOUNDING BOX IF IT IS AXIS-ALIGNED (m131).** That shortcut
+// has been in since m124 and its claim -- "a box and its AABB is exact" -- is true of 347 of
+// this city's 349 twelve-triangle solids and FALSE of the two that are turned 45 degrees:
+// `prop_plaza_ledge_iron_a/b_col` are 14.51 x 0.06 m rails whose axis-aligned bounds are
+// 10.30 x 10.30, so each one was a **106 m2 invisible slab** across a plaza -- x121.86 its own
+// area. Measured through this very function against the real collision file, which is plain
+// glTF and therefore readable offline.
+//
+// **THE TEST IS THE AREA RATIO, AND THE OBVIOUS TEST IS WRONG.** My first version asked whether
+// every vertex sits on one of the two extremes in X and in Z, which is exact for a box and
+// **true of these rails**: a 6 cm bar running corner to corner has all eight of its vertices
+// bunched at two OPPOSITE corners of its own bounding box, so it passes. It diverted them
+// offline only by accident of a 2 cm tolerance and diverted NOTHING at the 45 cm one it
+// shipped with -- caught by re-running the measurement with the shipped function rather than
+// with the copy I had tested. A tolerance in METRES cannot separate a 6 cm bar from a 10 m box
+// anyway; what matters is how much the AABB over-claims, which is scale-free.
+// So: sweep the footprint for the tightest rectangle and compare areas. One degree of
+// resolution costs under 2% of area, well inside `skew`, and a box's own min-area rectangle is
+// itself -- so an axis-aligned one returns 1.000 exactly and needs no tolerance at all.
+function boxSkew(o) {
+  const a = o.geometry.getAttribute('position');
+  if (!a || !a.count) return 1;
+  const n = a.count, px = new Float64Array(n), pz = new Float64Array(n);
+  const v = new THREE.Vector3();
+  for (let i = 0; i < n; i++) {
+    v.fromBufferAttribute(a, i).applyMatrix4(o.matrixWorld);
+    px[i] = v.x; pz[i] = v.z;
+  }
+  let best = Infinity, flat = 0;
+  for (let d = 0; d < 90; d++) {
+    const t = d * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t);
+    let u0 = 1e30, u1 = -1e30, w0 = 1e30, w1 = -1e30;
+    for (let i = 0; i < n; i++) {
+      const u = px[i] * c + pz[i] * sn, w = -px[i] * sn + pz[i] * c;
+      if (u < u0) u0 = u; if (u > u1) u1 = u; if (w < w0) w0 = w; if (w > w1) w1 = w;
+    }
+    const ar = (u1 - u0) * (w1 - w0);
+    if (d === 0) flat = ar;
+    if (ar < best) best = ar;
+  }
+  // A DEGENERATE FOOTPRINT (a flat panel seen from above) has no area either way, so it has
+  // nothing to over-claim and the shortcut is as good as anything -- 1 says "leave it alone".
+  return best > 1e-6 ? flat / best : 1;
+}
 function solidColumns(mesh, cfg, out) {
   const geo = mesh.geometry, pos = geo.attributes.position, idx = geo.index;
   if (!pos) return 0;
@@ -9756,7 +9805,10 @@ function buildWpCollision(g) {
     // and the four that are not go through the rasteriser with the buildings, which is what
     // the name test would have got wrong in both directions.
     const nt = (idx ? idx.count : pos.count) / 3;
-    if (nt === 12) {
+    // **AND ONLY IF IT IS ACTUALLY AXIS-ALIGNED (m131).** See `axisBox`: the two diagonal
+    // plaza rails were a 106 m2 slab each, and anything else turned in a future export is
+    // caught by the same line with nothing named.
+    if (nt === 12 && boxSkew(o) < WP.cols.skew) {
       o.geometry.computeBoundingBox();
       const wb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
       BOXES.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
