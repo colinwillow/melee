@@ -163,6 +163,18 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 #build b { font-family: var(--disp); font-size: 26px; color: var(--sky); display: block; line-height: 1;
   pointer-events: auto; cursor: pointer; }
 #build i { font-style: normal; opacity: .8; font-size: 12px; }
+/* WHICH WORLD, AND THE TAP THAT CHANGES IT (m124). Under the build chip, in the same top-left
+   gutter and out of the play area, because a world switch is the badge's own kind of control:
+   out of the way, taking one tap, and saying which state it is in by having the name on it.
+   `top` is the chip's 12 plus its own two lines. */
+#worldKey { position: fixed; z-index: 6;
+  top: calc(56px + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left));
+  font-family: var(--ui); font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  color: #cfe8ff; background: #0b0d12cc; border: 1px solid #ffffff33;
+  padding: 4px 9px 5px; border-radius: 3px; pointer-events: auto; cursor: pointer;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+#worldKey b { font-family: var(--disp); font-size: 12px; color: var(--sky); font-weight: 400; }
+#worldKey:active { background: #16202ecc; }
 #wep { top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right));
   font-family: var(--disp); font-size: 15px; color: var(--sun); text-align: right; }
 #wep small { display: block; font-family: var(--ui); font-size: 11px; color: #cfe8ff; opacity: .7; letter-spacing: .08em; }
@@ -441,11 +453,12 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m123</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m124</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m123</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m124</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
+<div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -497,9 +510,9 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm123';
+const BUILD = 'm124';
 /* ASSETS:START */
-const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3"};
+const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1714,6 +1727,82 @@ const WEAP = {
 // yawed in QUARTER TURNS only, because `resolveBoxes` here is axis-aligned: a box carrying an
 // arbitrary yaw would have to be tested in its own frame, and the AABB of a rotated one is
 // forty per cent too big along both axes, which is the phantom hit.
+// ============================================================================================
+// TWO WORLDS (m124, `WORLD`, `WP`)
+//
+// *"There's a folder called Portland. It's a slice of a map I've been creating in Blender...
+// let's make a separate mode you can choose like the main mode. This will just be a new test
+// mode you can jack into. We want to set up the environment first and get all that right. But
+// basically, you can just have my character in there and make him able to walk around."*
+//
+// **THE CHOICE IS MADE AT BOOT AND REMEMBERED, BECAUSE SWITCHING COSTS A RELOAD ANYWAY.** The
+// test site is built at MODULE SCOPE and Weirdport is ten megabytes of GLB, so building both
+// every boot would put the whole city on the wire for a mode he may not be in. One key in the
+// store, a `?w=` in the URL that writes it, and the tap reloads.
+// **AND IT IS A KEY THAT SAYS WHICH WORLD IT IS**, top-left with the build chip and out of the
+// play area -- `actB`'s rule, that a prompt drawn ON the control performing it cannot be a mode
+// you are in without knowing it. `?w=test` is the way back if a world ever fails to boot, which
+// is a link that can be sent rather than a gesture that has to be explained.
+const WORLD = {
+  now: 'test',
+  store: 'mel.world',
+  list: { test: 'TEST SITE', weirdport: 'WEIRDPORT' },
+};
+{
+  // **THE STORE IS READ INSIDE A TRY, AT MODULE SCOPE.** A throw up here is `init()` never
+  // running and a boot card stuck on the text it was born with, which is the one failure he
+  // cannot look at and correct.
+  let want = null;
+  try { want = new URLSearchParams(location.search).get('w'); } catch (e) {}
+  try { if (!want) want = localStorage.getItem(WORLD.store); } catch (e) {}
+  if (want && WORLD.list[want]) WORLD.now = want;
+  try { localStorage.setItem(WORLD.store, WORLD.now); } catch (e) {}
+}
+const inWP = () => WORLD.now === 'weirdport';
+
+// WEIRDPORT -- his Blender slice, measured off the two files before a line of this was written.
+//     collision   537 nodes, 80,250 tris, 2 materials, NO draco, NO negative scale
+//                 333 prop_ (329 of them literal 12-triangle boxes), 100 solid_, 75 bld_,
+//                 22 ground_, 5 ramp_, 2 deck_    extent x -140..141, z -126..125, y -3.7..114.6
+//     visual      510 nodes -> 142 merged vis_ + 368 inst_ sharing 40 meshes, 150 materials
+//
+// **THE FAMILIES ARE THE COLLIDER AND THE NAMES ARE THE ONLY THING THAT SAYS SO**, which is his
+// export convention (`<family>_<source>_col`) and is why both are a regex rather than a list.
+// `road_` is in the ground family and this slice has none of it; that costs nothing and is
+// there for the next export.
+const WP = {
+  tag: 'WEIRDPORT',
+  col:  'models/portland/slice_downtown/weirdport_slice_collision.glb',
+  vis:  'models/portland/slice_downtown/weirdport_slice_visual_draco.glb',
+  trim: 'models/portland/textures/weirdport_trim_basecolor.png',
+  // **THE SPAWN IS SEARCHED, NEVER TYPED** -- the ORIGIN is inside `bld_dt_18_col`, so the one
+  // coordinate anybody would have picked by eye puts him inside a building. Swept against the
+  // real collider (props as AABBs, everything else through the shipped rasteriser) for the
+  // widest patch of clear level ground within 60 m of the middle: (-6, 6) on `ground_asphalt`,
+  // **14 m of clearance in every direction** -- the hero intersection. `npm run spots`' rule
+  // one repo over: placing anything by eye off a screenshot is how you get a half pipe inside
+  // a bank, and here it would have been a man inside a tower.
+  spawn: [-6, 6],
+  ground: /^(road|ground|deck|ramp)_/,
+  solid:  /^(bld|solid|prop)_/,
+  inst: 1,              // batch the inst_ nodes into InstancedMesh -- 368 draws become 40
+  cast: 0,              // see `sun` below: the city RECEIVES shadows and does not cast them
+  sun: 1,               // and the shadow camera follows him, because it is 44 m in a 280 m city
+  // WHAT A SOLID CONTRIBUTES. Its own table, never `BLD`'s (m60): these meshes are a different
+  // shape entirely and reading the building's numbers here would be a silently wrong answer.
+  cols: { tag: 'WEIRDPORT', cols: 1, cell: 1.0, maxCells: 4096, tol: .45, full: .92,
+          // **AND A SPARSE MESH IS NOT ITS BOUNDING BOX, WHICH `full` ALONE CANNOT SAY.**
+          // `solid_freeway_girder_col` is one node 276 x 250 m and 1.8 m thick: every column it
+          // has spans its whole height, so `boxy / used` is 1 and it collapsed back to a SLAB
+          // OVER THE ENTIRE MAP at 9.2 m -- which a man on the hill, on a roof or on a ledge
+          // lands on. `full` asks whether the occupied columns are full height and assumes the
+          // footprint is occupied, which is true of every closed building shell it has ever
+          // been given and false of a beam. `fill` is the other half. Measured: it takes the
+          // biggest box from 68,885 m2 to 676 (a real building plan) for 83 more boxes.
+          // **ABSENT IT IS EXACTLY THE OLD RULE**, so the building and the tower are untouched.
+          fill: .5 },
+};
+
 const BLD = {
   tag: 'BUILDING',      // what the chip calls it when something about it goes wrong
   file: 'models/buildings/alien_base_01.glb',
@@ -3422,6 +3511,9 @@ document.getElementById('bootBuild').textContent = BUILD;
 // whatever text it had. For the first load that is the text it was BORN with, which is pixel
 // for pixel what `init()` never running looks like. The two failures worth telling apart were
 // rendering as the same screen.
+// **AND WEIRDPORT'S TWO GLBs ARE MOST OF ITS WAIT**, so the denominator is the world's: at 4
+// the bar is already home before the city has started arriving, which is `bootAsk`'s own
+// sentence -- progress you cannot see is a hang.
 const PROG = { done: 0, total: 4, label: '' };
 function setBoot(label, frac) {
   PROG.label = label;
@@ -4192,6 +4284,21 @@ sun.shadow.camera.left = -22; sun.shadow.camera.right = 22;
 sun.shadow.camera.top = 22; sun.shadow.camera.bottom = -22;
 sun.shadow.bias = -0.0009;
 scene.add(sun, sun.target);
+// **A 44 METRE SHADOW CAMERA IN A 280 METRE CITY WORKS IN ONE CORNER OF IT (m124).** Fixed at
+// the origin it is exactly right for a test site you can see across and covers about two and a
+// half per cent of Weirdport -- so his own shadow, which is the thing that grounds him, would
+// simply stop existing a few steps from the spawn. It follows him instead, which keeps the
+// 2048 map at 46 texels per metre rather than spreading it over a district at four.
+// **THE OFFSET IS THE SUN'S OWN DIRECTION**, so the light keeps its bearing and only the box
+// it covers moves; writing a position without moving the target would swing the sun round the
+// sky as he walked.
+const _sunOff = sun.position.clone();
+function stepSun() {
+  if (!WP.sun || !inWP()) return;
+  sun.target.position.copy(player.pos);
+  sun.position.copy(player.pos).add(_sunOff);
+  sun.target.updateMatrixWorld();
+}
 
 // ---- the world: a white floor and some boxes to run at, jump on and hide the camera behind ----
 // BOXES ARE AABBs and they are the whole collider. Their tops are floors, which is how you
@@ -4201,6 +4308,11 @@ const BOXES = [];
 const world = new THREE.Group();
 scene.add(world);
 
+// **THE TEST SITE IS A WORLD, NOT THE WORLD (m124).** Its white floor, its two grids, its ten
+// boxes and its ledge stack are all at coordinates chosen against each other, so building them
+// inside Weirdport would be a grid hovering over a street and a stack of cubes inside a tower.
+// One condition round the block it already was; nothing inside it moved.
+if (!inWP())
 {
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(400, 400),
@@ -4371,13 +4483,165 @@ function buildStreets() {
   console.log('STREET ' + plots + ' plots, ' + streets.children.length + ' draw calls, ' + Math.round(tris) + ' tris');
   return plots;
 }
-buildStreets();
+// the painted road grid is the TEST SITE's own layout (m110); Weirdport brings its own.
+if (!inWP()) buildStreets();
 
 
-// The highest box top under (x,z) at or a step above `y`, else the floor at 0.
+// ============================================================================================
+// A GROUND THAT IS NOT FLAT (m124, `TRI`)
+//
+// A box top is FLAT, so a box collider cannot express a ramp, a hill or a stepped plaza -- and
+// Weirdport has five DIY banks at 34 degrees, terrain that climbs to 17 m and a freeway deck at
+// 9.2. So its walkable surfaces go in as TRIANGLES, in world space, in a uniform XZ grid, and
+// `groundAt` asks both. The test site adds none and every line below is skipped there.
+//
+// **A RAMP IS A FLOOR, NOT A SOLID, AND THAT IS ON PURPOSE.** Anything steeper than `TRI.up` is
+// thrown away, so a ramp's SIDE WALLS are not in the collider: meet one side-on and you pass
+// through it, roll at it up the slope and you ride it. The alternative is a box you stop dead
+// against, which is worse -- and it is the same rule that drops every UNDERSIDE for free, since
+// these meshes are closed solids and 3,132 of their 13,762 triangles face down.
+// Measured on this slice: 3,684 walkable of 13,762.
+//
+// **AND IT RETURNS TWO ANSWERS BY CONSTRUCTION, WHICH IS WHY A DECK WORKS.** The highest
+// surface at or a step above his feet: standing under the freeway that is the road at 0.16,
+// standing on it that is the deck at 11. One rule, no case for a bridge.
+// TRICOL:START
+const TRI = { on: 0, cell: 4, up: .5, x0: 0, z0: 0, nx: 0, nz: 0, grid: null, v: null, n: 0 };
+const _triRaw = [];
+// REJECT AND REPORT: a steep face, a downward face and a sliver are all "not a floor".
+function triAdd(ax, ay, az, bx, by, bz, cx, cy, cz) {
+  const ux = bx - ax, uy = by - ay, uz = bz - az, vx = cx - ax, vy = cy - ay, vz = cz - az;
+  const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+  const L = Math.hypot(nx, ny, nz);
+  if (L < 1e-9 || ny / L <= TRI.up) return 0;
+  _triRaw.push(ax, ay, az, bx, by, bz, cx, cy, cz);
+  return 1;
+}
+function triBuild() {
+  const n = _triRaw.length / 9;
+  if (!n) return 0;
+  let x0 = 1e30, x1 = -1e30, z0 = 1e30, z1 = -1e30;
+  for (let i = 0; i < _triRaw.length; i += 3) {
+    const x = _triRaw[i], z = _triRaw[i + 2];
+    if (x < x0) x0 = x; if (x > x1) x1 = x;
+    if (z < z0) z0 = z; if (z > z1) z1 = z;
+  }
+  const c = TRI.cell;
+  TRI.x0 = x0; TRI.z0 = z0;
+  TRI.nx = Math.max(1, Math.ceil((x1 - x0) / c) + 1);
+  TRI.nz = Math.max(1, Math.ceil((z1 - z0) / c) + 1);
+  const g = TRI.grid = new Array(TRI.nx * TRI.nz);
+  const v = TRI.v = new Float32Array(_triRaw);
+  for (let t = 0; t < n; t++) {
+    const o = t * 9;
+    const i0 = Math.max(0, Math.floor((Math.min(v[o], v[o + 3], v[o + 6]) - x0) / c));
+    const i1 = Math.min(TRI.nx - 1, Math.floor((Math.max(v[o], v[o + 3], v[o + 6]) - x0) / c));
+    const k0 = Math.max(0, Math.floor((Math.min(v[o + 2], v[o + 5], v[o + 8]) - z0) / c));
+    const k1 = Math.min(TRI.nz - 1, Math.floor((Math.max(v[o + 2], v[o + 5], v[o + 8]) - z0) / c));
+    for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
+      const q = i * TRI.nz + k; (g[q] || (g[q] = [])).push(o);
+    }
+  }
+  TRI.n = n; TRI.on = 1;
+  _triRaw.length = 0;
+  return n;
+}
+// POINT IN TRIANGLE IN XZ, then the height off its own plane. -1e30 for "no ground here", which
+// is a different answer from "the ground is at zero" and is what lets `groundAt` keep its floor.
+function triGround(x, z, y, step) {
+  const i = Math.floor((x - TRI.x0) / TRI.cell), k = Math.floor((z - TRI.z0) / TRI.cell);
+  if (i < 0 || k < 0 || i >= TRI.nx || k >= TRI.nz) return -1e30;
+  const L = TRI.grid[i * TRI.nz + k];
+  if (!L) return -1e30;
+  const v = TRI.v, lim = y + step;
+  let best = -1e30;
+  for (let q = 0; q < L.length; q++) {
+    const o = L[q];
+    const ax = v[o], ay = v[o + 1], az = v[o + 2];
+    const bx = v[o + 3], by = v[o + 4], bz = v[o + 5];
+    const cx = v[o + 6], cy = v[o + 7], cz = v[o + 8];
+    const d = (bz - cz) * (ax - cx) + (cx - bx) * (az - cz);
+    if (d < 1e-12 && d > -1e-12) continue;
+    const l1 = ((bz - cz) * (x - cx) + (cx - bx) * (z - cz)) / d;
+    if (l1 < -1e-6 || l1 > 1.000001) continue;
+    const l2 = ((cz - az) * (x - cx) + (ax - cx) * (z - cz)) / d;
+    if (l2 < -1e-6) continue;
+    const l3 = 1 - l1 - l2;
+    if (l3 < -1e-6) continue;
+    const h = l1 * ay + l2 * by + l3 * cy;
+    if (h > best && h <= lim) best = h;
+  }
+  return best;
+}
+// TRICOL:END
+
+// ============================================================================================
+// THE BROAD PHASE (m124, `BGRID`, `boxesNear`)
+//
+// `BOXES` is scanned LINEARLY by five functions -- `groundAt`, `resolveBoxes`, `wallFind`,
+// `ledgeFind` and `camHit` -- which is right for a test site with a dozen of them and is not
+// right for Weirdport's **4,086**. So they scan a grid BUCKET instead, and the loop bodies are
+// untouched: this is a broad phase and nothing else, the way a car's AABB is the broad phase
+// for its oriented box one repo over.
+// **IT IS OFF UNDER `min`, so the test site is byte-for-byte what it was** -- a grid over ten
+// boxes is slower than scanning ten boxes, and the world that already works must not change.
+//
+// **EACH CALL SITE OWNS ITS OWN BUFFER, AND THAT IS NOT TIDINESS.** `ledgeFind` calls `camHit`
+// INSIDE its own loop over the boxes, so one shared scratch array would be emptied under it
+// half way through and the ledge search would silently stop after its first candidate. A pool
+// sized by counting the nesting is a thing to get wrong later; five named arrays cannot alias.
+// BGRID:START
+const BGRID = { on: 0, cell: 8, min: 400, pad: 2, x0: 0, z0: 0, nx: 0, nz: 0, grid: null, mark: null, tick: 0 };
+function boxGrid() {
+  BGRID.on = 0; BGRID.grid = null; BGRID.mark = null;
+  if (BOXES.length < BGRID.min) return 0;
+  let x0 = 1e30, x1 = -1e30, z0 = 1e30, z1 = -1e30;
+  for (const b of BOXES) {
+    if (b.minx < x0) x0 = b.minx; if (b.maxx > x1) x1 = b.maxx;
+    if (b.minz < z0) z0 = b.minz; if (b.maxz > z1) z1 = b.maxz;
+  }
+  const c = BGRID.cell;
+  BGRID.x0 = x0; BGRID.z0 = z0;
+  BGRID.nx = Math.max(1, Math.ceil((x1 - x0) / c) + 1);
+  BGRID.nz = Math.max(1, Math.ceil((z1 - z0) / c) + 1);
+  const g = BGRID.grid = new Array(BGRID.nx * BGRID.nz);
+  for (let n = 0; n < BOXES.length; n++) {
+    const b = BOXES[n];
+    const i0 = Math.max(0, Math.floor((b.minx - x0) / c)), i1 = Math.min(BGRID.nx - 1, Math.floor((b.maxx - x0) / c));
+    const k0 = Math.max(0, Math.floor((b.minz - z0) / c)), k1 = Math.min(BGRID.nz - 1, Math.floor((b.maxz - z0) / c));
+    for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
+      const q = i * BGRID.nz + k; (g[q] || (g[q] = [])).push(n);
+    }
+  }
+  BGRID.mark = new Int32Array(BOXES.length);
+  BGRID.tick = 0; BGRID.on = 1;
+  return BGRID.nx * BGRID.nz;
+}
+function boxesNear(qx0, qx1, qz0, qz1, out) {
+  if (!BGRID.on) return BOXES;
+  const c = BGRID.cell, mark = BGRID.mark, t = ++BGRID.tick;
+  out.length = 0;
+  const i0 = Math.max(0, Math.floor((qx0 - BGRID.x0) / c)), i1 = Math.min(BGRID.nx - 1, Math.floor((qx1 - BGRID.x0) / c));
+  const k0 = Math.max(0, Math.floor((qz0 - BGRID.z0) / c)), k1 = Math.min(BGRID.nz - 1, Math.floor((qz1 - BGRID.z0) / c));
+  for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
+    const L = BGRID.grid[i * BGRID.nz + k];
+    if (!L) continue;
+    for (let n = 0; n < L.length; n++) { const b = L[n]; if (mark[b] === t) continue; mark[b] = t; out.push(BOXES[b]); }
+  }
+  return out;
+}
+// BGRID:END
+const _bnG = [], _bnR = [], _bnW = [], _bnL = [], _bnC = [];
+
+// The highest surface under (x,z) at or a step above `y`, else the floor at 0.
+// **THE TRIANGLES FIRST, THEN THE BOXES, AND THE HIGHER OF THE TWO WINS.** Weirdport's walkable
+// ground is a triangle mesh and its buildings and props are still boxes, so a roof and a ramp
+// are the same question asked of two stores -- and `triGround` returning -1e30 for "no ground
+// here" rather than 0 is what leaves the floor at zero doing its job off the edge of the slice.
 function groundAt(x, z, y, step) {
   let best = 0;
-  for (const b of BOXES) {
+  if (TRI.on) { const t = triGround(x, z, y, step); if (t > best) best = t; }
+  for (const b of boxesNear(x, x, z, z, _bnG)) {
     if (x < b.minx || x > b.maxx || z < b.minz || z > b.maxz) continue;
     if (b.maxy > best && b.maxy <= y + step) best = b.maxy;
   }
@@ -4388,7 +4652,16 @@ function groundAt(x, z, y, step) {
 // round a corner.
 function resolveBoxes(p, r, hh) {
   let hit = false;
-  for (const b of BOXES) {
+  // **PADDED, because this loop MOVES `p` as it goes.** The bucket is chosen once from where he
+  // started and a push-out can carry him toward a box the query never asked for.
+  // **THE PAD IS SIZED TO THE PUSH, NOT TO THE WORST CASE**, and the worst case here is 13 m --
+  // half the plan of the widest building, reachable only from its exact centre, which is a
+  // place he cannot get to. Two metres is far more than any push in play, and the failure mode
+  // past it is ONE FRAME of not being shoved out of a SECOND box, which the next frame's query
+  // resolves from his new position. Measured against the alternative: a pad of a whole grid
+  // cell scans 40.8 boxes a query where this scans 13.0, for a margin nothing ever uses.
+  const pad = r + BGRID.pad;
+  for (const b of boxesNear(p.x - pad, p.x + pad, p.z - pad, p.z + pad, _bnR)) {
     if (p.x + r < b.minx || p.x - r > b.maxx) continue;
     if (p.z + r < b.minz || p.z - r > b.maxz) continue;
     // A BOX TOP WITHIN `step` OF HIS FEET IS A FLOOR, NOT A WALL -- which is how a kerb is
@@ -4417,7 +4690,7 @@ function resolveBoxes(p, r, hh) {
 function wallFind(px, py, pz, R) {
   let best = null, bd = 1e9;
   const h = py + WALL.chest;
-  for (const b of BOXES) {
+  for (const b of boxesNear(px - R, px + R, pz - R, pz + R, _bnW)) {
     if (b.maxy - b.miny < WALL.tall) continue;      // a kerb is cover for nobody
     if (b.maxy < h || b.miny > h) continue;         // measured at his CHEST, not his ankles
     if (px + R < b.minx || px - R > b.maxx) continue;
@@ -4443,7 +4716,8 @@ function ledgeFind(px, py, pz, R) {
   // placement disagree about the one thing they were written to agree about.
   const hands = py + RIG.height * LEDGE.hang * bodyK();
   let best = null, bd = 1e9;
-  for (const b of BOXES) {
+  // ITS OWN BUFFER: `camHit` is called from inside this loop and would empty a shared one.
+  for (const b of boxesNear(px - R, px + R, pz - R, pz + R, _bnL)) {
     if (b.maxy - b.miny < LEDGE.tall) continue;      // a kerb is not a ledge
     const dy = b.maxy - hands;
     if (dy < -LEDGE.band || dy > LEDGE.band) continue;
@@ -4503,7 +4777,7 @@ function pushBodies(pos, r, skip) {
 }
 
 function camHit(x, y, z, pad) {
-  for (const b of BOXES) {
+  for (const b of boxesNear(x - pad, x + pad, z - pad, z + pad, _bnC)) {
     if (x > b.minx - pad && x < b.maxx + pad && y > b.miny - pad && y < b.maxy + pad &&
         z > b.minz - pad && z < b.maxz + pad) return true;
   }
@@ -7406,6 +7680,25 @@ document.getElementById('buildN').addEventListener('pointerdown', e => {
   setDyn(!STICK.dyn);
 });
 
+// AND THE WORLD KEY SWAPS THE WORLD (m124). It RELOADS, and that is not a shortcut: the test
+// site is built at module scope and Weirdport is ten megabytes of GLB, so the two cannot both
+// be standing at once and tearing one down to raise the other would be a second build path to
+// keep in step with the first. A reload is one path.
+// **AND IT WRITES THE STORE BEFORE IT RELOADS, so the choice survives** -- and it reloads to a
+// CLEAN PATH rather than carrying a `?w=` that would then outrank the store for ever.
+{
+  const wk = document.getElementById('worldKey'), wn = document.getElementById('worldName');
+  if (wn) wn.textContent = WORLD.list[WORLD.now] || WORLD.now;
+  if (wk) wk.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation();
+    const keys = Object.keys(WORLD.list);
+    const next = keys[(keys.indexOf(WORLD.now) + 1) % keys.length];
+    try { localStorage.setItem(WORLD.store, next); } catch (err) {}
+    if (wn) wn.textContent = WORLD.list[next] + ' ...';
+    location.replace(location.pathname);
+  });
+}
+
 // ============================================================================================
 // DESKTOP (m79, `DESK`)
 //
@@ -9031,7 +9324,14 @@ function solidColumns(mesh, cfg, out) {
   if (!used) return 0;
 
   // IS IT JUST A BOX? Most buildings are, and collapsing costs nothing and saves every frame.
-  if (boxy / used >= cfg.full) {
+  // **AND IT HAS TO FILL ITS FOOTPRINT AS WELL AS ITS HEIGHT (m124, `cfg.fill`).** `full` asks
+  // whether the OCCUPIED columns are full height and quietly assumes the footprint is occupied
+  // -- which is true of every closed building shell this has ever been handed and false of a
+  // beam, a row of piers or a fence. `solid_freeway_girder_col` is 276 x 250 m and 1.8 m thick:
+  // every column it has is full height, so it collapsed into a SLAB OVER THE WHOLE MAP at
+  // 9.2 m, which is an invisible floor a man on a roof or on the hill lands on.
+  // **ABSENT IT IS EXACTLY THE OLD RULE** -- `BLD` and `TOWER` name no `fill` and are untouched.
+  if (boxy / used >= cfg.full && used >= nx * nz * (cfg.fill || 0)) {
     out.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
                minz: wb.min.z, maxz: wb.max.z });
     return 1;
@@ -9067,6 +9367,207 @@ function solidColumns(mesh, cfg, out) {
   return made;
 }
 // COLS:END
+
+// ============================================================================================
+// WEIRDPORT (m124, `buildWpCollision`, `buildWpVisual`)
+//
+// TWO FILES AND TWO JOBS. The collision GLB is uncompressed and its node NAMES are the whole
+// classification; the visual is draco and shares nothing with it but the space they are both
+// authored in. Neither knows about the other, which is the point: he can re-export either one.
+//
+// **THE PICTURE AND THE THING YOU WALK INTO ARE NOT THE SAME MESH HERE, AND THAT IS HIS
+// DESIGN.** Every other solid in this game pushes its own footprint into `BOXES`, so there is
+// one description of the world; this one has two by construction, and the collision file is
+// the one that is true. If he ever reports walking into nothing, that is the gap, and it is
+// his export to close rather than this code's to paper over.
+// **DECLARED ABOVE EVERYTHING THAT READS IT.** A `const` read from a function that runs later
+// is fine and a `const` read from module scope above its own declaration is a BLANK PAGE, and
+// this file has paid for that eight times. It goes above.
+const wpRoot = new THREE.Group();
+wpRoot.name = 'weirdport';
+world.add(wpRoot);
+
+function buildWpCollision(g) {
+  let nGround = 0, nTri = 0, nBox = 0, nRaster = 0, nPlain = 0, nMetal = 0, skipped = 0;
+  const t0 = performance.now();
+  g.scene.updateMatrixWorld(true);
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+  const rails = [];
+  g.scene.traverse(o => {
+    if (!o.isMesh || !o.geometry) return;
+    // THE NODE NAME IS THE FAMILY, and a mesh in neither family is not in the collider at all
+    // rather than being guessed at -- a silent third answer is how a collider grows a wall
+    // nobody put there.
+    const nm = o.name || '';
+    const ground = WP.ground.test(nm), solid = WP.solid.test(nm);
+    if (!ground && !solid) { skipped++; return; }
+    // **A GRIND RAIL IS A MATERIAL, NOT A NAME** -- his ten handrails, ledge irons and coping
+    // are `prop_` nodes whose material is `metal`, which is the one thing that separates them
+    // from the concrete they are bolted to. Counted and remembered; see the note below.
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    if (mats.some(m => m && m.name === 'metal')) { nMetal++; rails.push(nm); }
+
+    const pos = o.geometry.attributes.position, idx = o.geometry.index;
+    if (!pos) { skipped++; return; }
+
+    if (ground) {
+      nGround++;
+      const n = idx ? idx.count : pos.count;
+      for (let i = 0; i < n; i += 3) {
+        const ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
+        A.fromBufferAttribute(pos, ia).applyMatrix4(o.matrixWorld);
+        B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
+        C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
+        nTri++; triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+      }
+      return;
+    }
+
+    // **A 12-TRIANGLE MESH IS A BOX AND ITS AABB IS EXACT, so it skips the rasteriser.** That
+    // is a STRUCTURAL test rather than a test on `prop_`: 329 of his 333 props really are
+    // boxes (his own note says so -- "props are simple boxes; trees are 0.7 m trunk boxes")
+    // and the four that are not go through the rasteriser with the buildings, which is what
+    // the name test would have got wrong in both directions.
+    const nt = (idx ? idx.count : pos.count) / 3;
+    if (nt === 12) {
+      o.geometry.computeBoundingBox();
+      const wb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+      BOXES.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
+                   minz: wb.min.z, maxz: wb.max.z });
+      nBox++; nPlain++;
+      return;
+    }
+    // **AND A BOUNDING BOX IS NOT A BUILDING (m26), WHICH HERE IS NOT A MATTER OF DEGREE.**
+    // `solid_freeway_piers_col` is ONE node whose bounding box is 155 x 229 m and 9 m tall --
+    // a row of separate piers under the I-405. As an AABB that is a solid block over most of
+    // the slice from the ground up, and the player could not have moved at all.
+    const got = [];
+    solidColumns(o, WP.cols, got);
+    if (got.length) { for (const c of got) BOXES.push(c); nBox += got.length; nRaster++; }
+    else { skipped++; }
+  });
+  const n = triBuild();
+  const cells = boxGrid();
+  WP.rails = rails;
+  console.log('[melee] weirdport collider: ' + n + ' walkable tris of ' + nTri + ' kept from ' +
+    nGround + ' ground meshes, ' + nBox + ' boxes (' + nPlain + ' plain, ' + nRaster +
+    ' rasterised), ' + nMetal + ' metal nodes, ' + skipped + ' skipped, grid ' + cells +
+    ' cells, ' + Math.round(performance.now() - t0) + ' ms');
+  if (!n) note('WP NO GROUND');
+  if (!nBox) note('WP NO SOLIDS');
+}
+
+// THE PICTURE. Three things it has to do that a plain `scene.add` does not.
+function buildWpVisual(g, trim) {
+  const root = g.scene;
+  root.updateMatrixWorld(true);
+
+  // **THE MATERIALS FIRST AND THE BATCH SECOND, WHICH IS NOT AN ORDERING PREFERENCE.** The
+  // batch REMOVES the nodes it merges, so a material pass after it never sees them -- and 368
+  // of the 510 nodes here are instanced, `G_PF_Garden_Bed` and `G_PF_Garden_Bush` among them,
+  // which are **City_Trim**. Run the other way round, a third of the city would miss the trim
+  // sheet, the tint mask, the anisotropy and its shadow flags, and nothing on screen would say
+  // which third.
+
+  // 1. **BATCH THE `inst_` NODES.** His exporter did not emit `EXT_mesh_gpu_instancing`, so
+  //    368 trees, cars, benches and lamps arrive as 368 separate nodes sharing 40 meshes --
+  //    368 draw calls for 40 distinct things. Draw calls are the first thing that costs
+  //    anything on a phone and triangles are the last, so they are merged into one
+  //    `InstancedMesh` each and the originals come out of the scene.
+  //    **GROUPED BY GEOMETRY *AND* MATERIAL**, because two nodes sharing a mesh but not a
+  //    material are not one draw call, and an InstancedMesh has exactly one of each.
+  let trimmed = 0, beam = 0, mats = 0;
+  const seen = new Set();
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = !!WP.cast; o.receiveShadow = true;
+    for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+      if (!m || seen.has(m)) continue;
+      seen.add(m); mats++;
+      if (m.map) { m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); m.map.needsUpdate = true; }
+      if (m.name === 'City_Trim') {
+        const mask = m.map;
+        if (trim) { trim.flipY = false; trim.colorSpace = THREE.SRGBColorSpace;
+                    trim.wrapS = trim.wrapT = THREE.RepeatWrapping;
+                    trim.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+                    m.map = trim; }
+        m.vertexColors = true;
+        if (mask) {
+          mask.colorSpace = THREE.NoColorSpace;
+          m.onBeforeCompile = sh => {
+            sh.uniforms.tintMask = { value: mask };
+            sh.fragmentShader = sh.fragmentShader
+              .replace('#include <common>', '#include <common>\nuniform sampler2D tintMask;')
+              .replace('#include <color_fragment>', [
+                '#ifdef USE_COLOR',
+                '  float wpTint = texture2D(tintMask, vMapUv).r;',
+                '  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vColor.rgb, wpTint);',
+                '#endif'].join('\n'));
+          };
+          // A MATERIAL CARRYING A CUSTOM HOOK NEEDS ITS OWN CACHE KEY or three can hand it a
+          // program compiled for something else.
+          m.customProgramCacheKey = () => 'wp-trim';
+        }
+        m.needsUpdate = true;
+        trimmed++;
+      }
+      // 3. THE TRACTOR BEAM IS LIGHT, NOT PAINT -- his own note, and it is the one material
+      //    here that has to be told.
+      if (m.name === 'Tractor_Beam') {
+        m.blending = THREE.AdditiveBlending; m.depthWrite = false; m.transparent = true;
+        m.needsUpdate = true; beam++;
+      }
+    }
+  });
+
+
+  let inst = 0, instN = 0;
+  if (WP.inst) {
+    const by = new Map();
+    root.traverse(o => {
+      if (!o.isMesh || !/^inst_/.test(o.name || '') || Array.isArray(o.material)) return;
+      const k = o.geometry.uuid + '|' + o.material.uuid;
+      let L = by.get(k); if (!L) by.set(k, L = []);
+      L.push(o);
+    });
+    for (const list of by.values()) {
+      if (list.length < 2) continue;
+      const im = new THREE.InstancedMesh(list[0].geometry, list[0].material, list.length);
+      im.name = 'wpinst_' + (list[0].name || '');
+      for (let i = 0; i < list.length; i++) im.setMatrixAt(i, list[i].matrixWorld);
+      im.instanceMatrix.needsUpdate = true;
+      // **AND THE MATRICES ARE WORLD MATRICES, so it hangs off the world at identity.** Adding
+      // it under the gltf root would apply that root's transform a second time.
+      // ITS OWN SHADOW FLAGS, because it is a NEW object and the pass above set the ones it
+      // replaces. Taking them from the source is what keeps `WP.cast` meaning one thing.
+      im.castShadow = list[0].castShadow; im.receiveShadow = list[0].receiveShadow;
+      // AND REAL BOUNDS, so it can still be culled: a tree pack spread over the whole slice
+      // never leaves the frustum and loses nothing, while twelve garden bushes in one plaza
+      // are a tight sphere and are culled from everywhere else in the city.
+      im.computeBoundingSphere();
+      wpRoot.add(im);
+      for (const o of list) o.parent && o.parent.remove(o);
+      inst++; instN += list.length;
+    }
+  }
+
+  // 2. **THE TRIM SHEET GOES IN THE BASE SLOT AND THE TINT MASK COMES OUT OF IT.** His exporter
+  //    put the MASK in `baseColorTexture` and left the painted 2048 sheet out of the GLB
+  //    entirely -- so loaded as it stands, every building in the city is shaded with a black
+  //    and white mask. The mask is exactly what the shader wants, just not where the shader
+  //    wants it: it is kept as the mask and `map` becomes the real sheet.
+  //    **THE MASK IS THE EMBEDDED ONE, so there is no second fetch and no second failure mode
+  //    on the boot path.** `textures/weirdport_trim_tintmask.png` is the lossless 1024 copy if
+  //    the JPEG's ringing ever shows at a window frame.
+  //    The shader itself is his (`models/portland/three/weirdportCity.js`) -- **except that it
+  //    tests `City_Trim_Export` and this export calls the material `City_Trim`**, so on this
+  //    file it would have matched nothing at all.
+  wpRoot.add(root);
+  console.log('[melee] weirdport visual: ' + mats + ' materials, ' + inst + ' instanced meshes for ' +
+    instN + ' nodes, trim ' + trimmed + (trim ? '' : ' (NO SHEET)') + ', beam ' + beam);
+  if (!trimmed) note('WP NO TRIM MAT');
+  if (!trim) note('WP NO TRIM PNG');
+}
 
 const BUILDINGS = [];
 // **ONE BUILDER, A TABLE PER KIND (m60).** *"I added a towers folder. Towers are just like much
@@ -12316,6 +12817,7 @@ function frame() {
     rig.drawnYaw = rig.root.rotation.y;
   }
   stepCam(dt);
+  stepSun();
   // AFTER the camera, because the reticle is PROJECTED through it -- drawn from last frame's
   // matrix it would trail the shot by a frame every time the lens moved, which is exactly the
   // thing a mark on a target must not do.
@@ -12435,6 +12937,11 @@ function frame() {
     // WHICH PAD MODE IT IS IN. Silent when they are fixed, because that is the default and the
     // pads plainly say so by being where they always are -- `rollREC`'s rule, one control over.
     const fl = STICK.dyn ? ' · FLOAT' : '';
+    // **HOW BIG THE COLLIDER ACTUALLY IS, IN WEIRDPORT ONLY.** "the city never loaded", "it
+    // loaded and I fall through the road" and "it loaded and I cannot move" are three bugs and
+    // one picture from a phone, and only these two numbers tell them apart: no triangles is no
+    // ground, no boxes is no buildings. Silent in the test site, `rollREC`'s rule.
+    const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b' : '';
     // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from
     // a phone. Silent when he is himself, `rollREC`'s rule.
@@ -12448,7 +12955,7 @@ function frame() {
              : p.mphK ? ' · DNA ' + mphName(p.mphK) +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     buildI.textContent = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl + mp +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cl + vs + mo + fl + wp + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
   }
@@ -12623,6 +13130,25 @@ async function init() {
   const side = (fn, label, tag) => loadGLB(fn, label).then(
     g => { try { tag.build(g); } catch (e) { console.error('[melee] ' + tag.name + ' build failed', e); note(tag.name + ' FAILED'); } },
     e => { PROG.done++; console.warn('[melee] ' + tag.name + ' did not load', e); note('NO ' + tag.name + ' GLB'); });
+  if (inWP()) {
+    PROG.total = 5;
+    // **THE COLLISION FIRST, AND IT IS THE ONE THERE IS NO WORLD WITHOUT.** The visual is a
+    // picture; the collision is the ground he stands on, so a slice with no picture is a man
+    // walking round an invisible city and a slice with no collision is a man falling through a
+    // painting. They are both on `side()` all the same -- neither is worth a boot that hangs,
+    // and the chip says which one is absent.
+    await side(WP.col, 'loading weirdport', { name: 'WPCOL', build: buildWpCollision });
+    // THE TRIM SHEET IS FETCHED BESIDE THE PICTURE, not inside the builder, so a 2048 that does
+    // not arrive costs the buildings their paint and not the whole city. It is the biggest
+    // single asset in the slice -- 5.8 MB on the wire and about 22 MB resident with its mips --
+    // and it is the one thing his export left OUT of the GLB, so there is nowhere else for it
+    // to come from. `gltf-transform uastc` to KTX2 is what takes that 22 MB to about 5.6 the
+    // day the count makes it matter.
+    let trim = null;
+    try { trim = await new THREE.TextureLoader().loadAsync(A(WP.trim)); }
+    catch (e) { console.warn('[melee] weirdport trim sheet did not load', e); }
+    await side(WP.vis, 'loading weirdport', { name: 'WPVIS', build: g => buildWpVisual(g, trim) });
+  } else {
   await side(DUMMY.file, 'loading a body to hit', { name: 'DUMMY', build: buildDummies });
   await side(BLD.file, 'loading a building', { name: 'BUILDING',
              build: g => buildBuildings(g, BLD) });
@@ -12641,6 +13167,7 @@ async function init() {
   await side(MOTO.file, 'loading a motorcycle', { name: 'MOTO', build: buildMoto });
   await side(BIKER.file, 'loading the locals', { name: 'BIKER', build: buildBikers });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
+  }
 
   paintKit();
 
@@ -12665,6 +13192,10 @@ async function init() {
                mats: mphMats(rig.model), h: RIG.height, stride: STEP.clip, bind: rig.bind };
   player.mphH = RIG.height;
 
+  // **THE SPAWN, AFTER THE COLLIDER AND NOT BEFORE IT.** `player.pos` is (0, 0, 4) at module
+  // scope and in Weirdport the origin is inside `bld_dt_18_col`, so x and z move HERE -- where
+  // the ground he is about to stand on actually exists -- and `groundAt` does the rest.
+  if (inWP()) { player.pos.x = WP.spawn[0]; player.pos.z = WP.spawn[1]; }
   player.pos.y = groundAt(player.pos.x, player.pos.z, 0, MOVE.step);
   rig.ready = true;
   setBoot('go', 1);
@@ -12680,6 +13211,13 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   DUMMY, DUMMIES, LOCK, LEDGE, WALL, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, slamGo, chargeRelease, groundAt,
   MFX, camShake, palDive,
+  // THE WORLD, LIVE (m124). `mel.world('weirdport')` is the key without the key, which is what
+  // a desktop wants; `mel.WP` and `mel.TRI` and `mel.BGRID` are the dials.
+  WORLD, WP, TRI, BGRID, triGround, boxesNear, wpRoot,
+  world: k => { if (!k) return WORLD.now;
+    if (!WORLD.list[k]) return 'worlds: ' + Object.keys(WORLD.list).join(', ');
+    try { localStorage.setItem(WORLD.store, k); } catch (e) {}
+    location.replace(location.pathname); return 'loading ' + k; },
   // THE DNA GUN, LIVE (m112). `mel.dna('hick')` wears the nearest kind whose file matches, with
   // no shot fired -- which is the only way to look at the transform without a fight, and is
   // `mel.slamfx()`'s own argument. `mel.dna()` puts him back.

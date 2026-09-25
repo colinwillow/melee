@@ -1041,6 +1041,174 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **WEIRDPORT: A SECOND WORLD, AND THE FIRST THING IN THIS GAME A BOX COLLIDER CANNOT EXPRESS
+  (m124, `WORLD`, `WP`, `TRI`, `BGRID`, `buildWpCollision`, `buildWpVisual`).** *"There's a
+  folder called Portland. It's a slice of a map I've been creating in Blender... let's make a
+  separate mode you can choose like the main mode. This will just be a new test mode you can
+  jack into. We want to set up the environment first and get all that right. But basically, you
+  can just have my character in there and make him able to walk around."*
+  **AND THE FILES WERE ON `origin` AND NOT IN MY CLONE.** `git log` said the last three commits
+  were mine; `git fetch` brought down six of his, including two that DELETE a first, misplaced
+  copy at `models/portland/*.glb`. The real ones are under `slice_downtown/`. m107's lesson,
+  paid a second time: **`git log` answers a question about the LOCAL clone, and after a push of
+  your own the local head is exactly as far behind as it was before.** Fetch before concluding
+  a file never arrived.
+- **THE CHOICE IS MADE AT BOOT AND IT RELOADS, WHICH IS NOT A SHORTCUT (m124).** The test site
+  is built at MODULE SCOPE and Weirdport is ten megabytes of GLB, so the two cannot both be
+  standing and tearing one down to raise the other is a second build path to keep in step with
+  the first. A reload is one path. The key sits under the build chip -- out of the play area, in
+  the same gutter, one tap, with the world's NAME on it -- which is `actB`'s rule that a prompt
+  drawn on the control performing it cannot be a mode you are in without knowing it. `?w=test`
+  is the way back if a world ever fails to boot: **a link can be sent where a gesture has to be
+  explained**, which is `?fresh`'s own argument one repo over. `mel.world('weirdport')` on a
+  desktop.
+- **A BOX TOP IS FLAT, SO A BOX COLLIDER CANNOT EXPRESS A RAMP (m124, `TRI`).** Every collider
+  in this game until now has been an AABB, which is right for a test site of cubes and cannot
+  describe five DIY banks at 34 degrees, terrain climbing to 17 m or a freeway deck at 9.2. So
+  Weirdport's walkable surfaces go in as TRIANGLES -- world space, a 4 m XZ grid,
+  point-in-triangle -- and `groundAt` asks both stores and takes the higher.
+  **ANYTHING STEEPER THAN `TRI.up` IS THROWN AWAY, WHICH DOES THREE JOBS AT ONCE.** A ramp's
+  SIDE WALLS are not in the collider, so meet one side-on and you pass through it and roll at it
+  up the slope and you ride it -- **a ramp is a floor, not a solid**, which is the alternative
+  to a box you stop dead against. The same line drops every UNDERSIDE, because these meshes are
+  closed solids: **3,132 of their 13,762 triangles face DOWN** and 6,850 more are the kerbs and
+  retaining walls at the slabs' edges. 3,684 survive, and they are exactly the deck.
+  **AND IT RETURNS TWO ANSWERS BY CONSTRUCTION, WHICH IS WHY A DECK NEEDED NO CASE.** The
+  highest surface at or a step above his feet: measured at one point under the I-405, standing
+  at y 0 it answers **0.00** and standing at y 11 it answers **11.00**.
+  **VERIFIED AGAINST EVERY TRIANGLE IT WAS BUILT FROM**, by lifting the shipped text between the
+  `TRICOL:` markers and driving it with the real file -- a harness with its own copy of the rule
+  measures a game that does not exist, and this repo has made that mistake more than any other.
+  Standing at each of the 3,684 centroids and asking for the ground: **3,290 exact, 394
+  overlapped by something higher, 0 wrong or missing.** Walkable slopes run to 58.2 degrees, and
+  every one of the five ramps rises continuously from its foot to its lip
+  (`ramp_diy_bank_a` 0.22 -> 2.42 in even steps).
+  **AND MY FIRST TWO PROBES OF THOSE RAMPS BOTH MEASURED MY OWN SAMPLING.** One asked for the
+  ground with a step of 6 m and got the freeway deck at 11 (the DIY spot is UNDER the I-405);
+  the other walked across a bank along the axis it is flat in and read 0.22 the whole way. Both
+  read as the collider failing and neither was. **The question that cannot be aimed wrongly is
+  "does it reproduce what it was built from"**, which is the one above.
+- **A BOUNDING BOX IS NOT A BUILDING, AND HERE IT IS NOT A MATTER OF DEGREE (m124).**
+  `solid_freeway_piers_col` is ONE node -- a row of separate piers under the I-405 -- whose
+  bounding box is **155 x 229 m and 9 m tall**. As an AABB that is a solid block over most of
+  the slice from the ground up and **the player could not have moved at all.** So `solid_` and
+  `bld_` go through `solidColumns`, m26's own rasteriser, and it costs 77 ms for 179 meshes.
+  **A 12-TRIANGLE MESH IS A BOX AND ITS AABB IS EXACT, so it skips the rasteriser** -- and that
+  is a STRUCTURAL test rather than a test on `prop_`. 329 of his 333 props really are boxes (his
+  note: *"props are simple boxes; trees are 0.7 m trunk boxes 3 m tall"*) and the four that are
+  not go through with the buildings, which is what a name test would have got wrong in both
+  directions. `stripPoses`' rule, one asset along.
+- **AND `full` ALONE SAYS A BEAM IS ITS OWN BOUNDING BOX (m124, `cfg.fill`).** The collapse test
+  asks whether the OCCUPIED columns are full height and quietly assumes the footprint is
+  occupied -- which is true of every closed building shell it has ever been handed and false of
+  a beam, a row of piers or a fence. `solid_freeway_girder_col` is 276 x 250 m and 1.8 m thick,
+  so every column it has spans its whole height, `boxy / used` is 1, and **it collapsed into a
+  SLAB OVER THE ENTIRE MAP at 9.2 m** -- an invisible floor that a man on a roof, on a ledge or
+  on the hill lands on. `fill` is the other half of the question. Measured over the whole slice:
+      fill 0     4003 boxes, 26 collapsed, biggest box **68,885 m2**  (the girder)
+      fill .5    4086 boxes, 21 collapsed, biggest box **676 m2**     (a real building plan)
+  **ABSENT IT IS PROVABLY THE OLD RULE** -- `cfg.fill || 0` and `used >= 1` by the `if (!used)`
+  three lines above -- so `BLD` and `TOWER`, which name no `fill`, are untouched.
+- **FIVE FUNCTIONS SCANNED `BOXES` LINEARLY, WHICH IS RIGHT FOR TEN AND NOT FOR 4,086 (m124,
+  `BGRID`, `boxesNear`).** `groundAt`, `resolveBoxes`, `wallFind`, `ledgeFind` and `camHit` all
+  walked the whole list, several times a frame. They read a grid BUCKET now and **the loop
+  bodies are untouched**: this is a broad phase and nothing else, the way a car's AABB is the
+  broad phase for its oriented box one repo over. Measured over 40,000 random queries against
+  the real 4,086: **0 boxes missed**, and the scan drops from 4,086 to a mean of **9.8** -- 0.24%
+  of the list, worst case 235.
+  **IT IS OFF UNDER `BGRID.min`, so the test site is byte-for-byte what it was.** A grid over
+  ten boxes is slower than scanning ten boxes, and the world that already works must not change.
+  **EACH CALL SITE OWNS ITS OWN BUFFER, AND THAT IS NOT TIDINESS.** `ledgeFind` calls `camHit`
+  INSIDE its own loop over the boxes, so one shared scratch array would be emptied under it half
+  way through and the ledge search would silently stop after its first candidate. A pool sized
+  by counting the nesting is a thing to get wrong later; five named arrays cannot alias.
+  **AND `resolveBoxes`'s QUERY IS PADDED, because that loop MOVES `p` as it goes.** The pad is
+  sized to the PUSH rather than to the worst case -- the worst case is 13 m, half the plan of the
+  widest building, reachable only from its exact centre -- and past it the failure is ONE FRAME
+  of not being shoved out of a SECOND box, which the next frame resolves from his new position.
+  A pad of a whole grid cell scans 40.8 boxes a query where 2 m scans 13.0, for a margin nothing
+  ever uses.
+- **THE SPAWN IS SEARCHED, NEVER TYPED -- AND THE ORIGIN IS INSIDE A BUILDING (m124).** (0, 0)
+  is inside `bld_dt_18_col`, so the one coordinate anybody would have picked by eye puts him in
+  a tower. Swept against the real collider for the widest patch of clear level ground within
+  60 m of the middle: **(-6, 6) on `ground_asphalt_col`, y 0.00, 14 m of clearance in every
+  direction** -- the hero intersection. `npm run spots`' rule one repo over, and here it is the
+  difference between a world and a man in a wall.
+  **AND IT IS SET IN `init()`, NOT AT MODULE SCOPE**, because the ground he is about to stand on
+  does not exist until the collider does.
+- **HIS EXPORTER PUT THE TINT MASK IN THE BASE COLOUR SLOT AND LEFT THE PAINTED SHEET OUT
+  (m124).** Read off the file: `City_Trim`'s `baseColorTexture` is `weirdport_trim_tintmask`, and
+  `weirdport_trim_basecolor.png` -- the 2048 his manifest says the window tiles need -- **is not
+  embedded at all**. Loaded as it stands, every building in the city is shaded with a black and
+  white mask. The mask is exactly what the shader wants, just not where the shader wants it: it
+  is kept AS the mask and `map` becomes the real sheet, fetched beside the picture so a 2048
+  that does not arrive costs the buildings their paint rather than the whole city.
+  **THE MASK IS THE EMBEDDED ONE, so there is no second fetch and no second failure mode on the
+  boot path.** `textures/weirdport_trim_tintmask.png` is the lossless 1024 copy if the JPEG's
+  ringing ever shows at a window frame.
+  **AND HIS REFERENCE SHADER TESTS `City_Trim_Export` WHILE THIS EXPORT CALLS THE MATERIAL
+  `City_Trim`** -- so on this file it would have matched nothing at all. The shader itself is
+  his (`models/portland/three/weirdportCity.js`) and is otherwise used as written.
+  **`#ifdef USE_COLOR` FIRES FOR A VEC4 COLOUR TOO**, checked in the vendored source rather than
+  assumed: three defines `USE_COLOR` whenever `vertexColors` is true and adds `USE_COLOR_ALPHA`
+  on top, and `vColor.rgb` is valid on both the vec3 and the vec4.
+  **THE TRIM SHEET IS THE BIGGEST THING IN THE SLICE** -- 5.8 MB on the wire and about **22 MB
+  resident** with its mips. `gltf-transform uastc` to KTX2 takes that to about 5.6 the day the
+  count makes it matter; it is one texture today.
+- **368 OF THE 510 VISUAL NODES ARE INSTANCES AND THE EXPORTER DID NOT SAY SO (m124).** No
+  `EXT_mesh_gpu_instancing`, so 368 trees, cars, benches and lamp banners arrive as separate
+  nodes sharing **40 meshes** -- 368 draw calls for 40 distinct things, and draw calls are the
+  first thing that costs anything on a phone. They are merged into one `InstancedMesh` each.
+  **GROUPED BY GEOMETRY *AND* MATERIAL**, because two nodes sharing a mesh but not a material
+  are not one draw call.
+  **THE MATERIAL PASS RUNS BEFORE THE BATCH, AND THAT IS NOT AN ORDERING PREFERENCE.** The batch
+  REMOVES the nodes it merges, so a pass after it never sees them -- and `G_PF_Garden_Bed` and
+  `G_PF_Garden_Bush` are instanced AND are **City_Trim**. Run the other way round, a third of
+  the city misses the trim sheet, the tint mask, the anisotropy and its shadow flags, and
+  nothing on screen says which third. Caught reading the diff, not running it.
+  **AND THE INSTANCED MESH CARRIES ITS SOURCE'S SHADOW FLAGS AND ITS OWN BOUNDS**, because it is
+  a NEW object: a tree pack spread over the slice never leaves the frustum and loses nothing by
+  being tested, while twelve garden bushes in one plaza are a tight sphere and cull everywhere
+  else in the city.
+- **A 44 METRE SHADOW CAMERA IN A 280 METRE CITY WORKS IN ONE CORNER OF IT (m124, `stepSun`).**
+  Fixed at the origin it covers about two and a half per cent of Weirdport, so his own shadow --
+  the thing that grounds him -- would simply stop existing a few steps from the spawn. It
+  follows him, which keeps the 2048 map at **46 texels per metre** rather than spreading it over
+  a district at four. **The offset is the sun's own direction**, so the light keeps its bearing
+  and only the box it covers moves; writing a position without moving the target swings the sun
+  round the sky as he walks.
+  **THE CITY RECEIVES SHADOWS AND DOES NOT CAST THEM (`WP.cast`).** 182 casting meshes is a
+  shadow pass of 182 more draws, and an InstancedMesh's bounds span the slice so most of them
+  would never cull out of it. His own shadow still lands on the street, which is the half that
+  matters. `mel.WP.cast = 1` is the A/B.
+- **AND THE BOOT GATE CAN BE POINTED AT EITHER WORLD (m124, `MEL_WORLD`).** The Weirdport branch
+  is a path no gate had ever evaluated -- and a `const` read above its own declaration in there
+  is a blank page exactly as it is anywhere else, which is this file's oldest landmine and the
+  one `check:boot` exists for. `MEL_WORLD=weirdport npm run check:boot`. Empty is the test site,
+  so `npm run check` is unchanged.
+  **WHAT NO GATE HERE CAN REACH IS EITHER BUILDER**, because headless every `loadGLB` rejects --
+  so `buildWpCollision` and `buildWpVisual` have never run outside a browser. What IS measured
+  is everything they hand to: the shipped `triAdd`/`triBuild`/`triGround` over the real file, the
+  shipped `solidColumns` over the real solids, and the shipped `boxGrid`/`boxesNear` over the
+  real 4,086 boxes. The classification, the traverse and the draco decode are device questions.
+  **THE CHIP CARRIES `WP<tris>t/<boxes>b`**, because *"the city never loaded"*, *"it loaded and
+  I fall through the road"* and *"it loaded and I cannot move"* are three bugs and one picture
+  from a phone, and only those two numbers tell them apart. Expect **WP3684t/4086b**.
+- **NOT IN WEIRDPORT, AND EACH FOR A REASON (m124).** No NPCs: every warrior, drunk, skater,
+  biker and Clancy is placed at a coordinate chosen against the TEST SITE, and a body spawned
+  inside a tower is the m24 lesson (nothing on screen disagrees with anything and the player
+  simply cannot walk there). Placing them wants the same sweep the spawn got, and it is its own
+  build. **No grind rails**: his ten handrails, ledge irons and coping are found and counted
+  (`WP.rails`, keyed on the `metal` MATERIAL, which is the one thing separating them from the
+  concrete they are bolted to) and **this game has no grind mechanic at all**, so they are a
+  hook and nothing reads them. **No ground textures**: his own note says the asphalt, sidewalk
+  and grass export as flat colours until he bakes them, which is the first thing anybody will
+  notice and is his export rather than this code.
+  **AND THE PICTURE AND THE THING YOU WALK INTO ARE TWO DIFFERENT MESHES HERE, BY HIS DESIGN.**
+  Every other solid in this game pushes its own footprint into `BOXES`, so there is one
+  description of the world; this one has two, and the collision file is the one that is true. If
+  he reports walking into nothing, that is the gap -- and it is his export to close rather than
+  this code's to paper over.
 - **A THUMB LIFTING OFF THE GLASS IS NOT A SWIPE, AND NO WINDOW CAN SAY OTHERWISE (m104, `FLICK`).**
   *"I'll press and hold in one direction and then when I release it thinks I've done a swipe
   gesture -- he keeps rolling out of the way when I'm not meaning to. It needs to be both the press
@@ -5936,6 +6104,9 @@ means anything you can carry from one situation to the next.
   glass produces a fast move and an immediate lift, which is geometrically the same event -- so
   what separates them is DISTANCE (`FLICK.at` .95 of the pad's radius) and no timing window ever
   could. See the landmine.
+- **AND THE BUILD NUMBER IS NOT THE ONLY TAP TARGET ANY MORE (m124).** The world key sits under
+  it, in the same top-left gutter and out of the play area, and swaps between the test site and
+  Weirdport. It RELOADS, and it says which world it is in by having the name on it.
 - **THE PADS CAN FLOAT (`STICK.dyn`, tap the build number).** Fixed they are 148 px; floating they
   are 132 and appear where the thumb lands. Everything downstream reads the pad's own rect, so a
   gesture means the same thing in both.
@@ -5975,7 +6146,12 @@ means anything you can carry from one situation to the next.
   threshold and a standoff rather than a placement -- so a box that is cover for zap is cover for
   a body a head taller, which is arguable and is stated rather than assumed. `MORPH.tall = 0`
   draws him at zap's height and is the A/B; changing the collider mid-game is m52's whole build.
-- The world is a white floor and ten boxes, with a painted street grid round it (m110). It is
+- **THE TEST SITE IS ONE OF TWO WORLDS NOW (m124).** Weirdport -- his Blender slice of downtown
+  Portland -- is the other, and it has **no NPCs, no grind rails on its ten metal nodes and flat
+  colours on its ground** until he bakes those surfaces. Every one of those is written up above
+  with why. What it does have is 3,684 walkable triangles, 4,086 collider boxes, ramps you can
+  ride, a deck you can walk on and under, and a spawn that was searched rather than typed.
+- The test site is a white floor and ten boxes, with a painted street grid round it (m110). It is
   a test site, not a level. **The streets have no relief** -- no kerb, no lamp, no crossing --
   and the one thing standing between them and all three is `camHit` having a minimum height,
   so that a bolt is stopped by a wall and not by a pavement. That is the next build.

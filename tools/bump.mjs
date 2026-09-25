@@ -30,7 +30,10 @@ s = s.replace(/const BUILD = '[^']*';/, `const BUILD = '${next}';`);
 s = s.replace(/<b id="buildN">[^<]*<\/b>/, `<b id="buildN">${next}</b>`);
 s = s.replace(/<span id="bootBuild">[^<]*<\/span>/, `<span id="bootBuild">${next}</span>`);
 
-const DIRS = ['models', 'models/characters', 'models/vehicles', 'models/weapons', 'models/buildings', 'models/towers', 'models/streets', 'images', 'audio', 'audio/plasma_sounds', 'audio/alien_orc_grunt_sounds', 'audio/hit_sounds', 'audio/creature_noises'];
+const DIRS = ['models', 'models/characters', 'models/vehicles', 'models/weapons', 'models/buildings', 'models/towers', 'models/streets', 'images', 'audio', 'audio/plasma_sounds', 'audio/alien_orc_grunt_sounds', 'audio/hit_sounds', 'audio/creature_noises',
+  // m124: his Portland slice. THREE new folders, because readdirSync is not recursive -- the
+  // ninth time this tax has been paid across these repos, and the one that bites silently.
+  'models/portland/slice_downtown', 'models/portland/textures', 'models/portland/three'];
 const EXT = /\.(glb|png|jpe?g|webp|mp3|ogg|wav)$/i;
 const map = {};
 for (const d of DIRS) {
