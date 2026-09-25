@@ -468,10 +468,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m132</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m133</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m132</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m133</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -526,7 +526,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm132';
+const BUILD = 'm133';
 /* ASSETS:START */
 const ASSETS = {"models/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"ee30fe39","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -4419,13 +4419,36 @@ const fill = new THREE.DirectionalLight(0xbfd8ff, 0.85);
 fill.position.set(-7, 5, -6);
 scene.add(fill);
 const sun = new THREE.DirectionalLight(0xfff3e0, 2.4);
-sun.position.set(6, 12, 5);
+// **THE SUN WAS AT 57 DEGREES AND THE TOP OF THE FRAME IS 16.4, SO NOTHING THAT READS OFF IT
+// COULD EVER BE SEEN (m133).** `CAM.fov` is 58 and `CAM.el` is a CONSTANT .22 rad of DOWNWARD
+// pitch, so the only sky on screen is the band from the horizon to `fov/2 - el` = **16.4
+// degrees**, at every bearing, for ever. (6, 12, 5) puts the sun at asin(12/14.32) = **56.9**:
+//     the DISC     40 degrees above the top of the screen -- `SKY.sun`, `sunSize`, `sunGlow`
+//                  and `sunK` have never once been on screen
+//     the SHAFTS   `stepShafts` keys on `camFwd . sunDir`, whose best case is cos(56.9 + 12.6)
+//                  = .350, so `gain * pow(k, 3.2)` = .26 * .035 = **opacity 0.009**. It clears
+//                  the `a < .004` cutoff and draws at under one per cent. m130 has never been
+//                  visible either, and it is the SAME number
+// One fact -- where the sun is -- and m129's "all three read `_sunOff`" is what makes it one
+// edit. Same BEARING and same length (14.32), elevation 56.9 -> **12.0**, which puts the disc
+// (3.2 deg of radius) at 8.8..15.2 and squarely inside the band. The shafts go to .192, **21x**.
+// **THE SHADING MOVES WITH IT AND THAT IS THE POINT, NOT A SIDE EFFECT** -- a sun you can see
+// is a low sun, and a low sun is long shadows: a 1.25 m body casts 0.81 m at 57 degrees and
+// **5.9 m** at 12, well inside the 44 m shadow box either way.
+sun.position.set(10.76, 2.98, 8.97);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.camera.near = 1; sun.shadow.camera.far = 60;
 sun.shadow.camera.left = -22; sun.shadow.camera.right = 22;
 sun.shadow.camera.top = 22; sun.shadow.camera.bottom = -22;
 sun.shadow.bias = -0.0009;
+// AND A GRAZING SUN IS WHERE DEPTH BIAS ALONE STOPS BEING ENOUGH. `normalBias` offsets the
+// lookup along the surface normal rather than in depth, which is the remedy fitted to exactly
+// this: at 12 degrees a floor is nearly edge-on to the light and a constant depth bias either
+// leaves acne or floats the shadow off its own feet. It cannot be measured here (no GPU), so
+// it is shipped as insurance against a predictable consequence of the line above rather than
+// as a fix for something seen -- `mel.sun(57)` puts the whole thing back for the A/B.
+sun.shadow.normalBias = 0.04;
 scene.add(sun, sun.target);
 // **A 44 METRE SHADOW CAMERA IN A 280 METRE CITY WORKS IN ONE CORNER OF IT (m124).** Fixed at
 // the origin it is exactly right for a test site you can see across and covers about two and a
@@ -4482,7 +4505,15 @@ const SKY = {
   hor: 0xe7edf5,     // at the horizon
   zen: 0x6ea8de,     // overhead
   gnd: 0xb9ad9c,     // below it -- never black, or everything reflects a hole
-  bend: 1.35,        // how fast the horizon gives way to the zenith. >1 keeps the band low
+  // **AND `bend` 1.35 SPENT THE WHOLE GRADIENT ABOVE THE SCREEN (m133).** It is a power on
+  // sin(elevation), so at the TOP of the visible band (16.4 deg) it returned t = 0.181 -- the
+  // sky went #e7edf5 at the horizon to #d7e2f1 at the top of the frame, a **6% shift**, and
+  // `SKY.hor` is by m129's own deliberate choice the exact colour the game already had. So the
+  // gradient really was in and really was indistinguishable from the flat background it
+  // replaced, which is his report described exactly. At .60 that same top-of-band reads t =
+  // 0.468, so half the blue is on screen: #e7edf5 -> **#b5cfeb**. >1 keeps the band low and
+  // <1 pulls it down into the only 16 degrees this camera can see.
+  bend: .60,         // how fast the horizon gives way to the zenith
   gndFade: .10,      // how soft the ground meets the horizon, in units of elevation
   sun: 1,            // the disc and its halo
   sunCol: 0xfff0d8,
@@ -14380,6 +14411,19 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // AND THE ONE THAT COSTS FRAMES, ON ITS OWN SWITCH. `env` 0 keeps the backdrop and drops the
   // image-based lighting, which is an env lookup per fragment on every PBR surface in the city.
   ibl: v => { SKY.env = v == null ? (SKY.env ? 0 : 1) : (v ? 1 : 0); skyBake(); return SKY.env; },
+  // AND WHERE THE SUN IS, IN DEGREES OF ELEVATION (m133) -- the one number the disc, the shafts
+  // and every shadow in the game all read. `mel.sun(57)` is the A/B back to m132 and
+  // `mel.sun()` says where it is. The BEARING and the distance are kept, so only the pitch
+  // moves; `skyBake` re-runs because `_sunOff` is what it measures the disc's direction from,
+  // and without it the sky would go on drawing a sun the shading no longer has.
+  sun: d => { if (d != null) { const L = Math.hypot(_sunOff.x, _sunOff.y, _sunOff.z) || 1,
+      h = Math.hypot(_sunOff.x, _sunOff.z) || 1, t = d * Math.PI / 180;
+      _sunOff.set(_sunOff.x / h * L * Math.cos(t), L * Math.sin(t), _sunOff.z / h * L * Math.cos(t));
+      sun.position.copy(_sunOff); sun.target.position.set(0, 0, 0); sun.target.updateMatrixWorld();
+      skyBake(); }
+    const L2 = Math.hypot(_sunOff.x, _sunOff.y, _sunOff.z) || 1;
+    return { elev: +(Math.asin(_sunOff.y / L2) * 180 / Math.PI).toFixed(1),
+             topOfFrame: +((CAM.fov / 2) - CAM.el * 180 / Math.PI).toFixed(1) }; },
   // THE AIR (m130). Two switches, because they are two costs: the dust is a second `Points` and
   // 220 motes, the shafts are additive overdraw near the lens. `mel.dust(0)` / `mel.shafts(0)`.
   DUST, SHAFT,

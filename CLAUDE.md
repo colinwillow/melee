@@ -1085,6 +1085,76 @@ same picture from a phone.
   **WHAT IS UNVERIFIED AND WHY:** `p.mphK` is never set headless, so neither gate executes the
   new branch -- what they cover is that the module still evaluates and the line parses. Both pass.
 
+- **THE SUN WAS 40 DEGREES ABOVE THE TOP OF THE FRAME, AND THAT IS WHY NOTHING LOOKED DIFFERENT
+  (m133).** *"I'm on 129 and I don't really see any changes. Did you put in the sun or the
+  background? I'm wondering if the fog is just covering up the background."* **It is not the fog
+  -- `scene.fog` applies to MESHES and `scene.background` is never fogged**, so that hypothesis
+  can be ruled out outright. The sky was in, the IBL was in, and all three of the things built on
+  them were invisible by construction. `CAM.fov` is 58 and **`CAM.el` is a CONSTANT .22 rad of
+  DOWNWARD pitch**, so the only sky on screen is the band from the horizon to `fov/2 - el` =
+  **16.4 degrees**, at every bearing, for ever -- and (6, 12, 5) put the sun at
+  asin(12/14.32) = **56.9**:
+      the DISC      **40 degrees above the top of the screen**. `SKY.sun`, `sunSize`, `sunGlow`
+                    and `sunK` have never once been on screen, at any camera bearing
+      the SHAFTS    `stepShafts` keys on `camFwd . sunDir`, whose best case is
+                    cos(56.9 + 12.6) = **.350**, so `gain * pow(k, 3.2)` = .26 x .035 =
+                    **opacity 0.009**. It clears the `a < .004` cutoff and draws at under ONE
+                    PER CENT -- **m130 has never been visible either**
+      the GRADIENT  `bend` 1.35 is a power on sin(elevation), so at the top of the band it
+                    returned t = **0.181**: the sky ran #e7edf5 to **#d7e2f1**, a 6% shift, and
+                    `SKY.hor` is by m129's own deliberate choice the exact colour the game
+                    already had. So the gradient was genuinely there and genuinely
+                    indistinguishable from the flat background it replaced
+  **ONE FACT -- WHERE THE SUN IS -- AND m129'S "ALL THREE READ `_sunOff`" IS WHAT MAKES IT ONE
+  EDIT.** That note was written so the disc, the shading and the rays could not drift apart; this
+  is the first time it has been collected on, and it is the difference between one line and three
+  numbers to keep in step. Same BEARING and same length (14.32), elevation 56.9 -> **12.0**:
+      the disc (3.2 deg of angular radius) lands at 8.8..15.2, squarely inside the band
+      the shafts go to **.192 -- 21x** what they have ever drawn at
+      `bend` .60 puts t = 0.468 at the top of the band: #e7edf5 -> **#b5cfeb**
+  **THE SHADING MOVES WITH IT AND THAT IS THE POINT RATHER THAN A SIDE EFFECT.** A sun you can
+  SEE is a low sun, and a low sun is long shadows: a 1.25 m body casts 0.81 m at 57 degrees and
+  **5.9 m** at 12, well inside the 44 m shadow box either way. `sun.shadow.normalBias` 0.04 goes
+  with it as insurance against grazing-angle acne -- **that one cannot be measured here** (no
+  GPU) and is shipped as a predictable consequence of the line above rather than as a fix for
+  something seen. `mel.sun(57)` is the whole A/B back, `mel.sun()` says where it is.
+  **AND THE LESSON IS THE CAMERA, NOT THE SKY.** Anything meant to be SEEN in this game has to be
+  placed in the FRAME'S terms -- 0 to 16.4 degrees of elevation -- and never in world terms that
+  look reasonable in a viewer. That is Shredworld's *"a cloud is placed in ANGLE, never in
+  metres"* arriving here, and it cost two builds of effects nobody could see.
+
+- **AND HIS "WEIRD COLLIDE ON PARK BENCHES" IS THE BOX HE AUTHORED, NOT THE QUERY (m133).**
+  *"Would it be really computationally expensive to just do raycasting for collisions, because
+  I'm going up against everything like park benches and they all just have weird collide."*
+  **RAYCASTING WOULD CHANGE NOTHING, BECAUSE THESE ALREADY ARE BOXES.** Measured off the real
+  collision file (plain glTF, m131) -- every street prop is **12 triangles**, `boxSkew` **1.00**,
+  so each one is an honestly axis-aligned box and a ray against its own triangles returns exactly
+  the surface `resolveBoxes` already tests. What is wrong is the SIZE:
+      prop_bench_parkblock_col   1.37 x 1.62 x **1.47 m**   a bench is ~1.7 x 0.6 x 0.85
+                                 -> 2.7x the plan area, and 1.47 m is CHEST HEIGHT on a 1.25 m
+                                    body, so it is cover rather than something you step over
+      prop_lamp_*_col            0.40 x 0.40 x **5.20 m**   a lamp post is ~0.15 across -> 7x
+      prop_bollard_inst_col      0.40 x 0.40 x 0.95         a bollard is ~0.20 across -> 4x
+      prop_parkingmeter_inst_col 0.40 x 0.40 x 1.45         a meter post is ~0.10 across
+      prop_hydrant_inst_col      0.40 x 0.40 x 0.90
+      prop_tree_*_col            0.70 x 0.70 x 3.00         his own stated convention, and fine
+  **So a 1.5 m cube round every bench is the collider working exactly as exported.** The fix is
+  a smaller box in his Blender file, one number per prop, and it needs no code change here at all.
+  **AND THE 5.2 m LAMP IS ALSO THE m128 LEDGE CANDIDATE** -- over `LEDGE.tall`, its top edge is in
+  `BOXES`, and its box is 40 cm where the post is 15 -- which ties *"weird collider geometry I'm
+  floating on"* to the same table.
+  **WHAT RAYCASTING WOULD COST, SINCE HE ASKED:** the existing test is an AABB overlap behind
+  `BGRID`/`boxesNear`, which m124 measured at a mean of **9.8 boxes per query** out of 4,086.
+  Sweeping a capsule against triangles means a BVH over Weirdport's 13,762 collision triangles
+  plus a segment-triangle test per candidate -- strictly more work per frame, on a phone already
+  at 37 fps, to get the same answer about a shape that is a box either way. **It is the right
+  tool for a world whose collider is a real mesh and the wrong one for a world whose collider is
+  boxes somebody authored.**
+  **THE ONE REAL COLLIDER FAULT ON THIS SIDE IS STILL THE 55 VEHICLES** (m129/m131): axis-aligned
+  boxes of ROTATED cars, mean plan inflation x1.28 and worst x2.13. `boxSkew` correctly passes
+  them because they genuinely are axis-aligned now; recovering the yaw means pairing each to its
+  visual instance by position and carrying `b.yaw` into `resolveBoxes`. That is the next build.
+
 - **THE 12-TRIANGLE SHORTCUT WAS THE WHOLE VEHICLE-COLLIDER FAULT, AND MY FIRST DIAGNOSIS OF THE
   OTHER HALF WAS WRONG (m131, `boxSkew`, `WP.cols.skew`).** *"The colliders for the cars in
   general are pretty big. The van's one is like skewed cockeye offset."*
