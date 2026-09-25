@@ -498,10 +498,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m142</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m143</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m142</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m143</b><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -557,9 +557,9 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm142';
+const BUILD = 'm143';
 /* ASSETS:START */
-const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"2516fcb8","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1932,7 +1932,10 @@ const WP = {
   // **27 BODIES AGAINST THE TEST SITE'S 19**, on a slice ten times its area: enough that a
   // street has somebody on it and not so many that a phone pays for a crowd nobody asked for.
   // Read at LOAD, so a change wants a reload.
-  crowd: { FOE: 5, HICK: 5, HOBO: 5, SKATER: 4, BIKER: 3, DUMMY: 3 },
+  // **`CIVIL` IS PER KIND, NOT A TOTAL (m143).** Six more rosters keyed by name here would be six
+  // strings to keep in step with `CIVILS`, which is the thing that table exists to stop -- so it
+  // is one number and `wpPopulate` expands it. A seventh civil needs no edit.
+  crowd: { FOE: 5, HICK: 5, HOBO: 5, SKATER: 4, BIKER: 3, DUMMY: 3, CIVIL: 2 },
 
   // WHAT A SOLID CONTRIBUTES. Its own table, never `BLD`'s (m60): these meshes are a different
   // shape entirely and reading the building's numbers here would be a silently wrong answer.
@@ -3053,6 +3056,95 @@ const BIKER = {
   sep: .95,
   bar: { w: .8, h: .09, up: 1.20, fade: 4.0 },
 };
+
+// ============================================================================================
+// THE LOCALS WHO BROUGHT NO ANIMATIONS (m143, `CIVIL`, `civil`, `CIVILS`)
+//
+// *"Let's go ahead and put all the new characters in the games. None of them have animations but
+// they're rigged with mixamo rig so they can borrow animations."*
+//
+// **HE IS RIGHT ABOUT BOTH HALVES OF THAT, AND THE FILES SAY SO** -- see `bodyBorrow` for the
+// measurement. Zero clips each, the complete 65-joint Mixamo set, and a bind pose **0.00 deg**
+// off `fat_biker_02` on every shared bone.
+//
+// **ONE TABLE, SIX ROWS, AND THE ROWS CARRY ONLY WHAT ACTUALLY DIFFERS.** Six near-identical
+// tables is six things to keep in step, which is the standing rule this file has about a
+// constant somebody has to remember -- so a row is a FILE and a PLACE and nothing else. The
+// height comes out of `hRel` (the artist's own proportion), the clips come out of `borrow`, and
+// the reference speeds are written by the borrow from the donor's measured pair.
+//
+// **THE NUMBERS ARE `BIKER`'s, BECAUSE THE CLIPS ARE.** He is the same fat build and his table
+// was measured against exactly these sixteen animations at exactly this scale (m107): `walkRef`
+// 1.50 and `runRef` 3.43 off the planted foot, `walk` 1.1 and `run` 2.8 sitting a little UNDER
+// each clip's own reference because a heavy man should, `hitBeat` 1.3 near the clips' own
+// lengths. Copying them is not a guess; it is the same measurement applied to the same clips.
+//
+// **AND THE THREE DRIVING CLIPS ARE DELIBERATELY LEFT OUT.** Only `buildBikers` seats a rider,
+// and `bodyLoops` would otherwise put three held poses in the loop set for a body that can never
+// reach them. A clip nothing names costs nothing (m35); a clip something half-names is a state
+// to keep in step.
+//
+// **THEY ARE DNA-WEARABLE FOR FREE, WHICH IS `dnaOK`'s OWN RULE COLLECTING.** That test is
+// structural -- `K.P && clips.idle && clips.walk && clips.run` -- so the moment the borrow gives
+// them a gait they can be worn, with nothing said about them anywhere in `MORPH`.
+const CIVIL = {
+  r: .42, hp: 5, snd: 'soft',
+  drop: /^CINEMA_4D/,
+  ai: 1, pacifist: 1,
+  // AS TALL AS THE DONOR IN THE RATIO THE TWO EXPORTS WERE DRAWN IN -- see `K.hRel`.
+  hRel: 1, h: 1.75,
+  clips: {
+    idle: 'idle',
+    // TWO IDLES, so a man standing still is not a statue -- `idle_fan_self` is 49 moving bones
+    // against `idle`'s 33, which is a real flourish and is what `look` is for.
+    look: ['idle_fan_self'],
+    walk: 'walk_fwd', run: 'run_fwd', flee: 'run_fwd',
+    air: 'in_air',
+    hits: ['hit_take_damage_00', 'hit_take_damage_01'],
+    big: ['hit_take_dmage_02'],            // HIS spelling, left alone -- a rename here is a
+                                           // silent T-pose the next time he re-exports it
+    downF: 'hit_take_damage_and_fall', downB: 'hit_take_damage_and_fall',
+    upF: 'laying_get_up', upB: 'laying_get_up',
+  },
+  // WRITTEN BY `bodyBorrow` from the donor's, scaled by the height ratio -- typed here only so
+  // a donor that never arrives leaves a sane pair rather than `undefined`.
+  walkRef: 1.50, runRef: 3.43, fleeRef: 3.43, tsHi: 1.5, tsLo: .7,
+  walk: 1.1, run: 2.8, flee: 3.2,
+  turn: 2.6,
+  vary: { pace: [.8, 1.2], nerve: [1, 1], react: [.4, 1.3], guard: [0, 0] },
+  gait: { lane: 0, laneT: [1.2, 3.0], surge: .34, stop: .22, stopT: [.7, 2.4] },
+  roam: 8, roamWait: [2.5, 6.5], roamAt: .9,
+  flee0: 4.5, fleeAdd: 2.0, fleeMax: 10,
+  hitBeat: 1.3, bigBeat: 1.1, downBeat: 2.2, upBeat: 2.0,
+  out: 1.8,
+  flyV: 19.0, flyUp: 7.4, flyG: 20, flyDrag: 1.35,
+  knock: 3.4, knockUp: .5, knockDrag: 5.5, shoveDrag: 2.2,
+  hard: 1.01,
+  fling: .62,
+  fly0: .45,
+  dmg: { bolt: 1.5, fist: .8, weap: 1.3, finish: 2.8 },
+  cool: .16,
+  sep: .95,
+  bar: { w: .8, h: .09, up: 1.20, fade: 4.0 },
+};
+// **THE `clips` BLOCK IS COPIED, NOT SHARED.** `bodyLoops` is a pure read, but `bodySpawn` and
+// the chip both walk `K.clips`, and one object behind six kinds is one object for a future edit
+// to change six characters with -- which is `KIT.on`-with-three-owners at table scope.
+const civil = (file, at) => Object.assign({}, CIVIL, { file, at, borrow: BIKER,
+  clips: Object.assign({}, CIVIL.clips) });
+// **PLACED BY FARTHEST-POINT FROM THE BODIES ALREADY ON THE STREET, NEVER BY EYE (m60/m80).**
+// Seeding the spread with the nineteen already out there is what puts these six in the GAPS
+// rather than in a rank of their own; checked as rectangles against all fourteen boxes, both
+// buildings, the motorcycle's lane and every existing body. Worst clearance 2.55 m against a
+// body radius of .42, and all six sit 16 to 27 m out, which is the band the street occupies.
+const CIVILS = [
+  civil('models/characters/fat_activist_01.glb',    [[26, -5]]),    // clear 8.00 m
+  civil('models/characters/fat_biker_01.glb',       [[-19, -19]]),  // clear 2.87
+  civil('models/characters/fat_hippie.glb',         [[5, -26]]),    // clear 7.40
+  civil('models/characters/fat_hipster.glb',        [[22, 4]]),     // clear 4.87
+  civil('models/characters/fat_secret_service.glb', [[18, -10]]),   // clear 3.00
+  civil('models/characters/fat_trump.glb',          [[-3, 16]]),    // clear 2.55
+];
 
 // ============================================================================================
 // THE MOTORCYCLE (m107, `MOTO`, `buildMoto`, `motoBones`, `stepMoto`)
@@ -11000,9 +11092,14 @@ function wpLoop(pool, n, lo, hi, maxY) {
 // nothing has been placed on it yet.
 function wpPopulate() {
   const KIND = { FOE, HICK, HOBO, SKATER, BIKER, DUMMY };
+  // EXPANDED RATHER THAN LISTED -- see `WP.crowd`. Each civil is his own kind with his own `at`,
+  // because `bodySpawn` reads the table the body was built from; what is shared is the COUNT.
+  for (const K of CIVILS) KIND[mphName(K)] = K;
+  const civN = WP.crowd.CIVIL || 0;
   const pool = wpPool();
   let want = 0;
   for (const k in WP.crowd) if (KIND[k]) want += WP.crowd[k];
+  want += civN * CIVILS.length;
   const spots = wpSpread(pool, want, WPSPOT.gap);
   // **DEALT ROUND-ROBIN, NOT SLICED.** `wpSpread` returns them in the order it found them --
   // furthest-first -- so a slice would hand one kind the far edge of the city and another the
@@ -11010,6 +11107,7 @@ function wpPopulate() {
   // is the half of "randomly" that a spread alone does not buy.
   const keys = Object.keys(WP.crowd).filter(k => KIND[k] && WP.crowd[k] > 0);
   const left = {}; for (const k of keys) { left[k] = WP.crowd[k]; KIND[k].at = []; }
+  if (civN) for (const K of CIVILS) { const k = mphName(K); keys.push(k); left[k] = civN; K.at = []; }
   let i = 0;
   while (i < spots.length) {
     let dealt = 0;
@@ -11200,7 +11298,26 @@ function bodyProto(g, K) {
     o.geometry.computeBoundingBox();
     lo = Math.min(lo, o.geometry.boundingBox.min.y); hi = Math.max(hi, o.geometry.boundingBox.max.y);
   });
-  const authored = hi - lo, scale = authored > .01 ? K.h / authored : 1;
+  const authored = hi - lo;
+  // **AND HOW TALL HE IS DRAWN CAN BE A PROPORTION RATHER THAN A NUMBER (m143, `K.hRel`).** Six
+  // of the roster have no clips of their own and wear a donor's, and every one of them is a
+  // different shape -- so typing six heights is six constants that go stale the next time one is
+  // re-exported, which is the thing this file has a standing rule against. `hRel` says "as tall
+  // as the donor, in the ratio the two exports were DRAWN in", so the artist's own answer ships
+  // and a re-export at any size lands right with no edit (`buildBoard`'s rule, one roster over):
+  //     activist 1.78   biker_01 1.76   hippie 1.71   hipster 1.73   secret 1.59   trump 1.59
+  // against the donor's 1.75, the hick's 1.78 and the warrior's 1.85 -- 19 cm across the six,
+  // which reads as six people rather than as six copies at one height.
+  // **AND THE CONFOUND IS STATED RATHER THAN HIDDEN.** Every export in this repo is normalised
+  // so its authored X span is exactly 1.000, which is the ARM SPAN in an A-pose -- so a FATTER
+  // body, whose arms cannot come as close in, reads as slightly shorter than it is. Two
+  // independent skeletal measures (the head bone's height and the hips bone's) agree with this
+  // one on the ORDER, so the ranking is real; how much of the 19 cm is girth rather than height
+  // is not knowable from this side. `hRel: 0` draws all six at the donor's own height, and it
+  // is read at BUILD time, so it wants a reload rather than a console poke.
+  if (K.hRel && K.borrow && K.borrow.P && K.borrow.P.authored > .01)
+    K.h = K.borrow.h * (authored / K.borrow.P.authored);
+  const scale = authored > .01 ? K.h / authored : 1;
   // the same emissive lift the player gets, so nobody reads as a dark cut-out beside him.
   // `skeletonClone` SHARES materials, so this is done once for every copy.
   proto.traverse(o => {
@@ -11230,6 +11347,16 @@ function bodyProto(g, K) {
   if (!(hipY > 0)) hipY = authored * .30;    // no Hips bone: a plausible fraction, never zero
   let clips = normaliseClips(g.animations || []);
   if (K.drop) clips = clips.filter(c => !K.drop.test(c.name));
+  // **THE BIND POSE, WHILE THIS SKELETON STILL PROVABLY HAS ONE.** Nothing ever animates a
+  // proto, so its bones are at rest by construction -- and one frame after a mixer touches them
+  // they are not. `bindPose` composes the Hips' parent chain up to the model, which is the frame
+  // both its local rotation and its local translation are expressed in; see `retarget`.
+  const bind = bindPose(pb, proto);
+  // BEFORE THE DE-DRIFT AND BEFORE THE LOG, so the count printed is the count he ends up with
+  // and the de-drift pass covers whatever is actually in the pool. It is a proven no-op on the
+  // borrowed ones -- the donor's own `bodyProto` already ran it, so their net drift is under the
+  // threshold and nothing is subtracted twice.
+  bodyBorrow(K, clips, bind, pb);
   // **ONLY THE LOOPING ONES, AND ONLY ONCE PER KIND.** `bodyLoops` already derives which clips
   // repeat, so there is no second list to keep in step -- and a ONCE clip that travels is FINE,
   // because it has no loop point to snap at: `Shoulder_Hit_And_Fall` drifts 26.7 units and that
@@ -11251,9 +11378,88 @@ function bodyProto(g, K) {
   // **AND IT IS STASHED ON THE KIND (m112).** The DNA gun wears a clone of this, and a proto
   // that only exists as a local inside a builder is a proto nothing else can reach -- which is
   // the one line between "a table and a load line" and a second loader.
-  const P = { proto, scale, faceOff, clips, hipY: hipY * scale };
+  const P = { proto, scale, faceOff, clips, authored, bind, hipY: hipY * scale };
   K.P = P;
   return P;
+}
+
+// **A RIG WITH NO CLIPS WEARS A DONOR'S (m143).** *"None of them have animations but they're
+// rigged with mixamo rig so they can borrow animations."* He is right, and the files say how
+// right: read out of the six new exports' own JSON chunks -- animation samplers and node
+// transforms are never draco, so this is measurable here even though the MESH is not --
+//     every one of them  0 clips, 1 skinned mesh, soles at exactly y = 0, toes +Z (0.00 deg)
+//     fat_activist_01  65 joints     the other five  66 (+ a `root` null)
+//     and ALL SIX carry the complete 65-joint set `hobo_01` has, missing nothing
+//     rest-pose offset against `fat_biker_02`: worst **0.04 deg**, and that is export rounding
+// **THE `root` BONE IS THE ONLY STRUCTURAL DIFFERENCE AND IT IS m119's, EXACTLY.** They fall into
+// the two families this file already knows about: `Armature[0.01] > Hips` with the -90 X in the
+// Hips' own local, and `Armature[0.01] > root > Hips` with it in `root`. Same net world rotation
+// either way, so a retarget across them is ONE constant rotation at the Hips -- which is what
+// `retarget` computes and what its per-bone guard is there to prove.
+// **AND HE MOVED ONE OF THEM MID-BUILD**, which is the point: `fat_hipster` shipped in the
+// donor's family and was re-exported an hour later with a `root` null, taking its delta from
+// 0.00 deg to 90.00. **Nothing in the code changed and nothing needed to**, because the delta is
+// MEASURED off the two bind poses rather than typed -- the only thing that went stale is the
+// table of numbers in this comment, which is the right thing to have to update.
+//
+// **`fat_biker_02` IS THE DONOR AND IT IS NOT HOBO.** Measured per clip, moving bones past 2 deg:
+//     hobo_01 `idle`            **2 bones, 2.1 deg** -- a statue, so his idle is `drunk_idle`
+//     fat_biker_02 `idle`       33 bones, 18.9 deg -- a man standing about
+//     fat_biker_02 `idle_fan_self`  49 bones, 86.2 -- a real flourish, which is what `look` is for
+// So the hobo's pool is a DRUNK's, and a secret service agent stumbling like a drunk is a worse
+// answer than no clips at all. The biker's sixteen are the complete SOBER civilian set -- idle,
+// a flourish, walk, run, in-air, three hit reactions, one fall and one get-up -- on a FAT rig,
+// which is what all six of these are. **The three driving clips are deliberately left out of the
+// civil table**: only `buildBikers` seats a rider, and a clip nothing names costs nothing (m35).
+//
+// **AND THE ARITHMETIC IS EXACT, MEASURED RATHER THAN ARGUED.** The delta, `k` and the track
+// rewrite were run offline over `walk_fwd`'s real 26-key Hips track -- node transforms and
+// animation samplers are never draco, so this is answerable here even though no harness in this
+// container can build a skin -- and compared as WORLD transforms on the target against the
+// donor's:
+//     fat_activist_01  D  0.00 deg  k .9137     fat_hipster         D 90.00 deg  k 1.0136
+//     fat_biker_01     D 90.00      k .9670     fat_secret_service  D 90.00      k .9391
+//     fat_hippie       D 90.00      k .9677     fat_trump           D 90.00      k .9043
+//     world ROTATION error 0.0e+0 on every key of all six; world POSITION error ~1e-6 units
+// The two families fall out exactly as the bind poses predict -- 0 within a family, a quarter
+// turn across one -- which is the single-delta form being provably right rather than plausible.
+//
+// **THE NON-HIPS TRACKS ARE SHARED WITH THE DONOR, NOT COPIED**, which is `mphBorrow`'s own rule
+// (a `KeyframeTrack` is immutable data and `createInterpolant` allocates a fresh result buffer
+// per action). The one thing in this file that MUTATES a track is `deDrift`, and it touches only
+// Hips `.position` -- which `retarget` always replaces with a fresh array on a fresh track. So
+// there is nothing shared that anything writes to, and six civils cost two small arrays a clip.
+//
+// **IT PRODUCES `P.clips`, WHICH IS WHY NOTHING DOWNSTREAM CHANGES.** `bodySpawn` builds its
+// actions off that list, `bodyAnim` reads the kind's table, and the bolt, the swept limb,
+// `bodyFly`, `bodySep`, `dummyBlow`, the player's own resolver and `foeWander` all reach anything
+// in `DUMMIES`. `d.K`'s dividend for the seventh time: a table and a load line.
+function bodyBorrow(K, clips, bind, bones) {
+  if (!K.borrow || clips.length) return 0;
+  const D = K.borrow, who = '[melee] borrow: ' + K.file + ' ';
+  // "THE STREET IS FULL OF STATUES" IS THREE BUGS AND ONE PICTURE FROM A PHONE: the donor never
+  // arrived, the rig is missing a limb the retarget needs, or its bind pose is too far off for a
+  // single delta. Each one names itself in the console and all three say so in the chip, because
+  // a console is invisible where he is standing.
+  const bad = why => { console.warn(who + why); note('NO CLIPS ' + mphName(K)); return 0; };
+  if (!D.P || !D.P.bind || !bind) return bad('has no donor pose (' + D.file + ')');
+  const r = retarget(D.P.bind, bind, D.P.clips.reduce((o, c) => (o[c.name] = c, o), {}), bones);
+  if (r.lack) return bad('has no ' + r.lack.join(', '));
+  if (!r.clips) return bad(r.worstN + ' is ' + (r.worst * 180 / Math.PI).toFixed(1) +
+                           ' deg off ' + D.file + '\'s bind -- a single-delta retarget is the wrong tool here');
+  for (const nm in r.clips) clips.push(r.clips[nm]);
+  // **AND THE REFERENCE SPEEDS ARE THE DONOR'S, SCALED (`mphBorrow`'s own `gaitK`).** A reference
+  // is how fast the PLANTED FOOT slides, which is authored travel TIMES the scale the model is
+  // drawn at -- so the biker's clip on a body drawn 2% shorter covers 2% less ground per cycle.
+  // **They are WRITTEN here rather than typed in six tables**, because a number copied six times
+  // is six things to keep in step with a measurement that lives somewhere else.
+  const g = K.h / D.h;
+  for (const k of ['walkRef', 'runRef', 'fleeRef']) if (D[k]) K[k] = D[k] * g;
+  console.log(who + clips.length + ' of ' + D.file + '\'s clips onto ' + r.shared +
+              ' shared bones, hips delta ' + r.hips.toFixed(1) + ' deg, k ' + r.k.toFixed(3) +
+              ', gait x' + g.toFixed(3) + ', worst other bone ' +
+              (r.worst * 180 / Math.PI).toFixed(2) + ' deg (' + r.worstN + ')');
+  return clips.length;
 }
 
 function bodySpawn(P, K, x, z, y0) {
@@ -11613,47 +11819,49 @@ function mphMounts(skin) {
   return out;
 }
 const _rtq = new THREE.Quaternion(), _rtv = new THREE.Vector3();
-function mphBorrow(skin) {
-  if (skin.borrow !== undefined) return skin.borrow;
-  skin.borrow = 0; skin.gaitK = 1;
-  const src = rig.base;
-  if (!MORPH.borrow || !src || !src.bind || !skin.bind) return 0;
+
+// **THE RETARGET ITSELF, LIFTED OUT OF `mphBorrow` (m143).** It was inline there for four
+// builds and it was correct; what changed is that there is now a SECOND caller -- six NPC rigs
+// with no clips of their own -- and a second copy of a rotation retarget is a second place for
+// the delta, the rest-pose guard and the Hips translation to drift apart. `bodyLaunch`'s own
+// extraction rule (m96): the thing that motivates it is a second caller, not tidiness.
+// Numbers in, clips out: it knows nothing about a mixer, an action table or whose body it is.
+//
+//   S / T   the SOURCE's and TARGET's `bindPose` -- `{ pq, t, rest }`
+//   bones   the target's bone map, which decides which tracks survive
+//
+// Returns `{ clips, hips, k, worst, worstN, shared, lack }`, or `null` with a reason.
+function retarget(S, T, srcClips, bones) {
   // MATCHED ON THE SUFFIX, so a rig whose prefix is spelt some other way still lands -- and
   // `LeftUpLeg` does not end with `LeftLeg`, nor `LeftHandPinky1` with `LeftHand`, so each of
   // these names one joint and only one.
-  const has = suf => { for (const n in skin.bones) if (n.endsWith(suf)) return true; return false; };
+  const has = suf => { for (const n in bones) if (n.endsWith(suf)) return true; return false; };
   const lack = MORPH.needs.filter(n => !has(n));
-  if (lack.length) {
-    console.warn('[melee] borrow: ' + (skin.K && skin.K.file) + ' has no ' + lack.join(', '));
-    return 0;
-  }
-  const S = src.bind, T = skin.bind;
+  if (lack.length) return { lack };
   const D = T.pq.clone().invert().multiply(S.pq);
   const k = T.t.length() / (S.t.length() || 1);
-  // HOW FAR HIS BIND POSE IS FROM ZAP'S, PER BONE -- measured rather than trusted, because the
-  // single-delta form above is only sound while this is ~0 everywhere but the Hips.
+  // HOW FAR THE TARGET'S BIND POSE IS FROM THE DONOR'S, PER BONE -- measured rather than
+  // trusted, because the single-delta form is only sound while this is ~0 everywhere but the
+  // Hips. The day an export arrives whose elbow is twenty degrees off, this is the wrong tool
+  // and it says so rather than quietly producing a bent man.
   let shared = 0, worst = 0, worstN = '';
   for (const n in S.rest) {
-    if (n === MHIPS || !skin.bones[n]) continue;
+    if (n === MHIPS || !bones[n]) continue;
     shared++;
     const a = S.rest[n], b = T.rest[n];
     if (!b) continue;
     const d = 2 * Math.acos(Math.min(1, Math.abs(a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3])));
     if (d > worst) { worst = d; worstN = n; }
   }
-  if (worst > MORPH.restTol) {
-    console.warn('[melee] borrow: ' + worstN + ' is ' + (worst * 180 / Math.PI).toFixed(1) +
-                 ' deg off zap\'s bind -- a single-delta retarget is the wrong tool here');
-    return 0;
-  }
-  let made = 0;
-  for (const nm in src.clips) {
-    const c = src.clips[nm];
+  if (worst > MORPH.restTol) return { worst, worstN, shared };
+  const clips = {};
+  for (const nm in srcClips) {
+    const c = srcClips[nm];
     const tracks = [];
     for (const t of c.tracks) {
       const dot = t.name.lastIndexOf('.');
       const bone = t.name.slice(0, dot), prop = t.name.slice(dot + 1);
-      if (!skin.bones[bone]) continue;              // a finger, or a weapon marker, he has not got
+      if (!bones[bone]) continue;                   // a finger, or a weapon marker, he has not got
       if (!t.values || !t.values.length || !t.times || !t.times.length) continue;
       if (prop === 'position') {
         if (bone !== MHIPS) continue;               // a bone LENGTH, and not his
@@ -11674,14 +11882,34 @@ function mphBorrow(skin) {
         tracks.push(new t.constructor(t.name, t.times, o));
       }
     }
-    if (!tracks.length) continue;
+    if (tracks.length) clips[nm] = new THREE.AnimationClip(nm, c.duration, tracks);
+  }
+  return { clips, k, shared, worst, worstN,
+           hips: 2 * Math.acos(Math.min(1, Math.abs(D.w))) * 180 / Math.PI };
+}
+
+function mphBorrow(skin) {
+  if (skin.borrow !== undefined) return skin.borrow;
+  skin.borrow = 0; skin.gaitK = 1;
+  const src = rig.base;
+  if (!MORPH.borrow || !src || !src.bind || !skin.bind) return 0;
+  const who = '[melee] borrow: ' + (skin.K && skin.K.file) + ' ';
+  const r = retarget(src.bind, skin.bind, src.clips, skin.bones);
+  if (r.lack) { console.warn(who + 'has no ' + r.lack.join(', ')); return 0; }
+  if (!r.clips) {
+    console.warn(who + r.worstN + ' is ' + (r.worst * 180 / Math.PI).toFixed(1) +
+                 ' deg off zap\'s bind -- a single-delta retarget is the wrong tool here');
+    return 0;
+  }
+  let made = 0;
+  for (const nm in r.clips) {
     // AND ZAP'S NAME WINS WHERE THEY COLLIDE. Measured: the only collisions in the whole roster
     // are `in_air` (hobo), `idle_01` (clancy) and `idle_01`/`run_fwd`/`walk_fwd` (the female) --
     // and on every one of them zap's is the clip everything in `CLIPS` was written against.
     const old = skin.actions[nm];
     if (old) { old.setEffectiveWeight(0); old.stop(); }
     skin.cw[nm] = 0;
-    const nc = new THREE.AnimationClip(nm, c.duration, tracks);
+    const nc = r.clips[nm];
     skin.clips[nm] = nc;
     const a = skin.mixer.clipAction(nc);
     if (ONCE.has(nm)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
@@ -11697,10 +11925,10 @@ function mphBorrow(skin) {
   const zk = c => c ? { d: c.d, r: c.r * skin.gaitK } : null;
   skin.stride = { walk: zk(src.stride.walk), run: zk(src.stride.run), sprint: zk(src.stride.sprint) };
   skin.borrow = made;
-  console.log('[melee] borrow: ' + made + ' of zap\'s clips onto ' + shared + ' shared bones, ' +
-              'hips delta ' + (2 * Math.acos(Math.min(1, Math.abs(D.w))) * 180 / Math.PI).toFixed(1) +
-              ' deg, k ' + k.toFixed(3) + ', gait x' + skin.gaitK.toFixed(3) +
-              ', worst other bone ' + (worst * 180 / Math.PI).toFixed(2) + ' deg (' + worstN + ')');
+  console.log(who + made + ' of zap\'s clips onto ' + r.shared + ' shared bones, ' +
+              'hips delta ' + r.hips.toFixed(1) + ' deg, k ' + r.k.toFixed(3) +
+              ', gait x' + skin.gaitK.toFixed(3) +
+              ', worst other bone ' + (r.worst * 180 / Math.PI).toFixed(2) + ' deg (' + r.worstN + ')');
   return made;
 }
 
@@ -12362,6 +12590,18 @@ function buildBikers(g) {
     MOTO.rider = d;
     BIKER.up++;
   }
+}
+
+// **THE SIX WHO BORROW (m143).** The shared pair and a table, for the seventh time -- and this
+// one takes the kind as an ARGUMENT rather than closing over it, because there are six of them
+// and six copies of `buildBikers` with a different name in each is exactly the drift `CIVIL`
+// exists to stop. Everything that makes a body a body is already in `bodyProto`/`bodySpawn`;
+// what is new is in neither of them, which is the whole claim.
+function buildCivil(g, K) {
+  K.loops = bodyLoops(K);
+  const P = bodyProto(g, K);
+  K.up = 0;
+  for (const [x, z, y] of K.at) { const d = bodySpawn(P, K, x, z, y); foeBar(d); K.up++; }
 }
 
 // ---- the motorcycle -------------------------------------------------------------------------
@@ -14946,7 +15186,7 @@ async function init() {
   // real count of `loadGLB` calls each branch makes, decided up here where nothing has been
   // fetched yet. If it ever drifts the bar is still clamped and `setBoot('go', 1)` forces it
   // home, so the cost of being wrong is a bar that is a little off rather than a broken boot.
-  PROG.total = inWP() ? 14 : 15;
+  PROG.total = inWP() ? 20 : 21;
   // ---- the character. There is no game without him, so a failure here is reported on the
   //      card rather than warned to a console that does not exist on a phone.
   let g;
@@ -15180,6 +15420,12 @@ async function init() {
   await side(HOBO.file, 'loading the locals', { name: 'HOBO', build: buildHobos });
   await side(SKATER.file, 'loading the locals', { name: 'SKATER', build: buildSkaters });
   await side(BIKER.file, 'loading the locals', { name: 'BIKER', build: buildBikers });
+  // **AFTER THE BIKER, BECAUSE THEY WEAR HIS CLIPS.** `bodyBorrow` reads `BIKER.P`, which only
+  // exists once his own `bodyProto` has run -- and a donor that never arrived is reported by
+  // `side()` on its own line and again as `NO CLIPS <name>` in the chip, which are the two
+  // halves of "the street is full of statues".
+  for (const K of CIVILS)
+    await side(K.file, 'loading the locals', { name: mphName(K), build: g => buildCivil(g, K) });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
 
   paintKit();
@@ -15265,7 +15511,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
   // flash and the bar can be looked at without standing in front of a mace.
-  FOE, HICK, HOBO, SKATER, SMOKE, BLOCK, HEALTH, HURT, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
+  FOE, HICK, HOBO, SKATER, CIVIL, CIVILS, SMOKE, BLOCK, HEALTH, HURT, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
   smoke: (x, y, z) => { smokeAt(x, y, z); return 'puff'; },
   hurt: (d, k) => playerHurt(d || 12, player.faceH + Math.PI, FOE.push, FOE.pushUp, FOE.stun, k == null ? 1 : k),
   heal: () => { player.hp = HEALTH.max; return 'full'; },

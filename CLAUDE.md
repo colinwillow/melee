@@ -1241,6 +1241,99 @@ same picture from a phone.
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
 
+- **SIX RIGS WITH NO CLIPS WEAR THE BIKER'S, AND THE RETARGET WAS ALREADY WRITTEN (m143, `CIVIL`,
+  `civil`, `CIVILS`, `retarget`, `bodyBorrow`, `buildCivil`, `K.borrow`, `K.hRel`).** *"Let's go
+  ahead and put all the new characters in the games. None of them have animations but they're
+  rigged with mixamo rig so they can borrow animations."*
+  **HE IS RIGHT ABOUT BOTH HALVES AND THE FILES SAY SO**, read out of their own JSON chunks --
+  animation samplers and node transforms are never draco, so all of this is answerable here even
+  though nothing in this container can build a skin:
+      all six      0 clips, 1 skinned mesh, soles at exactly y = 0, toes +Z (0.00 deg),
+                   no weapon mounts, and the COMPLETE 65-joint set `hobo_01` has, missing nothing
+      fat_activist_01  65 joints     the other five  66 (+ a `root` null)
+      rest-pose offset vs `fat_biker_02`  worst **0.04 deg**, which is export rounding
+  **THE `root` BONE IS THE ONLY STRUCTURAL DIFFERENCE AND IT IS m119's, EXACTLY.** They fall into
+  the two families this file already knows: `Armature[0.01] > Hips` with the -90 X in the Hips'
+  own local, and `Armature[0.01] > root > Hips` with it in `root`. Same net world rotation either
+  way, so a retarget across them is ONE constant rotation at the Hips.
+  **AND HE MOVED ONE OF THEM MID-BUILD, WHICH IS THE POINT.** `fat_hipster` was measured in the
+  donor's family and re-exported an hour later with a `root` null, taking its delta from 0.00 deg
+  to 90.00. **Nothing in the code changed and nothing needed to** -- the delta is measured off the
+  two bind poses rather than typed, so the only thing that went stale is the table of numbers in
+  this note. That is the right thing to have to update, and re-running the measurement after his
+  push is what caught it; the re-export also needed `npm run bump m143` to move its content hash,
+  or the phone would have gone on serving the copy it already had.
+  **`fat_biker_02` IS THE DONOR AND IT IS NOT THE HOBO**, which is the one real design call here.
+  Measured per clip, bones moving past 2 degrees:
+      hobo_01 `idle`             **2 bones, 2.1 deg** -- a statue, so his idle is `drunk_idle`
+      fat_biker_02 `idle`        33 bones, 18.9 -- a man standing about
+      fat_biker_02 `idle_fan_self`  49 bones, 86.2 -- a real flourish, which is what `look` is for
+  So the hobo's thirty are a DRUNK's set, and a secret service agent stumbling like a drunk is a
+  worse answer than no clips at all. The biker's sixteen are the complete SOBER civilian set --
+  idle, a flourish, walk, run, in-air, three hit reactions, one fall, one get-up -- **on a FAT
+  rig, which is what all six of these are.** The three DRIVING clips are deliberately left out:
+  only `buildBikers` seats a rider, and `bodyLoops` would otherwise put three held poses in the
+  loop set for a body that can never reach them.
+  **AND THE RETARGET IS AN EXTRACTION, NOT A SECOND COPY.** `mphBorrow` has done rotation-only
+  Mixamo retargeting since m119 and it was correct; what changed is that there is now a SECOND
+  caller, which is `bodyLaunch`'s own rule (m96) -- the thing that motivates an extraction is a
+  second caller, not tidiness. `retarget(S, T, clips, bones)` is numbers in and clips out: it
+  knows nothing about a mixer, an action table or whose body it is, and `mphBorrow` is what is
+  left over once it is gone.
+  **THE ARITHMETIC IS EXACT, MEASURED RATHER THAN ARGUED.** The delta, `k` and the track rewrite
+  run offline over `walk_fwd`'s real 26-key Hips track, compared as WORLD transforms on the
+  target against the donor's:
+      activist  D  0.00 deg  k .9137      hipster  D 90.00 deg  k 1.0136
+      biker_01  D 90.00      k .9670      secret   D 90.00      k .9391
+      hippie    D 90.00      k .9677      trump    D 90.00      k .9043
+      world ROTATION error **0.0e+0 on every key of all six**; world POSITION error ~1e-6 units
+  The two families fall out exactly as the bind poses predict, which is the single-delta form
+  being provably right rather than plausible.
+  **IT PRODUCES `P.clips`, WHICH IS WHY NOTHING ELSE CHANGED.** `bodySpawn` builds its actions off
+  that list, and the bolt, the swept limb, `bodyFly`, `bodySep`, `dummyBlow`, the player's own
+  resolver and `foeWander` all reach anything in `DUMMIES`. **`d.K`'s dividend for the seventh
+  time: a table and a load line.** And it runs BEFORE the de-drift and before the log, so the
+  printed count is the count he ends up with -- the de-drift is then a proven no-op, because the
+  donor's own `bodyProto` already ran it.
+  **THE NON-HIPS TRACKS ARE SHARED WITH THE DONOR, NOT COPIED.** The one thing in this file that
+  MUTATES a track is `deDrift`, and it touches only Hips `.position` -- which `retarget` always
+  replaces with a fresh array on a fresh track. Nothing shared is ever written to.
+  **ONE TABLE, SIX ROWS, AND A ROW IS A FILE AND A PLACE.** Six near-identical tables is six
+  things to keep in step, which is this file's oldest standing complaint; the height comes out of
+  `hRel`, the clips out of `borrow`, and **the reference speeds are WRITTEN by the borrow** from
+  the donor's measured pair scaled by the height ratio -- `mphBorrow`'s own `gaitK`, because a
+  reference is authored travel times the scale the model is drawn at. A number copied six times
+  is six things to keep in step with a measurement that lives somewhere else.
+  **AND `K.hRel` IS A PROPORTION RATHER THAN SIX TYPED HEIGHTS** -- as tall as the donor, in the
+  ratio the two exports were DRAWN in, so a re-export at any size lands right with no edit:
+      activist 1.78   biker_01 1.76   hippie 1.71   hipster 1.73   secret 1.59   trump 1.59
+  19 cm across the six, which reads as six people rather than six copies at one height.
+  **THE CONFOUND IS STATED RATHER THAN HIDDEN**: every export here is normalised so its authored
+  X span is exactly 1.000, which is the ARM SPAN in an A-pose -- so a FATTER body, whose arms
+  cannot come as close in, reads as slightly shorter than it is. Two independent skeletal measures
+  (the head bone's height, the hips bone's) agree on the ORDER, so the ranking is real; how much
+  of the 19 cm is girth rather than height is **not knowable from this side**. `hRel: 0` draws all
+  six at the donor's height and is read at BUILD time, so it wants a reload.
+  **PLACED BY FARTHEST-POINT SEEDED WITH THE BODIES ALREADY ON THE STREET (m60/m80).** Seeding the
+  spread with the nineteen already out there is what puts these six in the GAPS rather than in a
+  rank of their own -- checked as rectangles against all fourteen boxes, both buildings, the
+  motorcycle's lane and every existing body. Worst clearance **2.55 m** against a body radius of
+  .42, all six 16 to 27 m out. **A plain farthest-point run over the whole square went straight to
+  the corners** (every spot at 31-32 m, which is the void rather than the test site) -- m80's own
+  lesson, made again and caught by looking at the numbers before typing them.
+  **AND WEIRDPORT'S CROWD IS ONE NUMBER, NOT SIX KEYS.** `WP.crowd.CIVIL` is per KIND and
+  `wpPopulate` expands it, so a seventh civil needs no edit there -- six strings keyed by name
+  would be six more things to keep in step with `CIVILS`.
+  **THEY ARE DNA-WEARABLE FOR FREE**, which is `dnaOK`'s own structural rule collecting: that test
+  is `K.P && clips.idle && clips.walk && clips.run`, so the moment the borrow gives them a gait
+  they can be worn, with nothing said about them anywhere in `MORPH`.
+  **WHAT IS UNVERIFIED AND WHY:** there is no GPU here and no harness in this repo can build a
+  skin (draco wants a Worker), so **whether they stand up in the borrowed clips is a device
+  question** -- the arithmetic that CAN be checked is above and was. "The street is full of
+  statues" is three bugs and one picture from a phone (the donor never arrived, a limb is missing,
+  the bind pose is too far off), so all three warn to the console AND say `NO CLIPS <name>` in the
+  chip. `mel.CIVILS` is live.
+
 - **HIS EAR WAS RIGHT AND HIS MECHANISM WAS NOT, AND THE CLICK WAS MINE FROM m140 (m142,
   `bankLead`).** *"I jumped up in the air and landed on the ground and it made a noise when I hit
   the ground, and I think that might be the noise that's playing over and over when I run --
