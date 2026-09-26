@@ -160,9 +160,27 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
    *"I want the sticks the option to have dynamic"* is a look-at-it decision, which belongs on
    the phone rather than in a commit. Only the NUMBER is a target, so the state line beside it
    cannot eat a thumb, and it is out of the play area in the corner. */
-#build b { font-family: var(--disp); font-size: 26px; color: var(--sky); display: block; line-height: 1;
-  pointer-events: auto; cursor: pointer; }
-#build i { font-style: normal; opacity: .8; font-size: 12px; }
+#build b { font-family: var(--disp); font-size: 26px; color: var(--sky); display: inline-block; line-height: 1;
+  pointer-events: auto; cursor: pointer; vertical-align: middle; }
+#build i { font-style: normal; opacity: .8; font-size: 12px; display: block; }
+/* AND THE WHOLE DIAGNOSTIC STACK FOLDS AWAY (m145). *"The debug panel takes up a lot of the
+   screen -- it can have a minimize button."* It does: five elements in the top-left corner
+   between them (the chip's detail line, the world key, the collider key and the nine-segment
+   FX row), and on a phone that is most of the sky. **The BUILD NUMBER never folds**, because
+   "which build is he actually looking at" is half of every boot question and the card is over
+   the badge for the whole load -- so what is left minimized is the one thing worth keeping.
+   **IT IS A KEY BESIDE THE NUMBER RATHER THAN A SECOND TAP ON IT.** That tap is spent (m104's
+   pad float), and a gesture that means two things depending on how long you hold it is a mode
+   you can be in without knowing it -- which is the argument that killed every hidden gesture
+   in this file. Two targets, each saying what it does by the glyph on it.
+   **ONE BODY CLASS, so the four elements cannot disagree about whether the panel is open.** */
+#chipMin { display: inline-block; vertical-align: middle; margin-left: 8px; text-decoration: none;
+  font-family: var(--ui); font-size: 13px; font-weight: 600; line-height: 1;
+  color: #cfe8ff; background: #0b0d12cc; border: 1px solid #ffffff33;
+  padding: 3px 8px 4px; border-radius: 3px; pointer-events: auto; cursor: pointer;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+#chipMin:active { background: #16202ecc; }
+body.chipmin #build i, body.chipmin #worldKey, body.chipmin #dbgKey, body.chipmin #fxKey { display: none; }
 /* WHICH WORLD, AND THE TAP THAT CHANGES IT (m124). Under the build chip, in the same top-left
    gutter and out of the play area, because a world switch is the badge's own kind of control:
    out of the way, taking one tap, and saying which state it is in by having the name on it.
@@ -498,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m144</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m145</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m144</b><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m145</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -557,7 +575,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm144';
+const BUILD = 'm145';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -3209,6 +3227,35 @@ const CIVILS = [
     Object.assign({}, GIRL, { borrow: [ASIAN, BIKER] })),
   civil('models/characters/firefighter.glb',        [[17, -2]]),    // clear 5.62
 ];
+
+// **EVERY BODY THAT WALKS GETS THE SLIDE, THE CLEAR SPOT AND THE GIVE-UP (m145).** *"All the
+// characters get stuck on stuff like buildings."* m74 built all of this for CLANCY and gated
+// every field on the kind's own table, on the stated argument that *"a stuck drunk is a real
+// bug too and it is a different build, not a free ride on this one."* Nine builds later there
+// are thirty-seven bodies in a city of four thousand boxes and every one of them except the
+// sidekick has been walking into walls with no detector at all, no clear-spot test and no
+// give-up. This is that build, and it is the same three fields.
+// **A DEFAULTS MERGE RATHER THAN A ROW EACH**, because seven near-identical copies of three
+// numbers is seven things to keep in step -- and `if (K[k] === undefined)` means a table that
+// names its own still wins, which is how CLANCY keeps the `give` he has had since m74.
+// **AND IT RUNS AFTER `CIVILS`, WHICH IS NOT TIDINESS**: `civil()` builds each row with
+// `Object.assign({}, CIVIL, ...)`, so CIVIL's fields are COPIED at build time and anything
+// written to CIVIL afterwards never reaches them. The rows are in the list for that reason.
+// **THE HOP IS DELIBERATELY NOT IN HERE.** A 0.576 m apex is for the KERB it was measured
+// against (m74) and a man hopping at a building reads as flailing -- and `K.clips.jump` is
+// absent on every one of these, so it would play the IDLE clip floating upward, which is
+// worse than the thing it is fixing. The slide is the answer for a wall; the hop stays the
+// answer for a kerb, on the one body that has a pose for it.
+const STUCK = {
+  // `at` is well under CLANCY's `hop.at` .55 and far under `give`, so the escalation is
+  // slide -> hop -> give up, in that order and by construction rather than by three
+  // thresholds happening to be in the right order.
+  slide: { at: .25, hold: .60, turn: 2.2 },
+  give: 1.6,
+  roamTry: 6,
+};
+for (const K of [FOE, HICK, HOBO, SKATER, BIKER, CIVIL, CLANCY, ...CIVILS])
+  for (const k in STUCK) if (K[k] === undefined) K[k] = STUCK[k];
 
 // **AND THE OFFICER IS WEARABLE NOW, WHICH IS THE LAST "EVERYBODY" (m144).** *"Everybody should
 // be playable."* `dnaOK` is structural -- a pool carries idle, walk and run or it is not an
@@ -8933,6 +8980,47 @@ document.getElementById('buildN').addEventListener('pointerdown', e => {
   setDyn(!STICK.dyn);
 });
 
+// **AND THE KEY BESIDE IT FOLDS THE WHOLE DIAGNOSTIC STACK AWAY (m145).** *"The debug panel
+// takes up a lot of the screen -- it can have a minimize button."*
+// **`hudGutter` IS A FUNCTION NOW, BECAUSE THERE ARE TWO THINGS THAT MOVE THE CHIP'S HEIGHT.**
+// m128 measured it inside the chip update, which was right while the only thing that changed
+// the height was the text; folding the detail line away changes it too, and a second copy of
+// that arithmetic is two places to disagree about where the gutter is -- which is the exact
+// fault m128 exists to have fixed. One function, both callers.
+// **AND THE FOLD FORCES A RE-MEASURE RATHER THAN WAITING FOR THE TEXT TO MOVE.** The chip's
+// line changes most frames (the fps digit, the speed) so it would come right on its own within
+// a frame or two -- most of the time. Standing still with a steady frame rate it would not, and
+// the keys would sit where the OTHER state put them, which is a key on top of the chip or a
+// gap where the chip used to be. `chipLast` is cleared with it so the next frame re-measures
+// against the text it actually has.
+const chipMinEl = document.getElementById('chipMin');
+function hudGutter() {
+  const h = buildEl ? buildEl.offsetHeight : 0;
+  if (h <= 0) return;                 // hidden, or mid-orientation-change: keep the last good
+  const g = Math.round(12 + h + 6);
+  document.documentElement.style.setProperty('--gut', g + 'px');
+  document.documentElement.style.setProperty('--gut2', (g + 32) + 'px');
+  document.documentElement.style.setProperty('--gut3', (g + 64) + 'px');
+}
+// **IT IS REMEMBERED, because he reloads for every single build** -- a fold he has to re-tap
+// on every one is a fold that does not work. It is the world key's own `localStorage` idiom,
+// in a `try` for the same reason: a private window throws on the accessor rather than on the
+// read, and a HUD control is not worth a boot.
+function setChipMin(on) {
+  const m = !!on;
+  document.body.classList.toggle('chipmin', m);
+  if (chipMinEl) chipMinEl.textContent = m ? (MISSING.length ? '+' + MISSING.length : '+') : '\u2212';
+  try { localStorage.setItem('mel.chipmin', m ? '1' : '0'); } catch (e) {}
+  chipLast = '';                      // the height moved, so the next frame re-measures
+  hudGutter();
+  return m;
+}
+if (chipMinEl) chipMinEl.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation();
+  setChipMin(!document.body.classList.contains('chipmin'));
+});
+try { if (localStorage.getItem('mel.chipmin') === '1') setChipMin(1); } catch (e) {}
+
 // AND THE COLLIDER KEY DRAWS THE BOXES (m128). One tap, and it says which state it is in by
 // being lit -- so it is not a mode you can be in without knowing it, which is the argument that
 // killed every hidden gesture in this file. `setBoxes` is the ONE place that moves it, so the
@@ -11638,7 +11726,7 @@ function bodySpawn(P, K, x, z, y0) {
     aggro: 0, think: 0, gap: 0, seen: 0, bar: null, barT: 0,
     // `undefined -= dt` is NaN and a NaN clock is a body that can never hop or dive again --
     // silent, and invisible to both gates. m63's `d.bumpT` lesson, checked every time now.
-    stuckT: 0, hopT: 0, diveT: 0, mark: 0, lane: 0, foe: null, foeT: 0, sfoe: null,
+    stuckT: 0, hopT: 0, diveT: 0, slideT: 0, slideH: 0, mark: 0, lane: 0, foe: null, foeT: 0, sfoe: null,
     // **ROLLED AT SPAWN, NOT SET TO ZERO (m82).** Zero is every body chirping on frame one and
     // then on the same frame for ever, which is one creature drawn N times -- m50's lesson about
     // the get-ups, on the audio side. And it is a NUMBER rather than `undefined`, because
@@ -13993,18 +14081,27 @@ function foeWander(d, dt, t, dd, toP) {
   if (d.roamT > 0) {
     d.roamT -= dt;
     if (d.roamT <= 0) {
-      let a = Math.random() * Math.PI * 2;
-      // **THE RING HAS A HOLE IN IT WHERE YOU ARE POINTING (m74, `K.palArc`).** *"He goes in
-      // front of me a lot and then I just end up shooting him... stand off the side of me."*
-      // PUSHED to the nearer edge rather than re-rolled: a rejection loop is unbounded and a
-      // push is one line, and it also piles him up along the two edges of the arc, which IS
-      // "off the side of me" rather than "anywhere but in front".
-      if (K.palArc) {
-        const off = wrapAngle(a - player.faceH);
-        if (Math.abs(off) < K.palArc) a = player.faceH + (off >= 0 ? K.palArc : -K.palArc);
+      // **AND IT TRIES A FEW AND KEEPS THE FIRST HE CAN STAND AT (m145, `K.roamTry`).** A FIXED
+      // NUMBER OF DARTS, never a rejection loop -- that is unbounded, and an unbounded loop
+      // inside the frame over 4,104 boxes is a hitch nobody can explain. The last one is kept
+      // whatever it reads, so the worst case is exactly the old behaviour and the slide and the
+      // give-up are still underneath it.
+      let a = 0;
+      for (let i = 0, n = K.roamTry || 1; i < n; i++) {
+        a = Math.random() * Math.PI * 2;
+        // **THE RING HAS A HOLE IN IT WHERE YOU ARE POINTING (m74, `K.palArc`).** *"He goes in
+        // front of me a lot and then I just end up shooting him... stand off the side of me."*
+        // PUSHED to the nearer edge rather than re-rolled: a rejection loop is unbounded and a
+        // push is one line, and it also piles him up along the two edges of the arc, which IS
+        // "off the side of me" rather than "anywhere but in front".
+        if (K.palArc) {
+          const off = wrapAngle(a - player.faceH);
+          if (Math.abs(off) < K.palArc) a = player.faceH + (off >= 0 ? K.palArc : -K.palArc);
+        }
+        const r = Math.sqrt(Math.random()) * K.roam;
+        d.rx = d.hx + Math.sin(a) * r; d.rz = d.hz + Math.cos(a) * r;
+        if (foeSpot(d, d.rx, d.rz)) break;
       }
-      const r = Math.sqrt(Math.random()) * K.roam;
-      d.rx = d.hx + Math.sin(a) * r; d.rz = d.hz + Math.cos(a) * r;
     }
     t[d.look && d.t < skinLen(d, d.look) ? d.look : d.rest || K.clips.idle] = 1;
     return;
@@ -14124,9 +14221,33 @@ function foeSwing(d, delay) {
 // rule that separates the player from all of them -- one description of a body taking up room.
 function foeMove(d, h, sp, dt) {
   const K = d.K, step = sp * dt;
+  // **A MAN WHO WALKS INTO A BUILDING WALKS ALONG IT (m145, `K.slide`).** *"All the characters
+  // get stuck on stuff like buildings -- they're just constantly stuck walking into buildings.
+  // It needs a much more sophisticated state machine."* m74 built the stuck detector against
+  // the TEST SITE's ten boxes and wrote down in the same breath that *"a stuck drunk is a real
+  // bug too and it is a different build"*; Weirdport is 4,104 collider boxes and real
+  // buildings, and this is that build.
+  // **AND THE WALL'S NORMAL IS ALREADY IN HAND -- THE PUSH-OUT *IS* IT.** `resolveBoxes` moves
+  // him out of whatever he met along the shortest axis, so the difference between where he
+  // ASKED to be and where he ENDED UP is that face's outward normal, exactly as m63's flying
+  // body reads it for its wall bounce. Nothing is raycast and nothing is searched.
+  // **IT BENDS THE FACING AND THE TRAVEL FOLLOWS IT**, rather than sliding the travel alone:
+  // a walk cycle going sideways is the moonwalk this file refuses everywhere else. So it is
+  // one more call to `faceTo` -- still the one writer on `d.h` -- and he comes round onto the
+  // wall at his own turn rate over a couple of frames.
+  // **AND IT HAS TO TURN HIM HARDER THAN THE GOAL IS PULLING HIM BACK (`slide.turn`).** The
+  // caller ran `faceTo(goal)` a moment earlier in this same frame, so two eases at the same
+  // rate pointing opposite ways CANCEL EXACTLY and he goes on walking into the wall -- which
+  // is the bug this whole build is about, reintroduced by the fix for it. At 2.2 the net is
+  // 1.2x his own turn rate onto the tangent, so he comes round in about a sixth of a second
+  // and the goal still takes him back the moment the latch lets go.
+  const _S = K.slide;
+  if (d.slideT > 0) { d.slideT -= dt; faceTo(d, d.slideH, dt * (_S ? _S.turn : 1)); h = d.h; }
   const x0 = d.root.position.x, z0 = d.root.position.z;
   _fp.set(x0 + Math.sin(h) * step, d.root.position.y, z0 + Math.cos(h) * step);
+  const wx = _fp.x, wz = _fp.z;                   // where he asked to be
   resolveBoxes(_fp, K.r, K.h * .9);
+  const px = _fp.x - wx, pz = _fp.z - wz;         // and the push out of it: the face's normal
   d.root.position.x = _fp.x; d.root.position.z = _fp.z;
   d.root.position.y = groundAt(_fp.x, _fp.z, d.root.position.y, MOVE.step);
   // **ASKED TO MOVE AND NOT MOVING IS THE ONLY HONEST STUCK TEST, AND IT BELONGS HERE (m74).**
@@ -14140,7 +14261,42 @@ function foeMove(d, h, sp, dt) {
     // it rather than carrying a grudge into the next corner.
     if (got < step * .35) d.stuckT += dt; else d.stuckT = Math.max(0, d.stuckT - dt * 2);
   }
+  // **THE LATCH IS REFRESHED WHILE HE IS STILL AGAINST SOMETHING, AND THE SIDE IS KEPT.**
+  // Picking the tangent fresh from the goal every time is a man at an inside corner flipping
+  // between its two ends for ever; agreeing with the direction he is ALREADY sliding follows
+  // the wall round a corner instead, and there is nothing left to flip. `LOCK.keep`'s
+  // hysteresis argument, one system over.
+  // **AND IT RELEASES BY ITSELF.** The moment nothing is pushing him the clock runs down over
+  // `hold`, which is what carries him clear of the corner before the goal takes him back --
+  // and sliding MOVES him, so `stuckT` is decaying at twice its build rate the whole time. A
+  // slide that is working never reaches the hop or the give-up underneath it, and one that is
+  // not (an inside corner, both tangents blocked) reaches both, in that order.
+  const S = _S, pl = Math.hypot(px, pz);
+  if (S && pl > 1e-5 && (d.slideT > 0 || d.stuckT > S.at)) {
+    const nx = px / pl, nz = pz / pl;
+    let tx = -nz, tz = nx;
+    const rx = d.slideT > 0 ? Math.sin(d.slideH) : Math.sin(h);
+    const rz = d.slideT > 0 ? Math.cos(d.slideH) : Math.cos(h);
+    if (rx * tx + rz * tz < 0) { tx = -tx; tz = -tz; }
+    d.slideH = Math.atan2(tx, tz); d.slideT = S.hold;
+  }
 }
+
+// **AND A ROAM POINT HAS TO BE ONE HE CAN STAND AT (m145, `foeSpot`).** The ring has never been
+// tested against anything: on the test site a point inside one of ten boxes is rare and the
+// give-up timer covers it, and in a city most of a fourteen-metre ring is BUILDING. So a body
+// spent his life walking at a place inside a wall, grinding there until `give` re-rolled him
+// at another one. The slide gets him along the face; this stops him being sent at it.
+// **IT IS THE COLLIDER'S OWN ANSWER, not a second rule** -- the same radius and the same height
+// `foeMove` resolves against, so a spot this accepts is a spot his own body agrees it can
+// occupy. m127's `wpStand` is the same sentence for the spawn sweep and cannot be reused: it
+// is built on `triGround`, which the test site has not got.
+function foeSpot(d, x, z) {
+  const K = d.K;
+  _fs.set(x, groundAt(x, z, d.root.position.y, MOVE.step), z);
+  return !resolveBoxes(_fs, K.r, K.h * .9);
+}
+const _fs = new THREE.Vector3();
 
 // **AND THEY DO NOT STAND INSIDE EACH OTHER (m36).** *"They shouldn't be able to overlap each
 // other."* `pushBodies` was only reached from the walking branch, so the moment two of them
@@ -15236,6 +15392,15 @@ function frame() {
       : pal.st === 'hop' ? ' · HOP' : pal.st === 'dive' ? ' · DIVE'
       : pal.lane ? ' · LANE'
       : pal.stuckT > .2 ? ' · STUCK' + pal.stuckT.toFixed(1) : '';
+    // **AND THE STREET SAYS HOW MANY ARE STUCK AND HOW MANY ARE GETTING OUT OF IT (m145).**
+    // *"They're just constantly stuck walking into buildings."* From a phone "the slide never
+    // fired", "it fired and it did not help" and "they are not stuck at all and it is the
+    // roam point" are three different bugs and one picture -- and only these two numbers tell
+    // them apart. `S3/2` is three bodies stuck and two of them sliding along something.
+    // Silent when nobody is, which is `rollREC`'s rule.
+    let nStuck = 0, nSlide = 0;
+    for (const d of DUMMIES) { if (d.stuckT > .4) nStuck++; if (d.slideT > 0) nSlide++; }
+    const sk = nStuck || nSlide ? ' · S' + nStuck + '/' + nSlide : '';
     // "an orc never went for him" and "one did and it did nothing" are opposite bugs and one
     // picture from a phone, and the pal's own state cannot answer it -- `PALDOWN` is equally
     // what a stray bolt looks like.
@@ -15288,7 +15453,7 @@ function frame() {
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + cl + vs + mo + fl + wp + mp +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + cl + sk + vs + mo + fl + wp + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
     // **THE KEYS SIT UNDER THE CHIP, AND THE CHIP IS THE ONE HUD ELEMENT THAT GROWS (m128).**
@@ -15304,13 +15469,15 @@ function frame() {
     if (line !== chipLast) {
       chipLast = line;
       buildI.textContent = line;
-      const h = buildEl ? buildEl.offsetHeight : 0;
-      if (h > 0) {
-        const g = Math.round(12 + h + 6);
-        document.documentElement.style.setProperty('--gut', g + 'px');
-        document.documentElement.style.setProperty('--gut2', (g + 32) + 'px');
-        document.documentElement.style.setProperty('--gut3', (g + 64) + 'px');
-      }
+      // **AND THE MINIMIZED KEY CARRIES THE MISSING COUNT (m145).** Folded away, `missing()` is
+      // the one thing on that line he cannot afford to lose -- `NO COLIN GLB` and `LOST 3
+      // CHUNKS` are exactly the reports a phone has no other way to make. A number on the key
+      // is not the message and it is not meant to be: it says there IS one, which is the whole
+      // job, and the tap that reads it is already under his thumb. `rollREC`'s rule -- silent
+      // when there is nothing to say.
+      if (chipMinEl && document.body.classList.contains('chipmin'))
+        chipMinEl.textContent = MISSING.length ? '+' + MISSING.length : '+';
+      hudGutter();
     }
   }
 }

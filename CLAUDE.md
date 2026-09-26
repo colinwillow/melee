@@ -1344,6 +1344,98 @@ same picture from a phone.
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
 
+- **THIRTY-SEVEN BODIES IN A CITY OF FOUR THOUSAND BOXES AND ONLY THE SIDEKICK HAD A STUCK
+  DETECTOR (m145, `K.slide`, `foeSpot`, `STUCK`).** *"All the characters get stuck on stuff like
+  buildings -- they're just constantly stuck walking into buildings. It needs a much more
+  sophisticated state machine."*
+  **m74 BUILT ALL OF THIS AND WROTE DOWN IN THE SAME BREATH THAT IT WAS ONLY HALF DONE.** Its
+  own note: *"BOTH ARE GATED ON THE KIND'S OWN FIELDS, so the drunks are byte-for-byte unchanged
+  -- a stuck drunk is a real bug too and it is a different build, not a free ride on this one."*
+  `hop` and `give` are on `CLANCY` and on nothing else, so for nine builds **every warrior,
+  drunk, hobo, skater, biker and civil has walked into walls with no detector, no give-up and
+  no clear-spot test at all.** This is that build.
+  **AND THE WALL'S NORMAL WAS ALREADY IN HAND -- THE PUSH-OUT *IS* IT.** `resolveBoxes` moves a
+  body out of whatever it met along the shortest axis, so the difference between where he ASKED
+  to be and where he ENDED UP is that face's outward normal. m63's flying body has read it
+  exactly that way for its wall bounce since it was written; nothing is raycast and nothing is
+  searched. That is the whole reason the slide is fifteen lines.
+  **IT BENDS THE FACING AND THE TRAVEL FOLLOWS IT.** Sliding the TRAVEL alone is a walk cycle
+  going sideways, which is the moonwalk this file refuses everywhere else -- so it is one more
+  call to `faceTo`, still the one writer on `d.h`, and he comes round onto the wall at his own
+  turn rate.
+  **AND IT HAS TO TURN HIM HARDER THAN THE GOAL IS PULLING HIM BACK (`slide.turn` 2.2).** The
+  caller ran `faceTo(goal)` a moment earlier in the SAME frame, so **two eases at the same rate
+  pointing opposite ways cancel exactly** and he goes on walking into the wall -- the bug this
+  build is about, reintroduced by the fix for it. Caught by reading the composition rather than
+  by running it. At 2.2 the net is 1.2x his own turn rate onto the tangent.
+  **THE LATCH IS REFRESHED WHILE HE IS STILL PRESSED, AND THE SIDE IS KEPT.** Picking the
+  tangent fresh from the goal each frame is a man at an inside corner flipping between its two
+  ends for ever; agreeing with the direction he is ALREADY sliding follows the wall round a
+  corner and there is nothing left to flip -- `LOCK.keep`'s hysteresis argument, one system
+  over. It releases by itself: the moment nothing pushes him the clock runs down over `hold`,
+  which is what carries him clear of the corner before the goal takes him back.
+  **AND THE ESCALATION FALLS OUT OF THE NUMBERS RATHER THAN BEING A STATE MACHINE.** `slide.at`
+  .25 is under CLANCY's `hop.at` .55 and far under `give` 1.6, and **sliding MOVES him**, so
+  `stuckT` decays at twice its build rate the whole time: a slide that is working never reaches
+  the hop or the give-up underneath it, and one that is not (an inside corner, both tangents
+  blocked) reaches both, in order, with nothing written to sequence them.
+  **AND THE ROAM POINT HAS NEVER BEEN TESTED AGAINST ANYTHING (`foeSpot`, `roamTry`).** That is
+  the other half and probably the bigger one: on the test site a point inside one of ten boxes
+  is rare and the give-up covers it, and **in a city most of a fourteen-metre ring is BUILDING**
+  -- so a body spent his life walking at a place inside a wall, grinding there until `give`
+  re-rolled him at another one. Six darts, first clear one wins, **last one kept whatever it
+  reads** -- a FIXED count and never a rejection loop, which is unbounded and which inside the
+  frame over 4,104 boxes is a hitch nobody can explain. Worst case is exactly the old behaviour
+  with the slide and the give-up still underneath it.
+  **IT IS THE COLLIDER'S OWN ANSWER, NOT A SECOND RULE** -- the same radius and the same height
+  `foeMove` resolves against, so a spot it accepts is one his own body agrees it can occupy.
+  m127's `wpStand` is the same sentence for the spawn sweep and **cannot be reused**: it is
+  built on `triGround`, which the test site has not got.
+  **THE HOP IS DELIBERATELY NOT GIVEN TO THE OTHERS.** A 0.576 m apex is for the KERB it was
+  measured against, a man hopping at a building reads as flailing, and `K.clips.jump` is absent
+  on every one of these kinds -- so it would play the IDLE clip floating upward, which is worse
+  than the thing it is fixing. The slide is the answer for a wall; the hop stays the answer for
+  a kerb, on the one body that has a pose for it.
+  **A DEFAULTS MERGE RATHER THAN SEVEN ROWS**, with `if (K[k] === undefined)` so a table that
+  names its own still wins (CLANCY keeps the `give` he has had since m74). **And it runs AFTER
+  `CIVILS`, which is not tidiness**: `civil()` builds each row with `Object.assign({}, CIVIL,
+  ...)`, so CIVIL's fields are COPIED at build time and anything written to CIVIL afterwards
+  never reaches them -- the rows are in the list for that reason.
+  **AND THE CHIP COUNTS BOTH (`S3/2`).** *"They're just constantly stuck"* is three bugs and one
+  picture from a phone -- the slide never fired, it fired and did not help, or they were never
+  stuck and it is the roam point -- and only those two numbers tell them apart. Silent when
+  nobody is stuck.
+  **WHAT IS UNVERIFIED AND WHY:** there is no GPU here and no way to step thirty-seven bodies
+  through the real Weirdport collider outside a browser, so **whether a body actually rounds a
+  corner rather than shuffling along one wall for ever is a device question.** Both gates pass.
+  `mel.STUCK` is the table, `mel.FOE.slide = null` turns it off on one kind, and `roamTry: 1` is
+  the old picker exactly.
+- **THE DEBUG STACK FOLDS AWAY, AND `hudGutter` HAD TO BECOME A FUNCTION FOR IT (m145,
+  `#chipMin`).** *"The debug panel takes up a lot of the screen -- it can have a minimize
+  button."* Five things in that corner between them: the chip's detail line (two or three lines
+  on his phone), the world key, the collider key and the nine-segment FX row.
+  **THE BUILD NUMBER NEVER FOLDS**, because *"which build is he actually looking at"* is half of
+  every boot question and the card is over the badge for the whole load -- so what is left
+  minimized is the one thing worth keeping.
+  **IT IS A KEY BESIDE THE NUMBER RATHER THAN A SECOND TAP ON IT.** That tap is spent (m104's
+  pad float), and a gesture meaning two things depending on how long it is held is a mode you
+  can be in without knowing it -- the argument that killed every hidden gesture in this file.
+  **`hudGutter` IS A FUNCTION NOW, BECAUSE TWO THINGS MOVE THE CHIP'S HEIGHT.** m128 measured it
+  inside the chip update, which was right while the only thing that changed the height was the
+  TEXT; folding the detail line changes it too, and a second copy of that arithmetic is two
+  places to disagree about where the gutter is -- **which is the exact fault m128 exists to have
+  fixed.** One function, two callers.
+  **AND THE FOLD FORCES A RE-MEASURE RATHER THAN WAITING FOR THE TEXT TO MOVE.** The line
+  changes most frames (the fps digit, the speed) so it would come right on its own -- most of
+  the time. Standing still at a steady frame rate it would not, and the keys would sit where the
+  OTHER state put them: a key on top of the chip, or a gap where the chip used to be.
+  **AND THE MINIMIZED KEY CARRIES THE MISSING COUNT.** Folded away, `missing()` is the one thing
+  on that line he cannot afford to lose -- `NO COLIN GLB` and `LOST n CHUNKS` are exactly the
+  reports a phone has no other way to make. `+3` is not the message and is not meant to be: it
+  says there IS one, and the tap that reads it is already under his thumb.
+  **AND IT IS REMEMBERED, because he reloads for every single build** -- a fold he has to re-tap
+  on each one is a fold that does not work.
+
 - **SIX RIGS WITH NO CLIPS WEAR THE BIKER'S, AND THE RETARGET WAS ALREADY WRITTEN (m143, `CIVIL`,
   `civil`, `CIVILS`, `retarget`, `bodyBorrow`, `buildCivil`, `K.borrow`, `K.hRel`).** *"Let's go
   ahead and put all the new characters in the games. None of them have animations but they're
