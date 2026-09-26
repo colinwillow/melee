@@ -16,7 +16,8 @@
     "bld": "node tools/bld.mjs",
     "icons": "node tools/icons.mjs",
     "sfx": "node tools/sfx.mjs",
-    "hull": "node tools/hull.mjs"
+    "hull": "node tools/hull.mjs",
+    "lanes": "node tools/lanes.mjs"
   },
   "type": "module",
   "devDependencies": {

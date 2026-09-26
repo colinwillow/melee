@@ -48,7 +48,12 @@ card sits on the text it was born with and there is nothing on screen or in a ph
 say why. That is not a wrong guess he can judge; it is a round trip with nothing in it. Say the
 word and `check:boot` goes too.
 
-**AND THE COLLISION GLB IS NOT DRACO, WHICH WAS STATED WRONGLY TWICE (m129).**
+**AND DRACO DECODES HERE. THE COLLISION GLB IS NOT DRACO EITHER (m129, m147).**
+`vendor/draco/draco_wasm_wrapper.js` is an ordinary emscripten module -- the Worker is THREE's
+packaging, not draco's -- so `DracoDecoderModule({ wasmBinary })` runs in node and the whole
+510-node Weirdport visual decodes in 1.2 s (`tools/lanes.mjs` does it). **What is still true is
+that nothing here can build a SKIN**: that needs a mixer and a skeleton, not a decoder.
+The rest of this note stands:
 `weirdport_slice_collision.glb` is plain glTF -- only `weirdport_slice_visual_draco.glb` is
 compressed. m124 and m127 both say "the collision GLB is draco and nothing in this container can
 decode a mesh" and that is **false**: every collider vertex in Weirdport can be read here in a
@@ -68,6 +73,8 @@ npm run rig        # height, facing, and whether the weapon mounts still agree
 npm run icons      # rebuild the home-screen icon set from one square artwork
 npm run sfx        # what is in each sound file, and how hard it hits (needs mpg123-decoder)
 npm run hull       # does the DNA morph's proxy come out shaped like a body
+npm run lanes      # re-bake Weirdport's street centrelines -- RUN IT AFTER A RE-EXPORT OF THE
+                   # VISUAL GLB, because it WRITES `WPLANES` into index.html
 ```
 
 **These exist because of what they FOUND, and that is what they are for now — a record, not a
@@ -1343,6 +1350,134 @@ same picture from a phone.
   markers and parses `SFX.hit`/`pre`/`punch` out of `index.html`; a key it does not know about
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
+
+- **THE CARS DRIVE, AND THE GRAPH IS DERIVED FROM HIS OWN EXPORT RATHER THAN AUTHORED (m147,
+  `npm run lanes`, `WPLANES`, `TRAF`, `laneBuild`, `stepTraffic`, `pushCars`).** *"OK, what do we
+  gotta do to make the cars driving? He said we gotta do something with Laney's baked."* That is
+  my own m145 words coming back through the transcription -- **bake lanes** -- and the two ways
+  out were "he authors named empties in Blender" or "we derive it from what is already there".
+  This is the second, so there is nothing for him to do.
+  **AND DRACO DECODES IN NODE, WHICH THIS FILE HAS SAID OTHERWISE NINE TIMES.** *"No harness in
+  this repo can build a skin (draco wants a Worker)"* -- the Worker is THREE's packaging, not
+  draco's. `vendor/draco/draco_wasm_wrapper.js` is an ordinary emscripten module and
+  `DracoDecoderModule({ wasmBinary })` runs here perfectly well: the whole 510-node visual file
+  decodes in **1.2 seconds**. (It has to be copied to a `.cjs` first -- the repo is
+  `"type": "module"`, so node refuses to `require()` the vendored `.js` and hands back `{}`,
+  silently.) That is the same shape as m131's correction that the COLLISION file is not draco:
+  **a capability written down as absent stops being re-checked.** What is still true is that
+  nothing here can build a SKIN -- that needs a mixer and a skeleton, not a decoder.
+  **THE ROAD IS ASPHALT THAT NOTHING IS STANDING ON, AND THAT IS THE FINDING THAT MAKES ANY OF
+  THIS POSSIBLE.** `ground_asphalt_col` is **EIGHT TRIANGLES** -- one 280 x 250 m slab under the
+  entire slice -- and `vis_asphalt` is one merged primitive over the same box. The blocks, the
+  sidewalks, the lots, the grass and the plazas are laid ON TOP of it. So "where is the road" is
+  a TOP SURFACE question and not a mesh-name one, and there is no lane-line material to key on
+  either: the collision file has exactly two materials, `collision` and `metal`.
+  **AND A STREET'S WIDTH IS A RUN ACROSS IT.** Rasterise every up-facing ground triangle at 1 m,
+  keep the highest per cell, and scan the road mask row by row: a run of 6 to 18 m is a street
+  cross-section, so its MIDPOINT is a point on a centreline. Cluster the midpoints and the grid
+  falls out. The width histogram is what says the reading is sound -- 10 to 12 m is far and away
+  the commonest (424 of 709 runs one way, 545 of 1043 the other), which is what a downtown
+  street is.
+      4 N-S streets, 9 E-W segments, 19 junctions, 98 lanes, 3.7 km of lane
+  **AND THE EIGHTEEN-METRE HOLE IN THE MIDDLE OF z = -24.5 IS THE DATA BEING RIGHT.** That street
+  comes out as two segments with a gap between x -12 and +6, and the top surface there is
+  `BK_Grass`: his Park Blocks, sitting in the middle of the street exactly as Portland's do. A
+  car should not drive through a park, so the cut stays and the two halves are two streets.
+  **WHAT IS BAKED IS THE MEASUREMENT AND NOT THE STRUCTURE.** 425 bytes -- thirteen rows saying
+  where each street runs and how wide it is -- written into `index.html` between `LANES:` markers
+  by the tool, so there is no new fetch, no new failure mode and no `DIRS` entry. The junctions,
+  the graph, the lanes and the turns are derived by `laneBuild` at load, so **a bug in the graph
+  is a code fix and not a re-bake**, and a re-export moves only those thirteen rows.
+  **FORWARD IS LOCAL +X ON ALL FOUR CAR MODELS, AND IT WAS MEASURED TWICE RATHER THAN GUESSED.**
+  The roof mass sits toward -X on every one of them (jeep -0.43 against a body centre of +0.03,
+  weird van -0.85 / +0.32, hippie van -0.67 / -0.20, yellow cab -0.10 / +0.21), so the cabin is
+  at -X and the bonnet at +X; and independently, of the 26 parked cars sitting clearly off a
+  street's centreline and aligned with it, **19 keep RIGHT under that reading and 7 under the
+  other**. Same answer twice, from an asset fact and from a placement fact.
+  **AND IT JAMMED, AND THE FIRST FIX WAS NOT ENOUGH EITHER.** Driven headless over the shipped
+  rule -- 24 cars, 180 s, the real graph -- the first version went 0 stopped to **19 of 24 and
+  still climbing**, with one car stationary for 126 seconds. That is Shredworld's own signature
+  read the other way: it grew monotonically, so a queue rather than a lock, and the queue had a
+  lock at the head of it.
+      v1  first come = whoever the array reached first     19/24 stopped, longest stop 126 s
+      v2  + "you may not take a box you cannot leave"      19/24 stopped, longest stop 177 s
+      v3  + a TOTAL ORDER on predicted arrival, and
+          "you may not cross before the car in front"       **1/24, longest stop 16 s**
+  **THE DIAGNOSIS IS WHAT MADE v3 THE RIGHT FIX AND IT WAS NOT A GUESS.** Dumped at t=90: *car 9
+  owns node1 and is FOLLOWING car 13 at 9.8 m, and car 13 is WAITING for node1*. Both were on
+  the SAME lane, car 13 six metres from the junction and car 9 sixteen -- so car 9 won the box
+  because its id is lower, and then queued behind the car it had locked out. **Awarding a
+  junction by loop order is not a rule, it is an accident**, and the fix is the one Shredworld
+  already wrote down: first come, first served on PREDICTED ARRIVAL, ties on the lower id, which
+  is arbitrary and TOTAL -- and a total order cannot close a cycle. Plus the clause that makes
+  it airtight on one approach: **you may not cross before the car in front of you does.**
+  **AND THE FAILSAFE IS A NET RATHER THAN A MECHANISM, WHICH IS MEASURED AND NOT ASSERTED.** A
+  claim whose holder has been stationary for `TRAF.hold` is handed back. Over ten minutes at 24
+  cars it **fires ZERO times**, and turning it off entirely (`hold: 999`) changes nothing -- so
+  the two rules above are doing the work. It fires twice at 60 cars, which is congestion rather
+  than a lock.
+      24 cars, 600 s   mean 8.3 m/s of a 9.5 cruise   worst 7 stopped   longest stop 16 s
+      40 cars          mean 7.2                       worst 13          32 s
+      60 cars          mean 5.4                       worst 28          48 s -- a real jam
+      12 cars          mean 9.0                       worst 2            4 s
+  **AND NO TWO CROSSING CARS ARE EVER IN A BOX TOGETHER**, checked directly rather than argued:
+  104 frames of 36,000 have a crossing pair inside a junction disc, and at 0.8 of that radius it
+  is **zero** -- so all of it is one car leaving at the edge while another enters, which is the
+  release threshold sitting exactly on the disc and not two cars meeting.
+  **A CORNER IS AN ARC, BECAUSE THE TWO LANES DO NOT MEET.** Each lane is offset to the RIGHT of
+  its own street, so a right turn ends at `node + offsetA` and starts again at `node + offsetB`
+  -- three and a half metres away with the yaw a quarter turn round, and at a dead end's U-turn
+  five metres and a half turn. As a bare state change that is a car teleporting at every single
+  corner. A quadratic Bezier fixes it, and **its control point is where the two LANE LINES
+  cross** -- the tangent of a quadratic at P0 is `P1 - P0` and at P2 is `P2 - P1`, so putting P1
+  on both lines satisfies both ends at once; parallel lines (straight on, and the U-turn) have
+  no crossing and take a point pushed out along A instead.
+  **AND A BEZIER IS LONGER THAN ITS PARAMETER, WHICH IS A SPEED AND NOT A DETAIL.** `s` is the
+  distance along the LANE, so a car covering `ds` of it covers `ds * stretch` on the ground --
+  measured at **5.6x through a dead end's U-turn**, which is 0.55 m in one frame against 0.158 m
+  at cruise. Eight samples give the curve's length and `arc.k` scales the speed cap by it, so
+  what is capped is the GROUND speed. After: biggest one-frame move **0.298 m**, worst yaw step
+  **4 degrees**, against 90 to 180 degrees before the arc existed.
+  **AN ISLAND IS PRUNED RATHER THAN LEFT FOR A CAR TO FIND.** The far east stub of z = -111.5 is
+  thirty metres that crosses nothing, so a car seeded there would shuttle on it for the whole
+  session. Keep the largest connected component; a lane nobody can reach is not a lane.
+  **AND A DEAD END IS A U-TURN, NOT A DESPAWN.** Most of the 23 are the edge of the slice, but
+  two are interior -- the Park Blocks -- and a car vanishing beside a park reads as a bug where
+  a car turning round reads as a car turning round.
+  **THE MODELS ARE HIS OWN PARKED FLEET**, collected in `buildWpVisual` before the batch takes
+  their nodes out of the scene: four bodies (a jeep, a weird van, a hippie van and a yellow cab)
+  on one material, one primitive each -- so the whole driving fleet is **four InstancedMeshes and
+  four draw calls** however many cars there are. Their half extents are measured off the
+  geometry, never typed.
+  **AND A CAR IS SOLID, THROUGH THE PLAYER'S OWN RESOLVER.** `pushCars` is m146's oriented-box
+  push against a list handed over every frame, beside `pushBodies` on the same line -- one
+  physics path, not two, and `cs`/`sn` are the same pair `wpOrient` writes and `boxLocal` reads,
+  so the collider and the picture cannot disagree about which way a car is facing.
+  **IT DOES NOT HIT HIM YET, AND THAT IS STATED RATHER THAN HIDDEN.** Being launched by a bonnet
+  is `carHit`'s own build (Shredworld has the worked version: the contact NORMAL picks the tier,
+  only a nose can launch, and `preVx/preVz` have to be stashed before the resolver deletes the
+  approach speed). Today a car shoves you out of the way and that is all.
+  **AND `stepTraffic` RUNS ABOVE `stepDummies`**, `stepMoto`'s own ordering rule: the resolver is
+  handed each car's box on the frame it is drawn at, so a fleet stepped after him is a fleet he
+  is pushed out of one frame late -- sixteen centimetres of being shoved by a car that is no
+  longer there.
+  **THE CHIP SAYS `TRAF24/98` AND THE COLLIDER VIEW DRAWS THE GRAPH.** "The cars are not driving"
+  is three bugs and one picture from a phone -- the graph came out empty, it came out and there
+  are no cars on it, or they are driving somewhere he has not walked to -- and only the two
+  numbers tell them apart, with `j<n>` on the end when cars are stopped. The COLLIDERS key draws
+  every lane with an arrow head and every car as its turned box, **and the buffer reserves room
+  for them rather than leaving it to the slack**: drawn after 700 static boxes they would be
+  silently dropped, and the one view built to answer "is the graph right" would answer nothing.
+  **WHAT IS UNVERIFIED AND WHY:** every Weirdport GLB rejects headless, so **`trafBuild` has
+  never run in anything but a browser** -- whether the lanes sit on his tarmac rather than on a
+  pavement, whether "right" reads as the right side of the road, and whether four car models at
+  24 instances cost anything are device questions. What CAN be checked here was, by lifting the
+  SHIPPED `laneBuild`/`lanePick`/`arcSet`/`stepTraffic` text and driving it: the graph, the
+  connectivity, the jam, the junction exclusion and the frame-to-frame motion, all above.
+  `mel.lanes()` prints the graph, `mel.lane(i)` puts him beside one, and `mel.TRAF` is live
+  except `n` and `on`, which want a reload.
+  **NOT DONE, AND HE SAID SO:** *"And can we make them drivable too maybe after."* Nothing here
+  seats him in one.
 
 - **EVERY VEHICLE COLLIDER WAS THE AXIS-ALIGNED BOX OF A ROTATED CAR, AND THE ORIENTATION WAS
   NEVER LOST -- ONLY MOVED (m146, `WP.turn`, `wpOrient`, `boxLocal`, `boxNear`).** *"The
@@ -7614,6 +7749,14 @@ means anything you can carry from one situation to the next.
   actually walking at. A faster approach than the clip can sell is a scramble.
 - **The rapid fire shares the blaster's model**, which makes the two slots identical to look at.
   Its own GLB is one `file:` in `WEAP.slots`.
+- **A car does not HIT you (m147).** It is solid -- `pushCars` shoves you out of the way with
+  m146's oriented box -- and nothing launches you off a bonnet. Shredworld's `carHit` is the
+  worked answer: the contact NORMAL picks the tier, only a nose can launch, and the approach
+  speed has to be stashed before the resolver deletes it. And **the cars are not drivable**,
+  which he deferred himself (*"maybe after"*).
+- **The traffic knows nothing about the freeway, the bridge ramps or the diagonals.** `npm run
+  lanes` finds streets that run along X or along Z, which is what downtown Portland is; the
+  I-405 and the bridge approaches are curves and are simply not in the graph.
 - **No stun weapons, no rocket launcher, no arrest.** `FOE.dmg` is the hook: a weapon is an entry
   in it, and a different EFFECT (a stun, a launch) is a field beside the number.
 - **Nothing uses `crouch_*`, the whole `unarmed_*` locomotion family, the disarms, the kicks, the

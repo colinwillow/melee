@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m146</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m147</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m146</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m147</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -575,7 +575,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm146';
+const BUILD = 'm147';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -2023,6 +2023,51 @@ const WPSPOT = {
   // which is Shredworld's `TRAF.share` rule, one roster over.
   seed: 20260925,
 };
+
+// **THE CARS DRIVE (m147, `WPLANES`, `TRAF`, `laneBuild`, `stepTraffic`).** *"What do we gotta
+// do to make the cars driving?"* -- a graph, and there was none: m145 looked and found no lane
+// node, no route empty and no centreline curve in either GLB. The two ways out were "he authors
+// empties in Blender" or "we derive it from what is already there", and this is the second.
+//
+// **THE ROAD IS ASPHALT THAT NOTHING IS STANDING ON**, which is the finding that makes it
+// derivable at all. `ground_asphalt_col` is EIGHT TRIANGLES -- one 280 x 250 m slab under the
+// whole slice -- and `vis_asphalt` is one merged primitive over the same box; the blocks, the
+// sidewalks, the lots and the grass are laid ON TOP. So "where is the road" is a TOP SURFACE
+// question rather than a mesh-name one, and `npm run lanes` answers it by rasterising every
+// up-facing ground triangle in the file and keeping the highest at each square metre.
+//
+// **AND A STREET'S WIDTH IS A RUN ACROSS IT.** Scan the road mask row by row and a run of 6 to
+// 18 m is a street cross-section, so its MIDPOINT is a point on a centreline; cluster those
+// midpoints and the grid falls out. Measured: 10 to 12 m is far and away the commonest width
+// (424 of 709 runs one way, 545 of 1043 the other), which is what a downtown street is.
+//
+// **WHAT IS BAKED IS THE MEASUREMENT AND NOT THE STRUCTURE.** Thirteen streets -- where each
+// runs and how wide it is -- and the junctions, the graph, the lanes and the turns are derived
+// at load by `laneBuild`. So a bug in the graph is a code fix rather than a re-bake, and a
+// re-export moves only these thirteen rows.
+//
+// **AND THE GAP IN THE MIDDLE OF z = -24.5 IS THE DATA BEING RIGHT.** That street comes out as
+// two segments with eighteen metres missing between x -12 and +6, and what is there is
+// `BK_Grass`: his Park Blocks, sitting in the middle of the street exactly as Portland's do.
+// A car should not drive through a park, so the cut stays.
+//
+// LANES:START -- written by `npm run lanes`, do not hand-edit
+const WPLANES = [
+  [0, -89, -123.5, 102.5, 10],
+  [0, -47.5, -84.5, 102.5, 9],
+  [0, -6.4, -124.5, 102.5, 10],
+  [0, 72, -112.5, 61.5, 11],
+  [1, -111.5, -130.5, 2.5, 12],
+  [1, -111.5, 27.5, 78.5, 12],
+  [1, -111.5, 109.5, 139.5, 12],
+  [1, -62.5, -110.5, 14.5, 9],
+  [1, -24.5, -131.5, -11.5, 11],
+  [1, -24.5, 5.5, 135.5, 11],
+  [1, 12.5, -111.5, 14.5, 9],
+  [1, 53.5, -131.5, 113.5, 10],
+  [1, 87.5, -111.5, 14.5, 9],
+];
+// LANES:END
 
 const BLD = {
   tag: 'BUILDING',      // what the chip calls it when something about it goes wrong
@@ -9708,7 +9753,7 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
   let solid = 0;
   for (let k = 0, h = dt / sub; k < sub; k++) {
     p.pos.x += p.vel.x * h; p.pos.z += p.vel.z * h; p.pos.y += p.vel.y * h;
-    solid |= resolveBoxes(p.pos, p.r, p.hh) | pushBodies(p.pos, p.r);
+    solid |= resolveBoxes(p.pos, p.r, p.hh) | pushBodies(p.pos, p.r) | pushCars(p.pos, p.r, p.hh);
   }
   if (solid) {
     // only the component going INTO the surface is removed, so a slide along a wall keeps its
@@ -11289,6 +11334,22 @@ function buildWpVisual(g, trim) {
   });
 
 
+  // **THE CAR MODELS, TAKEN BEFORE THE BATCH REMOVES THEIR NODES (m147).** His parked fleet is
+  // four bodies -- a jeep, a weird van, a hippie van and a yellow cab -- one primitive each on
+  // one shared material, which is exactly the right shape for a driving fleet: four
+  // InstancedMeshes and four draw calls however many cars there are. Deduped by geometry,
+  // because thirty-nine nodes share those four.
+  {
+    const seen = new Set(); WP.carGeo = [];
+    root.traverse(o => {
+      if (!o.isMesh || !/^inst_(car|van)/.test(o.name || '') || Array.isArray(o.material)) return;
+      if (seen.has(o.geometry.uuid)) return;
+      seen.add(o.geometry.uuid);
+      WP.carGeo.push({ geometry: o.geometry, material: o.material, name: o.name,
+                       castShadow: o.castShadow, receiveShadow: o.receiveShadow });
+    });
+  }
+
   let inst = 0, instN = 0;
   if (WP.inst) {
     const by = new Map();
@@ -11541,6 +11602,392 @@ function wpPopulate() {
   if (!spots.length) note('WP NO SPOTS');
   else if (spots.length < want) note('WP CROWD' + spots.length + '/' + want);
   if (!loop) note('WP NO CIRCUIT');
+}
+
+
+// ========================= TRAFFIC (m147) ===================================================
+// **THE GRAPH IS DERIVED FROM `WPLANES` AT LOAD, NOT BAKED.** Thirteen streets in, a junction
+// graph and its directed lanes out -- so a bug in the graph is a code fix and a re-export moves
+// only the thirteen rows. Nothing here restates a rule: the road height is `triGround`, the
+// player's push-out is the same oriented-box arithmetic `resolveBoxes` does, and the car's own
+// half extents are measured off the geometry rather than typed.
+//
+// **A JUNCTION IS A REAL NODE HERE, WHICH IS WHAT SHREDWORLD NEVER HAD.** That game's road graph
+// is a soup of 12 m slabs with no intersections to find (`npm run junc`: 40 clusters with radii
+// up to 135 m), which is why its rule has to be per-pair and geometric -- ray crossings, stop
+// lines, a total order on predicted arrival. Here the crossings ARE the graph, so the simple
+// correct thing is available: **one car in a junction at a time, first come first served**, and
+// a car that cannot have it stops at the line rather than creeping into the box.
+const TRAF = {
+  on: 1,
+  n: 24,            // cars. 19 junctions and about 2 km of lane -- more than this is a jam
+  cruise: 9.5,      // m/s, about 21 mph. A city street, not a motorway.
+  accel: 4.5,
+  brake: 12,        // the real one. The PLANNING decel is `plan`, deliberately under it, so a
+                    // car that arrives too fast to stop comfortably still makes the line.
+  plan: 5.5,
+  gap: 5.0,         // clear metres wanted behind the car in front, ON TOP of both half lengths
+  // **KEEP RIGHT, WHERE RIGHT IS `(-fz, fx)` -- this file's own convention and nothing new.**
+  // Which side that actually reads as was MEASURED against his own parked fleet rather than
+  // argued: of the 26 parked cars sitting clearly off a street's centreline and aligned with
+  // it, 19 keep right under this reading and 7 under the other. `lane: -.25` flips the lot.
+  lane: .25,        // the lane centre sits this fraction of the street's width right of middle
+  nodeR: 1.0,       // a junction's radius, as a multiple of the wider street's half width
+  line: 1.6,        // and the stop line, that far short of the disc
+  turnAt: 28,       // how far out a car picks its next lane -- it has to, to see the car on it
+  claim: 14,        // and how far out it may take the junction. 8.2 m is the planning stop.
+  hold: 6,          // and the failsafe: a claim whose holder has not moved for this long is handed back
+  // **A CORNER IS AN ARC, BECAUSE THE TWO LANES DO NOT MEET.** Each is offset to the RIGHT of
+  // its own street, so a right turn ends at `node + offsetA` and starts again at
+  // `node + offsetB` -- three and a half metres away, with the yaw a quarter turn round. Left
+  // as a state change that is a car teleporting across the junction at every single corner,
+  // and at a dead end (where the U-turn swaps sides of the street) it is five metres.
+  arc: 1,
+  turnK: .62,       // and how much of cruise it takes a corner at
+  straight: 3,      // how much likelier going straight on is than a left or a right
+  y: .05,           // over the road, so the wheels do not z-fight the paint
+  seed: 20260926,
+  // **HOW SOLID IT IS TO THE PLAYER.** A car that drives through you is scenery, so its box is
+  // handed to the player's own resolver every frame the way a body's circle is -- one physics
+  // path, not two. It does NOT hit him yet: being launched by a bonnet is `carHit`'s own build.
+  solid: 1,
+};
+let _tSeed = 0;
+function tRand() { _tSeed = (_tSeed * 1664525 + 1013904223) >>> 0; return _tSeed / 4294967296; }
+
+const LANES = [], NODES = [], CARS = [];
+let trafMesh = [];
+
+// A street's y is asked of the TRIANGLES and not of `groundAt` -- that one takes a box top as
+// ground, which is right for a man walking onto a roof and would put a car on a bench.
+function laneY(x, z) {
+  const y = TRI.on ? triGround(x, z, 3, 3) : -1e30;
+  return y > -1e29 ? y + TRAF.y : TRAF.y;
+}
+
+function laneBuild() {
+  LANES.length = 0; NODES.length = 0;
+  const S = WPLANES.map(([ax, c, a0, a1, w]) => ({ ax, c, a0, a1, w, cuts: [] }));
+  // **A JUNCTION IS WHERE TWO STREETS ACTUALLY OVERLAP**, both ways round -- a N-S street whose
+  // constant x falls inside an E-W street's span AND whose own z span contains that street.
+  for (const a of S) if (!a.ax) for (const b of S) if (b.ax) {
+    if (a.c < b.a0 - 1 || a.c > b.a1 + 1) continue;
+    if (b.c < a.a0 - 1 || b.c > a.a1 + 1) continue;
+    const nd = { x: a.c, z: b.c, r: Math.max(a.w, b.w) * .5 * TRAF.nodeR, out: [], busy: -1 };
+    NODES.push(nd);
+    a.cuts.push({ t: b.c, nd });    // along a N-S street the parameter is z
+    b.cuts.push({ t: a.c, nd });
+  }
+  const mkEnd = (x, z) => { const nd = { x, z, r: 0, out: [], busy: -1 }; NODES.push(nd); return nd; };
+  for (const s of S) {
+    const pts = s.cuts.slice().sort((p, q) => p.t - q.t);
+    pts.unshift({ t: s.a0, nd: null }); pts.push({ t: s.a1, nd: null });
+    for (let i = 0; i + 1 < pts.length; i++) {
+      const A = pts[i], B = pts[i + 1];
+      if (B.t - A.t < 6) continue;          // a junction sitting on a street's own end
+      const na = A.nd || (A.nd = mkEnd(s.ax ? A.t : s.c, s.ax ? s.c : A.t));
+      const nb = B.nd || (B.nd = mkEnd(s.ax ? B.t : s.c, s.ax ? s.c : B.t));
+      // TWO DIRECTED LANES, EACH OFFSET TO THE RIGHT OF THE CENTRE. Right of a heading is
+      // `(-fz, fx)` -- this file's own convention everywhere else -- so the offset falls out of
+      // the direction and there is no second handedness rule to get backwards.
+      const pair = [[na, nb], [nb, na]].map(([p, q]) => {
+        let dx = q.x - p.x, dz = q.z - p.z;
+        const L = Math.hypot(dx, dz);
+        dx /= L; dz /= L;
+        const off = s.w * TRAF.lane, ox = -dz * off, oz = dx * off;
+        const ln = { from: p, to: q, dx, dz, len: L, w: s.w,
+                     x0: p.x + ox, z0: p.z + oz, x1: q.x + ox, z1: q.z + oz, rev: null };
+        ln.y0 = laneY(ln.x0, ln.z0); ln.y1 = laneY(ln.x1, ln.z1);
+        LANES.push(ln); p.out.push(ln);
+        return ln;
+      });
+      pair[0].rev = pair[1]; pair[1].rev = pair[0];
+    }
+  }
+  // **A DEAD END IS A U-TURN, NOT A DESPAWN.** Most of them are the edge of the slice, but two
+  // are interior -- the Park Blocks cut z = -24.5 in half -- and a car vanishing beside a park
+  // reads as a bug where a car turning round reads as a car turning round.
+  // **AN ISLAND IS PRUNED, NOT LEFT FOR A CAR TO FIND.** One of his streets -- the far east
+  // stub of z = -111.5, thirty metres of it -- crosses nothing, so a car seeded there would
+  // shuttle back and forth on it for the whole session and never be anywhere else. Keep the
+  // largest connected component and drop the rest; a lane nobody can reach is not a lane.
+  let biggest = [];
+  const done = new Set();
+  for (const L0 of LANES) {
+    if (done.has(L0)) continue;
+    const seen = new Set([L0]), q = [L0];
+    while (q.length) { const L = q.pop(); for (const o of L.to.out) if (!seen.has(o)) { seen.add(o); q.push(o); } }
+    for (const o of seen) done.add(o);
+    if (seen.size > biggest.length) biggest = [...seen];
+  }
+  const cut = LANES.length - biggest.length;
+  if (cut) {
+    LANES.length = 0; LANES.push(...biggest);
+    const keep = new Set(biggest);
+    for (const n of NODES) n.out = n.out.filter(o => keep.has(o));
+  }
+  let dead = 0;
+  for (const n of NODES) if (n.out.length && n.out.length < 2) dead++;
+  console.log('[melee] traffic: ' + LANES.length + ' lanes, ' + NODES.length + ' nodes (' +
+    NODES.filter(n => n.r > 0).length + ' junctions, ' + dead + ' dead ends' +
+    (cut ? ', ' + cut + ' island lanes dropped' : '') + ')');
+  return LANES.length;
+}
+
+// THE CORNER ITSELF: a quadratic Bezier whose control point is where the two LANE LINES cross,
+// which is the one point that makes the curve leave along A and arrive along B -- a tangent at
+// P0 is `P1 - P0` and at P2 is `P2 - P1`, so putting P1 on both lines satisfies both at once.
+// Parallel lines (going straight on, and a dead end's U-turn) have no crossing and take a
+// control point pushed out along A instead.
+function arcSet(c, A, B) {
+  if (!TRAF.arc) { c.arc = null; return; }
+  const gap = Math.hypot(B.x0 - A.x1, B.z0 - A.z1);
+  const same = A.dx * B.dx + A.dz * B.dz;
+  if (gap < .3 && same > .99) { c.arc = null; return; }   // the same street carrying straight on
+  const d = Math.min(B.len * .45, Math.max(3, A.to.r + 1));
+  const den = A.dx * B.dz - A.dz * B.dx;
+  let px, pz;
+  // A U-TURN'S CONTROL POINT IS PUSHED OUT BY THE WIDTH IT HAS TO SWING ROUND, or a hairpin
+  // across five metres of street inside three is a car pirouetting on its own axis.
+  if (Math.abs(den) < .2) { const e = Math.max(d, gap * .8); px = A.x1 + A.dx * e; pz = A.z1 + A.dz * e; }
+  else {
+    const t = ((B.x0 - A.x1) * B.dz - (B.z0 - A.z1) * B.dx) / den;
+    px = A.x1 + A.dx * t; pz = A.z1 + A.dz * t;
+  }
+  const x2 = B.x0 + B.dx * d, z2 = B.z0 + B.dz * d;
+  // **AND THE CURVE IS LONGER THAN `d`, WHICH IS A SPEED AND NOT A DETAIL.** `s` is the
+  // distance along the LANE, so a car covering `ds` of it covers `ds * stretch` on the ground
+  // -- measured, 5.6x through a dead end's U-turn, which is 0.55 m in a frame against 0.16 at
+  // cruise. `k` is what the speed cap is multiplied by so the GROUND speed is the one asked
+  // for. A Bezier has no closed-form arc length; eight samples is plenty for a corner.
+  let len = 0, lx = A.x1, lz = A.z1;
+  for (let i = 1; i <= 8; i++) { const t = i / 8, w2 = 1 - t;
+    const qx = w2*w2*A.x1 + 2*w2*t*px + t*t*x2, qz = w2*w2*A.z1 + 2*w2*t*pz + t*t*z2;
+    len += Math.hypot(qx - lx, qz - lz); lx = qx; lz = qz; }
+  c.arc = { x0: A.x1, z0: A.z1, px, pz, d, x2, z2, turn: same < .92,
+            k: clamp(d / Math.max(.01, len), .22, 1) };
+}
+
+// Which lane a car takes at a node: anything but the way it came, unless there is nothing else.
+function lanePick(ln) {
+  const n = ln.to, out = n.out;
+  let best = null, tot = 0;
+  for (const o of out) {
+    if (o === ln.rev) continue;
+    // going straight on is the likeliest, which is what stops a grid reading as a dodgems rink
+    const w = (o.dx * ln.dx + o.dz * ln.dz) > .7 ? TRAF.straight : 1;
+    tot += w; if (tRand() * tot < w) best = o;
+  }
+  return best || ln.rev || ln;
+}
+
+function trafBuild() {
+  if (!TRAF.on || !inWP()) return;
+  if (!laneBuild()) { note('NO LANES'); return; }
+  // **THE CAR MODELS ARE HIS OWN PARKED ONES**, collected by `buildWpVisual` before the batch
+  // takes their nodes out of the scene. Four bodies on one material, one primitive each, so a
+  // driving fleet is four InstancedMeshes and four draw calls whatever `n` is.
+  const models = WP.carGeo || [];
+  if (!models.length) { note('NO CAR MESH'); return; }
+  _tSeed = TRAF.seed >>> 0;
+  trafMesh = models.map(m => {
+    m.geometry.computeBoundingBox();
+    const bb = m.geometry.boundingBox;
+    // MEASURED, NEVER TYPED (the skateboard's rule). And FORWARD IS LOCAL +X on all four of
+    // them -- checked twice rather than guessed: the roof mass sits toward -X on every model,
+    // so the cabin is at -X and the bonnet at +X; and of the 26 parked cars sitting clearly
+    // off a street's centreline, 19 keep RIGHT under that reading and 7 under the other.
+    const im = new THREE.InstancedMesh(m.geometry, m.material, TRAF.n);
+    im.name = 'wptraf_' + (m.name || '');
+    im.castShadow = m.castShadow; im.receiveShadow = m.receiveShadow;
+    im.frustumCulled = false;     // the matrices are world matrices and the fleet is the city
+    im.count = 0;
+    wpRoot.add(im);
+    return { im, hx: (bb.max.x - bb.min.x) * .5, hz: (bb.max.z - bb.min.z) * .5, list: [] };
+  });
+  CARS.length = 0;
+  for (let i = 0; i < TRAF.n; i++) {
+    const ln = LANES[(tRand() * LANES.length) | 0];
+    const mi = (tRand() * trafMesh.length) | 0;
+    CARS.push({ id: i, ln, s: tRand() * ln.len, v: TRAF.cruise, mi,
+                hx: trafMesh[mi].hx, hz: trafMesh[mi].hz, own: null, next: null, arc: null,
+                x: 0, y: 0, z: 0, yaw: 0, cs: 1, sn: 0 });
+  }
+  // A CAR SPAWNED INSIDE ANOTHER CAR NEVER GETS OUT, because the follow rule holds them both.
+  for (let pass = 0; pass < 4; pass++) for (const c of CARS)
+    for (const o of CARS) if (o !== c && o.ln === c.ln && Math.abs(o.s - c.s) < 9)
+      c.s = tRand() * c.ln.len;
+  console.log('[melee] traffic: ' + CARS.length + ' cars on ' + trafMesh.length + ' models');
+}
+
+const _tm = new THREE.Matrix4();
+const _bid = [];
+function stepTraffic(dt) {
+  if (!CARS.length) return;
+  // ---- 1. RELEASE, AND PICK THE NEXT LANE ---------------------------------------------------
+  for (const c of CARS) {
+    // **RELEASE BEFORE CLAIMING, AND ONE BOX AT A TIME.** A car holds at most one junction; the
+    // version that claimed the next while still holding the last leaked the old claim and left
+    // that box busy FOR EVER, which is a deadlock built by the thing meant to prevent one. The
+    // second clause covers a lane shorter than the node's own radius, where `s > r` can never
+    // be reached before the next transition.
+    if (c.own && (c.ln.from !== c.own || c.s > c.own.r)) { c.own.busy = -1; c.own = null; }
+    // THE NEXT LANE IS PICKED EARLY, because the car in front may already be ON it and a leader
+    // search that stops at the junction is a car that drives into the back of one.
+    if (!c.next && c.ln.len - c.s < TRAF.turnAt) c.next = lanePick(c.ln);
+  }
+  // ---- 2. WHO GETS THE BOX ------------------------------------------------------------------
+  // **FIRST COME FIRST SERVED ON PREDICTED ARRIVAL, TIES ON THE LOWER ID -- NEVER ON LOOP
+  // ORDER.** Awarding it to whoever the array reached first is what jammed the first version:
+  // measured, car 9 took a box while car 13 sat six metres from it ON THE SAME LANE, so 9 was
+  // queued behind 13 and 13 was queued behind 9's claim. Arrival time is arbitrary and it is
+  // TOTAL, and a total order cannot close a cycle -- Shredworld's `crossGive`, and the reason
+  // it is a rule rather than a tie-break is that it is the only property that matters.
+  _bid.length = 0;
+  for (const c of CARS) {
+    const ln = c.ln, nd = ln.to, left = ln.len - c.s;
+    if (nd.r <= 0 || c.own === nd || nd.busy >= 0) continue;
+    if (left > nd.r + TRAF.line + TRAF.claim) continue;
+    // **AND YOU MAY NOT CROSS BEFORE THE CAR IN FRONT OF YOU DOES.** Without this a car whose
+    // own exit happens to be clear claims past the one ahead of it on its own approach, and
+    // the two of them lock: the holder is behind the waiter.
+    let mine = true;
+    for (const o of CARS) if (o !== c && o.ln === ln && o.s > c.s) { mine = false; break; }
+    if (!mine) continue;
+    // **AND PERMISSION TO CROSS IS NEVER PERMISSION TO STOP HALFWAY.** A car that takes the box
+    // with nowhere to go strands itself in everybody's path and the jam stops being local.
+    if (c.next) { let near = 1e9;
+      for (const o of CARS) if (o.ln === c.next && o.s < near) near = o.s;
+      if (near <= nd.r + c.hx * 2 + TRAF.gap) continue; }
+    _bid.push(c);
+  }
+  // sorted rather than scanned per node: a couple of dozen cars, and the order has to be the
+  // same one every node sees or two nodes can disagree about who is first
+  _bid.sort((a, b) => {
+    const ta = (a.ln.len - a.s) / Math.max(1, a.v), tb = (b.ln.len - b.s) / Math.max(1, b.v);
+    return ta !== tb ? ta - tb : a.id - b.id;
+  });
+  for (const c of _bid) { const nd = c.ln.to; if (nd.busy < 0) { nd.busy = c.id; c.own = nd; } }
+  // **AND A HELD BOX THAT NOBODY IS CROSSING IS HANDED BACK.** The two rules above make the
+  // lock I measured structurally impossible, and this is the net under the ones I have not
+  // thought of: a claim whose holder has been stationary for `hold` seconds is released. It
+  // cannot put two cars in a box that matters -- the holder is not moving -- and a jam that
+  // clears slowly beats one with no exit, which is the whole of Shredworld's failsafe lesson.
+  for (const nd of NODES) {
+    if (nd.busy < 0) { nd.wait = 0; continue; }
+    const h = CARS[nd.busy];
+    if (!h || h.own !== nd) { nd.busy = -1; nd.wait = 0; continue; }
+    nd.wait = h.v < .4 ? (nd.wait || 0) + dt : 0;
+    if (nd.wait > TRAF.hold) { nd.busy = -1; h.own = null; nd.wait = 0; }
+  }
+  // ---- 3. DRIVE -----------------------------------------------------------------------------
+  for (const c of CARS) {
+    const ln = c.ln, left = ln.len - c.s, nd = ln.to;
+    let want = TRAF.cruise, stop = -1;
+    // A CORNER IS TAKEN SLOWER, and the approach to one is too -- braking INTO the turn is what
+    // a car that has already committed cannot do.
+    if (c.arc && c.arc.turn) want = TRAF.cruise * TRAF.turnK * c.arc.k;
+    else if (c.next && left < nd.r + TRAF.line + 5 &&
+             c.next.dx * ln.dx + c.next.dz * ln.dz < .92) want = TRAF.cruise * TRAF.turnK;
+    if (nd.r > 0 && c.own !== nd) stop = ln.len - nd.r - TRAF.line;
+    // the car in front, on this lane and on the one it is about to take
+    let ahead = 1e9, lead = null;
+    for (const o of CARS) {
+      if (o === c) continue;
+      let d = 1e9;
+      if (o.ln === ln && o.s > c.s) d = o.s - c.s;
+      else if (c.next && o.ln === c.next) d = left + o.s;
+      if (d < ahead) { ahead = d; lead = o; }
+    }
+    if (lead) {
+      const clear = ahead - (c.hx + lead.hx) - TRAF.gap;
+      want = Math.min(want, clear <= 0 ? 0 : Math.sqrt(2 * TRAF.plan * clear));
+    }
+    if (stop >= 0) {
+      const d = stop - c.s;
+      // **THE PLANNING DECEL IS UNDER THE REAL ONE, WHICH IS WHAT MAKES THE PROFILE
+      // SELF-CORRECTING** -- a car too fast to plan a comfortable stop still makes the line,
+      // just harder. `v = sqrt(2 a d)` is the physics rather than a linear taper that either
+      // slams on late or rolls straight through.
+      want = Math.min(want, d <= 0 ? 0 : Math.sqrt(2 * TRAF.plan * d));
+    }
+    const a = want > c.v ? TRAF.accel : TRAF.brake;
+    c.v += clamp(want - c.v, -a * dt, a * dt);
+    if (c.v < 0) c.v = 0;
+    c.s += c.v * dt;
+    // ARRIVE. The lane runs node centre to node centre, so the junction disc is inside both
+    // ends and a car "in" it is simply one whose `s` is within `r` of either.
+    if (c.s >= ln.len) {
+      const next = c.next || lanePick(ln);
+      c.s -= ln.len; c.ln = next; c.next = null;
+      if (c.s > next.len) c.s = next.len - .01;
+      arcSet(c, ln, next);
+    }
+    const L = c.ln, u = c.s / L.len;
+    c.y = L.y0 + (L.y1 - L.y0) * u;
+    if (c.arc && c.s >= c.arc.d) c.arc = null;
+    if (c.arc) {
+      // ON THE CORNER. `s` is still the car's real distance along the new lane, so the leader
+      // search, the junction and the collider all read the same number they always did -- only
+      // where it is DRAWN and which way it points come off the curve.
+      const A = c.arc, t = c.s / A.d, w = 1 - t;
+      c.x = w*w*A.x0 + 2*w*t*A.px + t*t*A.x2;
+      c.z = w*w*A.z0 + 2*w*t*A.pz + t*t*A.z2;
+      const tx = 2*(w*(A.px - A.x0) + t*(A.x2 - A.px)), tz = 2*(w*(A.pz - A.z0) + t*(A.z2 - A.pz));
+      const yb2 = Math.atan2(tz, tx);
+      c.yaw = -yb2; c.cs = Math.cos(yb2); c.sn = Math.sin(yb2);
+      continue;
+    }
+    c.x = L.x0 + (L.x1 - L.x0) * u; c.z = L.z0 + (L.z1 - L.z0) * u;
+    // THE MODEL'S LOCAL +X IS ITS NOSE, and `Ry(t)` takes +X to `(cos t, 0, -sin t)`, so the
+    // yaw that points it down the lane is `-atan2(dz, dx)`. `cs`/`sn` are the BOX frame's, the
+    // same pair `wpOrient` writes and `boxLocal` reads, so the collider and the picture cannot
+    // disagree about which way the car is facing.
+    const yb = Math.atan2(L.dz, L.dx);
+    c.yaw = -yb; c.cs = Math.cos(yb); c.sn = Math.sin(yb);
+  }
+  // ---- 4. DRAW ------------------------------------------------------------------------------
+  for (const m of trafMesh) m.list.length = 0;
+  for (const c of CARS) trafMesh[c.mi].list.push(c);
+  for (const m of trafMesh) {
+    for (let i = 0; i < m.list.length; i++) {
+      const c = m.list[i];
+      _tm.makeRotationY(c.yaw); _tm.setPosition(c.x, c.y, c.z);
+      m.im.setMatrixAt(i, _tm);
+    }
+    m.im.count = m.list.length;
+    m.im.instanceMatrix.needsUpdate = true;
+  }
+}
+
+// A CAR IS SOLID, AND IT IS THE SAME ORIENTED-BOX PUSH `resolveBoxes` DOES (m146). He is a
+// CIRCLE, so his radius is rotation-invariant and only the axes change; the push comes back out
+// along the car's real face normal rather than the phantom AABB's.
+// HOW MANY OF THEM ARE STOPPED. A first-come-first-served junction cannot deadlock -- the
+// order is total, so somebody always has the box -- but a rule can still be wrong, and a
+// number on the chip is the only thing that tells "they are queueing" from "they have stopped
+// for ever" on a device with no console. Silent at zero, `rollREC`'s rule.
+function trafStuck() { let n = 0; for (const c of CARS) if (c.v < .4) n++; return n; }
+
+const _tcL = { x: 0, z: 0 };
+function pushCars(pos, r, hh) {
+  if (!TRAF.solid || !CARS.length) return false;
+  let hit = false;
+  for (const c of CARS) {
+    if (Math.abs(pos.x - c.x) > 8 || Math.abs(pos.z - c.z) > 8) continue;
+    if (pos.y > c.y + 2.6 || pos.y + hh < c.y) continue;
+    boxLocal(c, pos.x, pos.z, _tcL);
+    const ex1 = (c.hx + r) - _tcL.x, ex2 = _tcL.x + (c.hx + r);
+    const ez1 = (c.hz + r) - _tcL.z, ez2 = _tcL.z + (c.hz + r);
+    const q = Math.min(ex1, ex2, ez1, ez2);
+    if (q <= 0) continue;
+    let nx = 0, nz = 0;
+    if (q === ex1) nx = 1; else if (q === ex2) nx = -1; else if (q === ez1) nz = 1; else nz = -1;
+    pos.x += (nx * c.cs - nz * c.sn) * q;
+    pos.z += (nx * c.sn + nz * c.cs) * q;
+    hit = true;
+  }
+  return hit;
 }
 
 
@@ -15079,12 +15526,18 @@ const BOXV = {
   held: [1, .72, .12],    // whatever the ledge or the wall has hold of
   body: [1, .26, .46],    // a body -- a CIRCLE, because a circle is what `pushBodies` tests
   me:   [.30, .74, 1],    // and his own
+  car:  [1, .58, .10],    // a DRIVING car -- its own box, turned, handed to the player's resolver
+  lane: [.55, .40, 1],    // and the lane graph, which is the only way to see it from a phone
 };
 let bvMesh = null, bvPos = null, bvCol = null, bvN = 0, bvCap = 0;
 const _bvL = [];
 
 function bvBuild() {
-  bvCap = BOXV.max * 24 + 120 * BOXV.seg * 2 + 256;
+  // **AND THE TRAFFIC IS RESERVED RATHER THAN LEFT TO THE SLACK (m147).** The cars and the lane
+  // graph are drawn AFTER the static boxes, so a dense block would silently eat them and the
+  // one view built to answer "is the graph right" would answer nothing -- which is a diagnostic
+  // you have to diagnose. 64 cars at 24 verts and 512 lane segments at 2.
+  bvCap = BOXV.max * 24 + 120 * BOXV.seg * 2 + 64 * 24 + 512 * 2 + 256;
   bvPos = new Float32Array(bvCap * 3);
   bvCol = new Float32Array(bvCap * 3);
   const g = new THREE.BufferGeometry();
@@ -15185,6 +15638,22 @@ function stepBoxView() {
     if (Math.abs(q.x - p.pos.x) > R || Math.abs(q.z - p.pos.z) > R) continue;
     bvRing(q.x, q.y + .02, q.z, d.K.r, BOXV.body);
     bvRing(q.x, q.y + (d.K.h || 1.7), q.z, d.K.r, BOXV.body);
+  }
+  // A DRIVING CAR IS NOT IN `BOXES` -- it is handed to the resolver every frame -- so it is
+  // drawn from the same `cs`/`sn`/`hx`/`hz` `pushCars` tests, turned, and never as its AABB.
+  for (const c of CARS) {
+    if (Math.abs(c.x - p.pos.x) > R || Math.abs(c.z - p.pos.z) > R) continue;
+    bvBox({ cs: c.cs, sn: c.sn, cx: c.x, cz: c.z, hx: c.hx, hz: c.hz, miny: c.y, maxy: c.y + 2.4 }, BOXV.car);
+  }
+  // AND THE LANE GRAPH ITSELF, because "the cars are driving the wrong way" and "the graph is
+  // wrong" are the same picture otherwise. Drawn whole rather than clipped to `R`: it is 48
+  // segments against a 700-box budget, and the question it answers is about the WHOLE city.
+  for (const L of LANES) {
+    bvSeg(L.x0, L.y0 + .04, L.z0, L.x1, L.y1 + .04, L.z1, BOXV.lane);
+    // an arrow head, so which WAY it goes is readable rather than inferred
+    const hx = L.x1 - L.dx * 2.2, hz = L.z1 - L.dz * 2.2;
+    bvSeg(L.x1, L.y1 + .04, L.z1, hx - L.dz * .8, L.y1 + .04, hz + L.dx * .8, BOXV.lane);
+    bvSeg(L.x1, L.y1 + .04, L.z1, hx + L.dz * .8, L.y1 + .04, hz - L.dx * .8, BOXV.lane);
   }
   // AND HIS OWN, so the two can be COMPARED rather than one of them described. `hh` is the full
   // height above his feet -- `resolveBoxes` tests `p.y + hh < b.miny` -- not a half extent.
@@ -15475,6 +15944,11 @@ function frame() {
     // world position, so a bike stepped after him leaves him a frame behind it -- which at 6 m/s
     // is 10 cm of a man sliding along beside his own seat. `stepShip`'s ordering rule one repo over.
     stepMoto(dt);
+    // **ABOVE `stepDummies` FOR `stepMoto`'s OWN REASON.** The player's resolver is handed each
+    // car's box on the frame it is drawn at, so a fleet stepped after him is a fleet he is
+    // pushed out of one frame late -- which at 9.5 m/s is sixteen centimetres of being shoved
+    // by a car that is no longer there.
+    stepTraffic(dt);
     stepDummies(dt);
     stepShe(dt);
     // **BEFORE `rigAnim`, BECAUSE IT SWAPS THE MODEL.** Run after it, the weights of the frame
@@ -15645,7 +16119,13 @@ function frame() {
     // the box is still in the wrong place -- and only the count tells them apart. `y0` is the
     // first of those and any number at all is the second.
     const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b/' + (WP.turned || 0) + 'y' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
-      (WP.tinted ? ' · WPTINT' + WP.tinted : '') + (WP.bodies ? ' · WPCROWD' + WP.bodies : '') : '';
+      (WP.tinted ? ' · WPTINT' + WP.tinted : '') + (WP.bodies ? ' · WPCROWD' + WP.bodies : '') +
+      // **AND THE TRAFFIC, AS CARS ON LANES (m147).** "the cars are not driving" is three bugs
+      // and one picture from a phone: the graph came out empty, it came out and there are no
+      // cars on it, or they are driving somewhere he has not walked to. `TRAF0/0` answers the
+      // first, `TRAF0/48` the second, and a number of stopped cars is the jam.
+      (LANES.length ? ' · TRAF' + CARS.length + '/' + LANES.length +
+        (trafStuck() ? 'j' + trafStuck() : '') : '') : '';
     // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from
     // a phone. Silent when he is himself, `rollREC`'s rule.
@@ -15934,6 +16414,10 @@ async function init() {
     // a game you can walk round, and the chip says which of the two it is.
     try { wpPopulate(); }
     catch (e) { console.error('[melee] weirdport crowd failed', e); note('WP CROWD FAILED'); }
+    // AND THE TRAFFIC, on its own try for the same reason: a city with nobody driving in it is
+    // still a game you can walk round, and the chip says which of the two it is.
+    try { trafBuild(); }
+    catch (e) { console.error('[melee] weirdport traffic failed', e); note('TRAFFIC FAILED'); }
   } else {
     await side(BLD.file, 'loading a building', { name: 'BUILDING',
                build: g => buildBuildings(g, BLD) });
@@ -16054,6 +16538,16 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   shake: a => { camShake(a == null ? CAM.shake.max : a); return 'knock'; },
   resolveBoxes, camFree, aimPoint, aimRaw, aimTarget, AIM, fireBolt, BOLTS, gunOut,
   BLD, TOWER, BUILDINGS, solidColumns, pushBodies, CHAIN, SHE,
+  // THE TRAFFIC, LIVE (m147). `mel.TRAF.on = 0` wants a reload; `mel.TRAF.cruise`, `gap`,
+  // `lane` and `solid` all move on the phone. `mel.lanes()` prints the graph and
+  // `mel.lane(i)` puts him beside one, because a graph he cannot walk to is a graph he cannot
+  // check -- `city.bar()`'s rule, one system over.
+  TRAF, LANES, CARS, NODES, WPLANES, laneBuild, stepTraffic, pushCars,
+  lanes: () => LANES.length + ' lanes, ' + NODES.filter(n => n.r > 0).length + ' junctions, ' +
+    CARS.length + ' cars\n' + WPLANES.map(l => (l[0] ? 'E-W z ' : 'N-S x ') + l[1] +
+      '  ' + l[2] + ' .. ' + l[3] + '  w' + l[4]).join('\n'),
+  lane: i => { const L = LANES[(i || 0) % (LANES.length || 1)]; if (!L) return 'no lanes';
+    player.pos.set(L.x0, L.y0 + .2, L.z0); return 'at lane ' + i + ' of ' + LANES.length; },
   // THE WARRIOR, LIVE. `mel.FOE.notice = 0` parks them all; `mel.hurt(20)` fakes a blow so the
   // flash and the bar can be looked at without standing in front of a mace.
   FOE, HICK, HOBO, SKATER, CIVIL, CIVILS, SMOKE, BLOCK, HEALTH, HURT, foeAI, foePlan, foeWander, foeRoll, bodySep, bodyFly, boltHome, playerHurt, buildFoes,
