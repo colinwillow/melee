@@ -1351,6 +1351,51 @@ same picture from a phone.
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
 
+- **A CAR WAS NOT A BOX, AND `if (q <= 0) continue` IS FALSE FOR NaN (m148, `c.cx`/`c.cz`).**
+  *"This is what the game looks like... the main concern is everything is white."* The whole
+  viewport below the HUD, pure white, with the chip still reading **48 FPS, 504 draw calls**,
+  `0.0 m/s` and `land!` -- which is the diagnosis: the renderer is working perfectly and there
+  is nothing in front of the camera, because **the camera is at NaN.**
+  **`pushCars` HANDED A CAR TO `boxLocal`, AND `boxLocal` READS `b.cx` / `b.cz`.** A car carried
+  `x`/`y`/`z`. So `dx = pos.x - undefined` is NaN, `_tcL.x` and `_tcL.z` are NaN, every extent
+  is NaN, `q = Math.min(NaN, ...)` is NaN -- **and `if (q <= 0) continue` does not fire, because
+  every comparison against NaN is false.** `pos.x += NaN` on the first frame a car came within
+  eight metres, which in a city of 24 of them is immediately.
+  **A GUARD WRITTEN AS "SKIP THE HARMLESS CASE" LETS THE POISONED ONE THROUGH.** `q <= 0` is the
+  right test for a real number and the wrong shape for one that might not be; the version that
+  is safe either way is `if (!(q > 0)) continue`. Worth knowing everywhere in this file a
+  penetration, a distance or a dot is tested for being small.
+  **AND IT WAS THE SAME TWO NAMES FOR ONE FACT, WHICH IS THIS FILE'S OLDEST SHAPE.** A car now
+  carries `cx`, `cz`, `miny`, `maxy`, `cs`, `sn`, `hx`, `hz` -- **it IS a box**, so `boxLocal`,
+  `boxNear`, `resolveBoxes`' own arithmetic and `bvBox` all read it with nothing translated.
+  `TRAF.h` is its height, one number, so the collider and the view cannot disagree.
+  **THE COLLIDER VIEW WAS CORRECT AND THAT IS WHY IT HID THIS.** `stepBoxView` built a literal
+  (`{ cs, sn, cx: c.x, cz: c.z, ... }`) rather than passing the car, so the m147 probe drew the
+  boxes in exactly the right places while the resolver read undefined off the same objects. **A
+  view that restates the fields instead of passing the object is not drawing what is tested** --
+  which is m128's own rule about a debug view being a second thing to be wrong, met from the
+  other side. It is `bvBox(c, BOXV.car)` now.
+  **AND NO GATE HERE CAN SEE IT**: `check:syntax` parses, `check:boot` never builds a car (every
+  Weirdport GLB rejects headless), and `npm run jam`-style probes drive `stepTraffic` and not the
+  player's resolver. A NaN in a position is invisible to everything in this container and is a
+  WHITE SCREEN on the device, which is the one failure he cannot look at and correct.
+- **THE OFFICER BORROWS THE BIKER'S GAIT AND WAS LOADED THIRTEEN LINES ABOVE HIM (m148).** The
+  chip in that same screenshot read **`NO CLIP walk_fwd,run_fwd`**, and it has since m144:
+  `DUMMY.borrow = BIKER` gave the officer a walk and a run he never had, and `buildDummies` runs
+  BEFORE `buildBikers`, so `bodyBorrow` read `BIKER.P` as undefined, logged `skipped: no donor
+  pose` to a console that does not exist on a phone, and every officer in the game has stood
+  there with no gait ever since. **m144 wrote that ordering rule down for the CIVILS and did not
+  apply it to the one borrower outside the loop.** The load moved below the donor.
+  **AND THE NOTE NAMES THE BODY NOW.** `NO CLIP walk_fwd` is a fact about a CLIP and the question
+  is always WHICH of seven kinds is standing there -- they name overlapping clips, so the string
+  alone identified nobody and it cost a whole diagnosis to work out from the load order.
+  `NO CLIP OFFICER:walk_fwd,run_fwd`.
+- **THE DEBUG STACK IS FOLDED BY DEFAULT (m148).** *"That debug menu is still on screen."* m145
+  built the fold -- it takes the chip's detail line, the world key, the collider key and the FX
+  row -- and defaulted it OPEN, so the thing he asked to get out of the way was still the first
+  thing on screen and the only way out was a tap he had to know about. **The build number never
+  folds** and the key carries `+n` when `missing()` has something, so nothing that reports a
+  fault is lost. His stored choice still wins, which is what makes an opinionated default safe.
 - **THE CARS DRIVE, AND THE GRAPH IS DERIVED FROM HIS OWN EXPORT RATHER THAN AUTHORED (m147,
   `npm run lanes`, `WPLANES`, `TRAF`, `laneBuild`, `stepTraffic`, `pushCars`).** *"OK, what do we
   gotta do to make the cars driving? He said we gotta do something with Laney's baked."* That is

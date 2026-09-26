@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m147</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m148</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m147</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m148</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -575,7 +575,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm147';
+const BUILD = 'm148';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -9149,7 +9149,14 @@ if (chipMinEl) chipMinEl.addEventListener('pointerdown', e => {
   e.preventDefault(); e.stopPropagation();
   setChipMin(!document.body.classList.contains('chipmin'));
 });
-try { if (localStorage.getItem('mel.chipmin') === '1') setChipMin(1); } catch (e) {}
+// **AND IT IS FOLDED BY DEFAULT (m148).** *"That debug menu is still on screen."* m145 built
+// the fold and defaulted it OPEN, so the thing he asked to get out of the way was still the
+// first thing on screen and the only way out was a tap he had to know about. The BUILD NUMBER
+// never folds -- "which build is he actually looking at" is half of every boot question -- and
+// the key carries `+n` when `missing()` has something, so nothing that reports a fault is lost.
+// **His stored choice still wins either way**, which is what makes an opinionated default safe.
+try { const st = localStorage.getItem('mel.chipmin'); setChipMin(st === null ? 1 : st === '1'); }
+catch (e) { setChipMin(1); }
 
 // AND THE COLLIDER KEY DRAWS THE BOXES (m128). One tap, and it says which state it is in by
 // being lit -- so it is not a mode you can be in without knowing it, which is the argument that
@@ -11646,6 +11653,7 @@ const TRAF = {
   turnK: .62,       // and how much of cruise it takes a corner at
   straight: 3,      // how much likelier going straight on is than a left or a right
   y: .05,           // over the road, so the wheels do not z-fight the paint
+  h: 2.4,           // how tall its box is -- ONE number, so the collider and the view agree
   seed: 20260926,
   // **HOW SOLID IT IS TO THE PLAYER.** A car that drives through you is scenery, so its box is
   // handed to the player's own resolver every frame the way a body's circle is -- one physics
@@ -11811,7 +11819,7 @@ function trafBuild() {
     const mi = (tRand() * trafMesh.length) | 0;
     CARS.push({ id: i, ln, s: tRand() * ln.len, v: TRAF.cruise, mi,
                 hx: trafMesh[mi].hx, hz: trafMesh[mi].hz, own: null, next: null, arc: null,
-                x: 0, y: 0, z: 0, yaw: 0, cs: 1, sn: 0 });
+                cx: 0, cz: 0, miny: 0, maxy: 0, yaw: 0, cs: 1, sn: 0 });
   }
   // A CAR SPAWNED INSIDE ANOTHER CAR NEVER GETS OUT, because the follow rule holds them both.
   for (let pass = 0; pass < 4; pass++) for (const c of CARS)
@@ -11924,21 +11932,21 @@ function stepTraffic(dt) {
       arcSet(c, ln, next);
     }
     const L = c.ln, u = c.s / L.len;
-    c.y = L.y0 + (L.y1 - L.y0) * u;
+    c.miny = L.y0 + (L.y1 - L.y0) * u; c.maxy = c.miny + TRAF.h;
     if (c.arc && c.s >= c.arc.d) c.arc = null;
     if (c.arc) {
       // ON THE CORNER. `s` is still the car's real distance along the new lane, so the leader
       // search, the junction and the collider all read the same number they always did -- only
       // where it is DRAWN and which way it points come off the curve.
       const A = c.arc, t = c.s / A.d, w = 1 - t;
-      c.x = w*w*A.x0 + 2*w*t*A.px + t*t*A.x2;
-      c.z = w*w*A.z0 + 2*w*t*A.pz + t*t*A.z2;
+      c.cx = w*w*A.x0 + 2*w*t*A.px + t*t*A.x2;
+      c.cz = w*w*A.z0 + 2*w*t*A.pz + t*t*A.z2;
       const tx = 2*(w*(A.px - A.x0) + t*(A.x2 - A.px)), tz = 2*(w*(A.pz - A.z0) + t*(A.z2 - A.pz));
       const yb2 = Math.atan2(tz, tx);
       c.yaw = -yb2; c.cs = Math.cos(yb2); c.sn = Math.sin(yb2);
       continue;
     }
-    c.x = L.x0 + (L.x1 - L.x0) * u; c.z = L.z0 + (L.z1 - L.z0) * u;
+    c.cx = L.x0 + (L.x1 - L.x0) * u; c.cz = L.z0 + (L.z1 - L.z0) * u;
     // THE MODEL'S LOCAL +X IS ITS NOSE, and `Ry(t)` takes +X to `(cos t, 0, -sin t)`, so the
     // yaw that points it down the lane is `-atan2(dz, dx)`. `cs`/`sn` are the BOX frame's, the
     // same pair `wpOrient` writes and `boxLocal` reads, so the collider and the picture cannot
@@ -11952,7 +11960,7 @@ function stepTraffic(dt) {
   for (const m of trafMesh) {
     for (let i = 0; i < m.list.length; i++) {
       const c = m.list[i];
-      _tm.makeRotationY(c.yaw); _tm.setPosition(c.x, c.y, c.z);
+      _tm.makeRotationY(c.yaw); _tm.setPosition(c.cx, c.miny, c.cz);
       m.im.setMatrixAt(i, _tm);
     }
     m.im.count = m.list.length;
@@ -11974,13 +11982,16 @@ function pushCars(pos, r, hh) {
   if (!TRAF.solid || !CARS.length) return false;
   let hit = false;
   for (const c of CARS) {
-    if (Math.abs(pos.x - c.x) > 8 || Math.abs(pos.z - c.z) > 8) continue;
-    if (pos.y > c.y + 2.6 || pos.y + hh < c.y) continue;
+    if (Math.abs(pos.x - c.cx) > 8 || Math.abs(pos.z - c.cz) > 8) continue;
+    if (pos.y > c.maxy + .2 || pos.y + hh < c.miny) continue;
     boxLocal(c, pos.x, pos.z, _tcL);
     const ex1 = (c.hx + r) - _tcL.x, ex2 = _tcL.x + (c.hx + r);
     const ez1 = (c.hz + r) - _tcL.z, ez2 = _tcL.z + (c.hz + r);
     const q = Math.min(ex1, ex2, ez1, ez2);
-    if (q <= 0) continue;
+    // **`q <= 0` IS FALSE FOR NaN, AND THAT WAS A WHITE SCREEN (m148).** The fields are right
+    // now, so nothing should reach here non-finite -- but a guard written as "skip the harmless
+    // case" lets a poisoned one through, and what it poisons is the player's own position.
+    if (!(q > 0)) continue;
     let nx = 0, nz = 0;
     if (q === ex1) nx = 1; else if (q === ex2) nx = -1; else if (q === ez1) nz = 1; else nz = -1;
     pos.x += (nx * c.cs - nz * c.sn) * q;
@@ -12413,7 +12424,10 @@ function bodySpawn(P, K, x, z, y0) {
   // `''` in the table on purpose -- the STATE still runs and the animation arrives later -- so
   // reporting it would be the chip crying wolf about a deliberate gap.
   const gone = want.filter(n => n && !d.actions[n]);
-  if (gone.length) note('NO CLIP ' + gone.join(','));
+  // **AND IT NAMES THE BODY (m148).** Seven kinds name overlapping clips, so `NO CLIP walk_fwd`
+  // is a fact about a clip and the question is always WHICH of them is standing there with no
+  // gait. It cost a whole diagnosis to work that out from the name alone.
+  if (gone.length) note('NO CLIP ' + mphName(K) + ':' + gone.join(','));
   // **A SMOKE JOINT IS FOUND BY NAME AND FOUND ONCE.** `getObjectByName` walks the whole model,
   // which is not a per-frame thing to do, and the node never moves in the hierarchy. A kind that
   // names one it has not got says so rather than going quiet, because "there is no smoke" and
@@ -15642,8 +15656,8 @@ function stepBoxView() {
   // A DRIVING CAR IS NOT IN `BOXES` -- it is handed to the resolver every frame -- so it is
   // drawn from the same `cs`/`sn`/`hx`/`hz` `pushCars` tests, turned, and never as its AABB.
   for (const c of CARS) {
-    if (Math.abs(c.x - p.pos.x) > R || Math.abs(c.z - p.pos.z) > R) continue;
-    bvBox({ cs: c.cs, sn: c.sn, cx: c.x, cz: c.z, hx: c.hx, hz: c.hz, miny: c.y, maxy: c.y + 2.4 }, BOXV.car);
+    if (Math.abs(c.cx - p.pos.x) > R || Math.abs(c.cz - p.pos.z) > R) continue;
+    bvBox(c, BOXV.car);
   }
   // AND THE LANE GRAPH ITSELF, because "the cars are driving the wrong way" and "the graph is
   // wrong" are the same picture otherwise. Drawn whole rather than clipped to `R`: it is 48
@@ -16434,7 +16448,6 @@ async function init() {
 
   // ---- the bodies. BOTH WORLDS, which is the whole of m127: they used to sit inside the test
   //      site's branch, so Weirdport was a city with nobody in it.
-  await side(DUMMY.file, 'loading a body to hit', { name: 'DUMMY', build: buildDummies });
   // SHE HAS NO COLLIDER AT ALL -- `stepShe` writes x and z straight and only snaps y -- so she
   // is only loaded where a circuit has been proved clear. In Weirdport that is `wpLoop`'s job
   // and it may come back empty; the count is kept honest so the bar does not run short.
@@ -16452,6 +16465,12 @@ async function init() {
   // exists once his own `bodyProto` has run -- and a donor that never arrived is reported by
   // `side()` on its own line and again as `NO CLIPS <name>` in the chip, which are the two
   // halves of "the street is full of statues".
+  // **AND THE OFFICER IS ONE OF THEM, WHICH m144 WROTE THIS RULE FOR AND DID NOT APPLY TO HIM.**
+  // `DUMMY.borrow = BIKER` gave him a gait he has never had -- and he was loaded thirteen lines
+  // ABOVE the donor, so `bodyBorrow` read `BIKER.P` as undefined, skipped it with `no donor
+  // pose`, and every officer in the game has stood there with no walk and no run since. The
+  // chip said so from the first boot (`NO CLIP walk_fwd,run_fwd`) and nothing said WHO.
+  await side(DUMMY.file, 'loading a body to hit', { name: 'DUMMY', build: buildDummies });
   for (const K of CIVILS)
     await side(K.file, 'loading the locals', { name: mphName(K), build: g => buildCivil(g, K) });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
