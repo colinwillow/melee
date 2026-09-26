@@ -1050,6 +1050,109 @@ same picture from a phone.
   gates: `check:syntax` parses, and `check:boot` never fires a bolt. Ninth time across these
   repos, caught by reading rather than by running, which is not a method to rely on.
 
+- **TWO WOMEN, A FIREFIGHTER, AND EVERYBODY IS PLAYABLE NOW (m144, `GIRL`, `hCrown`, `ownRef`,
+  `SHE.r`).** *"I added three more characters. None of them have animations -- actually one of
+  them has a female walk in it and we can use that walk for the pretty girls... but they're gonna
+  need to borrow all the animations from the other mixamo skeletons for any detailed behavior.
+  Also one of my characters from earlier I can't shoot and turn into with the DNA gun -- it's the
+  female alien that's not the rollerblader, and that's one of my favourite characters. Everybody
+  should be playable."*
+  **ALL THREE MEASURE CLEAN, THE SAME WAY m143's SIX DID**: 66 joints, every one of `MORPH.needs`
+  present, one skinned mesh, toes at **+Z (0.00 deg)**, and a bind pose **0.00 deg** off the donor
+  on every shared bone with the Hips delta exactly **90.00** (they carry a `root` null, so they
+  are in zap's family and the biker is in the other one -- which is the whole of the difference
+  and is one constant rotation).
+  **AND `bodyBorrow`'s GATE WAS ALL-OR-NOTHING, WHICH THIS REQUEST IS EXACTLY THE CASE FOR.**
+  `if (!K.borrow || clips.length) return 0` -- so **the one character who brought an animation
+  would have been the one character who ended up with ONLY that animation**, walking everywhere
+  and doing nothing else. It fills per CLIP NAME now, from an ORDERED LIST of donors, first one
+  wins. Shredworld's `ownClips` rule arriving here: *name the clips you have redone and the rest
+  keep coming from the donor.*
+  **THE BLONDE'S DONOR IS THE ASIAN AND THE BIKER IS BEHIND HER.** `female_walk` is in the
+  asian's file, so she is loaded first and lends it on. **The second hop is exact rather than
+  close**: every rig in this repo reads 0.00 deg off every other on every shared bone, so the two
+  deltas are pure family rotations and they compose; `k` composes with them.
+  **AND A REFERENCE SPEED RIDES WITH ITS CLIP.** `walkRef` is read off whichever donor actually
+  supplied the clip named by `K.clips.walk`, or off `ownRef` when the body brought its own -- so
+  the blonde's walk is measured off `female_walk` and not off a clip she never plays.
+  **MEASURED: `female_walk` is 1.417 s and its planted foot slides 0.6345 authored units/s**,
+  `npm run gait`'s own method (the slower foot each frame, at its plateau) run offline against the
+  raw samplers. **Cross-checked on the one clip whose answer is already in this file**:
+  `alien_female_purple`'s walk reads 0.5282 against the 0.529 her shipped `walkRef` implies --
+  **0.2% apart**, which is what says the 0.6345 can be trusted rather than merely computed.
+- **AND `K.h / D.h` WAS THE WRONG GAIT FACTOR, WHICH IS AN m143 BUG THIS BUILD FIXES (m144).**
+  A reference speed is authored travel TIMES the scale the model is drawn at, so the factor
+  between two bodies is `scale_T / scale_S` -- and `K.h / D.h` is a BBOX ratio standing in for a
+  SCALE ratio. Under `hRel` every borrower is drawn at the donor's own scale exactly, so the
+  honest factor is **1.000** and the shipped one ran from **0.906 (trump) to 1.017 (activist)**:
+  up to **9.4% of foot slide** on a body whose clips were right all along. Same class as reading
+  a height off a bounding box, one quantity over.
+- **A BOUNDING BOX IS THE WRONG RULER ACROSS TWO NORMALISATION FAMILIES, AND THE HEAD IS WHAT
+  PROVES IT (m144, `K.hCrown`).** m143 stated this confound and could not quantify it; it is
+  quantified now. Every export here is normalised so its LONGEST axis is exactly 1.000 -- and
+  which axis that is depends on the ARM POSE:
+      the fat roster   X 1.000, Y .78 to .88   -> normalised on the ARM SPAN
+      the two girls    Y 1.000, X .698 / .753  -> normalised on the HEIGHT, arms at their sides
+  So `hRel` would compare height-over-armspan against height, and on `beautiful_asian` it
+  overstates her by **9%** -- a 2.05 m woman.
+  **`Head -> HeadTop_End` MEASURES 0.2328 ON ELEVEN OF THE FOURTEEN CHARACTER FILES**, to four
+  decimal places, which is the untouched Mixamo default: the armatures really are in one shared
+  unit and a SKELETAL landmark is comparable across them where a mesh bbox is not. The three
+  exceptions are the two girls (0.1462 and 0.1979) and they are the tell rather than a problem --
+  those rigs are drawn **6.5 and 5.0 heads tall** against everybody else's 3.3 to 4.0, and their
+  legs are **x1.92** the biker's. That is a deliberate proportion, not a scale.
+  **SO `hCrown` IS A CROWN HEIGHT IN METRES AND THE SCALE IS SOLVED FOR IT**, typed once for a
+  FAMILY rather than per body -- and the one number is not taste either: **1.725 m is where
+  `alien_female_purple`'s crown already lands** (1.0148 x her 1.70), so the three women in this
+  game are the same height as each other by construction and the one he already likes sets it.
+      asian    crown 0.9483 -> x1.8191, drawn 1.84 m to the top of her hair
+      blonde   crown 0.9945 -> x1.7346, drawn 1.73
+  **AND IT IS DELIBERATELY NOT USED ON THE FAT SIX**, because their crown BONE sits ABOVE their
+  own mesh -- the biker's is 0.8805 against a 0.8638 bbox, a default head-top bone on a squashed
+  head -- so for them the bbox is the honest measure and `hRel` compares like with like. Two
+  rulers, two questions, and each one stated where it is valid.
+  **THE FIREFIGHTER NEEDED NEITHER.** His export is in the fat family and his authored Y span is
+  **0.8638, the biker's to four decimals**, so `hRel` lands him at exactly 1.75 m and his refs at
+  exactly the biker's.
+- **SHE WAS NEVER REFUSED BY THE DNA GUN; SHE WAS NEVER LOOKED AT (m144).** `dnaCatch` loops
+  `DUMMIES` and `alien_female_purple` is not in it -- she is `buildShe`, her own path, with no
+  collider, no brain, no health bar and no spawn. `dnaOK` would have passed her on every count
+  (idle, walk, run) except the one thing she had no way to have: a **proto**.
+  **SO THE SAMPLER GAINS A SECOND SOURCE RATHER THAN HER GAINING A BODY.** Moving her into
+  `DUMMIES` would give her all four of those things and change what she IS; she is one more
+  candidate scored by the same distance, so the nearest still wins and there is no second rule
+  about who beats whom.
+  **AND THE PROTO IS A CLONE NOTHING HAS EVER ANIMATED**, which is the load-bearing half:
+  `mphSkin` takes its bind pose from `skeletonClone(P.proto)` and that is only a bind pose while
+  the proto has never been touched by a mixer -- so it cannot be the instance walking the
+  circuit. A clone shares the geometry and the materials, so the second copy is a skeleton and
+  nothing else. `normaliseClips` runs on both paths and **is idempotent** (the second pass finds
+  `t0` already 0 and filters a list already filtered), and `bodyProto`'s de-drift is a free fix
+  for her: her walk banks **2.20 units** of hips drift over its 7.5 s loop and her run **2.61**,
+  which is a 4 cm snap back every time round.
+  **`r: .38` IS THE ONLY NEW FIELD** -- what the catch is sized against and what `spkCling`
+  throws its swarm round.
+- **AND THE OFFICER IS WEARABLE, WHICH IS THE LAST "EVERYBODY" (m144).** He was the one body in
+  the game `dnaOK` refused, correctly: an idle and fifteen reactions and **no gait at all**. He
+  measures 0.00 deg off the biker's bind on all 56 shared bones and carries every joint the
+  retarget needs, so a gait is one donor line.
+  **HE STILL NEVER MOVES** -- `foeAI` is gated on `K.ai` and he has none -- so what this buys is
+  a disguise rather than a fourth pedestrian.
+  **AND HE IS DELIBERATELY GIVEN NO `air` CLIP.** m90's finding is that a body which plays its
+  FALL clip for the whole flight AND the landing reads right; he already has that BECAUSE the
+  field is absent, and naming `in_air` here would hand him a float LOOP and put the fall back to
+  starting after he has already landed. **A field left empty is a behaviour, not an omission.**
+  **AND `DUMMY.borrow` IS ASSIGNED AFTER THE `BIKER` TABLE, NOT WRITTEN IN HIS OWN.** `DUMMY` is
+  declared eight hundred lines above `BIKER`, and a `const` read above its own declaration is a
+  blank page -- this file's oldest landmine, ninth time, and the one thing `npm run check:boot`
+  exists to catch.
+- **WHAT IS UNVERIFIED AND WHY (m144):** there is no GPU here and no harness in this repo can
+  build a skin (draco wants a Worker), so **whether the three stand up in the borrowed clips, and
+  whether 1.73 m reads as a pretty girl rather than a tall one, are device questions.** The
+  arithmetic that CAN be checked is above and was: the bind deltas, the crown ruler, the head
+  control, the measured walk and its cross-check, and the three spawn clearances. Both gates
+  pass. `mel.dna('female')` wears the alien girl from a console and `mel.dna('officer')` the
+  officer; `mel.CIVILS` is live and `hCrown` wants a reload.
 - **A DISGUISE IS THE SAME SCALE AS THE MAN IT IS A DISGUISE FOR, AND I COULD NOT FIND A CODE
   PATH THAT MAKES IT BIGGER (m132, `drawnH`).** *"When I transform into the characters I'm
   actually a bigger version of themselves -- I should match them. I don't wanna be bigger than
