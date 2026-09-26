@@ -7,6 +7,44 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A CAR IS A BLOW ALONG THE CONTACT NORMAL, AND ONLY A NOSE CAN LAUNCH HIM (m149, `CARHIT`,
+  `carHit`).** *"Can we make the cars hit you and send you flying? And land land down and get
+  up."*
+  **THE LAND AND THE GET-UP NEEDED NOT ONE LINE.** `playerHurt`'s knock-down is the single path
+  a mace, a plasma bolt and now a bonnet all take: it rolls the arc, SOLVES the fall clip's rate
+  so the pose is on the floor before he is (m96), runs the get-up, and cancels whatever move
+  owned the body. So this build is the SCORE and nothing else -- which is the return on m67 and
+  m96 having been built as a knock-down rather than as a mace reaction.
+  **AND THE CONTACT NORMAL IS NOT RE-DERIVED.** `pushCars` already picks the face he is least
+  deep into -- nose or flank -- and rotates it out of the car's own frame, so the face he is
+  shoved out of IS the face he is thrown off, by construction. Recovering a bearing from the
+  geometry of a contact where the two things are on top of each other is `copFly`'s mistake,
+  and this avoids it by never asking the question.
+  **`w` IS THE CAR'S SPEED ALONG THAT NORMAL, WHICH IS THE WHOLE OF "ONLY A NOSE".** On a flank
+  the normal is perpendicular to the way the car is going, so a side-swipe scores near zero
+  however fast it is -- no case, no test, it falls out of the dot product.
+  **AND THE SCORE IS NOT EITHER SPEED ON ITS OWN.** Being hit is not the same event as running
+  into something, so his own approach counts for `mine` .45 of the car's. Tabled:
+      car at cruise, nose on, he is standing     close 9.50  s 1.00  KNOCK, 26 dmg
+      car at cruise, FLANK                       close 0.00         nothing
+      he sprints into a PARKED flank at 7.2      close 3.24  s 0.09  a bump, 7 dmg
+      he sprints into an oncoming nose           close 12.7  s 1.00  KNOCK
+      car crawling out of a junction at 2.0      close 2.00         nothing (`v` 2.6)
+  **`ref` IS `TRAF.cruise`**, so a car at its own cruising speed is a full hit by construction
+  rather than by a number picked to match it -- retune the traffic and this follows.
+  **AND `cool` IS PER CAR, NOT PER FRAME.** `pushCars` runs inside the substep loop up to
+  `MOVE.subMax` times, so without it one contact is a dozen blows. Being punted along the road
+  by the NEXT car in the queue is deliberate and is what `HURT.again` bounds.
+  **A GUARD STILL BLUNTS ONE**, because it goes through `playerHurt` like everything else. That
+  is stated rather than hidden: blocking a car is silly, and it is also a deliberate act with
+  the thumb held down in an odd place, so it is left alone rather than paid for with a seventh
+  argument on a function six callers already share.
+  **WHAT IS UNVERIFIED AND WHY:** every Weirdport GLB rejects headless, so `stepTraffic` has
+  never built a car outside a browser and nothing here can drive the resolver against one.
+  Whether 26 damage is too much of a 100 hp bar, and whether the launch reads as a car hit
+  rather than as a punch, are device questions. `mel.CARHIT` is live and `mel.CARHIT.on = 0`
+  is the one word back to m148.
+
 - **A KEYFRAME TRACK'S `times` ARRAY IS SHARED, AND MUTATING IT IN PLACE IS THE WORST BUG THIS
   CLASS OF FILE HAS.** This export has **4,464 samplers referencing 33 distinct time accessors**
   — `npm run clips` prints that ratio and flags it. GLTFLoader resolves each accessor once and

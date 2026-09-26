@@ -518,11 +518,10 @@ means anything you can carry from one situation to the next.
   actually walking at. A faster approach than the clip can sell is a scramble.
 - **The rapid fire shares the blaster's model**, which makes the two slots identical to look at.
   Its own GLB is one `file:` in `WEAP.slots`.
-- **A car does not HIT you (m147).** It is solid -- `pushCars` shoves you out of the way with
-  m146's oriented box -- and nothing launches you off a bonnet. Shredworld's `carHit` is the
-  worked answer: the contact NORMAL picks the tier, only a nose can launch, and the approach
-  speed has to be stashed before the resolver deletes it. And **the cars are not drivable**,
-  which he deferred himself (*"maybe after"*).
+- **The cars are not drivable**, which he deferred himself (*"maybe after"*). They DO hit you
+  as of m149 -- see `CARHIT` -- and **a guard still blunts one**, because a car goes through
+  `playerHurt` like every other blow. Blocking a car is silly and it is also a deliberate act
+  with the thumb in an odd place, so it is left alone rather than given a seventh argument.
 - **The traffic knows nothing about the freeway, the bridge ramps or the diagonals.** `npm run
   lanes` finds streets that run along X or along Z, which is what downtown Portland is; the
   I-405 and the bridge approaches are curves and are simply not in the graph.
