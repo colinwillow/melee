@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m145</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m146</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m145</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m146</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -575,7 +575,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm145';
+const BUILD = 'm146';
 /* ASSETS:START */
 const ASSETS = {"models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1973,6 +1973,25 @@ const WP = {
           // 1.000, so 1.05 is "essentially aligned" with room for float noise, and the two
           // diagonal plaza rails read 121.86.
           skew: 1.05 },
+
+  // **EVERY VEHICLE COLLIDER IS THE AXIS-ALIGNED BOX OF A ROTATED CAR (m146, `wpOrient`).**
+  // `boxSkew` above catches a collision mesh whose GEOMETRY is turned; these are the opposite
+  // and it correctly passes them, because the export baked the AABB and the orientation is
+  // genuinely gone from the file. It is still in the VISUAL, on the instance that box was
+  // baked from -- so the yaw is paired back on by plan position and the true half extents fall
+  // out of the AABB by inversion. See `wpOrient` for the arithmetic and what it measured.
+  turn: {
+    on: 1,
+    snap: .25,   // how near an instance has to sit, in plan, to be THIS box's instance. The
+                 // measured pairing distance is 0.0000 m on all 54 cars, so this is slack and
+                 // not a tolerance -- and nearest-wins on top of it.
+    min: 1.06,   // and how much the AABB has to OVER-CLAIM before turning it is worth anything.
+                 // Scale-free, like `skew`: a box whose yaw costs it nothing is left alone, so
+                 // a mis-pair onto an axis-aligned node is a no-op by construction.
+    det: .005,   // |cos 2yaw|. At exactly 45 degrees the AABB of a rectangle is a square and
+                 // carries NO information about which side is which, so the honest answer there
+                 // is to leave it square and say so.
+  },
 };
 
 // THE TINT'S COLOUR SPACE, LIVE. One object shared by every City_Trim program, so `mel.tint(1)`
@@ -5915,6 +5934,44 @@ function boxesNear(qx0, qx1, qz0, qz1, out) {
 // BGRID:END
 const _bnG = [], _bnR = [], _bnW = [], _bnL = [], _bnC = [];
 
+// A BOX MAY BE TURNED, AND ITS AABB STAYS AS THE BROAD PHASE (m146). `wpOrient` writes `cs`,
+// `sn`, `cx`, `cz`, `hx` and `hz` onto a box whose axis-aligned bounds over-claim, and leaves
+// `minx..maxz` exactly as they were -- which is what keeps `boxGrid` and every overlap test
+// above untouched, because the true box is CONTAINED in those bounds by construction. So the
+// broad phase is unchanged and only the narrow phase asks in the box's own frame. `cs`
+// undefined IS the test: a box nobody turned takes the line it always took.
+function boxLocal(b, x, z, o) {
+  const dx = x - b.cx, dz = z - b.cz;
+  o.x = dx * b.cs + dz * b.sn;
+  o.z = -dx * b.sn + dz * b.cs;
+  return o;
+}
+// THE CLOSEST POINT ON A BOX'S FOOTPRINT AND THE OUTWARD NORMAL OF THE FACE IT IS ON, in one
+// step -- which is m89's whole trick, now asked in the box's own frame when it has one. The
+// offset is computed local and rotated back, so the normal is the face's real normal rather
+// than the phantom AABB's. Returns the distance, or **-1 when the point is INSIDE**, because
+// there is no nearest face from in there and picking one would be a wall chosen by rounding.
+const _blN = { x: 0, z: 0 };
+function boxNear(b, px, pz, o) {
+  let dx, dz;
+  if (b.cs !== undefined) {
+    boxLocal(b, px, pz, _blN);
+    const ox = _blN.x - clamp(_blN.x, -b.hx, b.hx), oz = _blN.z - clamp(_blN.z, -b.hz, b.hz);
+    dx = ox * b.cs - oz * b.sn; dz = ox * b.sn + oz * b.cs;
+  } else {
+    dx = px - clamp(px, b.minx, b.maxx); dz = pz - clamp(pz, b.minz, b.maxz);
+  }
+  const d = Math.hypot(dx, dz);
+  if (d < 1e-4) return -1;
+  o.d = d; o.nx = dx / d; o.nz = dz / d; o.cx = px - dx; o.cz = pz - dz;
+  return d;
+}
+const _blR = { x: 0, z: 0 };
+const _bnpG = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+const _bnpC = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+const _bnpW = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+const _bnpL = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+
 // The highest surface under (x,z) at or a step above `y`, else the floor at 0.
 // **THE TRIANGLES FIRST, THEN THE BOXES, AND THE HIGHER OF THE TWO WINS.** Weirdport's walkable
 // ground is a triangle mesh and its buildings and props are still boxes, so a roof and a ramp
@@ -5925,6 +5982,9 @@ function groundAt(x, z, y, step) {
   if (TRI.on) { const t = triGround(x, z, y, step); if (t > best) best = t; }
   for (const b of boxesNear(x, x, z, z, _bnG)) {
     if (x < b.minx || x > b.maxx || z < b.minz || z > b.maxz) continue;
+    // AND A TURNED BOX'S ROOF IS THE ROOF OF THE CAR, not of the square round it -- `boxNear`
+    // returns -1 for INSIDE the footprint, which is exactly the question a floor asks.
+    if (b.cs !== undefined && boxNear(b, x, z, _bnpG) >= 0) continue;
     if (b.maxy > best && b.maxy <= y + step) best = b.maxy;
   }
   return best;
@@ -5952,6 +6012,25 @@ function resolveBoxes(p, r, hh) {
     // he grinds to a halt against a 40 cm kerb he is standing on.
     if (b.maxy <= p.y + MOVE.step) continue;
     if (p.y + hh < b.miny || p.y > b.maxy - .02) continue;
+    // A TURNED BOX IS THE SAME QUESTION IN ITS OWN FRAME (m146). He is a CIRCLE, so his radius
+    // is rotation-invariant and nothing about the test changes but the axes -- and the push
+    // comes back out along the box's real face normal, which is what `foeMove` reads as the
+    // wall it is sliding along (m145). Against the AABB of a car at 45 degrees that normal is
+    // the phantom's, so the slide was following a wall that is not there.
+    if (b.cs !== undefined) {
+      boxLocal(b, p.x, p.z, _blR);
+      const lx = _blR.x, lz = _blR.z;
+      const ex1 = (b.hx + r) - lx, ex2 = lx + (b.hx + r);
+      const ez1 = (b.hz + r) - lz, ez2 = lz + (b.hz + r);
+      const q = Math.min(ex1, ex2, ez1, ez2);
+      if (q <= 0) continue;
+      let nx = 0, nz = 0;
+      if (q === ex1) nx = 1; else if (q === ex2) nx = -1; else if (q === ez1) nz = 1; else nz = -1;
+      p.x += (nx * b.cs - nz * b.sn) * q;
+      p.z += (nx * b.sn + nz * b.cs) * q;
+      hit = true;
+      continue;
+    }
     const dx1 = (b.maxx + r) - p.x, dx2 = p.x - (b.minx - r);
     const dz1 = (b.maxz + r) - p.z, dz2 = p.z - (b.minz - r);
     const m = Math.min(dx1, dx2, dz1, dz2);
@@ -5977,10 +6056,12 @@ function wallFind(px, py, pz, R) {
     if (b.maxy < h || b.miny > h) continue;         // measured at his CHEST, not his ankles
     if (px + R < b.minx || px - R > b.maxx) continue;
     if (pz + R < b.minz || pz - R > b.maxz) continue;
-    const cx = clamp(px, b.minx, b.maxx), cz = clamp(pz, b.minz, b.maxz);
-    const dx = px - cx, dz = pz - cz, d = Math.hypot(dx, dz);
-    if (d < 1e-4 || d > R || d >= bd) continue;
-    bd = d; best = { nx: dx / d, nz: dz / d, d, cx, cz, b };   // `b` for the collider view (m128)
+    const d = boxNear(b, px, pz, _bnpW);
+    if (d < 0 || d > R || d >= bd) continue;
+    // `b` for the collider view (m128): what has hold of him is drawn in ITS colour, and since
+    // m146 that box may be turned -- so the face this picked and the box that is drawn have to
+    // be the same one, or the view is the second thing to be wrong.
+    bd = d; best = { nx: _bnpW.nx, nz: _bnpW.nz, d, cx: _bnpW.cx, cz: _bnpW.cz, b };
   }
   return best;
 }
@@ -6005,12 +6086,12 @@ function ledgeFind(px, py, pz, R) {
     if (dy < -LEDGE.band || dy > LEDGE.band) continue;
     if (px + R < b.minx || px - R > b.maxx) continue;
     if (pz + R < b.minz || pz - R > b.maxz) continue;
-    const cx = clamp(px, b.minx, b.maxx), cz = clamp(pz, b.minz, b.maxz);
-    const dx = px - cx, dz = pz - cz, d = Math.hypot(dx, dz);
-    // INSIDE the footprint returns nothing, which is what stops him grabbing the roof he is
-    // standing on -- `wallFind`'s own line, and the reason both of these are one `clamp`.
-    if (d < 1e-4 || d > R || d >= bd) continue;
-    const nx = dx / d, nz = dz / d;
+    // INSIDE the footprint returns nothing (`boxNear` gives -1), which is what stops him
+    // grabbing the roof he is standing on -- `wallFind`'s own line, and the reason both of
+    // these are one call.
+    const d = boxNear(b, px, pz, _bnpL);
+    if (d < 0 || d > R || d >= bd) continue;
+    const nx = _bnpL.nx, nz = _bnpL.nz, cx = _bnpL.cx, cz = _bnpL.cz;
     // **HEADROOM, CHECKED BEFORE THE GRAB.** The probe is `inset` IN from the edge and half a
     // body up, which is where the mantle would put his chest: a lip with a wall over it is a
     // lip he would climb into, and there is no graceful way out of that once he is committed.
@@ -6064,8 +6145,12 @@ function pushBodies(pos, r, skip) {
 
 function camHit(x, y, z, pad) {
   for (const b of boxesNear(x - pad, x + pad, z - pad, z + pad, _bnC)) {
-    if (x > b.minx - pad && x < b.maxx + pad && y > b.miny - pad && y < b.maxy + pad &&
-        z > b.minz - pad && z < b.maxz + pad) return true;
+    if (y <= b.miny - pad || y >= b.maxy + pad) continue;
+    // AND A TURNED BOX IS TESTED AS THE BOX (m146). This is the camera boom AND the bolt's
+    // flight, so against the AABB of a car at 45 degrees a shot aimed well past it died in
+    // clear air -- Shredworld's own m161 complaint, one shape along.
+    if (b.cs !== undefined) { const d = boxNear(b, x, z, _bnpC); if (d >= 0 && d > pad) continue; return true; }
+    if (x > b.minx - pad && x < b.maxx + pad && z > b.minz - pad && z < b.maxz + pad) return true;
   }
   return false;
 }
@@ -10949,8 +11034,12 @@ function buildWpCollision(g) {
     if (nt === 12 && boxSkew(o) < WP.cols.skew) {
       o.geometry.computeBoundingBox();
       const wb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+      // **`plain` IS WHAT `wpOrient` LOOKS FOR, and it has to be recorded HERE (m146).** It
+      // means "this box IS a box, and its bounds are its whole shape" -- true of the AABB
+      // shortcut and false of every run the rasteriser emits, and there is no way to tell them
+      // apart afterwards. A rasterised run is a slice of a shape and turning one means nothing.
       BOXES.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
-                   minz: wb.min.z, maxz: wb.max.z });
+                   minz: wb.min.z, maxz: wb.max.z, plain: 1 });
       nBox++; nPlain++;
       return;
     }
@@ -10996,10 +11085,126 @@ function wpTintSet(geo) {
   return 1;
 }
 
+// EVERY VEHICLE COLLIDER IS THE AXIS-ALIGNED BOX OF A ROTATED CAR (m146, `wpOrient`).
+//
+// *"The colliders for the cars in general are pretty big. The van's one is like skewed cockeye
+// offset."* m129 measured that and m131 fixed the other half of it and said this one was still
+// open: 55 vehicles, **mean plan-area inflation x1.28 and worst x2.13** -- a 2.25 x 4.00 m car
+// parked at an angle becomes a near-SQUARE 4.79 x 5.92 box, which is why it reads as cockeyed
+// rather than merely big. It is the smallest upright box containing the car, not the car.
+//
+// **THE ORIENTATION IS GONE FROM THE COLLISION FILE AND IT IS STILL IN THE VISUAL.** Read out
+// of both (the collision GLB is plain glTF, and node transforms are never draco): all 55 car
+// and van collision meshes read `boxSkew` **1.000** -- so `boxSkew` correctly passes them, the
+// geometry really is axis-aligned, and there is nothing in that file to recover. 54 of them
+// pair to an `inst_car_*`/`inst_van_*` node at the same plan position to **0.0000 m**.
+//
+// **AND THE HALF EXTENTS FALL OUT OF THE AABB BY INVERSION, EXACTLY.** The axis-aligned bounds
+// of a rectangle turned by `yaw` are `W = 2(hx|cos| + hz|sin|)` and `D = 2(hx|sin| + hz|cos|)`,
+// two equations in two unknowns, which solves whenever `|cos 2yaw|` is not zero. That is not
+// an approximation and it was not trusted on its own residual either -- the residual of an
+// inversion is meaningless. It is confirmed by TWO independent facts the solve never sees:
+//     mesh 145 -> hx 2.000 hz 1.124   h 2.266      mesh 147 -> hx 2.250 hz 1.345   h 2.643
+//     mesh 146 -> hx 2.600 hz 1.421   h 2.454      mesh 148 -> hx 2.400 hz 1.438   h 2.535
+// Twelve instances of mesh 145 at twelve different yaws, `det` from 0.68 to 1.0 and both
+// signs, all solve to the same 2.000 x 1.124 -- and each group's HEIGHT, which is untouched by
+// yaw and therefore an independent fingerprint, is constant too. Four car bodies, four answers.
+//
+// **THE COLLIDER'S OWN DIMENSIONS ARE KEPT AND ONLY THEIR ORIENTATION CHANGES**, which is why
+// the extents are solved rather than read off the visual geometry. The visual is the whole
+// tree where the collider is a 0.7 m trunk box (m26's hack, which stays), so taking extents
+// from the picture would turn every tree into its canopy. What comes out here is exactly the
+// box he authored, turned the right way -- and it can only ever SHRINK, because the true box
+// is contained in the AABB by construction.
+//
+// **AND IT IS GENERAL RATHER THAN A CAR CASE, because a SQUARE over-claims WORST.** A 0.70 m
+// tree trunk at 45 degrees gets a 0.99 m box -- x2.0 -- so the honest scope is "the AABB
+// over-claims", not "this is a vehicle". 192 boxes of the 349 plain ones qualify at
+// `WP.turn.min` 1.06: 32 cars and vans, 122 trees and bushes, and 38 AC units, vents,
+// skylights, water towers, hydrants and bins. The other 157 are genuinely axis-aligned and are
+// left exactly as they were.
+//
+// **A MIS-PAIR IS A NO-OP BY CONSTRUCTION**, which is what makes a 0.25 m snap safe: the only
+// way to reach the write is for the paired node's yaw to make this box's OWN bounds over-claim
+// by 6%, so pairing onto a road slab or a wall (yaw 0, ratio 1) changes nothing at all. Two
+// co-located instances -- a skylight's base and its glass -- share a transform, so which of
+// them is picked cannot matter either.
+//
+// **IT RUNS BEFORE THE BATCH AND THAT IS NOT AN ORDERING PREFERENCE.** `buildWpVisual` REMOVES
+// the `inst_` nodes it merges into an InstancedMesh, so a pass after it sees a third of the
+// city missing. This is the one moment both facts are in hand: a live `BOXES` and a visual
+// node graph that still has its nodes.
+//
+// **THE AABB IS LEFT ALONE AND STAYS THE BROAD PHASE** -- `boxGrid` is already built by now,
+// and a box that only ever shrinks is still correctly bucketed by the bounds it was bucketed
+// with. Nothing about the grid, the queries or the overlap tests moves.
+//
+// STILL OPEN AND STATED: `boxSkew` diverts a genuinely ROTATED collision mesh to the rasteriser
+// (m131's two plaza rails), and now that a box can carry a yaw those would be better as one
+// turned box than as a staircase of ten. That is a second change and this build moves one.
+function wpOrient(root) {
+  const T = WP.turn;
+  if (!T || !T.on) return 0;
+  // A 1 m HASH OVER THE PLAIN BOXES ONLY, so 510 nodes do not each scan 4,104 boxes.
+  const C = 1, cells = new Map();
+  for (const b of BOXES) {
+    if (!b.plain) continue;
+    const cx = (b.minx + b.maxx) * .5, cz = (b.minz + b.maxz) * .5;
+    const k = Math.round(cx / C) + ',' + Math.round(cz / C);
+    let L = cells.get(k); if (!L) cells.set(k, L = []);
+    L.push({ b, cx, cz });
+  }
+  let n = 0, degen = 0;
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    const m = o.matrixWorld.elements;
+    const x = m[12], z = m[14];
+    const sx = Math.hypot(m[0], m[1], m[2]);
+    if (sx < 1e-6) return;
+    // **IT HAS TO BE A PLAIN Y ROTATION TO HAVE A YAW AT ALL.** `alien_tower_01`'s node carries
+    // a 90 degree turn about +X (m60), and `atan2` on a tilted basis returns a number that
+    // means nothing -- so a node whose local +X has left the horizontal is simply not this.
+    if (Math.abs(m[1]) > sx * .05) return;
+    let best = null, bd = T.snap;
+    const i0 = Math.round(x / C), k0 = Math.round(z / C);
+    for (let i = i0 - 1; i <= i0 + 1; i++) for (let k = k0 - 1; k <= k0 + 1; k++) {
+      const L = cells.get(i + ',' + k); if (!L) continue;
+      for (const e of L) {
+        if (e.b.cs !== undefined) continue;           // already turned by another instance
+        const d = Math.hypot(e.cx - x, e.cz - z);
+        if (d < bd) { bd = d; best = e; }
+      }
+    }
+    if (!best) return;
+    // LOCAL +X MAPS TO WORLD (m[0], m[2]) ONCE NORMALISED -- that is the whole definition of
+    // `yaw` here, taken off the matrix rather than off a Euler nobody guarantees.
+    const yaw = Math.atan2(m[2], m[0]);
+    const ca = Math.abs(Math.cos(yaw)), sa = Math.abs(Math.sin(yaw)), det = ca * ca - sa * sa;
+    if (Math.abs(det) < T.det) { degen++; return; }
+    const b = best.b, W = b.maxx - b.minx, D = b.maxz - b.minz;
+    const hx = (W * ca - D * sa) / (2 * det), hz = (D * ca - W * sa) / (2 * det);
+    if (!(hx > .01) || !(hz > .01)) return;           // a nonsense solve is not a box
+    if ((W * D) / (4 * hx * hz) < T.min) return;      // and a yaw that costs nothing is not worth carrying
+    b.yaw = yaw; b.cs = Math.cos(yaw); b.sn = Math.sin(yaw);
+    b.cx = best.cx; b.cz = best.cz; b.hx = hx; b.hz = hz;
+    n++;
+  });
+  WP.turned = n; WP.turnFlat = degen;
+  console.log('[melee] weirdport: ' + n + ' collider boxes turned onto their own instance' +
+    (degen ? ', ' + degen + ' at 45 deg left square (the AABB cannot say which side is which)' : ''));
+  return n;
+}
+
 // THE PICTURE. Three things it has to do that a plain `scene.add` does not.
 function buildWpVisual(g, trim) {
   const root = g.scene;
   root.updateMatrixWorld(true);
+
+  // **THE COLLIDER FIRST OF ALL, because the batch below REMOVES the nodes it merges** -- see
+  // `wpOrient`. It is a collider concern living in the picture's builder for the one reason
+  // that this is where the picture's node graph exists.
+  try { wpOrient(root); }
+  catch (e) { console.error('[melee] weirdport orient failed', e); note('WP NO TURN'); }
 
   // **THE MATERIALS FIRST AND THE BATCH SECOND, WHICH IS NOT AN ORDERING PREFERENCE.** The
   // batch REMOVES the nodes it merges, so a material pass after it never sees them -- and 368
@@ -14906,9 +15111,28 @@ function bvSeg(x0, y0, z0, x1, y1, z1, c) {
   bvN += 2;
 }
 
-// AXIS-ALIGNED, because that is what `BOXES` is (m24 keeps every placement on a quarter turn
-// for exactly this reason). A yawed wire box here would be drawing a rule the game has not got.
+// AND SINCE m146 A BOX CAN BE TURNED, SO THE WIRE IS TURNED WITH IT. The AABB is only the
+// broad phase now, so drawing it here would be drawing the PHANTOM rather than the thing the
+// resolver tests -- which is the one mistake a debug view is not allowed to make, and the
+// whole reason every number in this file is read off the resolver's own fields. Everything
+// else in `BOXES` is still axis-aligned (m24 keeps every test-site placement on a quarter
+// turn) and takes the line below exactly as it did.
+const _bvX = [0, 0, 0, 0], _bvZ = [0, 0, 0, 0];
 function bvBox(b, c) {
+  if (b.cs !== undefined) {
+    const y0 = b.miny, y1 = b.maxy;
+    const ux = b.cs * b.hx, uz = b.sn * b.hx, vx = -b.sn * b.hz, vz = b.cs * b.hz;
+    _bvX[0] = b.cx - ux - vx; _bvZ[0] = b.cz - uz - vz;
+    _bvX[1] = b.cx + ux - vx; _bvZ[1] = b.cz + uz - vz;
+    _bvX[2] = b.cx + ux + vx; _bvZ[2] = b.cz + uz + vz;
+    _bvX[3] = b.cx - ux + vx; _bvZ[3] = b.cz - uz + vz;
+    for (let k = 0; k < 2; k++) {
+      const y = k ? y1 : y0;
+      for (let i = 0; i < 4; i++) { const j = (i + 1) & 3; bvSeg(_bvX[i], y, _bvZ[i], _bvX[j], y, _bvZ[j], c); }
+    }
+    for (let i = 0; i < 4; i++) bvSeg(_bvX[i], y0, _bvZ[i], _bvX[i], y1, _bvZ[i], c);
+    return;
+  }
   const x0 = b.minx, x1 = b.maxx, y0 = b.miny, y1 = b.maxy, z0 = b.minz, z1 = b.maxz;
   for (let k = 0; k < 2; k++) {
     const y = k ? y1 : y0;
@@ -15416,7 +15640,11 @@ function frame() {
     // bugs and one picture from a phone: the sweep found nothing, it found spots and the GLBs
     // never arrived, or they arrived and are somewhere he has not walked to. `WPCROWD26` says
     // the first two apart from the third, and `WP NO SPOTS` / `WP CROWD n/m` carry the rest.
-    const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
+    // AND HOW MANY OF THOSE BOXES ARE TURNED (m146). *"The car colliders are still wrong"* is
+    // two bugs and one picture from a phone -- the pairing found nothing, or it found them and
+    // the box is still in the wrong place -- and only the count tells them apart. `y0` is the
+    // first of those and any number at all is the second.
+    const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b/' + (WP.turned || 0) + 'y' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
       (WP.tinted ? ' · WPTINT' + WP.tinted : '') + (WP.bodies ? ' · WPCROWD' + WP.bodies : '') : '';
     // WHO HE IS WEARING, AND WHETHER THE FLASH IS RUNNING. "the shot did nothing", "it fired and
     // he never changed" and "he changed into the wrong one" are three bugs and one picture from

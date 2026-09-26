@@ -1344,6 +1344,85 @@ same picture from a phone.
   arrives `undefined`, the cap never fires, and the tool measures a rule the game does not have.
   **This repo's oldest mistake, and the markers exist to prevent exactly it.**
 
+- **EVERY VEHICLE COLLIDER WAS THE AXIS-ALIGNED BOX OF A ROTATED CAR, AND THE ORIENTATION WAS
+  NEVER LOST -- ONLY MOVED (m146, `WP.turn`, `wpOrient`, `boxLocal`, `boxNear`).** *"The
+  colliders for the cars in general are pretty big. The van's one is like skewed cockeye
+  offset."* m129 measured it (55 vehicles, mean plan-area inflation **x1.28**, worst **x2.13**)
+  and m131 fixed the OTHER half of the same complaint and wrote this one down as still open.
+  **THE COLLISION FILE GENUINELY HAS NOTHING TO RECOVER, WHICH IS WHY `boxSkew` PASSES THEM.**
+  All 55 car and van collision meshes read `boxSkew` **1.000** -- the export baked the AABB, so
+  the geometry really is axis-aligned and m131's test is right to leave it alone. A 2.25 x 4.00
+  car parked at an angle is a near-SQUARE 4.79 x 5.92 box, which is what reads as cockeyed
+  rather than merely big.
+  **IT IS STILL IN THE VISUAL, AND THE PAIRING IS EXACT.** 54 of the 55 pair to an `inst_car_*`
+  / `inst_van_*` node at the same plan position to **0.0000 m** (the 55th is a freeway car with
+  no instance within 34 m). Node transforms are never draco, and the collision GLB is plain
+  glTF, so all of this is measurable offline against the real assets.
+  **AND THE HALF EXTENTS FALL OUT OF THE AABB BY INVERSION.** `W = 2(hx|cos| + hz|sin|)` and
+  `D = 2(hx|sin| + hz|cos|)` is two equations in two unknowns and solves whenever `|cos 2yaw|`
+  is not zero. **The residual of an inversion is meaningless and was not trusted** -- it is
+  confirmed by two facts the solve never sees:
+      mesh 145 -> hx 2.000 hz 1.124   h 2.266      mesh 147 -> hx 2.250 hz 1.345   h 2.643
+      mesh 146 -> hx 2.600 hz 1.421   h 2.454      mesh 148 -> hx 2.400 hz 1.438   h 2.535
+  Twelve instances of mesh 145 at twelve different yaws, `det` from 0.68 to 1.0 and both signs,
+  all solve to the same 2.000 x 1.124 -- and each group's HEIGHT, untouched by yaw and
+  therefore an independent fingerprint, is constant with it. Four car bodies, four answers.
+  **THE COLLIDER'S OWN DIMENSIONS ARE KEPT AND ONLY THEIR ORIENTATION CHANGES.** That is why
+  the extents are solved rather than read off the visual geometry, which is the obvious move
+  and is wrong: the visual is the whole TREE where the collider is a 0.7 m trunk box (m26's
+  hack, which stays), so taking extents from the picture turns every tree into its canopy. What
+  comes out is exactly the box he authored, turned the right way, and it can only ever SHRINK.
+  **AND IT IS GENERAL RATHER THAN A CAR CASE, BECAUSE A SQUARE OVER-CLAIMS WORST.** A 0.70 m
+  tree trunk at 45 degrees gets a 0.99 m box -- **x2.0** -- so the honest scope is "the AABB
+  over-claims" and not "this is a vehicle". Measured through the shipped function over the real
+  files: **195 of the 349 plain boxes**, and **1016.7 m2 of collider plan becomes 677.4** --
+  a third of it was air. 42 families, every one a `prop_`: **zero buildings and zero `solid_`
+  turned**, and the largest turned box is under 40 m2. Trees and bushes are 122 of them, so
+  walking past a street tree gets easier, which is the change he will feel first.
+  **A MIS-PAIR IS A NO-OP BY CONSTRUCTION**, which is what makes a 0.25 m snap safe: the only
+  way to reach the write is for the paired node's yaw to make this box's OWN bounds over-claim
+  by `min` 6%, so pairing onto a road slab or a wall (yaw 0, ratio 1) changes nothing at all.
+  Two co-located instances -- a skylight's base and its glass -- share a transform, so which is
+  picked cannot matter either.
+  **AT EXACTLY 45 DEGREES THE AABB CARRIES NO INFORMATION AND IT SAYS SO.** `det` is `cos 2yaw`
+  and the solve divides by it; at 45 the AABB of a rectangle is a square and cannot say which
+  side is which, so the honest answer is to leave it square. The amplification is harmless well
+  before that -- float32 bounds at `det` 0.005 give about 2e-4 m -- so the guard is 0.005 and
+  **nothing in the city is currently skipped by it** (the worst real case is 46.7 degrees).
+  **THE AABB IS LEFT ALONE AND STAYS THE BROAD PHASE**, which is what keeps this a narrow-phase
+  change: `boxGrid` is already built when `wpOrient` runs, and a box that only ever shrinks is
+  still correctly bucketed by the bounds it was bucketed with. Nothing about the grid, the
+  queries or the overlap tests moves. `cs === undefined` IS the test, so every box nobody
+  turned takes the exact line it always took.
+  **FIVE READERS, ONE PRIMITIVE EACH, AND NOTHING RESTATED.** `boxLocal` is the rotation into
+  the box's frame and `boxNear` is m89's closest-point-and-normal built on it:
+      resolveBoxes   the same min-penetration test in the box's own frame -- he is a CIRCLE, so
+                     his radius is rotation-invariant and only the axes change. **The push comes
+                     back out along the box's REAL face normal**, which is what `foeMove` reads
+                     as the wall it is sliding along (m145): against a car's phantom AABB that
+                     normal was a face that is not there.
+      groundAt       a turned box's roof is the roof of the CAR, not of the square round it
+      camHit         the camera boom AND the bolt's flight -- Shredworld's c161 complaint one
+                     shape along, where a shot aimed well past a car died in clear air
+      wallFind /     one `boxNear` call each instead of one `clamp` each, so the face they pick
+      ledgeFind      and the box the collider view draws are the same face
+      bvBox          **draws the turned box, because the AABB is only the broad phase now** --
+                     drawing it would be drawing the phantom rather than the thing the resolver
+                     tests, which is the one mistake a debug view is not allowed to make
+  **VERIFIED AGAINST THE REAL FILES BY RUNNING THE SHIPPED TEXT**, not a copy: every turned
+  box's four corners lie inside the AABB it replaced (worst 1.4e-14 m), the turned box
+  reproduces that AABB to 3.6e-15, `boxNear`'s normal always points away and its closest point
+  is on the surface to 1.4e-14, and 4,680 points placed inside turned boxes all come OUT of
+  `resolveBoxes`' oriented push with none left inside.
+  **AND THE CHIP COUNTS THEM (`WP3684t/4104b/195y`).** *"The car colliders are still wrong"* is
+  two bugs and one picture from a phone -- the pairing found nothing, or it found them and the
+  box is still in the wrong place -- and only the count tells them apart. `y0` is the first.
+  **STILL OPEN AND STATED:** `boxSkew` diverts a genuinely ROTATED collision mesh to the
+  rasteriser (m131's two plaza rails, 121.86 skew), and now that a box can carry a yaw those
+  would be better as one turned box than as a staircase of ten. `boxSkew` already sweeps for the
+  tightest rectangle and knows its angle. That is a second change and this build moves one.
+  `mel.WP.turn.on = 0` is m145 exactly and wants a reload.
+
 - **THIRTY-SEVEN BODIES IN A CITY OF FOUR THOUSAND BOXES AND ONLY THE SIDEKICK HAD A STUCK
   DETECTOR (m145, `K.slide`, `foeSpot`, `STUCK`).** *"All the characters get stuck on stuff like
   buildings -- they're just constantly stuck walking into buildings. It needs a much more
