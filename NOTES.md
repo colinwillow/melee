@@ -7,6 +7,54 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A GRIND RAIL IS THE TOP EDGE OF A SOLID BOX -- FOUND, NEVER AUTHORED (m153, `SK8.grind`,
+  `railNear`, `railCatch`, `stepGrind`).** *"Should we just build some procedural rails and put
+  in grinding, or did you mean animations? It'd be nice to be able to slide on cars and stuff,
+  but I feel like we don't have collide boxes -- you're just gonna be grinding on benches,
+  rails, kerbs, cars."*
+  **THE ANSWER IS NO PROCEDURAL RAILS, AND HIS OWN SENTENCE IS WHY.** The boxes are already
+  there: 4,104 in Weirdport -- every bench, kerb, planter, parapet, plaza rail and ledge iron
+  -- plus the 24 driving cars and the ten in the test site. A placed rail set would be a SECOND
+  description of the same edges: one to author, one to keep in step with the collider, and one
+  to be wrong. `ledgeFind`'s rule (m102), one verb along, and the rails' and bars' rule one
+  repo over.
+  **AND `boxNear` ALREADY GIVES THE LINE.** It returns the closest point on a box's FOOTPRINT
+  and that face's outward NORMAL, in the box's own oriented frame since m146 -- so the edge
+  through that point is the horizontal perpendicular to the normal, and how long it is, is the
+  box's own half extent on the OTHER axis. Nothing is derived, nothing is authored, and **a car
+  parked at an angle or driving past needs no case of its own.**
+  **THE SAME TWO STORES THE RESOLVER ASKS**, so a bench and the roof of a moving car are one
+  question with one answer.
+  **HOW MUCH RAIL IS LEFT IS MEASURED FROM THE BOX'S CENTRE, NOT FROM WHERE HE LANDED.** He
+  catches it wherever he happens to be, so `|railS| > half` gives him a full half-length in
+  BOTH directions from a catch near one end -- and runs him off the metal into thin air. `s0`
+  is where the catch point sits along the edge and the limit is against the sum.
+  **CATCHING IS DELIBERATE AND IT COSTS NO CONTROL.** A tap of the right pad IN THE AIR -- the
+  same tap that ollies on the road, so there is no new gesture and which it is comes out of
+  where he is. **AND RIDING PAST A RAIL MUST NEVER SNAG HIM**, which is what `align` is: the
+  catch has to be roughly ALONG the edge, and he rides the way he was already going rather than
+  being turned round onto the line.
+  **THAT AIR TAP WAS A LATENT BUG SINCE m150.** `p.jump` is set by the pad and was only ever
+  read in the grounded branch, so a tap in mid-air sat there and ollied him the instant he
+  touched down. It is spent either way now.
+  **THE GRIND OWNS THE BODY AND RETURNS**, above the ground test and above the collider: he is
+  locked to a line, so gravity, the resolver and the ground snap have nothing to say. Same
+  shape as cover and the ledge.
+  **AND AN OLLIE OUT IS THE ONE PART THAT HAS TO FEEL DELIBERATE** -- leaving on a tap pops,
+  running out of rail does not.
+  **`p.pos.y` IS WHERE THE WHEELS ARE, ON THE GROUND AND ON A RAIL ALIKE**, which is why
+  `boardPose` needed no special case: my first version overrode the deck's height on a rail and
+  that was a SECOND answer to a question the generic line already gets right.
+  **NO GRIND CLIP EXISTS**: `skate_idol_crouch` stands in, because it is the only board pose
+  with his knees bent and it reads far better on a rail than the ollie hang does. Same stand-in
+  rule as the ladder and the hang.
+  **NOT DONE: RAMPS**, which he asked for and deferred himself. Worth knowing before it starts:
+  Shredworld's ramps are a GLB whose triangles go into the same collider as the roads, so a
+  ramp is a floor he rolls up rather than a box he stops against -- and melee's triangle store
+  (`TRI`) exists only in Weirdport, where the test site has boxes alone. So a ramp is either a
+  Weirdport-only asset or `TRI` has to be built in the test site too, and that choice is the
+  first thing to settle. Also: no bail, no fakie, no half cab.
+
 - **THE VEER WAS APPLIED AND THEN UNDONE EVERY FRAME, AND THE TRICKS (m152).** *"The diagonal
   hit isn't diagonal enough, it still points you in front of the vehicle. Also I can't do the
   tricks -- I was thinking of having that functionality when you're on the board."*

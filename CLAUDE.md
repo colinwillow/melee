@@ -520,8 +520,11 @@ means anything you can carry from one situation to the next.
   Its own GLB is one `file:` in `WEAP.slots`.
 - **THE SKATEBOARD HAS TRICKS AS OF m152.** Push, roll, steer, ollie, land, and in the AIR:
   **right pad flick** up = kickflip, down = 360 flip, left/right = the two pop shove-its;
-  **left pad flick** up/down = front/back flip. Still missing: grinds and rails, a bail, fakie
-  and the half cab -- Shredworld has all four worked out and each is its own build. **And there is no riding-and-
+  **left pad flick** up/down = front/back flip. **AND IT GRINDS (m153)** -- a tap of the right
+  pad IN THE AIR catches the top edge of any solid box near him, which is every bench, kerb,
+  planter, parapet, plaza rail and moving CAR in the world, because `BOXES` already is the rail
+  set. Still missing: a bail, fakie, the half cab, and RAMPS (he asked, and deferred it
+  himself: *"I also wanna build some skate ramps. Maybe we can do that later."*). **And there is no riding-and-
   shooting**: the board is a kit SLOT, so the blaster is put away to take it out, which is
   Shredworld's c113/c115 (independent slots plus an upper-body override) and is a build.
   `SK8.top` 13 m/s and every other number in `SK8` is live on `mel.SK8`.
