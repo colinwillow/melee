@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m151</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m152</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m151</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m152</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -575,9 +575,9 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm151';
+const BUILD = 'm152';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"c6498097","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"b2e0a427","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -3393,7 +3393,25 @@ const SK8 = {
   ollie: 9.2, land: .55, scuff: .5,
   // ---- the look
   crouch: 4, lean: .32, bank: 5, lag: 6,
+  // **BOARD TRICKS ARE PURE GEOMETRY, NO CLIP.** The deck runs along its local Z, so with Euler
+  // `YXZ`: `rotation.z` is the KICKFLIP axis, `rotation.y` is the SHOVE, and `rotation.x` is a
+  // body flip carrying the board round with him. **The length being on Z is not negotiable** --
+  // a board whose long axis came in on X would kickflip end over end, which is why `buildBoard`
+  // gives one a quarter turn if it arrives that way.
+  // **AND THE TRICK FILLS THE JUMP.** An ollie is about 0.94 s of air and `back_flip` is 1.73 s
+  // of clip, so at 1x it could never once be landed; the duration is taken from the BALLISTICS
+  // at the moment of the flick and the clip is scaled to it.
+  trick: {
+    turn: 2 * Math.PI,     // one full rotation per trick, which is what all four of these are
+    fill: .78,             // ... over this much of the air. A flip that takes the WHOLE jump
+                           // reads as slow, and the rest of the air is his to aim the landing.
+    land: .55,             // landed under this far round, or with real rotation left, it scrubs
+    slop: .9,              // how many radians of board may still be turning and be forgiven
+    scuff: .55,
+    rateLo: .55, rateHi: 2.2,
+  },
   clip: { stand: 'skate_idol_standing', crouch: 'skate_idol_crouch',
+          flipF: 'front_flip', flipB: 'back_flip',
           push: 'skate_push_standing', pushC: 'skate_push_crouch',
           pop: 'skate_ollie_init_air', air: 'skate_ollie_air', land: 'skate_ollie_landing' },
 };
@@ -3986,7 +4004,7 @@ const SPLIT = {
 };
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
 // that starts it, never by its own damped weight -- see `playOnce`.
-const ONCE = new Set(['skate_ollie_landing',
+const ONCE = new Set(['skate_ollie_landing', 'front_flip', 'back_flip',
   'landing_soft', 'landing_hard', 'roll', 'shoot', 'weapon_melee_charge',
   'melee_01', 'melee_03',
   'weapon_melee_01', 'weapon_melee_02', 'weapon_melee_03', 'weapon_melee_04', 'weapon_melee_finish',
@@ -7751,6 +7769,9 @@ const player = {
   // is not a second fact to keep in step with it -- `boardOut()` is the one reader.
   board: 0, boardH: 0, pushT: 0, pushW: 0, pushSync: 0, shoveT: 0, shoveV: 0,
   crouch: 0, deckLag: 0, sk8L: 0, pop: 0,
+  // THE TRICK. `bRoll`/`bYaw` are radians REMAINING and `bRollA`/`bYawA` what has been applied,
+  // so the deck's pose is a running total and the landing test is "how much is left".
+  bRoll: 0, bYaw: 0, bRollA: 0, bYawA: 0, trick: '', trickT: 0, trickDur: 0, trickName: '',
   flip: '', flipT: 0, flipDur: 0,   // the air flip, and how long it has left
   flipRate: 0, flipPush: 0,        // the AIR rate, and how long the push takes at its own (m100)
   hurtNm: '', hurtClipT: 0, gotUp: 0, knockT: 0, knockDur: 0,   // the reaction clip, and the knock-down's own clock
@@ -9157,12 +9178,14 @@ const padL = document.getElementById('padL'), padR = document.getElementById('pa
 const zoneL = document.getElementById('zoneL'), zoneR = document.getElementById('zoneR');
 PADS.L = bindStick(padL, stick.L,
   () => cycleKit(),                                   // tap
-  (dx, dy) => rollGo(flickH(dx, dy)),                 // flick: dodge roll, in the flicked direction
+  // flick: a BODY FLIP on the board, otherwise the dodge roll in the flicked direction. The
+  // board takes it first and says so, because a dodge roll on a moving deck is nothing.
+  (dx, dy) => { if (!boardFlick(dx, dy, 1)) rollGo(flickH(dx, dy)); },
   null, null, zoneL);
 PADS.R = bindStick(padR, stick.R,
   () => { player.jump = 1; },                         // tap: jump
   // flick: a SLAM if he is in the air and it went down, otherwise a strike in that direction
-  (dx, dy) => { if (!slamGo(dx, dy)) meleeGo(flickH(dx, dy)); },
+  (dx, dy) => { if (boardFlick(dx, dy, 0)) return; if (!slamGo(dx, dy)) meleeGo(flickH(dx, dy)); },
   null,
   // THE RELEASE IS THE SHOT, so this must NOT clear `p.aim` -- `stepKit` sees the pad is no
   // longer held and fires on that edge. Clearing it here would eat every shot in the game.
@@ -9956,6 +9979,67 @@ function boardGrade(h) {
   return clamp((a - b) / (2 * d), -1, 1);
 }
 
+// **THE FLICK IS FREE ON THE BOARD, ON BOTH PADS, AND THAT IS WHY THE TRICKS COST NO CONTROL.**
+// The right pad's flick is a strike and the left pad's is a dodge roll, and neither means
+// anything while he is riding -- so the map stays what it has always been: **the LEFT pad is
+// the BODY (front flip, back flip) and the RIGHT pad is the VERB (what the deck does).**
+// AIR ONLY, which is Shredworld's rule and is also what keeps the ground gestures free: a
+// kickflip is something you do off the ground, and on the road that flick is simply nothing.
+function boardFlick(dx, dy, body) {
+  const p = player;
+  if (!p.board) return 0;                           // not ours: the roll and the strike stand
+  if (p.grounded) return 1;                         // ours, and a ground flick is deliberately nothing
+  const T = SK8.trick;
+  // how much air is LEFT, from the ballistics at this moment -- that is what the trick fills
+  const vy = p.vel.y, g = MOVE.g;
+  const gy = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
+  const fall = Math.max(.25, (vy + Math.sqrt(Math.max(0, vy * vy + 2 * g * Math.max(0, p.pos.y - gy)))) / g);
+  const dur = Math.max(.25, fall * T.fill);
+  const up = -dy;                                   // the pad's +Y is DOWN the screen
+  if (body) {
+    // **THE BODY FLIPS ARE A CLIP AND THE DECK IS CARRIED ROUND WITH HIM**, which is `rotation.x`
+    // -- one axis, and it composes with the other two rather than replacing them.
+    if (Math.abs(up) < Math.abs(dx)) return 1;      // sideways on the left pad is steering
+    const nm = up > 0 ? SK8.clip.flipF : SK8.clip.flipB;
+    if (!rig.actions[nm] || p.trick) return 1;
+    // **THE RATE IS CLAMPED AND THE STATE'S LENGTH IS DERIVED BACK OUT OF IT (m8's landmine).**
+    // `back_flip` is 1.73 s against a 0.25 s floor on the air, which is x6.9 -- a blur with no
+    // pose in it; and the state has to be exactly as long as the clip ends up being, or it cuts
+    // it off part-way. `rateLo`/`rateHi` is the band a flip stays readable in.
+    const rate = clamp(clipLen(nm) / dur, SK8.trick.rateLo, SK8.trick.rateHi);
+    p.trick = up > 0 ? 'f' : 'b'; p.trickName = nm; p.trickT = 0;
+    p.trickDur = clipLen(nm) / rate;
+    // **RE-ENTERING A `ONCE` CLIP HAS TO REWIND IT, ON THE STATE** -- these are not in `ONCE`,
+    // they loop, so the scale is what ends them and the rewind is what starts them clean.
+    playOnce(nm, rate);
+    snd('swoosh', { r: .95, g: .40 });
+    return 1;
+  }
+  if (p.bRoll || p.bYaw) return 1;                  // one board trick per airtime
+  if (Math.abs(up) >= Math.abs(dx)) {
+    if (up > 0) p.bRoll = T.turn;                                   // kickflip
+    else { p.bRoll = T.turn; p.bYaw = T.turn; }                     // a 360 flip is both at once
+  } else p.bYaw = Math.sign(dx) * T.turn;                           // the two pop shove-its
+  p.trickDur = dur;
+  snd('swoosh', { r: 1.35, g: .30 });
+  return 1;
+}
+
+// THE DECK'S TWO SPINS, AND THEY ARE RADIANS REMAINING SPENT OVER `trickDur`.
+function trickStep(dt) {
+  const p = player, T = SK8.trick;
+  const rate = dt / Math.max(.1, p.trickDur);
+  for (const [rem, app] of [['bRoll', 'bRollA'], ['bYaw', 'bYawA']]) {
+    if (!p[rem]) continue;
+    const step = Math.sign(p[rem]) * Math.min(Math.abs(p[rem]), T.turn * rate);
+    p[rem] -= step; p[app] += step;
+  }
+  if (p.trick) {
+    p.trickT += dt;
+    if (p.trickT >= p.trickDur) { p.trick = ''; p.trickName = ''; }
+  }
+}
+
 function stepSkate(dt) {
   const p = player, s = stickWorld();
   const fx = Math.sin(p.boardH), fz = Math.cos(p.boardH);
@@ -10022,6 +10106,7 @@ function stepSkate(dt) {
     if (s.mag > 0)
       p.boardH += clamp(wrapAngle(Math.atan2(s.x, s.z) - p.boardH), -1, 1) * SK8.turn * 1.6 * s.mag * dt;
     p.pushT = 0; p.shoveT = 0; p.pushW = 0;
+    trickStep(dt);
   }
 
   const wasAir = !p.grounded;
@@ -10033,8 +10118,17 @@ function stepSkate(dt) {
   if (wasAir && p.grounded) {
     const tr = Math.atan2(p.vel.x, p.vel.z), off0 = Math.abs(wrapAngle(tr - p.boardH));
     const off = p.speed > .5 ? Math.min(off0, Math.PI - off0) : 0;
-    if (off > SK8.land) { p.vel.x *= SK8.scuff; p.vel.z *= SK8.scuff; }
+    // **AND A TRICK STILL TURNING IS A BAD LANDING TOO.** `slop` is how much of the deck's
+    // rotation may still be outstanding and be forgiven; past that he lands on his wheels
+    // sideways, which costs him the same as landing crooked does.
+    const left = Math.abs(p.bRoll) + Math.abs(p.bYaw);
+    if (off > SK8.land || left > SK8.trick.slop) { p.vel.x *= SK8.scuff; p.vel.z *= SK8.scuff; }
     else { const v = Math.hypot(p.vel.x, p.vel.z); p.vel.x = Math.sin(p.boardH) * v; p.vel.z = Math.cos(p.boardH) * v; }
+    // **WRAP THE APPLIED PAIR ON LANDING**, or a landed 360 visibly settles back through a
+    // whole turn on the road. What is LEFT is dropped: the trick is over when he is down.
+    p.bRoll = 0; p.bYaw = 0;
+    p.bRollA = wrapAngle(p.bRollA); p.bYawA = wrapAngle(p.bYawA);
+    p.trick = ''; p.trickName = '';
     p.pop = 0; p.jumps = 0;
     // **ITS OWN CLOCK, NOT `p.land`.** That one belongs to the gait's two landings and is set
     // in `stepFoot`, which the board branch returns above -- so reading it here is reading
@@ -10044,6 +10138,10 @@ function stepSkate(dt) {
     bumpSnd(Math.abs(p.fallV), p.pos.x, p.pos.z);
   }
   // the crouch is how hard he is working, and it is what the two clip pairs blend on
+  if (p.grounded) {
+    const k = Math.min(1, 9 * dt);
+    p.bRollA -= p.bRollA * k; p.bYawA -= p.bYawA * k;
+  }
   const wantC = p.grounded ? (p.shoveT > 0 ? 1 : clamp(p.speed / SK8.top, 0, 1) * .5) : 0;
   p.crouch += (wantC - p.crouch) * Math.min(1, SK8.crouch * dt);
   // and he faces the way the board is going -- there is no second facing to keep in step
@@ -10059,10 +10157,17 @@ function boardPose(dt) {
   if (!on) return;
   p.deckLag += wrapAngle(p.boardH - p.deckLag) * Math.min(1, SK8.lag * dt);
   board.group.position.set(p.pos.x, p.pos.y, p.pos.z);
-  board.group.rotation.set(0, p.deckLag, 0);
   // the bank is the steering RATE, so it leans into a carve and comes back out of it by itself
   const turn = wrapAngle(p.boardH - p.deckLag);
-  board.group.rotation.z = clamp(turn * SK8.bank, -SK8.lean, SK8.lean);
+  const bank = clamp(turn * SK8.bank, -SK8.lean, SK8.lean);
+  // **EULER `YXZ`, AND THE ORDER IS THE WHOLE REASON THE THREE COMPOSE.** `y` is the heading
+  // plus the shove, `x` is a body flip carrying the deck round with him, `z` is the kickflip
+  // and the bank on one axis -- which they can share, because a board leaning INTO a kickflip
+  // is what a kickflip looks like.
+  const fx = p.trick ? clamp(p.trickT / Math.max(.05, p.trickDur), 0, 1) : 0;
+  board.group.rotation.order = 'YXZ';
+  board.group.rotation.set((p.trick === 'f' ? 1 : -1) * fx * SK8.trick.turn,
+                           p.deckLag + p.bYawA, bank + p.bRollA);
 }
 
 function stepPlayer(dt) {
@@ -10490,7 +10595,10 @@ function rigAnim(dt) {
   if (p.board) {
     const c = clamp(p.crouch, 0, 1);
     if (!p.grounded) {
-      const nm = p.pop && p.airT < .18 ? SK8.clip.pop : SK8.clip.air;
+      // THE BODY FLIP OWNS THE POSE WHILE IT RUNS -- a deck trick does not, because a kickflip
+      // is the BOARD turning under a man holding the ordinary air pose, which is what it is.
+      const nm = p.trickName && rig.actions[p.trickName] ? p.trickName
+               : p.pop && p.airT < .18 ? SK8.clip.pop : SK8.clip.air;
       t[rig.actions[nm] ? nm : SK8.clip.stand] = 1;
     } else if (p.sk8L > 0 && rig.actions[SK8.clip.land]) {
       t[SK8.clip.land] = 1;
@@ -12333,9 +12441,11 @@ const CARHIT = {
   // that normal IS the car's own heading, so the launch put him back in the lane and the same
   // car arrived again 0.9 s later. A knock-down lasts about 2.5 s, so it could do that three
   // times before he was on his feet, and the car behind it could do it again.
-  veer: .70,       // 40 degrees off the lane. `HURT.back` carries him about 9 m, so the sideways
-                   // part is sin(40) x 9 = **5.8 m** -- a lane is 3.2 m off the centreline and
-                   // the road is about 11 m wide, so he lands off the carriageway he was in.
+  veer: .95,       // 54 degrees off the lane. `HURT.back` carries him about 9 m, so the sideways
+                   // part is sin(54) x 9 = **7.3 m** against 5.3 forward -- a lane is 3.2 m off
+                   // the centreline on an 11 m road, so he leaves the carriageway sideways
+                   // rather than being sent up it. **40 degrees was not enough and it was also
+                   // not the whole fault**: see `pushCars`, which was undoing it every frame.
 };
 function carHit(c, nx, nz, lat) {
   if (!CARHIT.on || c.hitT > 0) return;
@@ -12381,7 +12491,18 @@ const _tcL = { x: 0, z: 0 };
 function pushCars(pos, r, hh) {
   if (!TRAF.solid || !CARS.length) return false;
   let hit = false;
+  // **AND A CAR DOES NOT SHOVE A MAN IT HAS JUST THROWN (m152).** *"The diagonal hit isn't
+  // diagonal enough, it still points you in front of the vehicle."* The VEER was applied and
+  // then undone: `pushCars` runs every substep, the car is doing 9.5 m/s and he is decelerating
+  // out of the launch, so they stay in contact -- and every one of those frames pushed him back
+  // out along the NOSE NORMAL, which is straight down the lane. **A resolver shoving a body
+  // mid-launch deletes the launch**, and no amount of angle survives it.
+  // **AIRBORNE ONLY.** Down on the road he is still pushed, so a car nudges him aside rather
+  // than driving through him -- what is skipped is exactly the window he is over the bonnet in,
+  // which is also the one he asked for a tumble animation for.
+  const fly = pos === player.pos && player.knock && !player.grounded;
   for (const c of CARS) {
+    if (fly) continue;
     if (Math.abs(pos.x - c.cx) > 8 || Math.abs(pos.z - c.cz) > 8) continue;
     if (pos.y > c.maxy + .2 || pos.y + hh < c.miny) continue;
     boxLocal(c, pos.x, pos.z, _tcL);
@@ -16505,7 +16626,10 @@ function frame() {
     // number every part of the geometry is derived from; anything else is the state's own name.
     const sk8 = !board.ready ? (slotNow().board ? ' · NO BOARD' : '') : (player.board
       ? ' · SK8 ' + player.speed.toFixed(1) + (player.grounded ? '' : ' air') +
-        (player.pushW > .5 ? ' push' : '')
+        (player.pushW > .5 ? ' push' : '') +
+        (player.trick ? (player.trick === 'f' ? ' FRONT' : ' BACK') : '') +
+        (player.bRoll || player.bYaw
+          ? ' ' + (player.bRoll && player.bYaw ? '360' : player.bRoll ? 'KICK' : 'SHOVE') : '')
       : (slotNow().board ? ' · SK8 off' : ''));
     const mo = !MOTO.up ? '' : ' · MOTO' +
       (MOTO.st === 'ride' ? Math.round(MOTO.steer * 180 / Math.PI) : MOTO.st);

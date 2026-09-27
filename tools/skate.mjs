@@ -31,7 +31,14 @@ import fs from 'fs';
 
 const SRC = process.argv[2] || '../city/models/colin.glb';
 const OUT = process.argv[3] || 'models/skate.glb';
-const WANT = /^(skate_|.*ollie)/i;
+const WANT = /^(skate_|.*ollie|front_flip|back_flip)$|^skate_/i;
+// **`back_flip` IS AUTHORED AS A STANDING FLIP AND ITS FIRST 12 FRAMES ARE A CROUCH AND A PUSH
+// OFF THE FLOOR** -- which, played on a board already in the air, reads as him crouching on
+// nothing before he goes over. Shredworld cuts it with a `TRIM` entry at runtime; here there
+// is no such machinery and no reason for one, so the head comes off the keys. 12 frames at the
+// 30 fps every clip in that file is authored at.
+// **DELETE THIS THE MOMENT AN EXPORT BAKES THE CUT IN**, or it is taken twice.
+const TRIM = { back_flip: 12 / 30 };
 
 const buf = fs.readFileSync(SRC);
 let o = 12, J = null, BIN = null;
@@ -65,7 +72,7 @@ const have = new Set(Object.keys(tgtJoint));
 const nodeName = i => J.nodes[i].name;
 
 // ---- copy accessors on demand ---------------------------------------------------------------
-const outAcc = [], outBV = [], parts = []; let off = 0; const seen = new Map();
+const outAcc = [], outBV = [], parts = []; let off = 0, cutFrom = 0; const seen = new Map();
 const CSZ = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4 };
 const BYTES = { 5120: 1, 5121: 1, 5122: 2, 5123: 2, 5125: 4, 5126: 4 };
 function raw(ai) {
@@ -76,8 +83,8 @@ function raw(ai) {
   for (let i = 0; i < a.count; i++) BIN.copy(out, i * comp * bs, base + i * stride, base + i * stride + comp * bs);
   return { a, comp, bs, out };
 }
-function push(ai, rewrite) {
-  const key = ai + (rewrite ? '#h' : '');
+function push(ai, rewrite, cut) {
+  const key = ai + (rewrite ? '#h' : '') + (cut ? '#t' + cut : '');
   if (seen.has(key)) return seen.get(key);
   const { a, comp, bs, out } = raw(ai);
   if (a.componentType !== 5126) { console.error('skate: accessor ' + ai + ' is not float -- quantised animation is not handled'); process.exit(1); }
@@ -85,15 +92,33 @@ function push(ai, rewrite) {
     const p = i * 12 + c * 4;
     out.writeFloatLE(rT[c] + k * (out.readFloatLE(p) - rS[c]), p);
   }
+  // **THE TRIM IS A KEY FILTER, AND IT IS IN THE DEDUPE KEY** -- ten distinct time accessors
+  // back four hundred samplers in this file, so a trim applied to a shared array without the
+  // key would cut every clip that happens to be the same length. (The `times` landmine, one
+  // level up: the fix there is to clone, and the fix here is not to share.)
+  let out2 = out, count = a.count;
+  if (cut) {
+    const isT = a.type === 'SCALAR';
+    const stepN = comp * bs;
+    let from = 0;
+    if (isT) { while (from < count && out.readFloatLE(from * 4) < cut) from++; from = Math.max(0, from - 1); }
+    else from = cutFrom;
+    count = a.count - from;
+    out2 = Buffer.alloc(count * stepN);
+    out.copy(out2, 0, from * stepN, a.count * stepN);
+    if (isT) { cutFrom = from;
+      const t0 = out2.readFloatLE(0);
+      for (let i = 0; i < count; i++) out2.writeFloatLE(out2.readFloatLE(i * 4) - t0, i * 4); }
+  }
   while (off % 4) { parts.push(Buffer.alloc(1)); off++; }
-  outBV.push({ buffer: 0, byteOffset: off, byteLength: out.length });
-  parts.push(out); off += out.length;
+  outBV.push({ buffer: 0, byteOffset: off, byteLength: out2.length });
+  parts.push(out2); off += out2.length;
   // min/max are required on the input (time) accessor of every sampler
   let mn = null, mx = null;
   if (a.type === 'SCALAR') { mn = [Infinity]; mx = [-Infinity];
-    for (let i = 0; i < a.count; i++) { const v = out.readFloatLE(i * 4); if (v < mn[0]) mn[0] = v; if (v > mx[0]) mx[0] = v; } }
+    for (let i = 0; i < count; i++) { const v = out2.readFloatLE(i * 4); if (v < mn[0]) mn[0] = v; if (v > mx[0]) mx[0] = v; } }
   const id = outAcc.length;
-  outAcc.push({ bufferView: outBV.length - 1, componentType: 5126, count: a.count, type: a.type,
+  outAcc.push({ bufferView: outBV.length - 1, componentType: 5126, count, type: a.type,
                 ...(mn ? { min: mn, max: mx } : {}) });
   seen.set(key, id);
   return id;
@@ -121,7 +146,10 @@ for (const a of anims) {
     const s = a.samplers[ch.sampler];
     const isHip = path === 'translation' && nm === HIP;
     if (isHip) hips++;
-    samplers.push({ input: push(s.input, false), output: push(s.output, isHip),
+    const cut = TRIM[a.name] || 0;
+    cutFrom = 0;
+    const inp = push(s.input, false, cut);      // FIRST: it is what decides where the cut falls
+    samplers.push({ input: inp, output: push(s.output, isHip, cut),
                     interpolation: s.interpolation || 'LINEAR' });
     channels.push({ sampler: samplers.length - 1, target: { node: remap.get(ch.target.node), path } });
     kept++;

@@ -7,6 +7,53 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE VEER WAS APPLIED AND THEN UNDONE EVERY FRAME, AND THE TRICKS (m152).** *"The diagonal
+  hit isn't diagonal enough, it still points you in front of the vehicle. Also I can't do the
+  tricks -- I was thinking of having that functionality when you're on the board."*
+  **`pushCars` WAS DELETING THE LAUNCH.** m151 threw him 40 degrees off the lane and it made
+  almost no difference, because the resolver runs EVERY SUBSTEP: the car is doing 9.5 m/s and
+  he is decelerating out of a 12 m/s launch, so they stay in contact -- and each of those
+  frames shoved him back out along the NOSE NORMAL, which is straight down the lane. **A
+  resolver pushing a body mid-launch deletes the launch**, and no amount of angle survives it.
+  That is m119's "one writer" in another shape: the launch and the push-out were both writing
+  where he goes, and the one that runs sixty times a second won.
+  **AIRBORNE ONLY, WHICH IS THE PART THAT KEEPS IT HONEST.** Down on the road a car still shoves
+  him aside rather than driving through him; what is skipped is exactly the window he is over
+  the bonnet in -- which is also the one he wants a tumble clip for.
+  **AND THE ANGLE WENT TO 54 DEGREES** with it: sin(54) x 9 m is 7.3 m sideways against 5.3
+  forward, so he LEAVES the carriageway rather than being sent up it. Both were wrong and only
+  one of them was the number.
+- **THE TRICKS COST NO CONTROL, BECAUSE BOTH FLICKS ARE FREE ON A BOARD (m152, `SK8.trick`,
+  `boardFlick`, `trickStep`).** The right pad's flick is a strike and the left pad's is a dodge
+  roll, and neither means anything while riding -- so the map is unchanged: **LEFT is the BODY
+  (front flip, back flip) and RIGHT is the VERB (what the deck does).** Air only, which is
+  Shredworld's rule and is what leaves the ground gestures alone.
+  **A BOARD TRICK IS PURE GEOMETRY AND NO CLIP.** The deck runs along local Z, so with Euler
+  `YXZ`: `rotation.z` is the kickflip axis, `rotation.y` the shove, `rotation.x` a body flip
+  carrying the board round. **The length being on Z is not negotiable** -- a board whose long
+  axis came in on X kickflips end over end -- which is why `buildBoard` gives one a quarter turn
+  if it arrives the other way, a line there rather than a rewrite here.
+  **`bRoll`/`bYaw` ARE RADIANS REMAINING AND `bRollA`/`bYawA` WHAT HAS BEEN APPLIED**, so the
+  pose is a running total and "did he land it" is just how much is left. **Wrap the applied pair
+  on landing** or a landed 360 visibly settles back through a whole turn on the road.
+  **AND THE BANK AND THE KICKFLIP SHARE `rotation.z` ON PURPOSE** -- a board leaning into a
+  kickflip is what a kickflip looks like.
+  **THE TRICK FILLS THE JUMP.** An ollie is about 0.94 s of air and `back_flip` is 1.73 s of
+  clip, so at 1x it could never once be landed; the duration comes from the BALLISTICS at the
+  moment of the flick. **And the rate is clamped FIRST and the state's length derived back out
+  of it** -- m8's landmine, and the floor on the air is 0.25 s, which unclamped is **x6.9**.
+  **`front_flip` AND `back_flip` CAME OVER WITH THE SKATE SET**, and `back_flip`'s first 12
+  frames are a CROUCH AND A PUSH OFF THE FLOOR -- it is authored as a STANDING flip, and played
+  in mid-air that is a man crouching on nothing before he goes over. Shredworld cuts it with a
+  runtime `TRIM`; here there is no such machinery and no reason for one, so `tools/skate.mjs`
+  takes the head off the KEYS. **Delete that entry the moment an export bakes the cut in**, or
+  it is taken twice. **And the trim is in the accessor DEDUPE KEY**: twelve distinct time
+  accessors back 540 samplers in that file, so a cut applied to a shared array without the key
+  would trim every clip that happens to be the same length -- the `times` landmine one level up,
+  where the fix is to clone and here the fix is not to share.
+  **A DECK TRICK DOES NOT OWN THE POSE AND A BODY FLIP DOES.** A kickflip is the BOARD turning
+  under a man holding the ordinary air pose, which is what it is.
+
 - **THE LAUNCH WENT STRAIGHT DOWN THE LANE, BECAUSE THE CONTACT NORMAL WAS RIGHT (m151,
   `CARHIT.veer`).** *"It pushes you perfectly forward in front of it so it just knocks you down
   and then it keeps hitting you over and over. It should shoot you off forward, but at an angle
