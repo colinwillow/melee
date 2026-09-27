@@ -7,6 +7,29 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **TWO SCRATCH FAMILIES ONE LETTER APART, AND I REACHED INTO THE WRONG ONE (m155).** *"Tries to
+  double jump on the skateboard and something happened"* -- with a photograph of the crash
+  overlay, which printed the whole answer:
+      TypeError: out.push is not a function ... 'out.push(BOXES[b])'
+      @ https://colinwillow.github.io/melee/:6081:108
+  `_bnG`/`_bnR`/`_bnW`/`_bnL`/`_bnC` are ARRAYS for `boxesNear`; `_bnpG`/`_bnpC`/`_bnpW`/`_bnpL`
+  are `{d, nx, nz, cx, cz}` POINT RECORDS for `boxNear`. m153's `railNear` needed a sixth array,
+  and I created `_bnpR` in the point family and handed it to `boxesNear` -- **a hard TypeError on
+  the frame he tapped in the air over anything**, which on a board is the second tap of a double
+  jump, and the first thing anybody tries.
+  **THE CRASH TRAP IS WHY THIS COST ONE ROUND RATHER THAN FIVE.** A phone has no console; that
+  overlay is the first script in the head, before the import map and before the module, and it
+  named the function, the expression, the file and the line. Every earlier report of this shape
+  in these repos cost three to six builds.
+  **AND THE SYNTAX GATE CATCHES THE CLASS NOW.** `boxesNear`'s last argument has to be an
+  identifier the file declares as `[]`. Crude, a source-shape test, and it costs nothing and
+  always runs -- the same argument the `poseColin` check above it is written under. **Verified
+  both ways**: green on the fixed file, `WRONG SCRATCH KIND` on the bug put back.
+  **AND THE FIRST VERSION OF THE GATE CRIED WOLF.** It tested the NAME (`/^_bn[A-Z]/`) and
+  flagged `_bvL`, the collider view's own perfectly good array. **What makes a scratch the right
+  kind is its DECLARATION, not its name** -- `stripPoses`' rule, one gate along -- and a check
+  that fails correct code is a check people learn to ignore.
+
 - **A MEMO THAT SKIPS THE SIDE EFFECT ITS CALLER DEPENDS ON (m154, `tools/skate.mjs`).** *"When
   I was skateboarding, and I jumped up in the air and then swiped down on the left stick, I
   think it froze the system."* Down on the left pad is the BACK FLIP, and `back_flip` is the

@@ -52,5 +52,30 @@ while ((m = re2.exec(html))) {
   if (miss) { console.error('POSE WITHOUT ANIM'); bad++; }
 }
 
+// **`boxesNear` TAKES AN ARRAY AND `boxNear` TAKES A POINT RECORD, AND THE SCRATCH BUFFERS FOR
+// THE TWO ARE ONE LETTER APART (m155).** `_bnG` is a list and `_bnpG` is a `{d, nx, nz, cx, cz}`,
+// and m153's `railNear` handed the second to the first -- `out.push(...)` on an object, a hard
+// TypeError on the frame he tapped in the air over anything. Nothing in the language catches
+// it, both gates ran green, and it reached his phone.
+// Crude, a source-shape test rather than a behavioural one, and it costs nothing and always
+// runs -- which is the argument this file already makes for the one above it.
+{
+  // **THE TEST IS THE DECLARATION, NOT THE NAME.** A prefix rule flagged `_bvL` -- the collider
+  // view's own perfectly good array -- which is a gate crying wolf on correct code, and this
+  // file's oldest complaint about its own chip. What makes a scratch the right KIND is that it
+  // was declared as a list.
+  const arrays = new Set();
+  for (const m of html.matchAll(/([A-Za-z_$][\w$]*)\s*=\s*\[\s*\]/g)) arrays.add(m[1]);
+  let miss = 0;
+  html.split('\n').forEach((ln, i) => {
+    const m = ln.match(/\bboxesNear\s*\([^)]*,\s*([A-Za-z_$][\w$]*)\s*\)/);
+    if (!m) return;
+    if (arrays.has(m[1])) return;
+    miss++; console.error('line ' + (i + 1) + ': boxesNear needs an ARRAY scratch (_bnX), got `' +
+      m[1] + '`, which is not declared as one\n  ' + ln.trim());
+  });
+  if (miss) { console.error('WRONG SCRATCH KIND'); bad++; }
+}
+
 console.log(bad ? 'SYNTAX FAIL' : `syntax ok (${n} module + ${k} inline)`);
 process.exit(bad ? 1 : 0);
