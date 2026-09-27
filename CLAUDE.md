@@ -511,6 +511,11 @@ means anything you can carry from one situation to the next.
 
 ## Still open
 
+- **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
+  his own torso — her hair has head/chest/hips spheres for exactly that reason. The arms are
+  pinned at the shoulder under a .85 cone and cannot reach far, so it is left out rather than
+  guessed at. `mel.DOLL` is live and `mel.DOLL.on = 0` is the A/B.
+
 - **No death.** The player's health runs to zero and regenerates; nothing happens at the bottom.
   That is a decision to be made rather than an oversight.
 - **The warrior does not chase you far and cannot catch you.** `FOE.run` 2.6 m/s against a

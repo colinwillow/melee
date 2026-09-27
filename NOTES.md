@@ -7,6 +7,64 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE RAGDOLL IS THE HAIR SOLVER WITH A SECOND SET OF CHAINS, AND IT ALREADY HAD THE JOINT
+  LIMITS (m156, `DOLL`, `dollInit`, `dollStep`).** *"It would be kinda interesting to try to make
+  a rag doll affect when you get hit but with limited joint rotations for realism and the ease to
+  lay down/get up."* Every one of those three is something `chainStep` already does.
+  **m28-m33 BUILT ALL OF IT FOR HER HAIR AND NOBODY WROTE DOWN THAT IT WAS GENERAL.** Verlet
+  particles, distance constraints, **a CONE LIMIT on every joint** -- which is "limited joint
+  rotations" literally -- a per-substep speed cap measured relative to the pin, correction
+  metering (`snap`), and a fixed substep so a 120 Hz phone plays the same solve as a 30 Hz one.
+  It is written against `skin.chains` / `skin.hulls` / `skin.chainT` / `skin.model`, so a ragdoll
+  is a second VIEW object handed to the same function. **Two small additions and nothing else:**
+  a floor clamp in the constraint pass, and a WEIGHT on `chainWrite`.
+  **AND IT IS A LAG AROUND THE AUTHORED POSE, NOT A REPLACEMENT FOR IT.** `C.home[i]` is what the
+  spring pulls back toward; for hair that is the REST pose, and here it is refreshed from the
+  MIXER'S OUTPUT every frame. That one choice is what makes this cheap AND safe:
+      the limbs swing, trail and settle AROUND the fall clip instead of collapsing away from it
+      `HURT.down` still lands him flat before he arrives (m96) and the get-up still stands him up
+      it cannot go anywhere catastrophic, because the thing it is pulled to is always a real pose
+      and **the blend in and out is ONE NUMBER**, which is the "ease" he asked for by name
+  **A FULL RAGDOLL -- rigid bodies, real joints, world collision -- IS A PHYSICS ENGINE**, and
+  that is a dependency and its own build. This is the useful part of the look for a solver the
+  file already pays for.
+  **`chainWrite` SETS RATHER THAN PREMULTIPLIES, WHICH IS WHY THERE IS NOTHING TO TAKE OFF.**
+  `aimTwist` is a per-bone edit ON TOP of the mixer and needed `aimUntwist` before it or it
+  unravelled (m128); this writes an absolute local quaternion, so the mixer overwriting it next
+  frame is the whole reset. The weight is a `slerp` toward that, from whatever the clip wrote.
+  **THE CHAINS ARE NAMED, WHICH WOULD BE WRONG FOR HAIR AND IS RIGHT HERE.** `findChains` is
+  structural (*"no clip moves it"*) because hair has no naming convention and every export spells
+  it differently; a BODY's does -- every character in this game is a Mixamo rig and m143/m144
+  measured all fourteen against zap's bind pose. Matched on the SUFFIX, `MORPH.needs`' own rule,
+  so a prefix change costs nothing. Five chains: spine+neck+head, both arms, both legs.
+  **AND IT LETS GO INTO THE GET-UP RATHER THAN ON A CLOCK OF ITS OWN (`DOLL.lead`).** `p.knockDur`
+  is when the stand-up fires and it is **SOLVED PER LAUNCH** (m96: `HURT.mark / (air * lead)`), so
+  it is a different number every time -- a second timer would be a second thing to keep in step
+  with one that moves. Releasing `lead` seconds before it means the physics is gone by the frame
+  the get-up starts and there is nothing to hand over. `inT` .06 in (a hit is an impulse, not a
+  fade) against `outT` .45 out.
+  **IT IS BUILT IN `mphWear`, BECAUSE THAT IS THE ONE PLACE THAT KNOWS WHICH BODY IS DRAWN.** The
+  chains hold BONE references, so a disguise leaves them pointing at a skeleton no longer in the
+  scene -- `WEAP.worn`'s own m122 lesson, one system over -- and building it there means every
+  wearable body gets its own with no second path and nothing to remember.
+  **AND IT IS STEPPED AFTER THE ROOT IS PLACED, NOT ONLY AFTER THE MIXER.** The pin is a bone's
+  WORLD position and the speed cap is measured against how far it moved, so solving before
+  `rig.root.position.copy(player.pos)` measures LAST frame's travel -- which at a knock-down's
+  12 m/s is most of a metre of phantom motion through every limb, every frame. `stepShip`'s
+  ordering rule, one system along.
+  **THE FLOOR IS `DOLL.clear` ABOVE THE GROUND, NOT ZERO.** A hand resting exactly in the tarmac
+  plane z-fights the road it is lying on.
+  **AND THERE ARE NO HULLS, WHICH IS A STATED GAP.** `doll.hulls` is empty, so a limb can pass
+  into his own torso. Her hair has head/chest/hips spheres for exactly this and it is the one
+  thing that made THAT read as hair rather than as broken; here the arms are pinned at the
+  shoulder under a .85 cone and cannot reach far, so it is left out rather than guessed at.
+  **WHAT IS UNVERIFIED AND WHY:** nothing in this container can build a skin (draco wants a
+  Worker) and there is no GPU, so **whether it reads as a body or as jelly is a device question**
+  and so is every one of the five cones. Both gates pass in both worlds. The chip carries
+  `FALL1.02/d0.84` -- "it never fired", "it fired and the pose is wrong" and "it fired and never
+  let go" are three bugs and one picture from a phone. `mel.DOLL.on = 0` is the one word back to
+  m155, live, and `mel.DOLL` / `mel.doll` are both on the handle.
+
 - **TWO SCRATCH FAMILIES ONE LETTER APART, AND I REACHED INTO THE WRONG ONE (m155).** *"Tries to
   double jump on the skateboard and something happened"* -- with a photograph of the crash
   overlay, which printed the whole answer:
