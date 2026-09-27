@@ -7,6 +7,39 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE LAUNCH WENT STRAIGHT DOWN THE LANE, BECAUSE THE CONTACT NORMAL WAS RIGHT (m151,
+  `CARHIT.veer`).** *"It pushes you perfectly forward in front of it so it just knocks you down
+  and then it keeps hitting you over and over. It should shoot you off forward, but at an angle
+  so that you clear the trajectory of the car. Hit me like 10 times."*
+  **m149's NORMAL IS CORRECT AND THAT IS PRECISELY WHY.** On a nose the contact normal IS the
+  car's own heading, so `dirH` put him back down the middle of the lane he was hit in -- and
+  `HURT.back` carries him about 9 m, which at 9.5 m/s the car covers in under a second. A
+  knock-down runs about 2.5 s, `c.hitT` is 0.9, so the same car could hit him three times before
+  he was on his feet and the car behind it could start again. **Ten is not an exaggeration.**
+  **THE VEER IS 40 DEGREES AND THE NUMBER IS SIZED, NOT PICKED**: sin(40) x 9 m is **5.8 m** of
+  sideways travel, against a lane offset of 3.2 m and a road about 11 m wide, so he lands off
+  the carriageway he was hit in rather than merely further along it.
+  **AND THE SIGN IS DERIVED, BECAUSE THIS FILE GETS HANDEDNESS BACKWARDS HALF THE TIME WHEN IT
+  ARGUES.** `boxLocal` writes `o.z = dot(d, (-sn, cs))`, so a positive `lat` puts him in the
+  world direction `(-sn, cs)`. The nose heading has `(sin h0, cos h0) = (cs, sn)`, and solving
+  `(sin h, cos h) = (-sn, cs)` gives `h0 - PI/2` -- so the side he is ALREADY ON is a LOWER
+  heading and the veer is the NEGATIVE of `sign(lat)`. Backwards, he is thrown across the
+  bonnet, which is the bug rather than the fix.
+  **DEAD CENTRE THE OFFSET IS NOISE AND ITS SIGN IS ROUNDING**, `copFly`'s own rule, so under a
+  tenth of a metre it falls back to the way he is already moving across the lane.
+  **AND IT IS THE LAUNCH ONLY.** A graze already shoves him out of the way and turning that
+  sideways is a push that does not read as the car that gave it.
+  **PLUS: A MAN ALREADY ON THE FLOOR IS NOT HIT AGAIN.** Shredworld's rule is that being punted
+  along by the next car in the queue is the thing he asked for; he has asked for the opposite
+  here in the same breath, and he is the judge. One blow per knock-down, and he is fair game
+  the moment he is on his feet. `mel.CARHIT.veer = 0` is m149 exactly.
+  **STILL NOT DRAWN: going over the top.** *"Maybe I'll eventually put in some roll animation
+  so you kind of tumble over the top of the car."* That is a clip and `HURT.down` is the one
+  string it goes in; nothing here has to change for it. Raising the arc to clear the roof is
+  NOT free, though, and it is worth writing down why: m96 solves the fall clip's playback rate
+  from `2*vy/g` so the pose is on the floor before he is, so a car that launches higher than a
+  mace needs that solve to see its own `vy` rather than `HURT.hi`'s.
+
 - **THE SKATEBOARD, AND THE TWO RIGS TURNED OUT TO BE THE SAME RIG (m150, `SK8`, `buildBoard`,
   `stepSkate`, `boardPose`, `tools/skate.mjs`).** *"It would be cool to import the skateboard
   and the skate animations from Shredworld until I can make new ones, and make it so we can

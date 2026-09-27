@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m150</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m151</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m150</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m151</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -575,7 +575,7 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm150';
+const BUILD = 'm151';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"c6498097","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -12326,22 +12326,55 @@ const CARHIT = {
   hard: .5,        // over this it is a knock-down rather than a shove
   dmg: [5, 26], push: 8, up: 2.4, stun: [.12, .30],
   cool: .9,        // per CAR, so one contact is ONE blow however many substeps it spans
+  // **AND HE IS THROWN OFF THE LANE, NOT DOWN IT (m151).** *"It pushes you perfectly forward
+  // in front of it so it just knocks you down and then it keeps hitting you over and over --
+  // it should shoot you off forward, but at an angle so that you clear the trajectory of the
+  // car."* Exactly right, and it is the contact normal being CORRECT that causes it: on a nose
+  // that normal IS the car's own heading, so the launch put him back in the lane and the same
+  // car arrived again 0.9 s later. A knock-down lasts about 2.5 s, so it could do that three
+  // times before he was on his feet, and the car behind it could do it again.
+  veer: .70,       // 40 degrees off the lane. `HURT.back` carries him about 9 m, so the sideways
+                   // part is sin(40) x 9 = **5.8 m** -- a lane is 3.2 m off the centreline and
+                   // the road is about 11 m wide, so he lands off the carriageway he was in.
 };
-function carHit(c, nx, nz) {
+function carHit(c, nx, nz, lat) {
   if (!CARHIT.on || c.hitT > 0) return;
   const p = player;
+  // **AND A MAN ALREADY ON THE FLOOR IS NOT HIT AGAIN.** Shredworld's rule is that being punted
+  // along by the next car in the queue is the thing he asked for; here he has asked for the
+  // opposite in the same breath, and he is the judge. One blow per knock-down, and he is fair
+  // game again the moment he is on his feet.
+  if (p.knock) return;
   const w = c.v * (c.cs * nx + c.sn * nz);
   const u = p.vel.x * nx + p.vel.z * nz;
   const close = w + CARHIT.mine * Math.max(0, -u);
   if (close < CARHIT.v) return;
   c.hitT = CARHIT.cool;
   const s = clamp((close - CARHIT.v) / Math.max(.1, CARHIT.ref - CARHIT.v), 0, 1);
+  // **WHICH WAY HE VEERS IS THE SIDE HE WAS ALREADY ON**, read off his offset in the car's own
+  // frame -- so he carries on out the way he was going rather than being thrown across the
+  // bonnet. Dead centre that offset is noise and its sign is rounding (`copFly`'s rule), so
+  // under a tenth of a metre it falls back to the way he is already moving across the lane,
+  // and failing that to the car's own right, which is at least the kerb in right-hand traffic.
+  // **AND THE SIGN IS DERIVED, BECAUSE THIS FILE GETS HANDEDNESS BACKWARDS HALF THE TIME WHEN
+  // IT ARGUES.** `boxLocal` writes `o.z = dot(d, (-sn, cs))`, so a POSITIVE `lat` means he is
+  // in the world direction `(-sn, cs)` from the car. The nose heading `h0` has
+  // `(sin h0, cos h0) = (cs, sn)`; solving `(sin h, cos h) = (-sn, cs)` gives `h = h0 - PI/2`,
+  // because `sin(h0 - PI/2) = -cos h0 = -sn` and `cos(h0 - PI/2) = sin h0 = cs`. So the side he
+  // is ALREADY ON is at a LOWER heading, and the veer is NEGATIVE of the sign of `lat`. Get
+  // that backwards and he is thrown across the bonnet, which is the bug this is fixing.
+  const raw = Math.abs(lat) > .1 ? lat : (p.vel.x * -c.sn + p.vel.z * c.cs);
+  const side = -(Math.sign(raw) || 1);
+  // and the veer only applies to a LAUNCH: a graze already pushes him out of the way, and
+  // turning that sideways is a shove that does not read as the car that gave it.
+  const hard = s >= CARHIT.hard;
   // `dirH` is the way the BLOW TRAVELS, which is the convention every other caller uses -- and
   // forward is `(sin h, cos h)`, so it is `atan2` of the normal in that order.
-  playerHurt(CARHIT.dmg[0] + (CARHIT.dmg[1] - CARHIT.dmg[0]) * s, Math.atan2(nx, nz),
+  playerHurt(CARHIT.dmg[0] + (CARHIT.dmg[1] - CARHIT.dmg[0]) * s,
+             Math.atan2(nx, nz) + (hard ? side * CARHIT.veer : 0),
              CARHIT.push * s, CARHIT.up * s,
              CARHIT.stun[0] + (CARHIT.stun[1] - CARHIT.stun[0]) * s,
-             s >= CARHIT.hard ? 1 : 0);
+             hard ? 1 : 0);
 }
 
 const _tcL = { x: 0, z: 0 };
@@ -12367,7 +12400,7 @@ function pushCars(pos, r, hh) {
     // AND THE BLOW RIDES THE PUSH, so the face he was shoved out of is the face he is thrown
     // off. It is fired only for the PLAYER's own resolver -- `pos` is his -- which is what this
     // function has always been.
-    if (pos === player.pos) carHit(c, wx, wz);
+    if (pos === player.pos) carHit(c, wx, wz, _tcL.z);
     hit = true;
   }
   return hit;
