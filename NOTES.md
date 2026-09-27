@@ -7,6 +7,42 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A MEMO THAT SKIPS THE SIDE EFFECT ITS CALLER DEPENDS ON (m154, `tools/skate.mjs`).** *"When
+  I was skateboarding, and I jumped up in the air and then swiped down on the left stick, I
+  think it froze the system."* Down on the left pad is the BACK FLIP, and `back_flip` is the
+  **only clip in the set with a trim** -- so the swipe he named is the one path with a bug in
+  it, and the bug is mine from m152.
+  **38 OF ITS 60 SAMPLERS HAD AN INPUT AND AN OUTPUT OF DIFFERENT LENGTHS.** The first version
+  took a trim TIME, worked out which key it fell on while copying the INPUT accessor, and
+  stashed that index in a variable for the OUTPUT to read -- which works exactly once. `push`
+  MEMOISES by accessor, and `back_flip`'s 60 channels share two time accessors, so from the
+  second channel on the input came back cached, **the index was never recomputed**, and the
+  output was copied from zero: 43 rotation values against 31 times, every value twelve frames
+  out of step with the time it is keyed at. It parses, it plays, and what comes out is a pose
+  nobody authored.
+  **THE FIX IS TO HAVE NO SIDE EFFECT**: `trimIndex` decides it once per (accessor, shift) and
+  both halves of the sampler are handed it.
+  **AND A SECOND FAULT UNDER IT: THE DURATION LIED.** A bone that does not move is exported as
+  TWO keys spanning the whole clip, and two keys cannot be trimmed -- so re-basing each
+  accessor to its OWN first time left those holds reaching 1.767 s while the real motion ended
+  at 1.400, and `clip.duration` is the MAX over every track. **A duration that lies is worse
+  than an untrimmed clip**, because `trickDur` and the playback rate are both solved from it:
+  the flip was being stretched over 26% more time than it has motion in. The shift is the
+  CLIP'S, taken off its longest time accessor and applied to every track in it. 1.767 -> 1.400,
+  which is Shredworld's own 1.77 -> 1.37 to the frame.
+  **AND THE TOOL CHECKS ITS OWN OUTPUT NOW**, because this is silent: a sampler whose two
+  halves disagree produces a valid file. **Verified by reintroducing the bug in a copy** -- it
+  exits 1 with `38 samplers have input/output counts that disagree` -- which is the only thing
+  that proves a guard is a guard.
+  **WHAT I COULD NOT REPRODUCE IS A FREEZE**, and that is stated rather than dressed up. There
+  is no unbounded loop on that path and nothing in this container has a GPU. What IS certain is
+  that the one clip he named was malformed, and two hardenings went in beside the fix: leaving
+  the board CLEARS what the board owns (`p.trick`, `p.rail`, the two spins -- `stepSkate` is the
+  only thing that steps them, so a state left set when the slot changes is one nothing can ever
+  end, and `boardFlick` refuses on `p.trick`, so it would have been one flip and then none for
+  the rest of the session), and a clip whose length is not a positive number is refused rather
+  than dividing into a **NaN `timeScale`, which on a mixer is every bone in the body gone**.
+
 - **A GRIND RAIL IS THE TOP EDGE OF A SOLID BOX -- FOUND, NEVER AUTHORED (m153, `SK8.grind`,
   `railNear`, `railCatch`, `stepGrind`).** *"Should we just build some procedural rails and put
   in grinding, or did you mean animations? It'd be nice to be able to slide on cars and stuff,

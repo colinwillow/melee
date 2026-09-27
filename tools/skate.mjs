@@ -72,7 +72,32 @@ const have = new Set(Object.keys(tgtJoint));
 const nodeName = i => J.nodes[i].name;
 
 // ---- copy accessors on demand ---------------------------------------------------------------
-const outAcc = [], outBV = [], parts = []; let off = 0, cutFrom = 0; const seen = new Map();
+const outAcc = [], outBV = [], parts = []; let off = 0; const seen = new Map();
+// which key a cut falls on, decided ONCE per (time accessor, cut) and shared by both halves of
+// every sampler that uses it. One key before the cut is kept, so the clip opens on a real pose
+// rather than interpolating out of nothing.
+const trimAt = new Map();
+function trimIndex(ai, shift) {
+  if (!shift) return 0;
+  const key = ai + '@' + shift;
+  if (trimAt.has(key)) return trimAt.get(key);
+  const { a, out } = raw(ai);
+  let i = 0; while (i < a.count && out.readFloatLE(i * 4) < shift) i++;
+  const from = Math.max(0, Math.min(a.count - 2, i - 1));
+  trimAt.set(key, from);
+  return from;
+}
+// **HOW FAR THE WHOLE CLIP MOVES, decided once off its LONGEST time accessor** -- the one that
+// actually carries the motion -- and then applied to every track in it, so the two-key holds
+// end where the animation does instead of pinning the duration at its old length.
+function clipShift(an, cut) {
+  if (!cut) return 0;
+  let best = null, bn = -1;
+  for (const sm of an.samplers) { const c = J.accessors[sm.input].count; if (c > bn) { bn = c; best = sm.input; } }
+  const { a, out } = raw(best);
+  let i = 0; while (i < a.count && out.readFloatLE(i * 4) < cut) i++;
+  return out.readFloatLE(Math.max(0, Math.min(a.count - 2, i - 1)) * 4);
+}
 const CSZ = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4 };
 const BYTES = { 5120: 1, 5121: 1, 5122: 2, 5123: 2, 5125: 4, 5126: 4 };
 function raw(ai) {
@@ -83,8 +108,17 @@ function raw(ai) {
   for (let i = 0; i < a.count; i++) BIN.copy(out, i * comp * bs, base + i * stride, base + i * stride + comp * bs);
   return { a, comp, bs, out };
 }
-function push(ai, rewrite, cut) {
-  const key = ai + (rewrite ? '#h' : '') + (cut ? '#t' + cut : '');
+// **THE TRIM IS AN INDEX, NOT A TIME, AND IT IS PASSED TO BOTH HALVES OF THE SAMPLER (m154).**
+// The first version took a TIME, worked the index out while copying the INPUT accessor, and
+// stashed it in a variable for the OUTPUT to read -- which is fine exactly once. `push` memoises
+// by accessor, `back_flip`'s 60 channels share two time accessors, so from the second channel
+// on the input came back CACHED, the index was never recomputed, and the output was copied from
+// zero: **43 rotation values against 31 times, with every value 12 frames out of step with the
+// time it is keyed at.** 38 of its 60 samplers, and it is the only clip with a trim.
+// A memo that skips the side effect its caller depends on is the bug; the fix is to have no
+// side effect. `trimIndex` decides it once per (accessor, cut) and both calls are given it.
+function push(ai, rewrite, from, shift) {
+  const key = ai + (rewrite ? '#h' : '') + (shift ? '#t' + from + '_' + shift : '');
   if (seen.has(key)) return seen.get(key);
   const { a, comp, bs, out } = raw(ai);
   if (a.componentType !== 5126) { console.error('skate: accessor ' + ai + ' is not float -- quantised animation is not handled'); process.exit(1); }
@@ -97,18 +131,21 @@ function push(ai, rewrite, cut) {
   // key would cut every clip that happens to be the same length. (The `times` landmine, one
   // level up: the fix there is to clone, and the fix here is not to share.)
   let out2 = out, count = a.count;
-  if (cut) {
-    const isT = a.type === 'SCALAR';
+  if (shift) {
     const stepN = comp * bs;
-    let from = 0;
-    if (isT) { while (from < count && out.readFloatLE(from * 4) < cut) from++; from = Math.max(0, from - 1); }
-    else from = cutFrom;
     count = a.count - from;
     out2 = Buffer.alloc(count * stepN);
     out.copy(out2, 0, from * stepN, a.count * stepN);
-    if (isT) { cutFrom = from;
-      const t0 = out2.readFloatLE(0);
-      for (let i = 0; i < count; i++) out2.writeFloatLE(out2.readFloatLE(i * 4) - t0, i * 4); }
+    // **THE SHIFT IS THE CLIP'S, NOT THE ACCESSOR'S OWN t0 (m154).** A bone that does not move
+    // is exported as TWO keys spanning the whole clip, and two keys cannot be trimmed -- so
+    // re-basing each accessor to its own first time left those holds still reaching 1.767 s
+    // while the real motion ended at 1.400, and `clip.duration` is the MAX over every track.
+    // **A duration that lies is worse than an untrimmed clip**, because `trickDur` and the
+    // playback rate are both solved from it: the flip was being stretched over 26% more time
+    // than it has motion in it.
+    if (a.type === 'SCALAR')
+      for (let i = 0; i < count; i++)
+        out2.writeFloatLE(Math.max(0, out2.readFloatLE(i * 4) - shift), i * 4);
   }
   while (off % 4) { parts.push(Buffer.alloc(1)); off++; }
   outBV.push({ buffer: 0, byteOffset: off, byteLength: out2.length });
@@ -138,6 +175,7 @@ const animations = [];
 let kept = 0, dropped = 0, hips = 0;
 for (const a of anims) {
   const samplers = [], channels = [];
+  const shift = clipShift(a, TRIM[a.name] || 0);
   for (const ch of a.channels) {
     const nm = nodeName(ch.target.node), path = ch.target.path;
     if (!have.has(nm)) { dropped++; continue; }
@@ -146,16 +184,17 @@ for (const a of anims) {
     const s = a.samplers[ch.sampler];
     const isHip = path === 'translation' && nm === HIP;
     if (isHip) hips++;
-    const cut = TRIM[a.name] || 0;
-    cutFrom = 0;
-    const inp = push(s.input, false, cut);      // FIRST: it is what decides where the cut falls
-    samplers.push({ input: inp, output: push(s.output, isHip, cut),
+    const from = trimIndex(s.input, shift);
+    samplers.push({ input: push(s.input, false, from, shift), output: push(s.output, isHip, from, shift),
                     interpolation: s.interpolation || 'LINEAR' });
     channels.push({ sampler: samplers.length - 1, target: { node: remap.get(ch.target.node), path } });
     kept++;
   }
   animations.push({ name: a.name, samplers, channels });
-  console.log('  ' + a.name.padEnd(24) + channels.length + ' tracks');
+  let dur = 0;
+  for (const sm of samplers) { const mx = outAcc[sm.input].max; if (mx && mx[0] > dur) dur = mx[0]; }
+  console.log('  ' + a.name.padEnd(24) + channels.length + ' tracks, ' + dur.toFixed(3) + 's' +
+              (shift ? '  (head cut ' + shift.toFixed(3) + 's)' : ''));
 }
 
 const bin = Buffer.concat(parts);
@@ -176,3 +215,12 @@ fs.writeFileSync(OUT, Buffer.concat([head, h1, jc, h2, bc]));
 console.log('\n' + animations.length + ' clips, ' + kept + ' tracks kept, ' + dropped +
             ' dropped (thumbs, scales, non-hips positions), ' + hips + ' hips tracks remapped');
 console.log(OUT + '  ' + (fs.statSync(OUT).size / 1024).toFixed(1) + ' KB');
+
+// **AND IT CHECKS ITS OWN OUTPUT, BECAUSE THE ONE THING THAT WENT WRONG HERE IS SILENT.** A
+// sampler whose input and output counts disagree is a clip whose values are keyed at the wrong
+// times: it parses, it plays, and what comes out is a pose nobody authored.
+let bad = 0;
+for (const a of animations) for (const sm of a.samplers)
+  if (outAcc[sm.input].count !== outAcc[sm.output].count) bad++;
+if (bad) { console.error('SKATE: ' + bad + ' samplers have input/output counts that disagree'); process.exit(1); }
+console.log('checked: every sampler\'s input and output agree');
