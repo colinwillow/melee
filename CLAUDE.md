@@ -511,6 +511,16 @@ means anything you can carry from one situation to the next.
 
 ## Still open
 
+- **THE TOON CITY IS A THIRD WORLD AS OF m157** (`TCITY`, world key `toon`, `?w=toon`). Measured:
+  2,327 draw calls down to **72** (34 InstancedMeshes + 25 merged buckets + 12 singles), 471k
+  tris, flat ground at y=0 and **no colliders at all**, which is what he asked for.
+  **The one thing still badly out of budget is TEXTURE MEMORY: ~268 MB resident as authored**
+  (27 images at 1254 px), floored to ~115 by `TCITY.tex` 768. **The real fix is `gltf-transform
+  uastc` to KTX2** — same picture at the same 1254 px, ~67 MB, because it stays GPU-compressed in
+  memory. That is the next build on this level and it is a bake, not a code change.
+  `mel.TCITY` is live (`tex`, `inst`, `merge`, `cast`, `ground`, `fog`); `inst`/`merge`/`tex` want
+  a reload.
+
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
   his own torso — her hair has head/chest/hips spheres for exactly that reason. The arms are
   pinned at the shoulder under a .85 cone and cannot reach far, so it is left out rather than

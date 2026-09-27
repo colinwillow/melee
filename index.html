@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m156</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m157</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m156</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m157</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -575,9 +575,9 @@ import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm156';
+const BUILD = 'm157';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/toon_city_visual.glb":"658bfec3","models/toon_city/tex/debris_pack_01_1k.jpg":"a91118e5","models/toon_city/tex/ojbects_pack_4k_1k.jpg":"31802b49","models/toon_city/tex/plant_pack_01_1k.jpg":"969256f4","models/toon_city/tex/tree_pack_01_1k.jpg":"305b66e9","models/toon_city/tex/tripo_rgb_2f6c88d0-a8e7-4528-b2de-cf88db94be24_1k.jpg":"b6d1ec0c","models/toon_city/tex/tripo_rgb_6f6e6543-1fad-4978-90a5-be8e013edbf9_1k.jpg":"6e4c4db3","models/toon_city/tex/tripo_rgb_cb539682-ee48-45b7-b001-4b5b35c02d6f_1k.jpg":"5fe38157","models/toon_city/tex/tripo_rgb_cc72376e-9f51-4ee9-9d59-7661b7cb06bf_1k.jpg":"2937cf67","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1819,7 +1819,7 @@ const WEAP = {
 const WORLD = {
   now: 'test',
   store: 'mel.world',
-  list: { test: 'TEST SITE', weirdport: 'WEIRDPORT' },
+  list: { test: 'TEST SITE', weirdport: 'WEIRDPORT', toon: 'TOON CITY' },
 };
 {
   // **THE STORE IS READ INSIDE A TRY, AT MODULE SCOPE.** A throw up here is `init()` never
@@ -1832,6 +1832,13 @@ const WORLD = {
   try { localStorage.setItem(WORLD.store, WORLD.now); } catch (e) {}
 }
 const inWP = () => WORLD.now === 'weirdport';
+// **A THIRD WORLD IS A THIRD PREDICATE, NOT AN `else` (m157).** Every `if (inWP()) ... else`
+// in this file reads "Weirdport or the test site", and with a third world the `else` quietly
+// becomes "anything that is not Weirdport" -- so the toon city would have grown the test
+// site's ten boxes, its street grid, its motorcycle and its building. Each of those is now
+// asked the question it actually means.
+const inTC = () => WORLD.now === 'toon';
+const inTest = () => WORLD.now === 'test';
 
 // WEIRDPORT -- his Blender slice, measured off the two files before a line of this was written.
 //     collision   537 nodes, 80,250 tris, 2 materials, NO draco, NO negative scale
@@ -5764,7 +5771,10 @@ scene.add(world);
 // boxes and its ledge stack are all at coordinates chosen against each other, so building them
 // inside Weirdport would be a grid hovering over a street and a stack of cubes inside a tower.
 // One condition round the block it already was; nothing inside it moved.
-if (!inWP())
+// **AND IT IS `inTest()` NOW, NOT `!inWP()` (m157)** -- with a third world the negation means
+// "anything that is not Weirdport", which would have put ten grey cubes and two grids in the
+// middle of his toon city.
+if (inTest())
 {
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(400, 400),
@@ -5936,7 +5946,7 @@ function buildStreets() {
   return plots;
 }
 // the painted road grid is the TEST SITE's own layout (m110); Weirdport brings its own.
-if (!inWP()) buildStreets();
+if (inTest()) buildStreets();
 
 
 // ============================================================================================
@@ -12132,6 +12142,230 @@ function buildWpVisual(g, trim) {
 }
 
 // ============================================================================================
+// THE TOON CITY (m157, `TCITY`, `buildTCity`) -- a third world, flat ground, and the optimisation
+// pass he asked for.
+//
+// *"I added a new level/environment, we need to setup and test out. I've been developing it in
+// Blender and need to work out what needs to be optimized or instanced. Can we load it into its
+// own level. There's no colliders yet so just a flat plane for ground and walkability."*
+//
+// **MEASURED OFF THE FILE BEFORE A LINE OF THIS WAS WRITTEN**, which is the whole of the answer
+// to "what needs optimising" -- and neither half of it is a guess:
+//     1,382 nodes / 159 meshes / 1,104 primitives / 43 materials / 471,364 tris
+//     184 x 20 x 182 m, ground at y ~ 0, **0 negative-determinant nodes**, no skins, no anims
+//     draco + EXT_texture_webp, 36 embedded images: 27 @ 1254, 7 @ 1024, 2 @ 512
+//
+// **DRAW CALLS AS IT ARRIVES: 2,327.** A phone wants a few hundred, and triangles are the last
+// thing that costs anything here while draw calls are the first. It splits in two, and each
+// half has its own answer:
+//     1,257 nodes share  34 meshes  -> ONE InstancedMesh each        ~34 draws
+//     1,070 draws on    125 meshes  -> MERGED BY MATERIAL, 37 buckets  37 draws
+//     -> about **75**, from 2,327. Both halves are `buildWpVisual`'s own machinery (m124).
+//
+// **AND THE TEST FOR AN INSTANCE IS STRUCTURAL, NOT A PREFIX.** Weirdport keys on `inst_`
+// because his exporter named them; here a geometry used more than once IS an instance, which
+// needs no naming convention and cannot go stale when he renames a collection. `stripPoses`'
+// own rule -- the property that makes the thing what it is, never its name.
+//
+// **THE BIGGEST SINGLE COST IS NOT DRAW CALLS, IT IS TEXTURE MEMORY, AND IT IS NOT CLOSE.**
+// 9.6 MB on the wire and **~268 MB RESIDENT** as RGBA with mips -- 226 of it in the twenty-seven
+// 1254s alone. Compression in the FILE only ever buys download time; the GPU holds it
+// uncompressed. That is m25's lesson at twenty-seven times the count, and on iOS it does not
+// throw: **it kills the tab, which comes back as the game reloading** (m133).
+//     tex 0 (as authored)  ~268 MB   <- the honest number, and a dead tab on an older phone
+//     tex 1024              ~192
+//     tex 768               ~115     <- DEFAULT
+//     tex 512                ~50
+// **THE REAL FIX IS NEVER A SMALLER MAP**, it is `gltf-transform uastc` (or `etc1s`) to KTX2,
+// which stays GPU-COMPRESSED IN MEMORY: 268 MB becomes about 67 with the same picture and the
+// same 1254 px. This downscale is a floor under the tab until that bake exists, and it is on a
+// dial precisely because how much resolution to give up is a look-at-it decision and those are
+// his. `mel.TCITY.tex = 0` is the A/B at full resolution.
+//
+// **AND THE LOOSE `tex/` JPEGS ARE NOT REFERENCED BY THE GLB.** All 36 images are bufferViews,
+// so those eight files are his Blender sources riding along -- 3 MB the phone never fetches.
+// Harmless, worth knowing, and they are why `models/toon_city/tex` is in `DIRS` too: a folder
+// that is not there goes stale silently, and that has been paid for eleven times.
+const TCITY = {
+  on: 1,
+  file: 'models/toon_city/toon_city_visual.glb',
+  spawn: [0, 0],
+  inst: 1,          // 1,257 nodes -> ~34 InstancedMeshes
+  merge: 1,         // 1,070 single-use draws -> ~37 merged buckets
+  tex: 768,         // the longest edge any texture is allowed. 0 = as authored.
+  cast: 0,          // the city RECEIVES shadows and does not cast them -- 75 more draws in the
+                    // shadow pass, and a merged bucket's bounds span the whole map so most of
+                    // them would never cull out of it. His own shadow still lands on the road.
+  // **THE GROUND IS A PLANE AND `groundAt` ALREADY RETURNS 0.** With `TRI.on` false and `BOXES`
+  // empty every collider query in the file answers "flat, at zero" with no case written -- so
+  // "walkability" is the ABSENCE of the two world builders rather than a third kind of ground.
+  ground: 520, groundY: -.02, groundCol: 0x6f6a63,
+  fog: { near: 55, far: 300 },
+};
+const tcRoot = new THREE.Group();
+tcRoot.name = 'tooncity';
+world.add(tcRoot);
+
+// THE DOWNSCALE. `image` is an ImageBitmap off the WebP, so one canvas draw per texture at load
+// and nothing per frame. It is done ONCE PER IMAGE rather than once per material -- 43 materials
+// share 36 images and several share one.
+const _tcTex = new Set();
+function tcShrink(t) {
+  if (!t || !TCITY.tex || _tcTex.has(t.uuid)) return 0;
+  _tcTex.add(t.uuid);
+  const im = t.image; if (!im || !im.width) return 0;
+  const big = Math.max(im.width, im.height);
+  if (big <= TCITY.tex) return 0;
+  const k = TCITY.tex / big;
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(im.width * k));
+  c.height = Math.max(1, Math.round(im.height * k));
+  try { c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); }
+  catch (e) { console.warn('[melee] toon texture shrink failed', e); return 0; }
+  const was = im.width * im.height;
+  t.image = c; t.needsUpdate = true;
+  // close the bitmap so the decoded original is not held alongside the canvas
+  if (im.close) { try { im.close(); } catch (e) {} }
+  return was - c.width * c.height;
+}
+
+function buildTCity(g) {
+  const root = g.scene;
+  root.updateMatrixWorld(true);
+
+  // ---- 1. the materials, ONCE EACH. Deduped by uuid because 1,104 primitives share 43 of them.
+  let mats = 0, dbl = 0, px = 0, texN = 0;
+  const seenM = new Set();
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = !!TCITY.cast; o.receiveShadow = true;
+    for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+      if (!m || seenM.has(m.uuid)) continue;
+      seenM.add(m.uuid); mats++;
+      // **28 OF THE 43 ARE `doubleSided`, WHICH IS THE BLENDER DEFAULT AND NOT A DECISION.**
+      // On a closed shell that is pure wasted fill on the one part of a mobile GPU that is
+      // actually scarce. **But a LEAF is not a shell**: ivy, weeds, stickers and graffiti are
+      // cards and genuinely need both faces -- so the test is the material's own ALPHA MODE,
+      // which is the structural difference between a card and a wall, rather than a list of
+      // names to keep in step with his export.
+      if (m.side === THREE.DoubleSide && !m.transparent && !m.alphaTest) { m.side = THREE.FrontSide; m.needsUpdate = true; dbl++; }
+      if (m.map) {
+        px += tcShrink(m.map); texN++;
+        m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        m.map.needsUpdate = true;
+      }
+      tcShrink(m.emissiveMap); tcShrink(m.normalMap); tcShrink(m.roughnessMap);
+    }
+  });
+
+  // ---- 2. INSTANCE anything whose geometry is used more than once.
+  //      **GROUPED BY GEOMETRY *AND* MATERIAL**, because two nodes sharing a mesh but not a
+  //      material are not one draw call and an InstancedMesh has exactly one of each.
+  const drew0 = (() => { let n = 0; root.traverse(o => { if (o.isMesh) n += Array.isArray(o.material) ? o.material.length : 1; }); return n; })();
+  let inst = 0, instN = 0;
+  if (TCITY.inst) {
+    const by = new Map();
+    root.traverse(o => {
+      if (!o.isMesh || Array.isArray(o.material)) return;
+      const k = o.geometry.uuid + '|' + o.material.uuid;
+      let L = by.get(k); if (!L) by.set(k, L = []);
+      L.push(o);
+    });
+    for (const list of by.values()) {
+      if (list.length < 2) continue;
+      const im = new THREE.InstancedMesh(list[0].geometry, list[0].material, list.length);
+      im.name = 'tc_' + (list[0].name || '');
+      for (let i = 0; i < list.length; i++) im.setMatrixAt(i, list[i].matrixWorld);
+      im.instanceMatrix.needsUpdate = true;
+      // WORLD matrices, so it hangs off the world at identity -- under the gltf root that
+      // root's own transform would be applied a second time.
+      im.castShadow = list[0].castShadow; im.receiveShadow = list[0].receiveShadow;
+      // AND REAL BOUNDS, so it can still be culled: a weed pack spread over the whole map
+      // never leaves the frustum and loses nothing, while a cluster in one alley is a tight
+      // sphere and is culled from everywhere else.
+      im.computeBoundingSphere();
+      tcRoot.add(im);
+      for (const o of list) o.parent && o.parent.remove(o);
+      inst++; instN += list.length;
+    }
+  }
+
+  // ---- 3. MERGE what is left, by material. 125 single-use meshes carry 1,070 primitives across
+  //      37 materials, which is 1,070 draw calls describing 37 things.
+  let merged = 0, mergedN = 0, lost = 0;
+  if (TCITY.merge) {
+    const by = new Map();
+    root.traverse(o => {
+      // **A MULTI-MATERIAL MESH IS LEFT ALONE, AND THAT IS NOT LAZINESS.** `mergeGeometries`
+      // with `useGroups` false merges the WHOLE geometry, so filtering a material's groups out
+      // of the clone first does nothing at all -- every material's bucket would get the whole
+      // mesh, drawn once per material. GLTFLoader gives a multi-primitive mesh a GROUP of
+      // Meshes rather than one Mesh with a material array, so on this file there are none; a
+      // future export that has them keeps its draw calls, which is honest and is the one
+      // outcome that cannot be wrong.
+      if (!o.isMesh || Array.isArray(o.material)) return;
+      {
+        const m = o.material; if (!m) return;
+        // **THE BUCKET IS KEYED ON THE ATTRIBUTE SET AS WELL AS THE MATERIAL, AND THAT IS NOT
+        // TIDINESS.** `mergeGeometries` returns **null** for a bucket whose members disagree,
+        // and the obvious handling -- skip it -- is a silent hole in the world: the picture is
+        // gone and nothing on screen says so. This file has three sets (1,026 prims with
+        // COLOR_0, 43 with COLOR_0+COLOR_1, 35 with neither), so splitting by set means every
+        // bucket merges BY CONSTRUCTION rather than by luck, and no vertex colour is dropped
+        // to make one fit. Shredworld's c142, which cost a third of a city.
+        const set = Object.keys(o.geometry.attributes).sort().join(',');
+        const k = m.uuid + '|' + set;
+        let L = by.get(k); if (!L) by.set(k, L = { m, list: [] });
+        L.list.push(o);
+      }
+    });
+    for (const B of by.values()) {
+      if (B.list.length < 2) continue;
+      const parts = [];
+      // **A CLONE, AND THE WORLD MATRIX BAKED INTO IT.** The merged mesh hangs off `tcRoot` at
+      // identity, so each part has to carry its own placement in its vertices -- and baking it
+      // into the SHARED geometry would move every other node still using it.
+      for (const o of B.list) { const ge = o.geometry.clone(); ge.applyMatrix4(o.matrixWorld); parts.push(ge); }
+      const one = mergeGeometries(parts, false);
+      for (const p of parts) p.dispose();
+      // **AND A REFUSED MERGE KEEPS THE ORIGINALS.** `null` here and a `continue` is the hole
+      // above; leaving the nodes in the scene costs the draw calls and loses nothing.
+      if (!one) { lost++; console.warn('[melee] toon: ' + (B.m.name || '?') + ' would not merge, kept as ' + B.list.length + ' draws'); continue; }
+      one.computeBoundingSphere();
+      const me = new THREE.Mesh(one, B.m);
+      me.name = 'tcmerge_' + (B.m.name || '?');
+      me.castShadow = !!TCITY.cast; me.receiveShadow = true;
+      tcRoot.add(me);
+      for (const o of B.list) o.parent && o.parent.remove(o);
+      merged++; mergedN += B.list.length;
+    }
+  }
+
+  // whatever neither pass claimed stays exactly as it arrived
+  tcRoot.add(root);
+
+  // ---- 4. THE GROUND. A plane, and it is the whole of the collider: `groundAt` returns 0 with
+  //      `TRI.on` false and `BOXES` empty, so what makes this walkable is that nothing was
+  //      built. `groundY` sits it a hair under zero so his own asphalt wins the depth test.
+  {
+    const gp = new THREE.Mesh(new THREE.PlaneGeometry(TCITY.ground, TCITY.ground),
+                              new THREE.MeshStandardMaterial({ color: TCITY.groundCol, roughness: .95, metalness: 0 }));
+    gp.rotation.x = -Math.PI / 2; gp.position.y = TCITY.groundY;
+    gp.name = 'tcground'; gp.receiveShadow = true;
+    tcRoot.add(gp);
+  }
+
+  let draws = 0;
+  tcRoot.traverse(o => { if (o.isMesh) draws += o.isInstancedMesh ? 1 : (Array.isArray(o.material) ? o.material.length : 1); });
+  TCITY.draws = draws;
+  console.log('[melee] toon city: ' + mats + ' materials (' + dbl + ' forced FrontSide, ' + texN + ' maps' +
+    (px ? ', ' + (px / 1e6).toFixed(1) + ' Mpx of texture dropped at ' + TCITY.tex : '') + '), ' +
+    inst + ' instanced meshes for ' + instN + ' nodes, ' + merged + ' merged buckets from ' + mergedN + ' meshes' +
+    (lost ? ', ' + lost + ' REFUSED' : '') + '  ->  DRAW CALLS ' + drew0 + ' -> ' + draws);
+  if (lost) note('TC ' + lost + ' NOMERGE');
+}
+
+// ============================================================================================
 // POPULATING WEIRDPORT (m127, `wpStand`, `wpPool`, `wpSpread`, `wpLoop`, `wpPopulate`)
 //
 // One seeded stream, one pool of clear standing spots, and a farthest-point spread over it.
@@ -16974,6 +17208,10 @@ function frame() {
     // two bugs and one picture from a phone -- the pairing found nothing, or it found them and
     // the box is still in the wrong place -- and only the count tells them apart. `y0` is the
     // first of those and any number at all is the second.
+    // **AND THE TOON CITY CARRIES ITS DRAW COUNT (m157).** "It never loaded", "it loaded and
+    // the optimisation did nothing" and "it loaded and it is slow anyway" are three bugs and
+    // one picture from a phone, and the only thing that separates the first two is a number.
+    const tc = inTC() ? ' · TC' + (TCITY.draws === undefined ? '?' : TCITY.draws) + 'd' : '';
     const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b/' + (WP.turned || 0) + 'y' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
       (WP.tinted ? ' · WPTINT' + WP.tinted : '') + (WP.bodies ? ' · WPCROWD' + WP.bodies : '') +
       // **AND THE TRAFFIC, AS CARS ON LANES (m147).** "the cars are not driving" is three bugs
@@ -17017,7 +17255,7 @@ function frame() {
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + cl + sk + sk8 + vs + mo + fl + wp + mp +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
     // **THE KEYS SIT UNDER THE CHIP, AND THE CHIP IS THE ONE HUD ELEMENT THAT GROWS (m128).**
@@ -17066,7 +17304,9 @@ async function init() {
   // real count of `loadGLB` calls each branch makes, decided up here where nothing has been
   // fetched yet. If it ever drifts the bar is still clamped and `setBoot('go', 1)` forces it
   // home, so the cost of being wrong is a bar that is a little off rather than a broken boot.
-  PROG.total = inWP() ? 25 : 26;   // +2 at m150: the deck and its clips
+  // +2 at m150: the deck and its clips. The toon city is one file where the test site is three
+  // (a building, a tower and a motorcycle), so it is 24.
+  PROG.total = inWP() ? 25 : inTC() ? 24 : 26;
   // ---- the character. There is no game without him, so a failure here is reported on the
   //      card rather than warned to a console that does not exist on a phone.
   let g;
@@ -17274,6 +17514,14 @@ async function init() {
     // still a game you can walk round, and the chip says which of the two it is.
     try { trafBuild(); }
     catch (e) { console.error('[melee] weirdport traffic failed', e); note('TRAFFIC FAILED'); }
+  } else if (inTC()) {
+    // **HIS LEVEL, AND NOTHING ELSE AT ALL.** No collider builder, no street grid, no boxes --
+    // which is not an omission, it IS the "flat plane for ground and walkability" he asked
+    // for: with `TRI.on` false and `BOXES` empty every collider query in the file already
+    // answers "flat, at zero".
+    if (TCITY.fog) { scene.fog.near = TCITY.fog.near; scene.fog.far = TCITY.fog.far; }
+    await side(TCITY.file, 'loading the toon city', { name: 'TOONCITY', build: buildTCity });
+    player.pos.x = TCITY.spawn[0]; player.pos.z = TCITY.spawn[1];
   } else {
     await side(BLD.file, 'loading a building', { name: 'BUILDING',
                build: g => buildBuildings(g, BLD) });

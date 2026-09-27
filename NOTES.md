@@ -7,6 +7,93 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE TOON CITY: A THIRD WORLD, AND THE OPTIMISATION IS 2,327 DRAW CALLS DOWN TO 72 (m157,
+  `TCITY`, `buildTCity`, `inTC`).** *"I added a new level/environment, we need to setup and test
+  out. I've been developing it in Blender and need to work out what needs to be optimized or
+  instanced. Can we load it into its own level. There's no colliders yet so just a flat plane for
+  ground and walkability."*
+  **MEASURED OFF THE FILE BEFORE A LINE WAS WRITTEN**, which is the whole answer to his question:
+      1,382 nodes / 159 meshes / **1,104 primitives** / 43 materials / 471,364 tris
+      184 x 20 x 182 m, ground at y ~ 0, **0 negative-determinant nodes**, no skins, no anims
+      draco + EXT_texture_webp, 36 embedded images: 27 @ 1254, 7 @ 1024, 2 @ 512
+      top-level names: `road_wr_*`, `ground_wr_*`, `bld_wk_*`, `bld_hero_*`, `AS_*`
+  **GLTFLoader GIVES ONE MESH PER PRIMITIVE, SO "1,104 primitives on 1,382 nodes" IS 2,327 DRAW
+  CALLS.** A phone wants a few hundred; triangles are the last thing that costs anything here and
+  draw calls are the first. It splits cleanly and each half has an answer this file already owns:
+      1,257 meshes share  34 geometries -> ONE InstancedMesh each      34 draws
+      1,058 meshes on 25 material+attribute buckets -> MERGED          25 draws
+         12 left alone (one of their kind)                             12 draws
+      -> **72**, plus the ground plane. Simulated through the SHIPPED grouping keys against the
+      real file, not estimated.
+  **AND THE TEST FOR AN INSTANCE IS STRUCTURAL, NOT A PREFIX.** `buildWpVisual` keys on `inst_`
+  because that exporter named them; here **a geometry used more than once IS an instance**, which
+  needs no naming convention and cannot go stale when he renames a collection. `stripPoses`' own
+  rule, one asset over. (His names would have worked too -- `AS_soda_can` x183, `AS_pl_weed_small`
+  x86 -- which is exactly why the structural test is free to prefer.)
+  **THE BUCKET IS KEYED ON THE ATTRIBUTE SET AS WELL AS THE MATERIAL, AND THAT IS NOT TIDINESS.**
+  `mergeGeometries` returns **null** for a bucket whose members disagree, and the obvious handling
+  -- skip it -- is a silent hole in the world: the picture is gone, the collider (here, nothing)
+  is unaffected, and **nothing on screen says so.** This file has three sets (1,026 prims with
+  COLOR_0, 43 with COLOR_0+COLOR_1, 35 with neither), so splitting by set means every bucket
+  merges BY CONSTRUCTION rather than by luck and no vertex colour is dropped to make one fit.
+  Shredworld's c142, which cost a third of a city. **A refused merge KEEPS the originals** and
+  says `TC n NOMERGE` in the chip -- it costs the draw calls and loses nothing.
+  **A MULTI-MATERIAL MESH IS LEFT ALONE, AND MY FIRST VERSION SILENTLY DUPLICATED IT.** I filtered
+  a material's `groups` out of the clone before merging -- and `mergeGeometries(parts, false)`
+  merges the WHOLE geometry and ignores groups, so every material's bucket would have got the
+  whole mesh and drawn it once per material. GLTFLoader gives a multi-primitive mesh a GROUP of
+  Meshes rather than one Mesh with a material array, so there are none in this file and it would
+  have sat there latent. Caught by reading the composition rather than by running it.
+  **THE BIGGEST SINGLE COST IS NOT DRAW CALLS, IT IS TEXTURE MEMORY, AND IT IS NOT CLOSE.**
+  9.6 MB on the wire and **~268 MB RESIDENT** as RGBA with mips -- 226 of it in the twenty-seven
+  1254s alone. Compression in the FILE only ever buys download time; the GPU holds it
+  uncompressed. That is m25's lesson at twenty-seven times the count, and **on iOS it does not
+  throw: it kills the tab, which comes back as the game reloading** (m133).
+      tex 0 (as authored)  ~268 MB     tex 1024  ~192     tex 768  ~115 (DEFAULT)   tex 512  ~50
+  **THE REAL FIX IS NEVER A SMALLER MAP** -- it is `gltf-transform uastc` (or `etc1s`) to KTX2,
+  which stays GPU-COMPRESSED IN MEMORY: 268 MB becomes about 67 with the same picture at the same
+  1254 px. The downscale is a floor under the tab until that bake exists, it is ONE CANVAS DRAW
+  PER IMAGE at load (deduped by texture uuid, because 43 materials share 36 images), and it
+  **closes the source ImageBitmap** so the decoded original is not held alongside the canvas.
+  It is on a dial because how much resolution to give up is a look-at-it decision and those are
+  his: `mel.TCITY.tex = 0` is the A/B at full resolution.
+  **28 OF THE 43 MATERIALS ARE `doubleSided`, WHICH IS THE BLENDER DEFAULT AND NOT A DECISION.**
+  On a closed shell that is pure wasted fill on the one part of a mobile GPU that is actually
+  scarce. **But a LEAF is not a shell** -- ivy, weeds, stickers and graffiti are cards and
+  genuinely need both faces -- so the test is the material's own transparency, which is the
+  structural difference between a card and a wall, rather than a list of names to keep in step
+  with his export.
+  **"FLAT GROUND AND WALKABILITY" IS THE ABSENCE OF THE TWO WORLD BUILDERS, NOT A THIRD KIND OF
+  GROUND.** With `TRI.on` false and `BOXES` empty, `groundAt` already returns 0 everywhere,
+  `resolveBoxes` and `camHit` are no-ops and the bolt flies until `boltLife`. So the level needed
+  no collider code at all -- only a visible plane so he is not standing over a void, sat at
+  `groundY` -0.02 so his own asphalt wins the depth test.
+  **AND A THIRD WORLD IS A THIRD PREDICATE, NOT AN `else`.** Every `if (inWP()) ... else` in this
+  file reads "Weirdport or the test site", and with a third world that `else` quietly becomes
+  "anything that is not Weirdport" -- so the toon city would have grown the test site's ten grey
+  boxes, its two grids, its painted street layout, its building, its tower and its motorcycle, in
+  the middle of his level. `inTest()` and `inTC()`, and each `else` was asked the question it
+  actually means. **This is the shape to check first the day there is a fourth.**
+  **THE LOOSE `tex/` JPEGS ARE NOT REFERENCED BY THE GLB** -- all 36 images are bufferViews, so
+  those eight files are his Blender sources riding along, 3 MB the phone never fetches. Harmless,
+  and they are why `models/toon_city/tex` went into `DIRS` beside `models/toon_city`: **twelfth
+  time**, and a folder that is not there goes stale silently.
+  **THE COST OF MERGING, STATED: a bucket spans the whole map and never culls.** `WK_M_trim` is
+  111,266 tris in ONE draw across 184 m, so nothing in it is ever frustum-culled -- which is the
+  right trade at 60 draws down to 1 on a map where the fog reaches 300 m anyway, and is the thing
+  to revisit if it ever wants streaming. The InstancedMeshes DO compute real bounds, so a weed
+  pack spread over the map loses nothing and a cluster in one alley culls from everywhere else.
+  **WHAT IS UNVERIFIED AND WHY:** every GLB rejects headless, so **`buildTCity` has never run
+  outside a browser** -- whether 72 draws at 471k tris and ~115 MB of texture is playable, whether
+  768 is enough resolution, and whether the FrontSide forcing flattens something that needed two
+  faces are all device questions. The arithmetic that CAN be checked here was, above, through the
+  shipped grouping keys. All three worlds boot (`MEL_WORLD=toon npm run check:boot`). The chip
+  carries `TC72d`, because "it never loaded", "it loaded and the optimisation did nothing" and
+  "it loaded and it is slow anyway" are three bugs and one picture from a phone.
+  **NOT DONE:** no colliders (his own words), no spawn search (0,0 is harmless with no solids),
+  and the bodies still stand at their test-site coordinates -- which in a 184 m city centred on
+  the origin puts them near the middle and gives him a scale reference, so it is left.
+
 - **THE RAGDOLL IS THE HAIR SOLVER WITH A SECOND SET OF CHAINS, AND IT ALREADY HAD THE JOINT
   LIMITS (m156, `DOLL`, `dollInit`, `dollStep`).** *"It would be kinda interesting to try to make
   a rag doll affect when you get hit but with limited joint rotations for realism and the ease to
