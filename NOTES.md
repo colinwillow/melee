@@ -7,6 +7,91 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE SKATEBOARD, AND THE TWO RIGS TURNED OUT TO BE THE SAME RIG (m150, `SK8`, `buildBoard`,
+  `stepSkate`, `boardPose`, `tools/skate.mjs`).** *"It would be cool to import the skateboard
+  and the skate animations from Shredworld until I can make new ones, and make it so we can
+  skateboard around."*
+  **THE GO/NO-GO WAS ONE MEASUREMENT AND IT CAME BACK BETTER THAN EXPECTED.** Colin's 68 joints
+  against zap's 62, read straight out of both files' JSON chunks (node transforms are never
+  draco, so this needs no decoder):
+      SHARED 59 joints    rest-pose offset mean **0.06 deg**, worst 3.00 on `weapon_tip`
+      over 5 deg          **NONE**
+      Hips                0.02 deg, and BOTH are `Armature[0.01] > root > Hips`
+      the 9 zap lacks     four thumbs a side, plus Colin's `weapon_root`
+  So there is no per-bone delta to apply, no `HIPFIX` family rotation, and **no runtime
+  retarget at all** -- which is Shredworld's own `ownClips` rule: a track filter and a hips
+  correction exist to survive wearing ANOTHER skeleton's animation, and neither means anything
+  here. The pool is appended raw.
+  **WHAT DOES DIFFER IS HOW BIG THE TWO MEN ARE**, and that is one number: Colin's hips sit at
+  52.830 armature units and zap's at 40.078, **k = 0.7586**. The HIPS TRANSLATION is the body's
+  height off the ground and every crouch, push and landing in the set uses it, so it is
+  re-expressed OFFLINE by `tools/skate.mjs` in `retarget`'s own form, `p' = restT + k*(p -
+  restS)` -- exact at the bind pose by construction. **A scaled ABSOLUTE (`k*p`) is the version
+  that looks right and is not**: it also scales wherever the artist put the pelvis relative to
+  the armature origin, which is a free choice per export and was 11.5 units of it at m119.
+  **THE EXTRACTOR IS A GLB WITH NO MESH, NO SKIN AND NO MATERIAL** -- a node tree and seven
+  animations, which is all `gltf.animations` needs. 10.2 MB in, **264 KB out**. Every scale
+  track and every non-Hips position track is dropped (a bone's translation is its LENGTH), and
+  so are the thumb tracks: a track whose target is not in the scene is a console warning per
+  clip per load, and nobody sees a thumb curl on a skateboard.
+  **AND `normaliseClips` IS NOT OPTIONAL ON IT.** `npm run clips` reads **ten distinct time
+  accessors across 420 samplers** in that file, which is the shared-`times` landmine exactly: a
+  shift applied per track subtracts from one array dozens of times, the duration comes back
+  negative, and every clip freezes on its last frame for ever.
+  **ALL SEVEN CLIPS ARE DISTINCT**, checked rather than assumed -- `npm run clips` prints the
+  same duration and moving-bone count for `skate_idol_standing`, `skate_ollie_air` and
+  `skate_ollie_init_air` because they share a time accessor and have similar upper-body motion,
+  and their full channel signatures are 7 of 7 distinct.
+  **IT IS A KIT SLOT, WHICH IS SHREDWORLD'S OWN ANSWER.** A board is a whole locomotion mode and
+  keeps its own code path -- but what is in your hands is exactly what the kit is for, and a
+  second control would be a second thing on a HUD he has twice asked to have less on. **`p.board`
+  is DERIVED from the slot** (`boardOut()`), never stored, so a knock-down, a disguise or a swap
+  takes the deck away and there is nothing to put back: `KIT.on`'s three-owners bug, avoided by
+  never writing it down.
+  **EVERY NUMBER ABOUT THE DECK IS MEASURED AND ONE IS TYPED.** `SK8.len` is how long a
+  skateboard is; the scale comes off the model's own long horizontal axis and the deck height
+  off the **area-weighted centre of every up-facing triangle**, which on a board is the flat of
+  the grip. The bounding-box top is the KICKTAILS and standing him on those puts him three
+  centimetres in the air. **And the long axis must end up on local Z**, because that is what the
+  yaw and the bank are written against.
+  **THE GRADE IS SAMPLED, BECAUSE `groundAt` RETURNS A HEIGHT AND NOT A NORMAL.** Two probes
+  `SK8.probe` apart along the way he points is the rise over the run, which is all a slope term
+  needs -- and it works in BOTH worlds, where reading a triangle's normal would only work in the
+  one that has triangles.
+  **THE WHEELS ARE WHAT STEER, SO THE HEADING TURNS AND THE VELOCITY IS REBUILT ON IT** -- and
+  the rebuild has to use the NEW heading. My first version took `fx`/`fz` at the top of the
+  frame, before the steer, so the deck turned under a line that never changed and the carve did
+  nothing. In the AIR the heading turns and the velocity does NOT, which is the only thing that
+  makes landing sideways mean anything.
+  **THE PUSH CYCLE IS A PHASE IN [0,1), NEVER RAW SECONDS**, because the period moves with speed
+  and `T / P(now)` and the integral of `dt / P(t)` are the same number only while P is constant.
+  The stroke is spread over `shoveDur` on a half sine whose integral is exactly 1, so the shape
+  costs nothing in top speed; the scrape fires at `plant`, the point in the cycle the foot is
+  actually on the road. **And the CLIP is seeked to that phase once a cycle, never every frame**
+  -- `skinWeights` rewinds an action the moment its damped weight leaves the floor, which
+  happens again every time the crouch swaps which of the two push clips is up.
+  **THE PUSH CLIP IS WEIGHTED BY WHETHER HE IS PUSHING, NOT BY THE STROKE.** Weighting it by
+  `shoveT` shows 0.4 s of a 1.45 s cycle, which is a fragment of an animation rather than an
+  animation.
+  **HE STANDS ON THE DECK AND HIS COLLIDER DOES NOT.** `rig.root` is lifted by the measured deck
+  height; the body stays on the ground, which is right -- the board is a picture and the man is
+  the body.
+  **AND `stepFeet` HAD TO LEARN ABOUT IT.** It is the first line of `stepPlayer`, above the
+  branch that owns the body, so without `p.board` in its list he would have had a walk cycle's
+  footsteps under a board -- m70's exact finding, one state along, and the push has its own.
+  **`boardPose` RUNS AFTER `stepPlayer`**, because the deck is drawn where he ENDED UP: read
+  before it, the board trails the man standing on it by a frame, which at 13 m/s is 22 cm.
+  **WHAT IS UNVERIFIED AND WHY:** no harness here can build a skin, so **whether he stands on
+  the deck rather than through it, whether the clips read at all on his proportions, and whether
+  13 m/s is fun in a test site of ten boxes are device questions.** What was checked: the rigs
+  agree, the extracted file parses through the REAL vendored loader with 7 clips and 420 tracks,
+  and both gates pass in both worlds. The chip carries `SK8 <speed>` / `SK8 off` / `NO BOARD`,
+  because "it never loaded", "the slot is not out" and "I am on it and it is wrong" are three
+  bugs and one picture from a phone.
+  **NOT DONE, AND EACH ITS OWN BUILD:** tricks, grinds and rails, a bail, fakie and the half
+  cab -- Shredworld has all six worked out. And **riding-and-shooting**, which is c113's
+  independent slots plus c115's `__up`/`__legs` override and is the biggest of them.
+
 - **A CAR IS A BLOW ALONG THE CONTACT NORMAL, AND ONLY A NOSE CAN LAUNCH HIM (m149, `CARHIT`,
   `carHit`).** *"Can we make the cars hit you and send you flying? And land land down and get
   up."*

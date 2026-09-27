@@ -518,6 +518,12 @@ means anything you can carry from one situation to the next.
   actually walking at. A faster approach than the clip can sell is a scramble.
 - **The rapid fire shares the blaster's model**, which makes the two slots identical to look at.
   Its own GLB is one `file:` in `WEAP.slots`.
+- **THE SKATEBOARD IS A RIDE AND NOTHING MORE (m150).** No tricks, no grinds, no rails, no
+  bail, no fakie and no half cab -- Shredworld has all six worked out and each is its own
+  build. What is here is push, roll, steer, ollie and land. **And there is no riding-and-
+  shooting**: the board is a kit SLOT, so the blaster is put away to take it out, which is
+  Shredworld's c113/c115 (independent slots plus an upper-body override) and is a build.
+  `SK8.top` 13 m/s and every other number in `SK8` is live on `mel.SK8`.
 - **The cars are not drivable**, which he deferred himself (*"maybe after"*). They DO hit you
   as of m149 -- see `CARHIT` -- and **a guard still blunts one**, because a car goes through
   `playerHurt` like every other blow. Blocking a car is silly and it is also a deliberate act
