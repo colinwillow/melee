@@ -7,6 +7,31 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+
+- **THE HOUSE HAD NO WALLS IN IT, AND IT WAS THE LOADER, NOT THE HOUSE (m172, `kitCh`).** *"I'm
+  unable to shoot or destroy any of the outside of the building -- my bullets don't even touch the
+  outside of the wall, it just goes through and hits the inside -- and I can walk through walls
+  too."* One bug. His file says `_CHUNK`; **GLTFLoader LOWER-CASES every attribute name it does not
+  recognise** (`ATTRIBUTES[name] || name.toLowerCase()`, three places in `vendor/GLTFLoader.js`),
+  so the game was handed `_chunk` and asked for `_CHUNK`. `buildKit` found no chunked mesh on any
+  wall, returned before pushing a box, and m170 and m171 both shipped a house that was a PICTURE:
+  0 walls, 0 chunks, 28 boxes (his solids only). A bolt went through the outer wall and stopped on
+  what was in the collider -- a floor, a corner post, inside.
+  **EVERY OFFLINE CHECK PASSED, BECAUSE EVERY ONE OF THEM READ THE FILE**, which spells it his way.
+  The 6,264-of-6,264 containment check, the flood check and the debris check were all correct and
+  all irrelevant: the loader is a step none of them took. **A harness that fabricates a scene has
+  to fabricate it the way the LOADER builds it, not the way the file stores it** -- the same shape
+  as `normals.mjs` measuring the asset instead of the pipeline, one layer down.
+  **AND `tri: 1` ON THE CHUNK BOXES WAS A SECOND, INDEPENDENT REASON NO BOLT WOULD HAVE LANDED.**
+  `tri` tells `boltBox` "my real triangles are in `SURF`" -- true of his collision file's solids,
+  false of the walls, which have no baked collider. Off now; the chunk box IS the wall's face.
+  Measured with a scratch probe that boots the real module, fabricates both GLBs with the
+  attribute spelt `_chunk`, and walks the shipped `stepPlayer` at every wall every 25 cm on both
+  floors: shipped code 0 walls / 0 chunks; fixed, 261 chunks, stopped 0.24 m (his radius) off
+  every face, and the only pass-throughs are the door, shutter and door openings -- which in the
+  game carry their own part boxes. `boltBox` inside a chunk: false before, true after.
+  **`npm run sim`'s renderer stub had no `extensions`**, so KTX2Loader.detectSupport threw at module
+  scope and the harness could not boot at all since m158. Fixed the way `boot.mjs` already was.
 - **THE KIT'S DOORS OPEN, ITS GLASS BREAKS, AND A WALL THROWS REAL PIECES OF ITSELF (m171,
   `KPARTS`, `kitPartStep`, `kitPartKill`, `KDEB`, `kitDebrisChunk`).** *"You said it's not built
   yet -- why isn't it built? What's not built?"* m170 indexed every moving part with its hp and

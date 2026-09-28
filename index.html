@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m171</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m172</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m171</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m172</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,7 +584,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm171';
+const BUILD = 'm172';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_pieces.glb":"54857d40","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"05866750","models/building_kit/building_kit_test_visual_ktx2.glb":"6b5893b1","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -13951,7 +13951,10 @@ function tcObbBoxes() {
 //
 // **HIS NOTE IS THE SPEC AND EVERY CLAIM IN IT WAS CHECKED BEFORE A LINE OF THIS WAS WRITTEN**,
 // because a handoff read wrong is a build spent on a file that was always fine:
-//     `_CHUNK`             confirmed, upper-cased exactly as he said
+//     `_CHUNK`             confirmed, upper-cased exactly as he said -- IN THE FILE. **GLTFLoader
+//                          LOWER-CASES every attribute it does not recognise** (`_chunk`), so a
+//                          lookup by his spelling found nothing: m170 and m171 shipped with ZERO
+//                          chunks, no wall colliders and no wall for a bolt to hit (m172, `kitCh`).
 //     the axis rule        (x, y, z) -> (x, z, -y): **100% of 1,044 chunk vertices land inside
 //                          their own converted box**, against 14% for the identity reading.
 //                          The other sign was ruled out by PRINTING one chunk rather than by a
@@ -14028,6 +14031,20 @@ const KIT = {
 const WALLS = [], KCLIMB = [];
 const kit = { root: null, chunks: 0, dead: 0, cloned: 0 };
 
+// **THE CHUNK ATTRIBUTE, BY EITHER SPELLING (m172, `kitCh`).** *"My bullets don't even touch the
+// outside of the wall -- and I can walk through walls too."* One bug, and it was the loader, not
+// the house: his file says `_CHUNK` and **GLTFLoader lower-cases every attribute name it does not
+// know** (`ATTRIBUTES[name] || name.toLowerCase()`), so the game was handed `_chunk` and asked for
+// `_CHUNK`. Every wall came back with no chunked meshes, `buildKit` returned before pushing a
+// single box, and the house was a picture: nothing to stand against and nothing for a bolt to
+// stop on, so it flew through the outer wall and landed on whatever WAS in the collider -- a floor
+// or a corner post, inside. **The offline checks all read the FILE**, which spells it his way, so
+// every one of them passed; the loader is the step none of them took. Asked both ways here, in
+// one place, so a re-export that fixes the case (or a loader that stops changing it) needs nothing.
+function kitCh(geo) {
+  const a = geo && geo.attributes;
+  return a ? (a._CHUNK || a._chunk || null) : null;
+}
 // **HIS AXIS RULE, IN ONE PLACE (`kitBox`).** *"Chunk boxes are in Blender axes (Z-up). Map each
 // corner (x, y, z) to (x, z, -y) and re-sort the min and max."* Written once and called by the
 // collider AND by the collapse, so the two cannot disagree about where a chunk is -- which
@@ -14164,7 +14181,7 @@ function buildKit(g) {
     // multi-primitive mesh a Group of children. A pass that took the node itself would find no
     // geometry at all and silently index a wall with nothing in it.
     const meshes = [];
-    o.traverse(c => { if (c.isMesh && c.geometry && c.geometry.attributes._CHUNK) meshes.push(c); });
+    o.traverse(c => { if (c.isMesh && c.geometry && kitCh(c.geometry)) meshes.push(c); });
     if (!meshes.length) { note('KIT NO _CHUNK'); return; }
     o.matrixWorld.decompose(_kv, _kq, _ks);
     const eu = new THREE.Euler().setFromQuaternion(_kq, 'YXZ');
@@ -14184,7 +14201,12 @@ function buildKit(g) {
       const ex = hx * Math.abs(cs) + hz * Math.abs(sn), ez = hx * Math.abs(sn) + hz * Math.abs(cs);
       const box = { minx: wx - ex, maxx: wx + ex, minz: wz - ez, maxz: wz + ez,
                     miny: W.py + ly - hy, maxy: W.py + ly + hy,
-                    cx: wx, cz: wz, hx, hz, yaw, cs, sn, tri: 1 };
+                    cx: wx, cz: wz, hx, hz, yaw, cs, sn };
+      // **NOT `tri`, and m170's `tri: 1` was the second reason no bolt ever touched a wall.**
+      // `tri` tells `boltBox` "my real triangles are in `SURF`, let the ray decide" -- true of his
+      // collision file's solids and FALSE here: the walls have no baked collider, so nothing of
+      // them is in `SURF`. And the box IS the surface: every chunk is a pure +Y rotation of its
+      // own slab (6,264 of 6,264 vertices inside, 0.000 m escape), so its face is the wall's face.
       const c = { id: r.id, hp: (r.hp || 20), hp0: (r.hp || 20), anchored: !!r.anchored,
                   nb: r.nb || [], box, dead: 0, fall: 0,
                   x: wx, y: W.py + ly, z: wz, lx, ly, lz, r: Math.max(hx, hy, hz) };
@@ -14207,6 +14229,9 @@ function buildKit(g) {
     world.add(gp);
   }
   world.add(root);
+  // the broad phase has to be rebuilt with the walls in it: `buildKitCol` built it with only his
+  // solids, and a grid that predates 261 boxes would hand every query the old list
+  boxGrid();
   console.log('[melee] kit house: ' + nW + ' breakable walls, ' + kit.chunks + ' chunks, ' +
               nG + ' panes, ' + nDoor + ' doors, ' + nMark + ' markers');
   if (!nW) note('KIT NO WALLS');
@@ -14336,7 +14361,7 @@ function kitKill(W, c, loud, bx, by, bz) {
   // house down at once and 261 flying pieces is a hitch nobody asked to watch.
   if (loud) kitDebrisChunk(W, c, bx, by, bz);
   for (const m of W.meshes) {
-    const pos = m.geometry.attributes.position, ch = m.geometry.attributes._CHUNK;
+    const pos = m.geometry.attributes.position, ch = kitCh(m.geometry);
     if (!ch) continue;
     let touched = 0;
     for (let i = 0, n = ch.count; i < n; i++) {
@@ -14617,7 +14642,7 @@ function kitDebrisChunk(W, c, bx, by, bz) {
   const g = new THREE.Group();
   let tris = 0;
   for (const m of W.meshes) {
-    const geo = m.geometry, ch = geo.attributes._CHUNK, pos = geo.attributes.position;
+    const geo = m.geometry, ch = kitCh(geo), pos = geo.attributes.position;
     if (!ch || !pos) continue;
     const idx = geo.index, n = idx ? idx.count : pos.count;
     const nrm = geo.attributes.normal, uv = geo.attributes.uv, col = geo.attributes.color;

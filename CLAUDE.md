@@ -470,6 +470,9 @@ rule that has to be in front of me *before* I know which system I am in.
 - **A COLLIDER THAT REJECTS IS NOT A FILE THAT LACKS (m166).** `triAdd` keeps only up-facing
   faces, so "the triangles are in" and "the WALLS are in" are different claims and this file
   made the first while meaning the second for seven builds. Count what a store actually kept.
+- **GLTFLoader LOWER-CASES ANY ATTRIBUTE NAME IT DOES NOT KNOW (m172).** `_CHUNK` in the file is
+  `_chunk` in the game, and a check that reads the FILE cannot see it. Fabricate test scenes the
+  way the loader builds them.
 - **A TASTE DECISION IS HIS.** Put it on a switch he can reach on the phone; do not ship a pick
   and an argument for it.
 

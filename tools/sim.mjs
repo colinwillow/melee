@@ -47,7 +47,7 @@ export * from '${ROOT}vendor/three.module.min.js';
 import * as T from '${ROOT}vendor/three.module.min.js';
 class R { constructor(){ this.domElement = globalThis.document.createElement('canvas');
   this.shadowMap={enabled:false,type:0}; this.info={autoReset:true,render:{calls:0,triangles:0},reset(){}};
-  this.capabilities={isWebGL2:true,getMaxAnisotropy:()=>1,precision:'highp'};
+  this.extensions={has:()=>false,get:()=>undefined,init(){}}; this.capabilities={isWebGL2:true,getMaxAnisotropy:()=>1,precision:'highp'};
   this.outputColorSpace=''; this.toneMapping=0; this.toneMappingExposure=1; }
   setSize(){} setPixelRatio(){} setClearColor(){} setRenderTarget(){} clear(){} render(){} dispose(){}
   compile(){} initTexture(){} getContext(){return{getParameter:()=>0};} getDrawingBufferSize(v){return v.set(1280,720);} }
