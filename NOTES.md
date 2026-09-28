@@ -7,6 +7,51 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **EVERYTHING BREAKS THINGS NOW, AND `brkBlast` NEVER ASKED WHO WAS SWINGING (m161).** *"A
+  thrown body, you know, can run into things, break it. I do want the warriors to be able to
+  break stuff."* Two call sites and no new system, because that function is a POSITION, a RADIUS
+  and a DAMAGE -- which is the whole return on m160 having put the conversion in one door.
+  **THE WARRIOR'S SWING SITS ABOVE EVERY EARLY RETURN IN `foeStrike`.** Those all test whether
+  the blow reached a BODY, and a mace that missed you still went through the bench -- so gating
+  it on a connect would have made "he can break things" mean "he can break things only while
+  hitting you". At his own reach along his own heading, at chest height, which is where a mace at
+  the end of a swing actually is.
+  **A BODY'S DAMAGE IS ITS SPEED, WHICH IS A THIRD UNIT AND NEEDED A THIRD FACTOR (`BRK.bodyK`).**
+  m160 already had to reconcile his hp scale (15-150) with `FOE.dmg` (1.9 for a full bolt); a
+  flying body arrives in m/s. `FLYHIT` says the range is `at` 6 to `full` 22, so at **0.11**
+  against `BRK.dmg` 12:
+      6 m/s  a stagger      ->  7.9   nothing breaks in one pass, not even a crate (15)
+     14 m/s  a real launch  -> 18.5   the crate goes, trashbin 25 and bench 40 do not
+     22 m/s  full           -> 29.0   crate and trashbin; a dumpster (150) is untouched
+  Which is the same shape `FLYHIT.at` already gives a body hitting another body.
+  **AND A CAR IS DELIBERATELY NOT WIRED TO IT.** It is the identical one-liner and it is the one
+  producer that runs with nobody watching: 55 cars on lanes all day against 179 breakables would
+  clear the street furniture in a minute, and **a world that takes itself apart unattended is not
+  a world**. The gate on `FLYHIT.at` is what makes the same argument for bodies -- a man merely
+  walking about can never break anything.
+
+- **I CAN DECODE DRACO MESHES HERE, AND HE WAS ABOUT TO RE-EXPORT SIX CHARACTERS FOR NOTHING
+  (m161).** *"You said you can't look at the meshes because of Draco -- I was wondering if I
+  upload the models without Draco if you'd be able to inspect that."* **That is my own note being
+  misread back to me.** `CLAUDE.md` says draco decodes here and that what cannot be done is
+  building a **SKIN** (which needs a mixer and a skeleton, not a decoder) -- two different things,
+  and I have said "nothing here can build a skin" often enough that it heard as "nothing here can
+  read a mesh". Measured rather than quoted, through `vendor/draco/draco_wasm_wrapper.js` as a
+  `.cjs` copy, every character file in the repo:
+      alien_antenna_game   13704 verts  11059 tris   1 prim, draco   0 morph targets
+      hick_skinny          14115        10785        1 prim, draco   0
+      alien_warrior        14949        11071        1 prim, draco   0
+      alien_female_purple  14791        10966        1 prim, draco   0
+      hobo_01              14547        10318        1 prim, draco   0
+      clancy               13072        11035        1 prim, draco   0
+      and the attributes decoded are POSITION, NORMAL, TEXCOORD_0, **JOINTS_0, WEIGHTS_0**
+  So: do NOT re-export without draco. It would only make the files bigger, and the skin weights
+  -- which are the thing a correspondence needs -- come out of the compressed file already.
+  **AND NONE OF THEM SHARES A TOPOLOGY, WHICH IS THE WHOLE ANSWER ABOUT BLEND SHAPES.** Six
+  different vertex counts. A glTF morph target is a per-vertex DELTA on one topology, so
+  "building all the characters out of the same base mesh" is not a preference, it is the
+  requirement -- and it is exactly the resculpt he is trying to avoid.
+
 - **IMPACT DECALS, AND NOTHING IS RAYCAST (m160, `DECAL`, `decalPut`, `decalHit`).** *"On a shot
   hit: raycast the hit point and normal against the collision mesh, pick a decal by weapon/kind
   ... one shared material, pooled at about 40, oldest recycled first, fading after about 20 s."*
