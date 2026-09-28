@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m165</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m166</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m165</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m166</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,7 +584,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm165';
+const BUILD = 'm166';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -6180,6 +6180,135 @@ function triGround(x, z, y, step) {
 // TRICOL:END
 
 // ============================================================================================
+// THE REAL SURFACE, FOR IMPACTS (m166, `SURF`, `surfAdd`, `surfRay`)
+//
+// *"When I shoot like a building it puts the little blast mark on there, it's floating, like
+// floating just off away from the building... I'm still wondering how the other context window
+// says just use the triangles for collide so I'm confused why we're not doing that, because the
+// box colliders are horrid."* **He is right, and the measurement is what says so rather than
+// another opinion.** m159 fed every `bld_`/`prop_`/`solid_` mesh through `triAdd` and wrote that
+// up as "the whole of the walkable fix" -- and `triAdd` REJECTS a steep face by construction
+// (`ny / L <= TRI.up`), which is the entire point of it. Counted on his own collision file:
+//     total triangles        37,687
+//     kept by triAdd (UP)    10,994   <- the decks, the kerb tops, the dumpster lids
+//     thrown away            26,693   <- every WALL in the city, in no collider at all
+// So **the one surface a bolt actually hits was the one surface nothing had.** The impact point
+// and its normal came from `hitFace` off a BOX; the box is bigger and squarer than the building;
+// and a mark stamped on a box face a metre out from the brick is a mark floating in the air.
+// His screenshot is that arithmetic, and it was mine.
+//
+// **SO THE TRIANGLES GO IN A SECOND TIME, ALL OF THEM, AND THIS IS A RAY TEST RATHER THAN A
+// HEIGHTFIELD.** `TRI` answers "how high is the ground here", which has one answer per (x, z)
+// and is exactly why it can only hold floors -- a wall has no height. This answers "what does
+// this SEGMENT hit", which a wall can answer. Two questions, two stores: merging them would put
+// every wall into `triGround` and each one would read as ground you can stand on.
+// **37,687 triangles is 1.36 MB of Float32, bought once at load**, against a 4,086-box grid that
+// is already there.
+//
+// **AND WALKING IS STILL BOXES, WHICH IS SAID OUT LOUD RATHER THAN QUIETLY LEFT OUT.** A segment
+// test tells you what a bolt hit; it does not push a body out of a wall, and swapping
+// `resolveBoxes` for a triangle sweep is a whole build with the locomotion on the other end of
+// it. What moved here is every IMPACT -- and an impact is the one place a box's error is
+// VISIBLE, because it leaves a mark on screen that says exactly how far out the box was.
+// SURF:START
+const SURF = { on: 0, cell: 8, x0: 0, z0: 0, nx: 0, nz: 0, grid: null, v: null, n: 0 };
+const _surfRaw = [];
+// NO REJECTION. That is the whole difference from `triAdd`: a wall, an underside and a sliver
+// are all things a bolt can land on.
+function surfAdd(ax, ay, az, bx, by, bz, cx, cy, cz) {
+  _surfRaw.push(ax, ay, az, bx, by, bz, cx, cy, cz);
+}
+function surfBuild() {
+  SURF.on = 0; SURF.grid = null; SURF.v = null; SURF.n = 0;
+  const n = _surfRaw.length / 9;
+  if (!n) { _surfRaw.length = 0; return 0; }
+  let x0 = 1e30, x1 = -1e30, z0 = 1e30, z1 = -1e30;
+  for (let i = 0; i < _surfRaw.length; i += 3) {
+    const x = _surfRaw[i], z = _surfRaw[i + 2];
+    if (x < x0) x0 = x; if (x > x1) x1 = x;
+    if (z < z0) z0 = z; if (z > z1) z1 = z;
+  }
+  const c = SURF.cell;
+  SURF.x0 = x0; SURF.z0 = z0;
+  SURF.nx = Math.max(1, Math.ceil((x1 - x0) / c) + 1);
+  SURF.nz = Math.max(1, Math.ceil((z1 - z0) / c) + 1);
+  const g = SURF.grid = new Array(SURF.nx * SURF.nz);
+  const v = SURF.v = new Float32Array(_surfRaw);
+  for (let t = 0; t < n; t++) {
+    const o = t * 9;
+    const i0 = Math.max(0, Math.floor((Math.min(v[o], v[o + 3], v[o + 6]) - x0) / c));
+    const i1 = Math.min(SURF.nx - 1, Math.floor((Math.max(v[o], v[o + 3], v[o + 6]) - x0) / c));
+    const k0 = Math.max(0, Math.floor((Math.min(v[o + 2], v[o + 5], v[o + 8]) - z0) / c));
+    const k1 = Math.min(SURF.nz - 1, Math.floor((Math.max(v[o + 2], v[o + 5], v[o + 8]) - z0) / c));
+    for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
+      const q = i * SURF.nz + k; (g[q] || (g[q] = [])).push(o);
+    }
+  }
+  SURF.n = n; SURF.on = 1;
+  _surfRaw.length = 0;
+  return n;
+}
+// **THE CELLS COME FROM THE SEGMENT'S OWN XZ BOX, NOT FROM A DDA.** A bolt half-step is 0.37 m
+// at full speed against an 8 m cell, so the box is one cell and occasionally four -- a DDA walk
+// would be more code to get wrong for a saving that does not exist at this length. If something
+// ever wants a sixty-metre ray through here, that is when it earns one.
+const _srH = { x: 0, y: 0, z: 0, nx: 0, ny: 1, nz: 0, t: 1 };
+function surfRay(ox, oy, oz, ex, ey, ez, out) {
+  if (!SURF.on) return 0;
+  const dx = ex - ox, dy = ey - oy, dz = ez - oz;
+  const c = SURF.cell;
+  let i0 = Math.floor((Math.min(ox, ex) - SURF.x0) / c), i1 = Math.floor((Math.max(ox, ex) - SURF.x0) / c);
+  let k0 = Math.floor((Math.min(oz, ez) - SURF.z0) / c), k1 = Math.floor((Math.max(oz, ez) - SURF.z0) / c);
+  if (i1 < 0 || k1 < 0 || i0 >= SURF.nx || k0 >= SURF.nz) return 0;
+  if (i0 < 0) i0 = 0;
+  if (k0 < 0) k0 = 0;
+  if (i1 > SURF.nx - 1) i1 = SURF.nx - 1;
+  if (k1 > SURF.nz - 1) k1 = SURF.nz - 1;
+  const v = SURF.v;
+  let bt = 2, bo = -1;
+  for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
+    const list = SURF.grid[i * SURF.nz + k];
+    if (!list) continue;
+    for (let q = 0; q < list.length; q++) {
+      const o = list[q];
+      // Moller-Trumbore, DOUBLE SIDED -- these shells are closed, so half of every building is
+      // wound away from you and a one-sided test would shoot straight through the far wall.
+      const ax = v[o], ay = v[o + 1], az = v[o + 2];
+      const ux = v[o + 3] - ax, uy = v[o + 4] - ay, uz = v[o + 5] - az;
+      const wx = v[o + 6] - ax, wy = v[o + 7] - ay, wz = v[o + 8] - az;
+      const px = dy * wz - dz * wy, py = dz * wx - dx * wz, pz = dx * wy - dy * wx;
+      const det = ux * px + uy * py + uz * pz;
+      if (det > -1e-10 && det < 1e-10) continue;
+      const inv = 1 / det;
+      const tx = ox - ax, ty = oy - ay, tz = oz - az;
+      const bu = (tx * px + ty * py + tz * pz) * inv;
+      if (bu < 0 || bu > 1) continue;
+      const qx = ty * uz - tz * uy, qy = tz * ux - tx * uz, qz = tx * uy - ty * ux;
+      const bv = (dx * qx + dy * qy + dz * qz) * inv;
+      if (bv < 0 || bu + bv > 1) continue;
+      const t = (wx * qx + wy * qy + wz * qz) * inv;
+      if (t < 0 || t > 1 || t >= bt) continue;
+      bt = t; bo = o;
+    }
+  }
+  if (bo < 0) return 0;
+  const ax = v[bo], ay = v[bo + 1], az = v[bo + 2];
+  const ux = v[bo + 3] - ax, uy = v[bo + 4] - ay, uz = v[bo + 5] - az;
+  const wx = v[bo + 6] - ax, wy = v[bo + 7] - ay, wz = v[bo + 8] - az;
+  let nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx;
+  const len = Math.hypot(nx, ny, nz) || 1;
+  nx /= len; ny /= len; nz /= len;
+  // **AND IT FACES THE WAY THE SHOT CAME FROM, NEVER THE WINDING.** A mark laid along the
+  // triangle's own outward normal is on the far side of the wall half the time, which is a mark
+  // you cannot see and reads exactly like the decal not working.
+  if (nx * dx + ny * dy + nz * dz > 0) { nx = -nx; ny = -ny; nz = -nz; }
+  out.t = bt; out.nx = nx; out.ny = ny; out.nz = nz;
+  out.x = ox + dx * bt; out.y = oy + dy * bt; out.z = oz + dz * bt;
+  return 1;
+}
+// SURF:END
+
+// ============================================================================================
 // THE BROAD PHASE (m124, `BGRID`, `boxesNear`)
 //
 // `BOXES` is scanned LINEARLY by five functions -- `groundAt`, `resolveBoxes`, `wallFind`,
@@ -6243,7 +6372,7 @@ function boxesNear(qx0, qx1, qz0, qz1, out) {
 // the first script in the head.
 // **EACH CALL SITE OWNS ITS OWN AND THAT IS NOT TIDINESS**: `ledgeFind` queries inside its own
 // loop over these results, so one shared array would be emptied under it half way through.
-const _bnG = [], _bnR = [], _bnW = [], _bnL = [], _bnC = [], _bnS = [];
+const _bnG = [], _bnR = [], _bnW = [], _bnL = [], _bnC = [], _bnS = [], _bnB = [], _bnF = [];
 
 // A BOX MAY BE TURNED, AND ITS AABB STAYS AS THE BROAD PHASE (m146). `wpOrient` writes `cs`,
 // `sn`, `cx`, `cz`, `hx` and `hz` onto a box whose axis-aligned bounds over-claim, and leaves
@@ -6282,6 +6411,8 @@ const _bnpG = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
 const _bnpC = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
 const _bnpW = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
 const _bnpL = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+const _bnpB = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+const _bnpF = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
 
 // The highest surface under (x,z) at or a step above `y`, else the floor at 0.
 // **THE TRIANGLES FIRST, THEN THE BOXES, AND THE HIGHER OF THE TWO WINS.** Weirdport's walkable
@@ -6474,6 +6605,56 @@ function camHit(x, y, z, pad, out) {
     }
   }
   return false;
+}
+// **A BOLT'S OWN BOX TEST, AND WHAT IT SKIPS IS THE POINT (m166, `boltBox`).** It is `camHit`
+// with one line added: a box marked `tri` is a box whose REAL triangles are in `SURF`, and
+// `surfRay` has already had its say about those. Without the skip the ray would place a perfect
+// mark on the brick and then the box a metre out in front of the brick would kill the NEXT
+// bolt in clear air -- the same floating hit, moved one frame later, which is worse than not
+// having fixed it because it would look fixed half the time.
+// **WHAT IS LEFT IS EVERYTHING WE HAVE NO TRIANGLES FOR**: his 179 breakables (their colliders
+// come from the breakables library, not from the collision file), the test site's ten boxes,
+// and the cars. Those still hit on a box face, correctly, because a box face is the best answer
+// anything has about them.
+function boltBox(x, y, z, pad, out) {
+  const skipTri = SURF.on;
+  for (const b of boxesNear(x - pad, x + pad, z - pad, z + pad, _bnB)) {
+    if (skipTri && b.tri) continue;
+    if (y <= b.miny - pad || y >= b.maxy + pad) continue;
+    if (b.cs !== undefined) { const d = boxNear(b, x, z, _bnpB); if (d >= 0 && d > pad) continue;
+                              if (out) hitFace(b, x, y, z, pad, _bnpB, out); return true; }
+    if (x > b.minx - pad && x < b.maxx + pad && z > b.minz - pad && z < b.maxz + pad) {
+      if (out) hitFace(b, x, y, z, pad, null, out);
+      return true;
+    }
+  }
+  return false;
+}
+// **HOW BIG THE THING IT LANDED ON ACTUALLY IS (m166, `hitFit`).** *"Some small objects get the
+// blast mark and the blast mark is bigger than the object."* A scorch is sized by the CHARGE,
+// which is right on a wall and absurd on a fire hydrant. So the object gets a say: the NARROWEST
+// half-extent of the smallest collider box containing the impact, which caps the mark.
+// A building's is ten metres and caps nothing; a lamp post's is fifteen centimetres and caps
+// everything. **Nothing is typed per object** -- it is the same box the shot was already tested
+// against, asked a different question. 0 means "no box here", which is the road and is not a
+// cap, and is a different answer from "a very small box" by construction.
+function hitFit(x, y, z) {
+  const pad = .25;
+  let best = 0;
+  for (const b of boxesNear(x - pad, x + pad, z - pad, z + pad, _bnF)) {
+    if (y < b.miny - pad || y > b.maxy + pad) continue;
+    let hx, hz;
+    if (b.cs !== undefined) {
+      if (boxNear(b, x, z, _bnpF) > pad) continue;
+      hx = b.hx; hz = b.hz;
+    } else {
+      if (x < b.minx - pad || x > b.maxx + pad || z < b.minz - pad || z > b.maxz + pad) continue;
+      hx = (b.maxx - b.minx) * .5; hz = (b.maxz - b.minz) * .5;
+    }
+    const m = Math.min(hx, hz, (b.maxy - b.miny) * .5);
+    if (!best || m < best) best = m;
+  }
+  return best;
 }
 // WHICH FACE OF `b` THE POINT IS ON. The TOP and the BOTTOM are read off the box's own height
 // first, because a bolt that lands on a roof is on the roof and a plan normal there would lay
@@ -7723,8 +7904,15 @@ function boltHit(b) {
   // hammer and to anything that detonates later. The footprint rides `hitK` like every other
   // spatial term in this function, and the CHARGE decides whether the rubble comes with it.
   if (b.hitN) {
-    decalHit(b.pos.x, b.pos.y, b.pos.z, b.hitN[0], b.hitN[1], b.hitN[2],
-             c > DECAL.bigAt ? 'blast' : 'alien', c, K * (.7 + c * .6));
+    // **THE MARK GOES ON THE SURFACE POINT, NOT ON THE BALL (m166).** `b.hitAt` is where
+    // `surfRay` actually crossed the triangle; `b.pos` was pulled back off it by the ball's own
+    // radius so the flash is not half inside the wall, and stamping the decal THERE would float
+    // it by exactly that much -- the bug this build is about, reintroduced by its own fix.
+    const hx0 = b.hitAt ? b.hitAt[0] : b.pos.x, hy0 = b.hitAt ? b.hitAt[1] : b.pos.y,
+          hz0 = b.hitAt ? b.hitAt[2] : b.pos.z;
+    decalHit(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2],
+             c > DECAL.bigAt ? 'blast' : 'alien', c, K * (.7 + c * .6),
+             hitFit(hx0, hy0, hz0));
     // AND A BREAKABLE TAKES THE HIT. The blast radius is what reaches it, so a charged shot
     // takes out the crate beside the one it hit and a fumble takes out neither.
     brkBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast,
@@ -8271,6 +8459,11 @@ const DECAL = {
   alphaTest: .08,    // the atlas padding, NOT the fade -- see above
   rubble: .45,       // how often a big blast also drops a rubble mark beside the scorch
   bigAt: .55,        // and what counts as a big blast (the bolt's own charge)
+  // **AND HOW BIG A MARK IS ALLOWED TO BE ON WHAT IT LANDED ON (m166).** `hitFit` measures the
+  // narrowest half-extent of the object; `fitK` is how many of those a mark may span, and
+  // `fitMin` is the floor -- a mark scaled all the way down to a bollard's width is a mark you
+  // cannot see, which is the opposite failure and just as useless.
+  fit: 1, fitK: 2.2, fitMin: .3,
 };
 const decal = { mesh: null, pos: null, uv: null, col: null, i: 0, live: 0,
                 by: {}, ready: 0, age: [], life: [] };
@@ -8336,7 +8529,7 @@ function decalLoad() {
 // suggested world size.
 const _dcT = new THREE.Vector3(), _dcB = new THREE.Vector3(), _dcN = new THREE.Vector3(),
       _dcU = new THREE.Vector3();
-function decalPut(x, y, z, nx, ny, nz, k, s) {
+function decalPut(x, y, z, nx, ny, nz, k, s, fit) {
   if (!DECAL.on || !decal.ready) return;
   const pool = decal.by[k]; if (!pool || !pool.length) return;
   const d = pool[(Math.random() * pool.length) | 0];
@@ -8355,7 +8548,10 @@ function decalPut(x, y, z, nx, ny, nz, k, s) {
   const a = Math.random() * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a);
   const tx = _dcT.x * ca + _dcB.x * sa, ty = _dcT.y * ca + _dcB.y * sa, tz = _dcT.z * ca + _dcB.z * sa;
   const bx = -_dcT.x * sa + _dcB.x * ca, by = -_dcT.y * sa + _dcB.y * ca, bz = -_dcT.z * sa + _dcB.z * ca;
-  const w = d.size_m * (s || 1) * (1 + (Math.random() * 2 - 1) * DECAL.vary);
+  let w = d.size_m * (s || 1) * (1 + (Math.random() * 2 - 1) * DECAL.vary);
+  // **AND THE OBJECT CAPS IT.** See `hitFit`: 0 means there was no box there at all -- the road,
+  // a deck, open terrain -- which is not a small object and must not be treated as one.
+  if (DECAL.fit && fit > 0) w = Math.min(w, Math.max(DECAL.fitMin, fit * DECAL.fitK));
   // **THE ASPECT IS THE ART'S AND IT IS IN THE FILE**, so a mark that is not square is not
   // squashed to fit a square quad.
   const hw = w * .5, hh = hw / (d.aspect || 1);
@@ -8402,9 +8598,9 @@ function decalStep(dt) {
 
 // WHICH MARK A WEAPON LEAVES. One place deciding, so the bolt, the hammer and anything after
 // them cannot disagree about what a blast looks like -- `kitOut()`'s rule, one system along.
-function decalHit(x, y, z, nx, ny, nz, kind, chg, s) {
+function decalHit(x, y, z, nx, ny, nz, kind, chg, s, fit) {
   if (!DECAL.on || !decal.ready) return;
-  decalPut(x, y, z, nx, ny, nz, kind, s);
+  decalPut(x, y, z, nx, ny, nz, kind, s, fit);
   // **AND A BIG BLAST ALSO SCATTERS RUBBLE**, which is what he asked for and is also what makes
   // a charged shot read as bigger than a fumbled one without a second scorch on top of the first.
   if (kind === 'blast' && (chg || 0) > DECAL.bigAt && Math.random() < DECAL.rubble) {
@@ -8417,7 +8613,7 @@ function decalHit(x, y, z, nx, ny, nz, kind, chg, s) {
     _dcU.crossVectors(_dcT, _dcB);
     const ox = Math.cos(a) * r, oz = Math.sin(a) * r;
     decalPut(x + _dcB.x * ox + _dcU.x * oz, y + _dcB.y * ox + _dcU.y * oz,
-             z + _dcB.z * ox + _dcU.z * oz, nx, ny, nz, 'rubble', s);
+             z + _dcB.z * ox + _dcU.z * oz, nx, ny, nz, 'rubble', s, fit);
   }
 }
 
@@ -8454,6 +8650,8 @@ function stepBolts(dt) {
     let dead = b.t > WEAP.boltLife;
     for (let k = 0; k < 2 && !dead; k++) {
       boltHome(b, dt * .5);
+      // WHERE IT WAS, because the impact is a SEGMENT question now and not a point one
+      const _px = b.pos.x, _py = b.pos.y, _pz = b.pos.z;
       b.pos.addScaledVector(b.vel, dt * .5);
       // A BODY BEFORE A BOX. A bolt that tested the world first would pass through a man
       // standing against a wall, which is exactly where anybody stands.
@@ -8493,10 +8691,24 @@ function stepBolts(dt) {
       // **AND IT REMEMBERS WHAT STOPPED IT, because `boltHit` runs a frame's worth of code
       // later and by then the only thing left is a position.** The ground is its own case and
       // its normal is not a guess.
+      // **THE REAL SURFACE FIRST, THE BOXES ONLY FOR WHAT HAS NO REAL SURFACE (m166).**
+      // `surfRay` is exact: it returns the point ON the brick and the brick's own normal, so
+      // the mark lies on the wall instead of on a box face a metre in front of it. It is also
+      // a SEGMENT rather than a sample, so nothing can tunnel through a thin wall -- which the
+      // padded point test could only ever approximate with a radius.
+      // **AND THE POINT IS PULLED BACK OFF THE SURFACE BY `WEAP.boltR`**, because the ball has
+      // a size: landing its CENTRE on the plane buries half the flash inside the wall.
       if (!dead) {
-        if (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR, _hitF)) {
+        if (surfRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _srH)) {
+          dead = true;
+          b.pos.set(_srH.x + _srH.nx * WEAP.boltR, _srH.y + _srH.ny * WEAP.boltR,
+                    _srH.z + _srH.nz * WEAP.boltR);
+          b.hitN = [_srH.nx, _srH.ny, _srH.nz]; b.hitBox = null;
+          b.hitAt = [_srH.x, _srH.y, _srH.z];
+        } else if (boltBox(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR, _hitF)) {
           dead = true; b.hitN = [_hitF.nx, _hitF.ny, _hitF.nz]; b.hitBox = _hitF.box;
-        } else if (b.pos.y < 0) { dead = true; b.hitN = [0, 1, 0]; b.hitBox = null; }
+          b.hitAt = null;
+        } else if (b.pos.y < 0) { dead = true; b.hitN = [0, 1, 0]; b.hitBox = null; b.hitAt = null; }
       }
     }
     b.g.position.copy(b.pos);
@@ -12823,6 +13035,7 @@ function buildWpCollision(g) {
         B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
         C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
         nTri++; triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+        surfAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
       }
       return;
     }
@@ -12832,6 +13045,20 @@ function buildWpCollision(g) {
     // boxes (his own note says so -- "props are simple boxes; trees are 0.7 m trunk boxes")
     // and the four that are not go through the rasteriser with the buildings, which is what
     // the name test would have got wrong in both directions.
+    // **AND EVERY SOLID TRIANGLE GOES INTO `SURF` HERE TOO (m166).** Weirdport's solids never
+    // reach `triAdd` at all -- they go straight to boxes -- so without this line a bolt in the
+    // other city would still be marking a rasterised box face. Same fix, same place, one
+    // builder along.
+    {
+      const ns = idx ? idx.count : pos.count;
+      for (let i = 0; i < ns; i += 3) {
+        const ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
+        A.fromBufferAttribute(pos, ia).applyMatrix4(o.matrixWorld);
+        B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
+        C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
+        surfAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+      }
+    }
     const nt = (idx ? idx.count : pos.count) / 3;
     // **AND ONLY IF IT IS ACTUALLY AXIS-ALIGNED (m131).** See `axisBox`: the two diagonal
     // plaza rails were a 106 m2 slab each, and anything else turned in a future export is
@@ -12844,7 +13071,7 @@ function buildWpCollision(g) {
       // shortcut and false of every run the rasteriser emits, and there is no way to tell them
       // apart afterwards. A rasterised run is a slice of a shape and turning one means nothing.
       BOXES.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
-                   minz: wb.min.z, maxz: wb.max.z, plain: 1 });
+                   minz: wb.min.z, maxz: wb.max.z, plain: 1, tri: 1 });
       nBox++; nPlain++;
       return;
     }
@@ -12854,14 +13081,16 @@ function buildWpCollision(g) {
     // the slice from the ground up, and the player could not have moved at all.
     const got = [];
     solidColumns(o, WP.cols, got);
-    if (got.length) { for (const c of got) BOXES.push(c); nBox += got.length; nRaster++; }
+    if (got.length) { for (const c of got) { c.tri = 1; BOXES.push(c); } nBox += got.length; nRaster++; }
     else { skipped++; }
   });
   const n = triBuild();
+  const nSurf = surfBuild();
   const cells = boxGrid();
   WP.rails = rails;
   console.log('[melee] weirdport collider: ' + n + ' walkable tris of ' + nTri + ' kept from ' +
-    nGround + ' ground meshes, ' + nBox + ' boxes (' + nPlain + ' plain, ' + nRaster +
+    nGround + ' ground meshes, ' + nSurf + ' surface tris for impacts, ' +
+    nBox + ' boxes (' + nPlain + ' plain, ' + nRaster +
     ' rasterised), ' + nMetal + ' metal nodes, ' + skipped + ' skipped, grid ' + cells +
     ' cells, ' + Math.round(performance.now() - t0) + ' ms');
   if (!n) note('WP NO GROUND');
@@ -13331,6 +13560,7 @@ function buildTCityCol(g) {
         B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
         C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
         nTri++; triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+        surfAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
       }
       return;
     }
@@ -13355,13 +13585,16 @@ function buildTCityCol(g) {
       B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
       C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
       nTri++; triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+      surfAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
     }
   });
   const n = triBuild();
+  const nSurf = surfBuild();
   const nBox = tcObbBoxes();
   const cells = boxGrid();
-  TCITY.rails = rails; TCITY.tris = n; TCITY.boxes = BOXES.length;
-  console.log('[melee] toon collider: ' + n + ' walkable tris of ' + nTri + ' from ' + nG +
+  TCITY.rails = rails; TCITY.tris = n; TCITY.boxes = BOXES.length; TCITY.surf = nSurf;
+  console.log('[melee] toon collider: ' + n + ' walkable tris of ' + nTri +
+    ' (' + nSurf + ' surface tris for impacts) from ' + nG +
     ' ground and ' + nS + ' solid meshes, ' + nBox + ' ORIENTED boxes, ' + nMetal +
     ' metal (grindable) nodes' + (rails.length ? ' [' + rails.join(' ') + ']' : '') + ', ' +
     skip + ' skipped, grid ' + cells + ' cells, ' + Math.round(performance.now() - t0) + ' ms');
@@ -13401,6 +13634,12 @@ function tcObbBoxes() {
       minx: c[0] - ex, maxx: c[0] + ex, minz: c[2] - ez, maxz: c[2] + ez,
       miny: c[1] - h[1], maxy: c[1] + h[1],
       cx: c[0], cz: c[2], hx: h[0], hz: h[2], yaw, cs, sn,
+      // **`tri` MEANS "THE REAL SHAPE OF THIS THING IS IN `SURF`" (m166), and it is what lets a
+      // bolt ignore this box entirely.** Every one of these 491 wraps an object whose own
+      // triangles are now in the surface grid, so for an IMPACT the box has nothing left to
+      // say -- and saying it anyway is exactly what stamped the mark a metre out in mid-air.
+      // It still stops him WALKING: that half is untouched and is stated rather than implied.
+      tri: 1,
       kind: o.kind, name: o.name,
     });
     n++;
@@ -18940,10 +19179,26 @@ function frame() {
                 (HUSKS.length ? ' \u00b7 HUSK' + HUSKS.length : '');
     const inf = (() => { let n = 0; for (const d of DUMMIES) if (d.wasK) n++;
       return n ? ' \u00b7 INF' + n : ''; })();
-    const brkC = BREAK.length ? ' \u00b7 BRK' + BREAK.reduce((n, b) => n + (b.dead ? 0 : 1), 0) +
-      '/' + BREAK.length + (WRECKS.length ? 'w' + WRECKS.length : '') +
-      (SPOUTS.length ? ' SPOUT' + SPOUTS.length : '') +
-      (DECAL.on && !decal.ready ? ' NOATLAS' : '') : '';
+    // **AND HOW FAR THE NEAREST ONE IS (m166).** *"I'm unable to find anything that's breakable
+    // like objects in the scene... what's breakable, I can't find any breakable objects."* The
+    // count was already here and a count is not a direction: 179 of them in a city of 1,382
+    // objects, and every one of them looks like the prop beside it. A DISTANCE is a thing you
+    // can walk down. **And no `BRK` token at all means there are none in THIS world** -- they
+    // are the toon city's -- which is the other half of his sentence and was the same picture.
+    const brkC = BREAK.length ? (() => {
+      let live = 0, bd = 1e9;
+      for (const q of BREAK) {
+        if (q.dead) continue;
+        live++;
+        const d2 = (q.cx - p.pos.x) ** 2 + (q.cz - p.pos.z) ** 2;
+        if (d2 < bd) bd = d2;
+      }
+      return ' \u00b7 BRK' + live + '/' + BREAK.length +
+        (live ? ' ' + Math.sqrt(bd).toFixed(0) + 'm' : '') +
+        (WRECKS.length ? 'w' + WRECKS.length : '') +
+        (SPOUTS.length ? ' SPOUT' + SPOUTS.length : '') +
+        (DECAL.on && !decal.ready ? ' NOATLAS' : '');
+    })() : '';
     const wn = p.mphK && (() => { const w = WEAP.worn[slotNow().key];
       return w && w.root && !rig.mounts[w.root] ? ' NOHAND' : ''; })();
     // **AND HOW TALL HE IS DRAWN, AGAINST A REAL ONE OF THE SAME KIND (m132).** His drawn
@@ -19410,6 +19665,24 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
     decalHit(x, y + .002, z, 0, 1, 0, k || 'blast', 1, s2 || 1);
     return 'mark ' + (k || 'blast') + ' at ' + x.toFixed(1) + ',' + z.toFixed(1);
   },
+  // **`mel.brk()` PUTS HIM BESIDE THE NEAREST ONE (m166).** *"I can't find any breakable
+  // objects."* If it puts him next to a dumpster then FINDING them was the problem and the
+  // feature works; if it says there are none here, he is in the wrong world and that is the
+  // answer. `city.bar()`'s rule, one asset along -- and the two cases have to say different
+  // things or the report comes back the same shape next build.
+  brk: () => {
+    const p = player; let best = null, bd = 1e9;
+    for (const b of BREAK) { if (b.dead) continue;
+      const d2 = (b.cx - p.pos.x) ** 2 + (b.cz - p.pos.z) ** 2;
+      if (d2 < bd) { bd = d2; best = b; } }
+    if (!best) return BREAK.length ? 'all ' + BREAK.length + ' already broken -- mel.reload()'
+      : 'no breakables in this world. They are the toon city\'s: tap the world key, or ?w=toon';
+    const a = Math.atan2(best.cx - p.pos.x, best.cz - p.pos.z);
+    p.pos.set(best.cx - Math.sin(a) * 2.6, best.cy + .6, best.cz - Math.cos(a) * 2.6);
+    p.vel.set(0, 0, 0); p.heading = p.faceH = a;
+    return best.type + ' at ' + best.cx.toFixed(1) + ',' + best.cz.toFixed(1) +
+           ' (was ' + Math.sqrt(bd).toFixed(0) + ' m away), ' + BREAK.length + ' in the city';
+  },
   smash: () => {
     const p = player; let best = null, bd = 1e9;
     for (const b of BREAK) { if (b.dead) continue;
@@ -19430,7 +19703,7 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
                return player.riding ? 'on' : 'held'; },
   // THE WORLD, LIVE (m124). `mel.world('weirdport')` is the key without the key, which is what
   // a desktop wants; `mel.WP` and `mel.TRI` and `mel.BGRID` are the dials.
-  WORLD, WP, TRI, BGRID, triGround, boxesNear, wpRoot,
+  WORLD, WP, TRI, SURF, BGRID, triGround, surfRay, hitFit, boxesNear, wpRoot,
   // THE TINT'S COLOUR SPACE, LIVE (m126). `mel.tint(1)` reads the vertex colours as sRGB and
   // `mel.tint(0)` raw -- a uniform, so it is an A/B on the phone with no rebuild. See `WP.tint`.
   tint: v => { WP.tintMode = clamp(v | 0, 0, 2); WPTINT.value = WP.tintMode;

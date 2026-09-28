@@ -7,6 +7,86 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE MARK FLOATED BECAUSE THE WALL WAS IN NO COLLIDER AT ALL (m166, `SURF`, `surfRay`,
+  `boltBox`, `hitFit`).** *"When I shoot like a building it puts the little blast mark on there,
+  it's floating, like floating just off away from the building... some like small objects get the
+  blast mark and the blast mark is bigger than the object. I'm still wondering how the other
+  context window says just use the triangles for collide so I'm confused why we're not doing
+  that, because the box colliders are horrid. They're absolutely horrible."*
+  **HE IS RIGHT, AND HE HAD BEEN RIGHT THREE TIMES RUNNING.** m159 answered the first two by
+  feeding every `bld_`/`prop_`/`solid_` mesh through `triAdd` and writing that up as *"the whole
+  of the walkable fix"* -- and `triAdd` REJECTS a steep face by construction, which is the entire
+  point of it. Counted on his own collision file, before a line was written:
+      total triangles        37,702
+      kept by `triAdd` (UP)  10,994   <- decks, kerb tops, dumpster lids
+      thrown away            26,693   <- **every WALL in the city, in no collider at all**
+  So the one surface a bolt actually hits was the one surface nothing had, and the impact point
+  and normal came from `hitFace` off a BOX. **Measured, old path against new, same shot, the
+  shipped `surfRay` against the shipped `tcObbBoxes` arithmetic:**
+      west face   box died 13.71,61.10   triangle 13.73,61.10   mark was 0.02 m out
+      south face                                                            0.14
+      north face                                                            0.34
+      diagonal                                                              0.22
+      a corner                                                              0.58
+  Up to half a metre of air on a RECTANGULAR building, which is his screenshot exactly, and the
+  error grows with every angle and curve the box does not follow.
+  **SO THE TRIANGLES GO IN A SECOND TIME, ALL OF THEM, AND IT IS A RAY TEST RATHER THAN A
+  HEIGHTFIELD.** `TRI` answers "how high is the ground here", which has one answer per (x, z) and
+  is exactly why it can only hold floors -- **a wall has no height**. `SURF` answers "what does
+  this segment hit", which a wall can answer. Two questions, two stores: merging them would put
+  every wall into `triGround` and each one would read as ground you can stand on.
+  **AND `boltBox` IS THE HALF THAT IS EASY TO MISS.** A box carrying `tri` wraps an object whose
+  real shape is now in `SURF`, and the bolt skips it -- because without that the ray would place
+  a perfect mark on the brick and the box a metre in front of the brick would kill the NEXT shot
+  in clear air. Same floating hit, one frame later, **which is worse than not fixing it because
+  it would look fixed half the time.** What still hits on a box is everything we have no
+  triangles for: the 179 breakables (their colliders come from the breakables library, not the
+  collision file), the test site's ten boxes, the cars.
+  **COVERAGE WAS CHECKED RATHER THAN ASSUMED, because it is the one way this goes backwards.**
+  Every box the bolt now skips must have real triangles inside it or the shot flies through
+  something it used to stop against: **bld 71/71, prop 231/231, solid 142/142 -- 0 empty.**
+  **AND THE MARK IS BOUNDED BY WHAT IT LANDED ON (`hitFit`).** A scorch is sized by the CHARGE,
+  which is right on a wall and absurd on a hydrant. The narrowest half-extent of the smallest
+  collider box containing the impact caps it, `fitK` wide with a `fitMin` floor -- nothing typed
+  per object, it is the same box the shot was already tested against asked a different question:
+      bld    71 boxes  min half 2.19 m  ->  cap 4.8 m at worst, so a wall mark is NEVER capped
+      prop  231         median 0.29     ->  0.64 m
+      solid 142         median 0.07     ->  the 0.30 m floor, on a 14 cm post
+  **0 IS "NO BOX HERE", AND IT IS NOT A SMALL OBJECT.** The road, a deck and open terrain all
+  return 0 and must not be capped, which is why the test is `fit > 0` and not `fit < something`.
+  **THE HIT POINT AND THE BALL ARE TWO DIFFERENT PLACES.** `b.pos` is pulled back off the surface
+  by `WEAP.boltR` so the flash is not half inside the wall; `b.hitAt` is where the ray actually
+  crossed the triangle. Stamping the decal at `b.pos` would float it by exactly the ball's radius
+  -- **the bug this build is about, reintroduced by its own fix** -- so the mark takes `hitAt`.
+  **AND THE NORMAL FACES THE WAY THE SHOT CAME FROM, NEVER THE WINDING.** These shells are
+  closed, so half of every building is wound away from you; a mark laid along the triangle's own
+  outward normal is on the far side of the wall and reads exactly like the decal not working.
+  **WALKING IS STILL BOXES AND THAT IS STATED RATHER THAN QUIETLY LEFT OUT.** A segment test says
+  what a bolt hit; it does not push a body out of a wall, and swapping `resolveBoxes` for a
+  triangle sweep is a whole build with the locomotion on the other end of it. What moved here is
+  every IMPACT -- and an impact is the one place a box's error is VISIBLE, because it leaves a
+  mark on screen that says how far out the box was.
+  **THE COST, MEASURED:** 37,702 triangles = 1.36 MB of Float32, a 24 ms build at load, a 25x24
+  grid at 8 m, and **3.2 us per half-step ray** (5,000 in 16 ms) -- so twenty bolts in flight is
+  0.13 ms a frame. Verified against his real collision file through the lifted `SURF:` text:
+  west/south faces hit with normals (-1.00, 0, 0) and (0, 0, -1.00), straight down onto the road
+  at y 0.000 with n +1.00.
+  **AND THE CELLS COME FROM THE SEGMENT'S XZ BOX, NOT A DDA.** A half-step is 0.37 m against an
+  8 m cell, so it is one cell and occasionally four; a DDA is more code to get wrong for a saving
+  that does not exist at this length.
+
+- **179 BREAKABLES IN A CITY OF 1,382 OBJECTS IS NOT FINDABLE, AND A COUNT IS NOT A DIRECTION
+  (m166).** *"I'm unable to find anything that's breakable like objects in the scene... what's
+  breakable, I can't find any breakable objects."* They were all there and all working; the chip
+  said `BRK179/179` and every one of them looks like the prop standing next to it. **A DISTANCE
+  is a thing you can walk down**, so the chip carries the nearest one's, and `mel.brk()` puts him
+  beside it. If it stands him at a dumpster then FINDING them was the problem and the feature
+  works; if it says there are none here, he is in the wrong world -- **and the two have to say
+  different things or the report comes back the same shape next build.** `city.bar()`'s rule.
+  **AND NO `BRK` TOKEN AT ALL MEANS THIS WORLD HAS NONE**, which is the other half of his
+  sentence: they are the toon city's, and from the test site "there are none here" and "they are
+  broken" were one picture.
+
 - **I SLOWED DOWN THE WRONG TRANSFORM, AND THE TWO ARE NOT THE SAME SYSTEM (m165).** *"I don't
   know how you interpreted what I said as thinking it had to do with the transform from zap to a
   civilian -- that's not what I was talking about. The thing I was talking about is the transform

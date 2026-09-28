@@ -467,6 +467,9 @@ rule that has to be in front of me *before* I know which system I am in.
 - **PUT THE NUMBER THAT TELLS THE CASES APART IN THE CHIP.** There is no console on a phone, so
   "it never loaded", "it loaded wrong" and "it loaded and is elsewhere" are one picture.
 - **A NUMBER THAT EXISTS TO RESCUE A STAND-IN GOES WHEN THE STAND-IN DOES.**
+- **A COLLIDER THAT REJECTS IS NOT A FILE THAT LACKS (m166).** `triAdd` keeps only up-facing
+  faces, so "the triangles are in" and "the WALLS are in" are different claims and this file
+  made the first while meaning the second for seven builds. Count what a store actually kept.
 - **A TASTE DECISION IS HIS.** Put it on a switch he can reach on the phone; do not ship a pick
   and an argument for it.
 
@@ -524,7 +527,8 @@ means anything you can carry from one situation to the next.
   2,327 draw calls to ~72; m158 added his collision file, his `weirdkit_tint` paint, the rim and
   bounce lights, and **the KTX2 bake — 176 MB of texture down to 22**; m159 **threw the box
   rasteriser out** and took his own `toon_city_obb.json` (491 oriented boxes) plus the solids'
-  triangles through `triAdd` — see `NOTES.md`.
+  triangles through `triAdd`; **m166 put EVERY triangle in a second store (`SURF`) and moved the
+  bolt's impact onto it** — see `NOTES.md`.
   **`TCITY.file` POINTS AT THE BAKED GLB** — his own export is `TCITY.raw`, and **the bake has to
   be re-run (`npm run ktx models/toon_city/toon_city_visual.glb etc1s`, about 10 minutes) after
   EVERY re-export**, or the phone plays old textures on new geometry. The tell is `npm run bump`
@@ -535,11 +539,17 @@ means anything you can carry from one situation to the next.
   instancing pass sees every object as a plain node. **The skip on `o.isInstancedMesh` in both
   its passes STAYS** — it costs nothing and an `isInstancedMesh` is also an `isMesh`, so a
   traversal that merges without it silently destroys the inner instances.
-  What is left: **no spawn search** (0,0, harmless), the bodies still stand at test-site
-  coordinates, and **231 props and 189 posts are boxes only** — his collision file carries the
-  71 buildings' triangles and almost nothing else, so a dumpster's top is its box's flat `maxy`
-  rather than its real lean. Rolling off a leaning surface wants that object in the collision
-  file.
+  What is left: **no spawn search** (0,0, harmless) and the bodies still stand at test-site
+  coordinates.
+  **AND THE OLD NOTE HERE SAID HIS COLLISION FILE CARRIES "the 71 buildings' triangles and almost
+  nothing else". THAT WAS WRONG AND m166 MEASURED IT.** The file is nine meshes — `road_city`,
+  `ground_sidewalks`, `ground_lots`, `ground_curbs`, 71 `bld_*`, `prop_street`,
+  `prop_tree_trunks` and `solid_posts` — **37,702 triangles covering everything**, and every one
+  of the 444 boxes it is paired with has real triangles inside it (bld 71/71, prop 231/231,
+  solid 142/142, 0 empty). What was missing was never the data: `triAdd` throws away 26,693 of
+  those triangles as "not a floor", which is right for WALKING and left every wall in the city
+  with no surface at all. **A store that rejects is not the same thing as a file that lacks.**
+  Walking is still boxes; every IMPACT is now the real triangle.
   **THE BREAKABLES, THE DECALS AND THE WATER SPOUT ALL LANDED AT m160** — 179 breakables in 7
   types, 16 impact marks in one pooled draw call, and `fx_hydrant_water_spout` off his own
   marker. See `NOTES.md`. **The collider view draws the walkable TRIANGLES now as well as the
@@ -548,8 +558,12 @@ means anything you can carry from one situation to the next.
   What is still missing on them: **no spray sound** (`SPOUT.snd` is the hook — this repo has no
   water recording and one is not faked), no breakable reacts to a CAR hitting it, and the piles
   are capped at 6 because a pile is 3–5 draw calls.
-  `mel.TCITY` / `mel.LIGHTX` / `mel.DECAL` / `mel.BRK` / `mel.SPOUT` are live;
-  `mel.mark()`, `mel.smash()` and `mel.spout()` fire one of each where he stands.
+  **AND THEY WERE UNFINDABLE UNTIL m166.** 179 of them among 1,382 objects, each looking exactly
+  like the prop beside it, and the chip only carried a COUNT — which is not a direction. It
+  carries the nearest one's DISTANCE now, and **`mel.brk()` puts him beside it**; no `BRK` token
+  at all means this world has none, which is the other half of the same report.
+  `mel.TCITY` / `mel.LIGHTX` / `mel.DECAL` / `mel.BRK` / `mel.SPOUT` / `mel.SURF` are live;
+  `mel.mark()`, `mel.brk()`, `mel.smash()` and `mel.spout()` fire one of each where he stands.
   `inst`/`merge`/`tex`/`col` want a reload.
 
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
