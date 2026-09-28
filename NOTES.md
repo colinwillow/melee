@@ -12,6 +12,34 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 
 
+
+- **FIRING IN AUTO TURNED HIM 90 DEGREES OFF THE SHOT, AND IT WAS A HELD NUMBER NOBODY REFRESHED
+  (m177, `aimComp`).** *"When I'm shooting my character points 90 degrees to the right instead of
+  straight down the direction."* Driven first, so the guess was not the fix: through the shipped
+  `stepKit`/`stepPlayer`, AUTO and CHARGE, standing and walking, **`faceH` sat on `cam.az` to 0.0
+  degrees in every case** -- where he FACES was right, so the fault was in what is DRAWN on top.
+  Read out of `zap.glb`: `shoot` holds the barrel 18 deg right of his nose with the chest bladed
+  48 deg, and `aimComp` is the rigid yaw that turns him until the barrel lies down the shot --
+  capped at 40 deg and, during `fireT > 0`, HELD at `compHold` so a single shot's follow-through
+  does not swing. **AUTO arms and fires on the SAME frame and re-fires faster than the shot beat
+  ends**, so `fireT` is never 0 for a whole burst and the hold held a value it had never written
+  this commitment: whatever was left over, up to the cap either way. 40 the wrong way on top of a
+  48-degree blade is the ninety he saw. AUTO now tracks the barrel live, and `compHold` is cleared
+  whenever he is not committed, so a stale hold cannot reach the next burst either.
+- **THE ROLL-UP SHUTTER IS DOUBLE DOORS, BECAUSE THE PICTURE ON IT IS (m177, `kitDoubleDoors`,
+  `kitCutX`, `KIT.wide`, `KIT.doorOpen`).** *"The doors retract upward, and yet the image of the
+  door is not that kind of a door... they should open like normal double doors."* His file marks
+  the wide opening `door: "rollup"`; the region of `WK_M_doors` it samples (u .628-.874, v .669-.848)
+  is -- cropped out of the atlas and LOOKED AT -- a pair of steel doors with push bars and a seam
+  down the middle. The atlas does carry a real roll-up drawing elsewhere; this panel is not it.
+  So the one panel is CUT AT THE SEAM into two leaves: every vertex past the cut is pulled onto it
+  and its UV re-interpolated along its own edge (checked: both leaves 1.25 m, the UVs meeting at
+  .751 exactly, the back faces mirrored), each leaf shifted so its outer edge is its hinge, and
+  both run through the hinged door's own code with `flip` -1 on the right leaf so the pair opens
+  as a pair. A collider box each, as a child, so `kitPartBox` needed no case.
+  **WHETHER A DOOR OPENS AT ALL IS HIS CALL** -- *"maybe they don't open at all and you just have
+  to shoot them"* -- so it is the `DOORS SWING / SHUT` chip on the FX key, shown only in the house.
+  `KIT.wide = 'rollup'` puts m171's shutter back for the day one is drawn on it.
 - **HIS SECOND HOUSE EXPORT: GLASS, PIPES AND IVY, AND ONLY THE IVY NEEDED CODE (m176, `kitIvy`,
   `kitIvyDrop`, `kitAttr`).** *"Glass windows, the pipe system and ivy are built into the test house
   and re-exported."* Read out of the file before anything was wired:
