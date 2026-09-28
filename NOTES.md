@@ -7,6 +7,91 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE BOARD IS SHREDWORLD'S NOW: A FOLLOW CAMERA, THE BARREL ROLL, AND THE BLASTER IN HIS
+  HANDS WHILE HE RIDES (m167).** *"There are discrepancies between Shredworld and our version of
+  the skateboarding mode... the camera doesn't do a follow cam when you're on the skateboard,
+  whereas it should. When you're in the air after an ollie, a swipe left and a swipe right on the
+  left stick do not do the barrel roll that they're supposed to. I want to make it so that I can
+  still use my blaster when I'm riding and you can shoot and aim with the right stick just like
+  Shredworld. When you're riding you need to be able to go a little bit faster... it's almost like
+  a car, it's going -- you don't have to continue holding forward to go."* Four things, and only
+  one of them was a number.
+  **1. THE FOLLOW CAMERA IS BOARD-ONLY, AND THAT IS NOT A CONVENIENCE.** A board goes where it
+  POINTS, so the lens wants to be behind it and letting go of the pad should not leave you looking
+  at its side. On foot it is the opposite -- he turns on the spot in any direction the left thumb
+  picks, and a lens that swings in behind every one of those means the world spins whenever he
+  does. Shredworld had to be told that twice (c105) and it is one condition here.
+  **IT IS WRITTEN INSIDE `stepCam` BECAUSE `cam.az` HAS EXACTLY ONE WRITER** -- every other
+  writer of that number lives there for the same reason, and an auto-follow anywhere else is the
+  loop that never settles. Three things stand it down and each is a different reason: a DRAG is
+  deliberate (`cam.idle` restarts), the AIM owns the bearing while the trigger is up (a follow
+  would drag his shot off whatever he is pointing at), and the AIR makes a spin unreadable if the
+  lens comes round with him.
+  **2. THE BARREL ROLL IS GEOMETRY, AND THE FLICK WAS BAILING OUT.** `boardFlick`'s left-pad
+  branch read `if (|up| < |dx|) return` -- "sideways on the left pad is steering", which is true
+  on the GROUND and is nothing at all in the air. There is no clip, so the whole of him turns on
+  `rig.root.rotation.z`, applied innermost on an XYZ root and therefore in his own frame -- the
+  same channel the deck's bank uses, which is the proof it is the right one.
+  **AND IT TURNS ABOUT HIS WAIST, NOT HIS FEET.** The root sits on the deck; about the origin his
+  head would sweep a 1.7 m circle and he would ORBIT rather than roll. The offset is the pivot
+  held still while the body comes round it -- Rz(a) on (0,-k,0) less where it started -- and it
+  has to be added to the MAN AND THE DECK alike or the board stays behind while he goes round it.
+  **ONE PLACE COMPUTES IT, AND IT IS THE ONE THAT RUNS FIRST.** `boardPose` is called before the
+  root is placed, so the alternative is either two computations to keep in step or a frame-stale
+  vector -- and at a full turn in under a second, a frame is visibly a board lagging its rider.
+  `_roll` is zeroed ABOVE every early return in that function, or a frame that leaves early
+  strands the body displaced off a roll that has ended.
+  **A ROLL OWNS THE AIR WHILE IT RUNS.** The thumb that fired it is still on the edge of the pad,
+  so without `p.barrel` gating the air spin he yaws through his own roll -- two rotations at once,
+  which reads as neither. (Shredworld's `TRICK.rollLock`, learnt the same way.)
+  **WHICH WAY A FLICK ROLLS HIM IS A DIAL (`rollSide`), NOT AN ARGUMENT.** +X is his left, so a
+  positive `rotation.z` drops his right side, which makes a flick RIGHT a roll to the right. That
+  is REASONED and **this file gets handedness backwards about half the time when it reasons** --
+  and no harness here can build a skin, so it cannot be settled offline. One number to move.
+  **3. RIDING AND SHOOTING: THE DECK AND THE WEAPON WERE ONE VARIABLE.** `boardOut()` required
+  `slotNow().board`, so taking the blaster took the deck away -- which is Shredworld's own c84
+  `KIT.on` bug (*one variable, two facts*) with the fields renamed. The deck IN HIS HAND is still
+  a slot, because that really is what he is carrying; the deck UNDER HIS FEET is `p.riding` and
+  nothing else, and `applySlot` now only clears it when the slot being taken IS the board.
+      mount     `applySlot(lastWeapon())` DIRECTLY, never `swapGo` -- the reach sets `p.swap`,
+                which would refuse the mount that caused it. His hands are busy anyway.
+      step off  `boardDrop()`: remember the weapon, put the deck back in his hands
+      knocked   the SAME `boardDrop()`, which it never used to need -- before m167 the deck WAS
+                the slot, so putting it back was automatic. Without it a car hit leaves him with
+                a blaster and no board anywhere, which reads exactly like the board being gone.
+      the tap   skips the board slot while he is ON it, or a tap meant for the hammer dismounts
+  **AND A SWAP NO LONGER DROPS HIM OFF THE DECK.** It had to while they were one slot: reaching
+  into the bag WAS putting the board away. `boardMount` keeps its own `p.swap` test, because a
+  hand in a bag is not also stepping onto a board -- a different question, so a different test.
+  **THE POSE IS AN OVERRIDE, NOT A BLEND, WHICH IS c115'S WHOLE LESSON.** Laying a gun pose ON TOP
+  of a push cycle gives the arms the push's swing PLUS the pose -- **averaging two clips that both
+  key an arm does not give one arm doing both things, it gives a shrug** (m19 paid a build for
+  that). So every board clip gains a `__legs` half and the gun pose keeps spine-up: every bone
+  claimed exactly once, and they COMPOSE. The two at full weight summing to 2 is correct here and
+  only here, because they are DISJOINT.
+  **`aimIdle` HAD TO JOIN `SPLIT.up` AS WELL AS `SPLIT.legs`.** Its legs half is what the ordinary
+  armed gait stands on; its UPPER half is the gun CARRIED AT REST, which is what a man riding with
+  a blaster is doing most of the time. Without it the only upper pose is `aimPose` -- the SIGHTED
+  hold -- and he rides the whole city down the barrel.
+  **THREE THINGS IN THAT BRANCH WOULD HAVE BEEN QUIET BUGS:** a BODY FLIP must not be halved (a
+  somersault with the arms held still), the push clip's `setScale` and its once-a-cycle seek have
+  to go on the half that is actually PLAYING (Shredworld's c177, one clone along), and the
+  "nothing resolved" fallback must NOT count the gun pose -- it is spine-up only, so a table
+  carrying it and nothing else is still a pair of legs at BIND, which is the case the guard is for.
+  **THE STATED GAP IS THE BARREL.** `stepSkate` owns the heading (the wheels are what steer), so
+  he faces down the board while the reticle can be anywhere -- the shot goes where the reticle is,
+  because `fireBolt` has always taken `cam.az`, but the GUN visibly disagrees. Shredworld answered
+  that with a spine twist at c126; **melee deleted its spine-twist mechanism after three attempts
+  each of which made it worse** (see the `aimComp` note), and it is not going back in. This is
+  Shredworld's own c113 state, which is where that repo sat for thirteen builds.
+  **4. AND THE SPEED WAS TWO NUMBERS.** The coasting half was already true -- `stepSkate` calls
+  `integrate` with `ctl = 0`, so nothing in there scrubs a board and `SK8.roll` is the only drag
+  it has. What moved is the ceiling and the drag: `top` 13 -> 19 (a sprint on foot is 7.2, so the
+  board is plainly the fastest thing here) and `roll` .11 -> .065, a 6.3 s half life to 10.7 --
+  let go at 19 and he is still doing 16.4 three seconds later, which is "it's just going".
+  **`pushV` RIDES `(1 - sp/top)`**, so raising the ceiling tapers the last stretch rather than
+  making the first one harsher, which is why only those two had to move.
+
 - **THE MARK FLOATED BECAUSE THE WALL WAS IN NO COLLIDER AT ALL (m166, `SURF`, `surfRay`,
   `boltBox`, `hitFit`).** *"When I shoot like a building it puts the little blast mark on there,
   it's floating, like floating just off away from the building... some like small objects get the

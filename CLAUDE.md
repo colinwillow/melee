@@ -486,6 +486,16 @@ means anything you can carry from one situation to the next.
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
 
+**ON THE BOARD (m167) THE TWO HALVES MEAN THE SAME THINGS**, which is the whole point of having
+a map at all:
+
+| | left | right |
+|---|---|---|
+| hold | steer; forward = push, pulled back = brake (held, latched) | **hold UP**: the blaster, exactly as on foot |
+| tap | next weapon (skips the board slot while he is on it) | ollie — or catch a rail, in the air |
+| flick | up/down = front/back flip · **left/right = BARREL ROLL** · down while HOLDING it = step on, on it = step off | the deck's own tricks (kickflip / 360 / the two shove-its) |
+| drag | — | orbit the camera (and a follow cam takes over `CAM.idle` after the thumb lifts) |
+
 - **THE HAMMER'S WIND-UP IS THE SAME GESTURE AS THE TRIGGER, AND THE SAME CODE (`padUp`).**
   Both are "the thumb pushed UP past `fireAt`, kept past `keepAt`, inside `arc`". Until m46 the
   wind-up had no direction test at all and armed on any hold, so a camera drag swung the hammer.
@@ -578,6 +588,17 @@ means anything you can carry from one situation to the next.
   actually walking at. A faster approach than the clip can sell is a scramble.
 - **The rapid fire shares the blaster's model**, which makes the two slots identical to look at.
   Its own GLB is one `file:` in `WEAP.slots`.
+- **THE SKATEBOARD IS SHREDWORLD'S AS OF m167** — a board-only follow camera, the air barrel
+  roll on the left pad's sideways flick, **the blaster live while riding** (the deck stopped
+  being a weapon slot; `p.riding` is its own fact and every board clip has a `__legs` half so
+  the gun pose composes with it rather than averaging into a shrug), and `top` 13 → 19 with
+  `roll` .11 → .065 so a board coasts like a vehicle. See `NOTES.md`.
+  **THE STATED GAP IS THE BARREL**: `stepSkate` owns the heading, so he faces down the board
+  while the reticle can be anywhere. The SHOT goes where the reticle is; the gun visibly does
+  not. Shredworld answered that with a spine twist at c126 and **melee deleted its spine-twist
+  mechanism after three attempts each of which made it worse** — that is not going back in.
+  **AND `SK8.trick.rollSide` IS A DIAL, NOT A MEASUREMENT**: no harness here can build a skin,
+  so which way a flick rolls him could not be settled offline. `-1` if it is backwards.
 - **THE SKATEBOARD HAS TRICKS AS OF m152.** Push, roll, steer, ollie, land, and in the AIR:
   **right pad flick** up = kickflip, down = 360 flip, left/right = the two pop shove-its;
   **left pad flick** up/down = front/back flip. **AND IT GRINDS (m153)** -- a tap of the right
@@ -587,7 +608,7 @@ means anything you can carry from one situation to the next.
   himself: *"I also wanna build some skate ramps. Maybe we can do that later."*). **And there is no riding-and-
   shooting**: the board is a kit SLOT, so the blaster is put away to take it out, which is
   Shredworld's c113/c115 (independent slots plus an upper-body override) and is a build.
-  `SK8.top` 13 m/s and every other number in `SK8` is live on `mel.SK8`.
+  `SK8.top` is 19 m/s as of m167 and every other number in `SK8` is live on `mel.SK8`.
 - **The cars are not drivable**, which he deferred himself (*"maybe after"*). They DO hit you
   as of m149 -- see `CARHIT` -- and **a guard still blunts one**, because a car goes through
   `playerHurt` like every other blow. Blocking a car is silly and it is also a deliberate act
