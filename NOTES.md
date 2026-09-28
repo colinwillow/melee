@@ -7,6 +7,54 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **I SLOWED DOWN THE WRONG TRANSFORM, AND THE TWO ARE NOT THE SAME SYSTEM (m165).** *"I don't
+  know how you interpreted what I said as thinking it had to do with the transform from zap to a
+  civilian -- that's not what I was talking about. The thing I was talking about is the transform
+  between the civilians and the warrior alien."* There are **two** transforms in this game and
+  they share no code:
+      `MORPH` / `stepMorph`   the DNA gun. ZAP becomes a civilian. A MODEL SWAP on the player.
+      `VIRUS` / `virusGo`     the virus gun. A civilian becomes the warrior. A RESPAWN of a BODY.
+  m164 put `dur` and the silhouette morph on the first one, which he had not complained about,
+  and left the second -- the one he has now asked about twice -- untouched. **Both are reverted:
+  `MORPH.dur` back to 0.90 and `MORPH.shape` to 0.** The machinery stays wired because it is the
+  same method the virus transform will eventually want, and because `mel.MORPH.shape = 1` is what
+  produced the verdict below.
+  **AND HIS VERDICT ON THE SHAPE MORPH IS THE ANSWER TO m163's QUESTION.** *"It's like taller and
+  skinny now, it's weird -- it just looks way worse."* That is the transfer's measured 11-34%
+  error seen at full strength on a body you are looking straight at. **At this quality the answer
+  to "do I need to do the sculpts" is yes**, and it took putting it on screen to find that out --
+  which is what the silhouette metric could not settle and never claimed to.
+
+- **THE VIRUS TURN WAS A RESPAWN, WHICH IS INSTANT BY CONSTRUCTION (m165, `HUSKS`, `huskStep`).**
+  *"It still happens so quickly you can't see any transform at all, it's just a blink of an
+  eye."* `virusGo` called `bodyGone` and `bodySpawn` on the same frame, so there was never a
+  moment with anything IN it -- the sparks, the flash and the chest thump were decoration on a
+  cut. A duration alone would not have helped: there was nothing to spend it on.
+  **AND THERE IS NO VERTEX MORPH AVAILABLE HERE, WHICH IS WORTH BEING CLEAR ABOUT.** A hick and
+  the warrior are different meshes with different vertex counts; m163's deltas are all on ZAP's
+  topology and can only ever deform HIS mesh. Nothing about that changes for these two bodies
+  without the resculpt.
+  **SO BOTH BODIES ARE ON SCREEN FOR THE TRANSITION, WHICH IS WHAT HE DESCRIBED ANYWAY.** *"It's
+  almost like the monster alien is coming out of the last skin."* The old body stays as a HUSK,
+  swelling and whitening, while the new one grows out of it and collapses the shell in the last
+  `huskGo` of the beat. A skin that starts shrinking immediately reads as the body deflating
+  rather than as something emerging from it.
+  **THE HUSK IS THE OLD ROOT ITSELF, NOT A CLONE, AND THAT IS WHY IT HOLDS THE RIGHT POSE.**
+  `mixer.stopAllAction()` leaves the skeleton exactly where the last update put it -- nothing
+  rewrites those bones afterwards -- so the shell freezes standing the way he was standing. A
+  `skeletonClone` with no mixer would be a T-pose, which is the m41 lesson about bind poses
+  pointed at a corpse.
+  **AND `bodyGone` KEEPS ITS MATERIALS ALIVE FOR IT.** They are cloned per body (m39: flashing
+  one man must not flash all three) so the husk can whiten without touching anybody else -- but
+  it means the dispose moves to the end of the husk's life rather than being skipped.
+  **THE NEW BODY'S GROW IS A SHARE OF ITS OWN MEASURED SCALE**, so a re-export at any size still
+  arrives at the right thing. Eased out, because a body that grows linearly reads as a model
+  being scaled -- which is what it is.
+  **STATED GAP: THE COLLIDER DOES NOT GROW WITH HIM.** `d.K.r` is the kind's radius and a
+  30%-size warrior has a full-size one for about a second. Arguable either way -- he IS there --
+  and it is written down rather than quietly fixed.
+  `mel.VIRUS.dur` is the knob and **0 is m162's instant respawn exactly**, husk and all skipped.
+
 - **THE SILHOUETTE ACTUALLY MOVES NOW, AND THE OLD TRANSFORM HAD NOTHING TO SLOW DOWN (m164,
   `SHAPE`, `shapeSet`, `MORPH.dur`).** *"It works surprisingly well, but that's partially because
   the transform happens in like a few frames -- it's so so so fast. The reason I even wanted to
