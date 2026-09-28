@@ -7,6 +7,40 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **EVERYBODY GOES BOTH WAYS, AND THE CHEST THUMP (m163, `VIRUS.aliens`, `isAlien`, `civKinds`).**
+  *"The warriors can't actually turn into civilians -- it's only the civilians that can turn into
+  warriors and then back. I think they should kind of just go for everyone."* m162 gated the cure
+  on `d.wasK`, which made a BORN warrior permanent -- and his reason is the one that matters:
+  *"it's not just gonna be a gun that transforms them, it's gonna be something else, otherwise
+  there'd be no point of shooting them."* The gun is a DEBUG trigger, and a rule that only works
+  on bodies the trigger itself created is a rule that only exists in debug.
+  **`wasK` STOPS BEING A GATE AND BECOMES A MEMORY.** Shoot the hick you infected and you get the
+  hick back; shoot a born warrior and you get a civilian picked out of the roster. One line, and
+  the specific case still beats the general one.
+  **BUT THE KNOCK-DOWN REVERT STAYED NARROW, AND THAT IS NOT AN OVERSIGHT.** Opening the cure to
+  every warrior is right for a trigger you AIM and wrong for one that fires on its own: with
+  `virusBack` alone, every born warrior beaten down three times becomes a random civilian and the
+  street fills with them unattended -- which is the same argument that keeps CARS out of
+  `brkBlast`. His own sentence is the narrower one: *"he shrinks back into THE normal civilian
+  character."* `VIRUS.downsAny` opens it if that turns out to be the game.
+  **A POOL RATHER THAN `FOE`, BECAUSE HE HAS ALREADY SAID THERE WILL BE MORE.** *"I'm also gonna
+  have different versions of warriors so they're not all the same, but it's fine for now."* So
+  `VIRUS.aliens` is a list, `isAlien(K)` asks the list, and a second warrior is one entry rather
+  than a grep for `=== FOE`.
+  **AND `KINDS` IS ONE ROSTER NOW.** `[FOE, HICK, HOBO, SKATER, BIKER, CIVIL, CLANCY, ...CIVILS]`
+  was written inline for the `STUCK` defaults and the outbreak needs the same set. Two copies of a
+  roster is this repo's oldest mistake wearing its smallest hat -- `npm run wear` kept its own
+  `FILES` map and measured four characters while saying nothing at all about the fifth.
+  **THE CHEST THUMP IS NAMED, NOT ROLLED.** *"When the civilian transforms into a warrior I want
+  the thing where he stretches and beats his chest -- somebody breaking out of the skin."* The
+  get-up rolls one of his two taunts at random, which is right for standing up off the floor and
+  wrong here: `standing_taunt_battlecry` is not the beat he described. `VIRUS.taunt` names
+  `standing_taunt_chest_thump` and falls back to the kind's own pool if a re-export renames it,
+  so a missing clip is a quiet transform rather than a body stuck in a state whose clip has no
+  weight. Entering the state is four fields and no new code -- it plays its clip, fires that
+  clip's own sound beats in order and hands back to `idle` on its own.
+  **AND ONLY THE ALIEN TAUNTS.** A civilian coming back out of one has nothing to crow about.
+
 - **HOW CLOSE A SHAPE TRANSFER GETS WITHOUT A RESCULPT: HUMANS ~11-15%, THE WARRIOR 34% (m163,
   `npm run morph`).** *"I just wanna see how close we can get without me doing the sculpts, so
   that I know whether I need to go that route -- cause that's gonna be days or weeks of work."*
