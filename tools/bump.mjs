@@ -30,11 +30,18 @@ s = s.replace(/const BUILD = '[^']*';/, `const BUILD = '${next}';`);
 s = s.replace(/<b id="buildN">[^<]*<\/b>/, `<b id="buildN">${next}</b>`);
 s = s.replace(/<span id="bootBuild">[^<]*<\/span>/, `<span id="bootBuild">${next}</span>`);
 
-const DIRS = ['models', 'models/characters', 'models/vehicles', 'models/weapons', 'models/buildings', 'models/towers', 'models/streets', 'models/toon_city', 'images', 'audio', 'audio/plasma_sounds', 'audio/alien_orc_grunt_sounds', 'audio/hit_sounds', 'audio/creature_noises', 'audio/footsteps',
+const DIRS = ['models', 'models/characters', 'models/vehicles', 'models/weapons', 'models/buildings', 'models/towers', 'models/streets', 'models/toon_city', 'models/characters/morph', 'images', 'audio', 'audio/plasma_sounds', 'audio/alien_orc_grunt_sounds', 'audio/hit_sounds', 'audio/creature_noises', 'audio/footsteps',
   // m124: his Portland slice. THREE new folders, because readdirSync is not recursive -- the
   // ninth time this tax has been paid across these repos, and the one that bites silently.
   'models/portland/slice_downtown', 'models/portland/textures', 'models/portland/three'];
-const EXT = /\.(glb|png|jpe?g|webp|mp3|ogg|wav)$/i;
+// **`.json` AND `.bin` WERE MISSING AND THAT WAS A SILENT STALENESS BUG FOR TWO BUILDS (m164).**
+// `DIRS` is the tax everybody remembers; this is the one underneath it. m159 shipped
+// `toon_city_obb.json` (491 collider boxes) and m160 shipped `impact_marks.json` -- both went
+// through `A()`, both were invisible to this filter, so **a re-export of either would have kept
+// the old one on his phone for ever** with nothing on screen to say why. It surfaced only
+// because m164's `shapes.bin` reported "none changed" on a file that had just been written.
+// The extension list is the hash's real reach, not `DIRS`.
+const EXT = /\.(glb|png|jpe?g|webp|mp3|ogg|wav|json|bin)$/i;
 const map = {};
 for (const d of DIRS) {
   if (!fs.existsSync(d)) continue;

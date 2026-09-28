@@ -449,7 +449,10 @@ rule that has to be in front of me *before* I know which system I am in.
 - **ONE WRITER PER VALUE.** `cam.az`, `p.heading`, a bone, a sun direction. Two writers is a
   loop that never settles, and it has shown up five times.
 - **A NEW ASSET FOLDER GOES IN `DIRS` IN `bump.mjs`** or every file in it goes stale silently.
-  Eleven times.
+  Eleven times. **AND CHECK `EXT` TOO** -- the folder can be listed and the file still never
+  hashed, which is how `toon_city_obb.json` and `impact_marks.json` shipped stale-by-construction
+  for two builds (m164). **The tell is a bump printing a hash count that did not move on a run
+  where a file did change.**
 - **A TOOL MUST RUN THE SHIPPED TEXT, NOT A COPY OF THE RULE.** Lift it between its `NAME:`
   markers. A harness that measures a path the game does not take measures a different game —
   this repo's oldest and most expensive mistake.

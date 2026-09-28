@@ -233,6 +233,7 @@ console.log('\n' + 'name'.padEnd(10) + ['H','head','shoulder','chest','hip','thi
 console.log(row('ZAP', silhouette(A.count, A.P, A.own, A.joints)));
 fs.mkdirSync(OUT, { recursive: true });
 const man = { base: ZAP, count: A.count, targets: [] };
+const bins = [];
 for (const f of targets) {
   const B = await read(f);
   const r = transfer(A, B);
@@ -249,15 +250,32 @@ for (const f of targets) {
   console.log('');
   console.log(row('want:' + nm.slice(0,4), want));
   console.log(row('got :' + nm.slice(0,4), got));
-  const err = ['H','head','shoulder','chest','hip','thigh','calf','arm','fore']
+  // **ONLY THE SIX COLUMNS THAT MEAN ANYTHING.** `chest`, `hip` and `shoulder` are horizontal
+  // BANDS and these are T-pose meshes, so all three catch the arms and report nonsense -- the
+  // girl's hip came back 310% off, which is a fact about my ruler and not about the transfer.
+  // Height, head width and the four limb radii are per-bone or full-mesh and cannot be fooled.
+  const err = ['H','head','thigh','calf','arm','fore']
     .map(q => want[q] ? Math.abs(got[q]-want[q]) / want[q] : 0);
   console.log('  '.padEnd(10) + err.map(e => (e*100).toFixed(1).padStart(8) + '%').join(''));
   console.log('  miss ' + r.miss + '/' + A.count + '  mean move ' + (r.mean*100).toFixed(2) +
     ' cm(file)  worst ' + (r.worst*100).toFixed(2) + '  mean err ' +
     (err.reduce((a,b)=>a+b,0)/err.length*100).toFixed(1) + '%');
-  fs.writeFileSync(OUT + nm + '.bin', Buffer.from(sm.buffer));
-  man.targets.push({ key: nm, file: nm + '.bin', miss: r.miss, mean: r.mean, worst: r.worst });
+  bins.push(sm);
+  man.targets.push({ key: nm, miss: r.miss, mean: +r.mean.toFixed(5), worst: +r.worst.toFixed(4),
+                     err: +(err.reduce((a,b)=>a+b,0)/err.length).toFixed(4) });
 }
-fs.writeFileSync(OUT + 'morph.json', JSON.stringify(man, null, 1));
-console.log('\nwrote ' + OUT + ' (' + man.targets.length + ' targets, ' +
-  (A.count*12/1024/1024).toFixed(2) + ' MB each)');
+// **ONE FILE, NOT FIVE, because every runtime asset costs a fetch and a hash line.** The targets
+// are the same length by construction (they are all deltas on zap's topology), so the manifest
+// needs an order and nothing else -- and a five-way fetch that half-arrives is five ways for the
+// morph to be partly there.
+// **AND THE VERTEX COUNT IS IN THE MANIFEST ON PURPOSE.** These deltas are indexed by zap's
+// draco-decoded vertex ORDER, and the game decodes the same buffer with the same decoder -- but
+// if a re-export ever changes that count the deltas are silently applied to the wrong vertices,
+// which is a character turning inside out with nothing on screen saying why. The loader refuses
+// on a mismatch rather than drawing it.
+const all = new Float32Array(bins.length * A.count * 3);
+bins.forEach((b, i) => all.set(b, i * A.count * 3));
+fs.writeFileSync(OUT + 'shapes.bin', Buffer.from(all.buffer));
+fs.writeFileSync(OUT + 'shapes.json', JSON.stringify(man, null, 1));
+console.log('\nwrote ' + OUT + 'shapes.bin  ' + man.targets.length + ' targets x ' + A.count +
+  ' verts = ' + (all.byteLength/1024/1024).toFixed(2) + ' MB');

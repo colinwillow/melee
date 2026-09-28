@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m163</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m164</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m163</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m164</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,9 +584,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm163';
+const BUILD = 'm164';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -3897,9 +3897,24 @@ const SLAM = {
 // ============================================================================================
 const MORPH = {
   on: 1,
-  out: .34,          // the body he is wearing goes white over this
-  hold: .22,         // and stays white while the mesh is swapped
-  back: .34,         // then the new one comes up out of it
+  // **THE WHOLE TRANSFORM IS ONE NUMBER NOW, AND IT WAS 0.90 s (m164).** *"It works surprisingly
+  // well, but that's partially because the transform happens in like a few frames -- it's so so
+  // so fast. What I was envisioning was that you could play it slower and there'd be a visual of
+  // the silhouette morphing. Since it's so fast it was just like the snap of some fingers."*
+  // Exactly right, and the three phases are why it could not be tuned: `out`, `hold` and `back`
+  // are a SHAPE and `dur` is how long that shape takes, so dragging one number stretches all
+  // three in proportion and the beats stay where they are. `mel.MORPH.dur = 3` is a three-second
+  // transform with the same rhythm.
+  dur: 2.4,          // seconds, end to end. 0.90 is what m112..m163 shipped.
+  out: .34,          // ... the body he is wearing goes white over this SHARE of it
+  hold: .22,         // ... and stays white while the mesh is swapped
+  back: .34,         // ... then the new one comes up out of it
+  // **AND THE SILHOUETTE ACTUALLY MOVES NOW (m164, `SHAPE`).** The old transform SWAPPED the
+  // mesh at the top of the white flash, so there was never anything to see morph -- it was a
+  // cut hidden under a flash, and slowing it down would only have made the cut more obvious.
+  // Zap's mesh now deforms toward the target's shape across the whole `out` phase, the swap
+  // happens at the peak, and `back` is the real mesh arriving. `MORPH.shape = 0` is the cut.
+  shape: 1,
   white: 6.0,        // how hard the emissive drives at full flash
   tall: 1,           // 1 = drawn at the KIND's own height, 0 = at his. See the note.
   // ---- HIS MOVESET, WORN BY SOMEBODY ELSE (m119). See `mphBorrow` for the whole argument.
@@ -15552,13 +15567,22 @@ function stepMorph(dt) {
   const cur = p.mphK ? p.mphK.mph : rig.base;
   // ONE PROGRESS ACROSS THE WHOLE THING, so the blob runs continuously THROUGH the swap rather
   // than restarting at it. The phases still own the tint; `u` owns everything that is drawn.
-  const tot = Math.max(.06, MORPH.out + MORPH.hold + MORPH.back);
-  const u = p.mphU = clamp((p.mphSt === 'out' ? p.mphT : MORPH.out + MORPH.hold + p.mphT) / tot, 0, 1);
+  const OUT = mphOut(), HOLD = mphHold(), BACK = mphBack();
+  const tot = Math.max(.06, OUT + HOLD + BACK);
+  const u = p.mphU = clamp((p.mphSt === 'out' ? p.mphT : OUT + HOLD + p.mphT) / tot, 0, 1);
   if (p.mphSt === 'out') {
-    mphTint(cur.mats, clamp(p.mphT / Math.max(.02, MORPH.out), 0, 1));
-    if (p.mphT >= MORPH.out + MORPH.hold) {
+    mphTint(cur.mats, clamp(p.mphT / Math.max(.02, OUT), 0, 1));
+    // **THE SILHOUETTE, ON THE WAY IN.** Zap's own mesh deforms toward the target's shape across
+    // the whole `out` phase, so what the white flash is hiding is a body that has ALREADY become
+    // the other one -- rather than the cut it used to hide. It only ever runs while HIS mesh is
+    // the one on screen; going the other way is `back`'s job, below.
+    shapeSet(cur, p.mphNext, clamp(p.mphT / Math.max(.02, OUT), 0, 1));
+    if (p.mphT >= OUT + HOLD) {
       mphTint(cur.mats, 0);                            // the body coming off goes back to itself
       cur.model.visible = true;                        // and is never left hidden for next time
+      // WHAT HE IS COMING OUT OF, so `back` can run the shape morph in reverse on the mesh that
+      // is about to be on screen. Read before the swap, because after it `p.mphK` is the new one.
+      p.mphWas = p.mphK || null;
       const to = p.mphNext ? mphSkin(p.mphNext) : null;
       mphWear(to);
       // **AND HE COMES OUT OF IT HOLDING THE GUN, IN A MODE THAT DOES NOT TRANSFORM HIM AGAIN
@@ -15595,11 +15619,17 @@ function stepMorph(dt) {
                { col: MORPH.hot, spread: 6.5, up: 3.4, r: .5, size: .15, life: .6 });
     }
   } else {
-    const k = 1 - clamp(p.mphT / Math.max(.02, MORPH.back), 0, 1);
+    const k = 1 - clamp(p.mphT / Math.max(.02, BACK), 0, 1);
     mphTint(cur.mats, k);
+    // **AND ON THE WAY OUT, WHICH IS THE SAME MESH DOING THE SAME WORK BACKWARDS.** Coming back
+    // to himself, the body on screen during `back` IS zap -- so he emerges FROM the shape he was
+    // wearing rather than appearing in it. Going to another kind there is nothing to do: their
+    // mesh has no targets and is already the right shape.
+    shapeSet(cur, p.mphWas, k);
     if (k <= 0) {
       mphTint(cur.mats, 0);
       p.mphSt = ''; p.mphNext = null; p.mphU = 0; p.mphPA = null; p.mphPB = null;
+      shapeSet(cur, null, 0); p.mphWas = null;
       mphBlobOff();
       // **AND THE KIT HUD COMES BACK, WHICH IS THE OTHER HALF OF HIS REPORT (m123).** *"Your gun
       // is out but it thinks you're in disarmed mode, and then you have to take out your gun even
@@ -16110,6 +16140,119 @@ function buildMace(g) {
 // the same picture -- which is the whole reason `hp` being 6 rather than 3 needs it.
 // It FACES THE CAMERA each frame and is hidden while he is untouched, so an idle street is not
 // a row of floating gauges.
+// ============================================================================================
+// THE SILHOUETTE MORPH (m164, `SHAPE`, `shapeLoad`, `shapeSet`)
+//
+// *"The reason I even wanted to morph was so that you could play it slower and there'd be a
+// visual of the silhouette morphing. Since it's so fast it kind of was just the snap of some
+// fingers. I want to physically see the transform."*
+//
+// **THE OLD TRANSFORM HAD NOTHING TO SLOW DOWN.** `mphWear` SWAPS the whole model at the top of
+// the white flash -- so the mesh on screen before it and the mesh after it are two different
+// objects and the flash is there to hide the cut. Stretching that over three seconds would only
+// have made the cut easier to see. What makes a silhouette move is one mesh whose vertices go
+// somewhere, and that is what `npm run morph` produced: every character's shape expressed as a
+// per-vertex delta on ZAP'S OWN TOPOLOGY, which is the only topology they can share.
+//
+// **SO THE MORPH IS ALWAYS ZAP'S MESH, IN BOTH DIRECTIONS.** Going out, his body deforms into
+// the target across the whole `out` phase and the swap at the peak is between two shapes that
+// already match. Coming back, the mesh on screen IS his, so it emerges FROM the shape it was
+// wearing. A hick's mesh has no targets and never needs any.
+//
+// **THE VERTEX COUNT IS CHECKED AND A MISMATCH REFUSES.** These deltas are indexed by zap's
+// DRACO-DECODED vertex order -- the game decodes the same buffer with the same decoder, so they
+// agree by construction -- but a re-export that changes the count would apply them to the wrong
+// vertices, which is a character turning inside out with nothing on screen saying why.
+// `npm run morph` after every re-export of his, and this is what says when that was missed.
+//
+// **WHAT IT IS NOT: 11% on the humans and 34% on the warrior** (`npm run morph`, m163). The
+// limbs and the height land; fine detail smears where the topologies disagree, and a vertex
+// whose bone the target has not got (Clancy's fingers, the girl's hair) does not move at all.
+// It is here so he can look at it and decide whether the real blend shapes are worth days.
+const SHAPE = {
+  on: 1,
+  file: 'models/characters/morph/shapes.bin',
+  json: 'models/characters/morph/shapes.json',
+  // **THE KEY IS THE GLB'S OWN BASENAME**, so the manifest and the roster cannot drift: a kind
+  // is matched to a target by the file it was loaded from and by nothing else.
+  ease: 1,           // 1 = smoothstep the influence, 0 = linear. A silhouette that eases reads
+                     // as a body changing; one that ramps linearly reads as a slider moving.
+};
+const shape = { ready: 0, idx: {}, mesh: null, n: 0 };
+// **THE THREE PHASES ARE SHARES OF ONE DURATION.** They used to be absolute seconds, which is
+// why the transform could not be tuned: three numbers that have to keep their ratio is a rhythm
+// nobody can drag. Normalised, `MORPH.dur` stretches all three together and `dur = 0.90` is
+// byte-for-byte the beat m112 shipped.
+const mphSum = () => Math.max(.01, MORPH.out + MORPH.hold + MORPH.back);
+const mphOut = () => MORPH.dur * MORPH.out / mphSum();
+const mphHold = () => MORPH.dur * MORPH.hold / mphSum();
+const mphBack = () => MORPH.dur * MORPH.back / mphSum();
+
+// WHICH TARGET A KIND USES. `null` is the player's own body, which is the base and has no delta.
+function shapeIndex(K) {
+  if (!K || !K.file) return -1;
+  const b = String(K.file).split('/').pop().replace(/\.glb$/i, '');
+  const i = shape.idx[b];
+  return i === undefined ? -1 : i;
+}
+
+function shapeLoad() {
+  if (!SHAPE.on || shape.ready) return;
+  Promise.all([
+    fetch(A(SHAPE.file)).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null),
+    fetch(A(SHAPE.json)).then(r => r.ok ? r.json() : null).catch(() => null),
+  ]).then(([buf, man]) => {
+    if (!buf || !man || !man.targets || !man.targets.length) { note('NO SHAPES'); return; }
+    // ZAP'S OWN SKINNED MESH, which is the base the deltas were computed against. `rig.base` is
+    // his record whatever he happens to be wearing right now, so this is right at any moment.
+    let m = null;
+    (rig.base && rig.base.model || rig.model).traverse(o => { if (!m && o.isSkinnedMesh) m = o; });
+    if (!m) { note('NO SHAPE MESH'); return; }
+    const have = m.geometry.attributes.position.count;
+    if (have !== man.count) {
+      // **THE ONE FAILURE THAT MUST NOT BE SILENT.** Applying these to the wrong vertex order
+      // does not look like a bug, it looks like the character exploding -- and the cause would
+      // be a re-export three days earlier.
+      note('SHAPE ' + have + 'v NOT ' + man.count);
+      console.warn('[melee] shapes.bin is for ' + man.count + ' vertices and the mesh has ' +
+                   have + ' -- re-run `npm run morph` after a re-export of zap');
+      return;
+    }
+    const F = new Float32Array(buf);
+    const need = man.targets.length * have * 3;
+    if (F.length < need) { note('SHAPE SHORT'); return; }
+    const attrs = [];
+    man.targets.forEach((t, i) => {
+      shape.idx[t.key] = i;
+      attrs.push(new THREE.BufferAttribute(F.subarray(i * have * 3, (i + 1) * have * 3), 3));
+    });
+    m.geometry.morphAttributes.position = attrs;
+    m.geometry.morphTargetsRelative = true;      // these are DELTAS, not absolute positions
+    // **`updateMorphTargets()` IS WHAT BUILDS THE INFLUENCE ARRAY**, and without it
+    // `morphTargetInfluences` is undefined and every write below is a silent no-op on an
+    // object that looks perfectly fine.
+    m.updateMorphTargets();
+    for (let i = 0; i < attrs.length; i++) m.morphTargetInfluences[i] = 0;
+    shape.mesh = m; shape.n = attrs.length; shape.ready = 1;
+    console.log('[melee] shapes: ' + attrs.length + ' targets on ' + have + ' verts [' +
+      man.targets.map(t => t.key + ' ' + ((t.err || 0) * 100).toFixed(0) + '%').join(', ') + ']');
+  });
+}
+
+// DRIVE ONE. `skin` is whose mesh is on screen -- the morph only ever applies to ZAP's, because
+// his is the only topology the deltas are on. `K` is the kind being blended toward (or away
+// from) and `k` is how far.
+function shapeSet(skin, K, k) {
+  if (!shape.ready || !shape.mesh || !shape.mesh.morphTargetInfluences) return;
+  const inf = shape.mesh.morphTargetInfluences;
+  // **ONLY WHILE HIS OWN BODY IS THE ONE DRAWN.** `rig.base` is his record; anything else on
+  // screen is a different mesh entirely and these influences are not about it.
+  const mine = skin === rig.base || (skin && skin.model === (rig.base && rig.base.model));
+  const i = mine && SHAPE.on ? shapeIndex(K) : -1;
+  const w = i < 0 ? 0 : (SHAPE.ease ? k * k * (3 - 2 * k) : k);
+  for (let q = 0; q < shape.n; q++) inf[q] = q === i ? w : 0;
+}
+
 // ============================================================================================
 // THE OUTBREAK (m162, `VIRUS`, `virusOK`, `virusGo`, `bodyGone`)
 //
@@ -18718,6 +18861,10 @@ function frame() {
     // which is every world but the toon city.
     // HOW MANY OF THE STREET ARE ALIENS. "I shot him and nothing happened" and "he turned and
     // walked off" are one picture from a phone, and a count that MOVES is what tells them apart.
+    // AND WHETHER THE DELTAS ARRIVED. "The morph looks the same as it did" is two bugs from a
+    // phone -- the file never loaded, or it loaded and the shape is just not very good -- and
+    // only this tells them apart.
+    const shp = SHAPE.on && !shape.ready ? ' \u00b7 NOSHAPE' : '';
     const inf = (() => { let n = 0; for (const d of DUMMIES) if (d.wasK) n++;
       return n ? ' \u00b7 INF' + n : ''; })();
     const brkC = BREAK.length ? ' \u00b7 BRK' + BREAK.reduce((n, b) => n + (b.dead ? 0 : 1), 0) +
@@ -18748,7 +18895,7 @@ function frame() {
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + inf + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + inf + shp + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
     // **THE KEYS SIT UNDER THE CHIP, AND THE CHIP IS THE ONE HUD ELEMENT THAT GROWS (m128).**
@@ -19110,6 +19257,10 @@ async function init() {
                cw: rig.cw, bones: rig.bones, faceOff: rig.faceOff, mounts: rig.mounts,
                mats: mphMats(rig.model), h: RIG.height, stride: STEP.clip, bind: rig.bind };
   player.mphH = RIG.height;
+  // **AFTER `rig.base`, because that is the record the loader reads his mesh out of**, and not
+  // awaited: 0.8 MB of deltas has no business on the boot path, and a transform that arrives
+  // before them is the old cut, which is exactly what it was last week.
+  shapeLoad();
 
   // **THE SPAWN'S HEIGHT, AFTER EVERY BUILDER.** Its x and z are set in the world branch above,
   // because the crowd is placed relative to them; the y is taken here, where everything that
@@ -19141,6 +19292,23 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // the nearest alien that came out of one, and `mel.outbreak()` turns everybody -- which is the
   // only way to see what a street of them looks like without shooting eight rounds.
   VIRUS, virusGo, virusOK, virusBack,
+  // THE SILHOUETTE MORPH, LIVE (m164). `mel.MORPH.dur` is the whole transform in seconds --
+  // 0.90 is what shipped before this and 2.4 is the default now. `mel.shape('hick_skinny', .6)`
+  // holds his body 60% of the way into a hick and LEAVES it there, which is the only way to
+  // look at the shape itself rather than at a transform going past.
+  // **NOT `shape,` AND `shape:` IN ONE OBJECT.** The shorthand and the function are the same
+  // KEY, so the later one silently wins and the state object is simply unreachable -- a thing
+  // that reads as fine and is a `mel.shape.ready` that is always undefined.
+  SHAPE, shapeState: shape,
+  shape: (key, k) => {
+    if (!shape.ready) return 'shapes not loaded';
+    if (key === undefined) return Object.keys(shape.idx).join(', ');
+    const i = key === null || key === 0 ? -1 : shape.idx[key];
+    if (key && i === undefined) return 'no such shape. have: ' + Object.keys(shape.idx).join(', ');
+    const inf = shape.mesh.morphTargetInfluences;
+    for (let q = 0; q < shape.n; q++) inf[q] = q === i ? (k === undefined ? 1 : k) : 0;
+    return i < 0 ? 'cleared' : key + ' at ' + (k === undefined ? 1 : k);
+  },
   infect: back => {
     const p = player; let best = null, bd = 1e9;
     for (const d of DUMMIES) {

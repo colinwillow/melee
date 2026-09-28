@@ -7,6 +7,50 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE SILHOUETTE ACTUALLY MOVES NOW, AND THE OLD TRANSFORM HAD NOTHING TO SLOW DOWN (m164,
+  `SHAPE`, `shapeSet`, `MORPH.dur`).** *"It works surprisingly well, but that's partially because
+  the transform happens in like a few frames -- it's so so so fast. The reason I even wanted to
+  morph was so you could play it slower and there'd be a visual of the silhouette morphing. Since
+  it's so fast it was just the snap of some fingers."*
+  **`mphWear` SWAPS THE WHOLE MODEL**, so the mesh before the white flash and the mesh after it
+  are two different objects -- the flash exists to hide a CUT. Stretching that over three seconds
+  would only have made the cut easier to see, which is why "just add a slider" was not the whole
+  job. What makes a silhouette move is one mesh whose vertices go somewhere, and that is exactly
+  what `npm run morph` (m163) produced: every character's shape as a per-vertex delta on ZAP'S
+  topology, which is the only topology they can share.
+  **SO IT IS ALWAYS ZAP'S MESH, IN BOTH DIRECTIONS.** Going out, his body deforms into the target
+  across the whole `out` phase and the swap at the peak is between two shapes that already match.
+  Coming back, the mesh on screen IS his, so `back` runs the same morph in reverse and he emerges
+  FROM the shape he was wearing. A hick's mesh has no targets and never needs any -- and
+  `shapeSet` refuses unless the drawn skin is `rig.base`, so there is no state where it could
+  apply deltas to somebody else's vertices.
+  **THE THREE PHASES BECAME SHARES OF ONE DURATION.** `out`/`hold`/`back` were absolute seconds,
+  which is precisely why the transform could not be tuned: three numbers that have to keep their
+  ratio is a rhythm nobody can drag. Normalised, `MORPH.dur` stretches all three together --
+  **0.90 s is byte-for-byte the beat m112 shipped** and 2.4 is the new default.
+  **`updateMorphTargets()` IS WHAT BUILDS THE INFLUENCE ARRAY.** Without it
+  `morphTargetInfluences` is undefined and every write is a silent no-op on an object that looks
+  perfectly fine. And `morphTargetsRelative = true`, because these are deltas and not positions.
+  **THE VERTEX COUNT IS CHECKED AND A MISMATCH REFUSES TO DRAW.** The deltas are indexed by
+  zap's DRACO-DECODED vertex order -- the game decodes the same buffer with the same decoder, so
+  they agree by construction -- but a re-export that changed the count would apply them to the
+  wrong vertices, which is a character turning inside out three days after the cause.
+  **AND `mel.shape('hick_skinny', .6)` HOLDS HIM THERE**, which is the only way to look at the
+  shape itself rather than at a transform going past.
+
+- **`bump.mjs`'s `EXT` DID NOT INCLUDE `.json` OR `.bin`, AND THAT HAD BEEN A SILENT STALENESS
+  BUG FOR TWO BUILDS (m164).** `DIRS` is the tax everybody remembers and this is the one
+  underneath it: the folder can be listed and the file still never hashed.
+      m159   `toon_city_obb.json`     491 collider boxes, through `A()`, never hashed
+      m160   `impact_marks.json`      16 decal rects, through `A()`, never hashed
+  **A re-export of either would have kept the old one on his phone for ever**, with nothing on
+  screen to say why -- which is the exact failure the whole hash mechanism exists to prevent,
+  reintroduced by the filter rather than by the folder list.
+  **IT SURFACED ONLY BECAUSE A BUMP SAID "none changed" ON A FILE THAT HAD JUST BEEN WRITTEN.**
+  86 hashed before and 86 after, on a run where `shapes.bin` was new. That line is worth reading
+  every time: a count that does not move when a file did is the tell. Fixed, and the same bump
+  caught four more that had been stale by construction -- two Portland manifests included.
+
 - **EVERYBODY GOES BOTH WAYS, AND THE CHEST THUMP (m163, `VIRUS.aliens`, `isAlien`, `civKinds`).**
   *"The warriors can't actually turn into civilians -- it's only the civilians that can turn into
   warriors and then back. I think they should kind of just go for everyone."* m162 gated the cure
