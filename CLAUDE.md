@@ -515,11 +515,28 @@ means anything you can carry from one situation to the next.
 
 - **THE TOON CITY IS A THIRD WORLD** (`TCITY`, world key `toon`, `?w=toon`). m157 took it from
   2,327 draw calls to ~72; m158 added his collision file, his `weirdkit_tint` paint, the rim and
-  bounce lights, and **the KTX2 bake — 176 MB of texture down to 22**. What is left:
-  **no spawn search** (0,0, harmless), the bodies still stand at test-site coordinates, and
-  **`TCITY.file` points at the BAKED glb** — his own export is `TCITY.raw` and **the bake has to
-  be re-run (`npm run ktx models/toon_city/toon_city_visual.glb etc1s`) after every re-export**,
-  or the phone keeps playing the old textures on new geometry.
+  bounce lights, and **the KTX2 bake — 176 MB of texture down to 22**; m159 **threw the box
+  rasteriser out** and took his own `toon_city_obb.json` (491 oriented boxes) plus the solids'
+  triangles through `triAdd` — see `NOTES.md`.
+  **`TCITY.file` POINTS AT THE BAKED GLB** — his own export is `TCITY.raw`, and **the bake has to
+  be re-run (`npm run ktx models/toon_city/toon_city_visual.glb etc1s`, about 10 minutes) after
+  EVERY re-export**, or the phone plays old textures on new geometry. The tell is `npm run bump`
+  reporting `toon_city_visual.glb` CHANGED.
+  **HIS EXPORTS NO LONGER CARRY `EXT_mesh_gpu_instancing`, AND THEY WILL NOT AGAIN** — *"the
+  Blender export option only merged 1,382 objects down to 1,328, and it nearly made 98 objects
+  vanish. From here on, every export I make leaves that extension off."* So `buildTCity`'s own
+  instancing pass sees every object as a plain node. **The skip on `o.isInstancedMesh` in both
+  its passes STAYS** — it costs nothing and an `isInstancedMesh` is also an `isMesh`, so a
+  traversal that merges without it silently destroys the inner instances.
+  What is left: **no spawn search** (0,0, harmless), the bodies still stand at test-site
+  coordinates, and **231 props and 189 posts are boxes only** — his collision file carries the
+  71 buildings' triangles and almost nothing else, so a dumpster's top is its box's flat `maxy`
+  rather than its real lean. Rolling off a leaning surface wants that object in the collision
+  file.
+  **AND THE BREAKABLES, THE DECALS AND THE `fx_*` MARKERS ARE NOT STARTED.**
+  `models/toon_city/toon_city_breakables.glb` (7 types, including `fx_hydrant_water_spout`),
+  `impact_marks_atlas.png` and `impact_marks.json` are all in the repo and nothing reads them.
+  `TCITY.brk` is the path and that is the whole of it.
   `mel.TCITY` and `mel.LIGHTX` are live; `inst`/`merge`/`tex`/`col` want a reload.
 
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into

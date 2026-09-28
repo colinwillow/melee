@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m158</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m159</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m158</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m159</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,9 +584,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm158';
+const BUILD = 'm159';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/toon_city_collision.glb":"3cb70602","models/toon_city/toon_city_visual.glb":"176f3181","models/toon_city/toon_city_visual_ktx2.glb":"c1ca8535","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -3397,6 +3397,17 @@ const SK8 = {
   slope: 11,        // how hard a grade pushes, m/s^2 per unit of rise over run
   probe: 1.2,       // how far ahead the grade is sampled
   min: .4,          // under this he is stopped rather than creeping
+  // how far the thumb has to be BEHIND his travel to count as dragging a foot rather than as a
+  // hard carve. A sign test is a knife edge at exactly ninety degrees; this is ~110.
+  brakeZone: .35,
+  // **WHERE THE DECK SITS IN HIS HAND while it is carried (m159).** Metres and radians in the
+  // MOUNT BONE'S frame, at world scale -- the group is in metres and the armature is 0.01, so
+  // it is placed off the bone's world matrix rather than parented to it (the title-card board's
+  // own rule, one repo over). The blaster's barrel runs along the mount's -X, which is the one
+  // fact there is about that bone's convention, so the deck's LENGTH is laid along it:
+  // `ry` -PI/2 takes the group's local +Z onto the bone's -X. Everything else here is taste and
+  // is meant to be dialled on the phone -- `mel.hold()` prints the line to paste back.
+  hold: { x: -.34, y: .04, z: 0, rx: 0, ry: -Math.PI / 2, rz: Math.PI / 2 },
   // ---- the push. **A PUSH IS A STROKE, NOT A STEP** -- the whole delta-v on one frame is a
   //      staircase on the speedometer, which is not what a foot hitting the road does. It is
   //      spread over `shoveDur` on a half sine, whose integral over one cycle is exactly 1, so
@@ -4042,7 +4053,7 @@ const isUpper = name => {
 const UP = '__up', LEGS = '__legs';
 const SPLIT = {
   up: ['aimPose', 'shoot', 'chargeUp', 'chargeGo', 'swap', 'block'],
-  legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR'],
+  legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimIdle', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR'],
 };
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
 // that starts it, never by its own damped weight -- see `playOnce`.
@@ -7912,7 +7923,8 @@ const player = {
   jump: 0, jumps: 0, fallV: 0,
   // THE BOARD (m150). `board` is "he is riding", which is DERIVED from the slot being out and
   // is not a second fact to keep in step with it -- `boardOut()` is the one reader.
-  board: 0, boardH: 0, pushT: 0, pushW: 0, pushSync: 0, shoveT: 0, shoveV: 0,
+  board: 0, riding: 0, braked: 0,
+  boardH: 0, pushT: 0, pushW: 0, pushSync: 0, shoveT: 0, shoveV: 0,
   crouch: 0, deckLag: 0, sk8L: 0, pop: 0,
   // THE TRICK. `bRoll`/`bYaw` are radians REMAINING and `bRollA`/`bYawA` what has been applied,
   // so the deck's pose is a running total and the landing test is "how much is left".
@@ -8225,6 +8237,7 @@ function setMode(i) {
 }
 function applySlot(n) {
   player.slot = n;
+  player.riding = 0;        // a slot change puts it back in his hands, never under his feet
   player.aim = 0; player.aimT = 0; player.charge = 0; player.chargeT = 0;
   paintKit();
 }
@@ -9327,7 +9340,8 @@ PADS.L = bindStick(padL, stick.L,
   () => cycleKit(),                                   // tap
   // flick: a BODY FLIP on the board, otherwise the dodge roll in the flicked direction. The
   // board takes it first and says so, because a dodge roll on a moving deck is nothing.
-  (dx, dy) => { if (!boardFlick(dx, dy, 1)) rollGo(flickH(dx, dy)); },
+  (dx, dy) => { if (boardMount(dx, dy)) return;
+                if (!boardFlick(dx, dy, 1)) rollGo(flickH(dx, dy)); },
   null, null, zoneL);
 PADS.R = bindStick(padR, stick.R,
   () => { player.jump = 1; },                         // tap: jump
@@ -10115,7 +10129,35 @@ function buildSkateClips(g) {
 // HE IS RIDING WHEN THE DECK IS THE THING IN HIS HANDS, which is one fact and not two: the
 // slot IS the state, so there is nothing to put back when a knock-down or a morph takes the
 // board away. `KIT.on`'s three-owners bug, avoided by never storing it.
-function boardOut() { return !!(SK8.on && board.ready && slotNow().board && !boardBusy()); }
+// **CARRYING IT IS NOT RIDING IT (m159).** *"When it's equipped you're just holding it in your
+// hand. The way you get on it is you swipe up on the left stick."* So the SLOT says he has a
+// board and `p.riding` says it is under his feet -- two facts, two flags, and the deck is drawn
+// in his hand for the whole of the first one. `boardHeld()` is the other half of the same
+// question, so the pose, the chip and the gesture cannot disagree about which it is.
+function boardOut() { return !!(SK8.on && board.ready && slotNow().board && player.riding && !boardBusy()); }
+function boardHeld() { return !!(SK8.on && board.ready && slotNow().board && !player.riding); }
+// **GETTING ON AND OFF IS THE LEFT PAD'S FLICK, AND IT COSTS NO NEW GESTURE.** Not riding, that
+// flick is the dodge roll -- so the mount takes only the UP/forward half and a sideways or
+// backward flick still rolls. Riding, `boardFlick` already returns 1 for every GROUND flick and
+// does nothing with it ("a ground flick is deliberately nothing"), so the dismount spends a slot
+// that was empty: DOWN on the ground steps off. The air flicks are the two body flips and are
+// untouched, which is why the dismount is grounded-only.
+function boardMount(dx, dy) {
+  const p = player;
+  if (!boardHeld() || boardBusy()) return 0;
+  const up = -dy;                                   // the pad's +Y is DOWN the screen
+  if (up <= 0 || Math.abs(up) < Math.abs(dx)) return 0;
+  p.riding = 1;
+  snd('foot', { g: .22, r: .9 });
+  return 1;
+}
+function boardStepOff() {
+  const p = player;
+  if (!p.board || !p.grounded) return 0;
+  p.riding = 0;
+  snd('foot', { g: .22, r: 1.15 });
+  return 1;
+}
 // **A DISGUISE IS IN THAT LIST AND IT HAS TO BE**: no borrowed skin in this game has a skate
 // clip, so riding while wearing one is a man gliding along in somebody else's idle.
 function boardBusy() { const p = player; return !!(p.knock || p.roll || p.melee || p.chargeGo ||
@@ -10230,7 +10272,12 @@ function stepGrind(dt) {
 function boardFlick(dx, dy, body) {
   const p = player;
   if (!p.board) return 0;                           // not ours: the roll and the strike stand
-  if (p.grounded) return 1;                         // ours, and a ground flick is deliberately nothing
+  if (p.grounded) {
+    // THE ONE THING A GROUND FLICK DOES: the left pad flicked DOWN steps off. Everything else
+    // on the ground stays deliberately nothing, and the air flicks below are the tricks.
+    if (body) { const up = -dy; if (up < 0 && Math.abs(up) >= Math.abs(dx)) boardStepOff(); }
+    return 1;
+  }
   const T = SK8.trick;
   // how much air is LEFT, from the ballistics at this moment -- that is what the trick fills
   const vy = p.vel.y, g = MOVE.g;
@@ -10300,15 +10347,26 @@ function stepSkate(dt) {
     // **THE WHEELS ARE WHAT STEER, so the heading turns and the velocity is then REBUILT on
     // it.** Doing it the other way round leaves his trajectory going where it was.
     if (s.mag > 0) {
+      // **STEERING IS `ang`, NEVER `rel` (m159).** *"The left stick on the skateboard just goes
+      // the direction that you push -- if he's facing 90 degrees to the left but you push up he
+      // should turn to go that way. Right now it's relative to his position."* Exactly right,
+      // and it is Shredworld's c164 landmine word for word: `rel` folds the thumb onto the
+      // NEAREST END of the board, so a thumb more than 90 degrees off his nose steered him
+      // toward it with his TAIL -- the far side of the circle, which is away from where it
+      // points. `ang` is already the signed shortest rotation from his nose to the thumb, so
+      // it is the whole answer, and the fold survives only where it belongs: deciding whether
+      // this is a push or a brake.
       const ang = wrapAngle(Math.atan2(s.x, s.z) - p.boardH);
-      // WHICH END THE THUMB IS NEARER IS WHAT DECIDES PUSH FROM BRAKE. Measured off the way he
-      // is TRAVELLING rather than off the nose, so a thumb held against his line is a brake
-      // and the same held thumb becomes a push once he has stopped -- which is what dragging a
-      // foot and then shoving off actually is, with one input.
-      const rel = Math.abs(ang) > Math.PI / 2 ? wrapAngle(ang - Math.PI) : ang;
-      const back = Math.abs(ang) > Math.PI / 2;
+      const fwdC = Math.cos(ang);     // the thumb's component along his nose, which IS his travel
+      // **A HELD BRAKE IS A BRAKE UNTIL THE THUMB LEAVES IT**, and the latch is what stops the
+      // other half of Shredworld's c163: without it he carves round to face the thumb, `fwdC`
+      // flips positive, the brake becomes a push, and a held brake reads as a 180 into an
+      // acceleration. **AND THE ZONE IS NOT A SIGN TEST** -- a thumb held exactly sideways puts
+      // `fwdC` at +/-1e-17 and whether he is braking would be decided by rounding.
+      if (!p.braked && fwdC < -SK8.brakeZone && sp > SK8.min) p.braked = 1;
+      const back = !!p.braked;
       const rate = lerp(SK8.turn, SK8.turnHi, clamp(Math.abs(sp) / SK8.top, 0, 1));
-      p.boardH += clamp(rel * 3, -rate, rate) * dt * s.mag;
+      if (!back) p.boardH += clamp(ang * 3, -rate, rate) * dt * s.mag;
       if (back && sp > SK8.min) sp = Math.max(0, sp - SK8.brake * dt * s.mag);   // a brake
       else if (!back) {
         // **THE CYCLE IS A PHASE, NOT A CLOCK**, because the period moves with the speed.
@@ -10326,7 +10384,8 @@ function stepSkate(dt) {
           p.stepL = p.stepL ? 0 : 1;
         }
       }
-    } else p.pushT = 0;
+    } else { p.pushT = 0; p.braked = 0; }
+    if (sp <= SK8.min) p.braked = 0;       // stopped, so the same held thumb is a push again
     p.pushW += (want - p.pushW) * Math.min(1, 7 * dt);
     // the stroke itself, spread over a half sine whose integral over one cycle is exactly 1
     if (p.shoveT > 0) {
@@ -10405,11 +10464,35 @@ function stepSkate(dt) {
 
 // THE DECK IS DRAWN UNDER HIM, AND IT LAGS HIM THROUGH A TURN -- which is most of what makes a
 // carve read, and costs one damped angle.
+const _hp = new THREE.Vector3(), _hq = new THREE.Quaternion(), _hs = new THREE.Vector3();
 function boardPose(dt) {
   if (!board.ready) return;
   const p = player, on = !!p.board;
-  board.group.visible = on;
-  if (!on) return;
+  board.group.visible = on || boardHeld();
+  if (!on) {
+    if (!board.group.visible) return;
+    // **HELD: OFF THE MOUNT'S WORLD MATRIX, NEVER PARENTED TO IT.** The bone lives inside an
+    // armature scaled 0.01 and this group is in metres, so a child of it would draw a
+    // centimetre wide -- the same trap the blaster's own mount note is about, pointed the other
+    // way. Taking the bone's world position and rotation and DISCARDING its scale puts the deck
+    // in his hand at the size it was measured to be, and `translate*`/`rotate*` then apply
+    // `SK8.hold` in the bone's own frame at world scale.
+    const host = rig.mounts && rig.mounts.weapon_root_right;
+    if (!host) { board.group.visible = false; return; }
+    host.matrixWorld.decompose(_hp, _hq, _hs);
+    const H = SK8.hold, g = board.group;
+    g.scale.setScalar(1);
+    g.position.copy(_hp);
+    g.quaternion.copy(_hq);
+    // TRANSLATE FIRST, THEN ROTATE. `translate*` runs along the group's CURRENT axes, so after
+    // the rotations `x` would mean "along the board" rather than "along the bone" -- and the
+    // default was reasoned off the bone. (And nothing here may touch `rotation.order`: writing
+    // it fires Object3D's euler callback, which rebuilds the quaternion from a stale euler and
+    // throws the bone's rotation away.)
+    g.translateX(H.x); g.translateY(H.y); g.translateZ(H.z);
+    g.rotateY(H.ry); g.rotateX(H.rx); g.rotateZ(H.rz);
+    return;
+  }
   p.deckLag += wrapAngle(p.boardH - p.deckLag) * Math.min(1, SK8.lag * dt);
   board.group.position.set(p.pos.x, p.pos.y, p.pos.z);
   // the bank is the steering RATE, so it leans into a carve and comes back out of it by itself
@@ -10447,6 +10530,11 @@ function stepPlayer(dt) {
     const on = boardOut();
     if (on && !p.board) { p.boardH = p.faceH; p.pushT = 0; p.shoveT = 0; p.deckLag = p.faceH; }
     if (!on && p.board) {
+      // A KNOCK-DOWN TAKES THE DECK OUT FROM UNDER HIM AND HE HAS TO GET BACK ON. Everything
+      // else in `boardBusy` is transient -- a roll, a strike, a swap -- and popping back on
+      // when it ends is right, because he never chose to step off.
+      if (p.knock) p.riding = 0;
+      p.braked = 0;
       p.rail = null; p.trick = ''; p.trickName = '';
       p.bRoll = 0; p.bYaw = 0; p.bRollA = 0; p.bYawA = 0; p.pushW = 0; p.sk8L = 0;
     }
@@ -11051,13 +11139,33 @@ function rigAnim(dt) {
     setWeights(t, dt); return;
   }
 
+  // ---- THE SWAP IS AN UPPER-BODY OVERRIDE AND IT HAS TO SIT ABOVE `gunOut()` (m159) ----
+  // *"When he switches from the blaster to the melee weapon, the animation doesn't play in
+  // between those two. It plays between most of the other ones."* Exactly right, and the cause
+  // is WHERE the override lived rather than what it did: it sat at the bottom of the ordinary
+  // gait and `gunOut()` returns above it. `gunOut()` reads `player.slot`, which is still the OLD
+  // slot until `applySlot` fires at `SWAP.at` -- and the blaster is the only slot with `aim`:
+  //     none -> blaster    slot 0 for the first 48%, so the reach plays and then STOPS dead
+  //     blaster -> hammer  slot 1 for the first 48%, so the half that matters (the hand going
+  //                        INTO the bag) is silent and the weight fades in past the middle
+  //     hammer -> none     slot 2 throughout, so it plays -- which is "most of the other ones"
+  // **AN OVERRIDE THAT ONLY EXISTS IN ONE OF THE TWO GAIT BRANCHES IS NOT AN OVERRIDE**, so it
+  // is hoisted rather than copied: one `L` and one `add`, read by both.
+  // **AND `aimIdle` HAD TO JOIN `SPLIT.legs` FOR THIS TO BE SAFE.** Without a `__legs` half,
+  // `L()` falls back to the WHOLE rifle idle, which keys the arms -- and averaging two clips
+  // that both key an arm is a shrug, which is what m19 paid a build for.
+  const upNm = p.swap ? CLIPS.swap : '';
+  const sw = upNm && rig.actions[upNm + UP];
+  if (sw) add(upNm + UP, rest, 0);
+  const L = n => (sw && rig.actions[n + LEGS] ? n + LEGS : n);
+
   // ---- carrying it, but not committed: the ordinary armed gait, whole body ----
   if (gunOut()) {
     // CARRYING IT: the rifle idle standing, the rifle run moving. There is no rifle WALK in
     // the set, so the run takes the whole moving range and `tsLo` holds it down at the bottom.
     const wMove = smooth(0, GAIT.walkAt * 2.2, sp);
-    add(CLIPS.aimIdle, rest * (1 - wMove), 0);
-    add(p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun, rest * wMove, GAIT.aimRunRef);
+    add(L(CLIPS.aimIdle), rest * (1 - wMove), 0);
+    add(L(p.fireT > 0 ? CLIPS.aimRunShoot : CLIPS.aimRun), rest * wMove, GAIT.aimRunRef);
     setWeights(t, dt); return;
   }
 
@@ -11080,10 +11188,7 @@ function rigAnim(dt) {
   // exclusive by construction (you cannot throw what you are not carrying, and a swap is refused
   // while carrying). One override with a priority, rather than three branches that would each
   // have to know about the other two.
-  const upNm = p.swap ? CLIPS.swap : '';
-  const sw = upNm && rig.actions[upNm + UP];
-  if (sw) add(upNm + UP, rest, 0);
-  const L = n => (sw && rig.actions[n + LEGS] ? n + LEGS : n);
+  // (`upNm` / `sw` / `L` are built above the `gunOut()` branch, so both gaits get the reach.)
   add(L(CLIPS.idle), wIdle * rest, 0);
   add(L(CLIPS.walk), wWalk * rest, GAIT.walkRef);
   add(L(CLIPS.run), wRun * rest, GAIT.runRef);
@@ -12322,6 +12427,10 @@ const TCITY = {
   // take -- so every solid here goes through the rasteriser and the shortcut is dead code on
   // this file rather than something to reach for.
   col: 'models/toon_city/toon_city_collision.glb',
+  // **HIS OWN ORIENTED BOXES, ONE PER OBJECT, TURNED TO MATCH IT (m159).** The rasteriser is
+  // gone: see `tcObbBoxes`. `obb` is the parsed manifest and is null until it arrives.
+  obbFile: 'models/toon_city/toon_city_obb.json', obb: null,
+  brk: 'models/toon_city/toon_city_breakables.glb',
   ground: /^(road|ground)_/,     // walkable TRIANGLES -- his decks
   solid: /^(bld|prop|solid)_/,   // rasterised into BOXES
   // `solidColumns`' own config. `cell` .8 is tighter than Weirdport's 1.0 because these props
@@ -12383,7 +12492,7 @@ function tcShrink(t) {
 // `BOXES` being the rail set means the kerbs and posts are grindable with NO code at all. The
 // names are collected so `mel.TCITY.rails` can say which they were.
 function buildTCityCol(g) {
-  let nG = 0, nTri = 0, nBox = 0, nRaster = 0, nMetal = 0, skip = 0;
+  let nG = 0, nS = 0, nTri = 0, nMetal = 0, skip = 0;
   const t0 = performance.now();
   g.scene.updateMatrixWorld(true);
   const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
@@ -12412,20 +12521,78 @@ function buildTCityCol(g) {
       }
       return;
     }
-    const got = [];
-    solidColumns(o, TCITY.cols, got);
-    if (got.length) { for (const c of got) BOXES.push(c); nBox += got.length; nRaster++; }
-    else skip++;
+    // **A SOLID'S TRIANGLES GO THROUGH `triAdd` TOO, AND THAT IS THE WHOLE OF THE WALKABLE
+    // FIX (m159).** *"A box fitted around a turned or leaning shape is always bigger than the
+    // shape and lined up with the world instead of the object. My collision file is already
+    // tight shapes that follow each object's rotation and lean."* Right on both counts, and
+    // the screenshot was a staircase of little world-aligned boxes up the side of every
+    // building. `triAdd` self-selects -- it keeps only what faces up -- so handing it a
+    // dumpster gives its LID, a slanted wall gives the slant, a kerb gives its top and every
+    // vertical face drops out by itself. Exact, leaning, curved, and nothing typed.
+    // **BUT IT IS ONLY HALF THE ANSWER, AND SAYING SO IS THE POINT.** `triGround` returns a
+    // HEIGHT, not a solidity: the triangle collider is a heightfield and cannot stop him
+    // walking THROUGH a wall, because the wall's own faces are the ones it just threw away.
+    // What stops him is `resolveBoxes`, and that wants boxes -- which is why the second half
+    // is `toon_city_obb.json` rather than a rasteriser.
+    nS++;
+    const n2 = idx ? idx.count : pos.count;
+    for (let i = 0; i < n2; i += 3) {
+      const ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
+      A.fromBufferAttribute(pos, ia).applyMatrix4(o.matrixWorld);
+      B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
+      C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
+      nTri++; triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+    }
   });
   const n = triBuild();
+  const nBox = tcObbBoxes();
   const cells = boxGrid();
   TCITY.rails = rails; TCITY.tris = n; TCITY.boxes = BOXES.length;
   console.log('[melee] toon collider: ' + n + ' walkable tris of ' + nTri + ' from ' + nG +
-    ' ground meshes, ' + nBox + ' boxes from ' + nRaster + ' rasterised, ' + nMetal +
+    ' ground and ' + nS + ' solid meshes, ' + nBox + ' ORIENTED boxes, ' + nMetal +
     ' metal (grindable) nodes' + (rails.length ? ' [' + rails.join(' ') + ']' : '') + ', ' +
     skip + ' skipped, grid ' + cells + ' cells, ' + Math.round(performance.now() - t0) + ' ms');
   if (!n) note('TC NO GROUND');
-  if (!nBox) note('TC NO SOLIDS');
+  if (!nBox) note('TC NO OBB');
+}
+
+// **HIS 491 ORIENTED BOXES, AND THEY NEEDED NO COLLISION CODE AT ALL (m159).** *"Each box has a
+// center, a half-size and a rotation, already converted to the game's Y-up coordinates. Each
+// box is the smallest one that fits its object when rotated to match it."* `resolveBoxes`,
+// `groundAt`, `boxNear` and `camHit` have all tested a turned box in its OWN FRAME since m146 --
+// built for the cars, for exactly this reason ("against the AABB of a car at 45 degrees that
+// normal is the phantom's") -- so this is a loader and nothing more. 71 buildings, 231 props,
+// 189 posts, against a rasteriser that was making thousands of world-aligned stair steps.
+// **THE YAW IS NEGATED, AND IT IS DERIVED FROM THE QUATERNION RATHER THAN READ OFF `yaw`.**
+// A three.js rotation of `t` about +Y maps local +X to `(cos t, 0, -sin t)`; melee's `b.cs`/
+// `b.sn` are written so local +X maps to `(cs, sn)` in (x, z), which is `atan2(-sin t, cos t)`
+// = **-t**. The bodies' own boxes negate it the same way (`c.yaw = -yb`), and this file gets
+// handedness backwards about half the time when it argues, so it is taken off the quaternion
+// the file actually carries rather than off a field whose sign convention is ours to assume.
+// **AND THE AABB IS STILL BUILT, because it is the BROAD PHASE** -- every one of those callers
+// rejects on `minx/maxx/minz/maxz` before it ever looks at `cs`, so a turned box with no
+// world-aligned bounds is a box nothing ever tests.
+function tcObbBoxes() {
+  const src = TCITY.obb;
+  if (!src || !src.boxes || !src.boxes.length) { note('TC NO OBB JSON'); return 0; }
+  let n = 0;
+  for (const o of src.boxes) {
+    const c = o.center, h = o.half, q = o.quat_xyzw;
+    if (!c || !h || !q) continue;
+    if (!(h[0] > .01) || !(h[1] > .01) || !(h[2] > .01)) continue;
+    const t = 2 * Math.atan2(q[1], q[3]);        // the +Y rotation the file carries
+    const yaw = -t, cs = Math.cos(yaw), sn = Math.sin(yaw);
+    const ex = h[0] * Math.abs(cs) + h[2] * Math.abs(sn);
+    const ez = h[0] * Math.abs(sn) + h[2] * Math.abs(cs);
+    BOXES.push({
+      minx: c[0] - ex, maxx: c[0] + ex, minz: c[2] - ez, maxz: c[2] + ez,
+      miny: c[1] - h[1], maxy: c[1] + h[1],
+      cx: c[0], cz: c[2], hx: h[0], hz: h[2], yaw, cs, sn,
+      kind: o.kind, name: o.name,
+    });
+    n++;
+  }
+  return n;
 }
 
 // **HIS PAINT TINT (`weirdkit_tint.js`), PORTED RATHER THAN IMPORTED.** *"Also hand it
@@ -17420,7 +17587,7 @@ function frame() {
         (player.trick ? (player.trick === 'f' ? ' FRONT' : ' BACK') : '') +
         (player.bRoll || player.bYaw
           ? ' ' + (player.bRoll && player.bYaw ? '360' : player.bRoll ? 'KICK' : 'SHOVE') : '')
-      : (slotNow().board ? ' · SK8 off' : ''));
+      : (slotNow().board ? (boardHeld() ? ' · SK8 held' : ' · SK8 off') : ''));
     const mo = !MOTO.up ? '' : ' · MOTO' +
       (MOTO.st === 'ride' ? Math.round(MOTO.steer * 180 / Math.PI) : MOTO.st);
     const pal = DUMMIES.find(d => d.K.pal);
@@ -17780,6 +17947,15 @@ async function init() {
     // painting. Both on `side()` all the same: neither is worth a boot that hangs, and the
     // chip says which one is absent. **And with neither, `groundAt` still answers 0 and the
     // plane is still there, so a failed fetch is a flat world rather than a void.**
+    // **THE ORIENTED BOXES ARE FETCHED BEFORE THE COLLIDER, because the collider USES them.**
+    // 81 KB of JSON against a rasteriser, and it is the exact shape rather than a staircase.
+    // It is not on `side()` -- there is no GLB to build, and a failed fetch is a city with
+    // walkable surfaces and nothing solid, which `TC NO OBB` in the chip is what says.
+    try {
+      const r = await fetch(A(TCITY.obbFile));
+      TCITY.obb = r.ok ? await r.json() : null;
+      if (!TCITY.obb) note('TC NO OBB JSON');
+    } catch (e) { TCITY.obb = null; note('TC NO OBB JSON'); console.warn('[melee] obb', e); }
     await side(TCITY.col, 'loading the toon city', { name: 'TOONCOL', build: buildTCityCol });
     await side(TCITY.file, 'loading the toon city', { name: 'TOONCITY', build: buildTCity });
     // AFTER the collider, so the y he lands on is the one his own road actually has.
@@ -17873,6 +18049,17 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   DUMMY, DUMMIES, LOCK, LEDGE, WALL, STRIKE, PADS, DESK, meleeLock, dummyHit, dummyBlow, strikeSweep, stepDummies, findLock, SFX, CHARGE, POSE, snd, PUNCH, PLASMA, HITSND, BODYSND, FLYHIT, STEP,
   stepPlayer, rigAnim, stepKit, stepCam, integrate, stickWorld, flickH, rollGo, meleeGo, slamGo, chargeRelease, groundAt,
   MFX, camShake, palDive,
+  // THE BOARD, LIVE (m159). `mel.SK8.hold` is where the deck sits IN HIS HAND while it is
+  // carried, and how a carried board should look is a look-at-it decision -- so it is a dial he
+  // can reach on the phone rather than a pick shipped with an argument for it. `mel.hold()`
+  // prints the line to paste back, and `mel.ride(1|0)` puts him on and off without a gesture.
+  SK8, board, boardOut, boardHeld,
+  hold: o => { if (o) Object.assign(SK8.hold, o);
+    const H = SK8.hold, r = n => Math.round(n * 1000) / 1000;
+    return 'hold: { x: ' + r(H.x) + ', y: ' + r(H.y) + ', z: ' + r(H.z) +
+           ', rx: ' + r(H.rx) + ', ry: ' + r(H.ry) + ', rz: ' + r(H.rz) + ' }'; },
+  ride: v => { player.riding = v === undefined ? (player.riding ? 0 : 1) : (v ? 1 : 0);
+               return player.riding ? 'on' : 'held'; },
   // THE WORLD, LIVE (m124). `mel.world('weirdport')` is the key without the key, which is what
   // a desktop wants; `mel.WP` and `mel.TRI` and `mel.BGRID` are the dials.
   WORLD, WP, TRI, BGRID, triGround, boxesNear, wpRoot,

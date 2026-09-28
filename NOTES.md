@@ -7,6 +7,109 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A BOX FITTED ROUND A TURNED SHAPE IS A STAIRCASE, AND HIS COLLISION FILE WAS NEVER THE
+  PROBLEM (m159, `tcObbBoxes`, `toon_city_obb.json`).** *"Your screenshot shows exactly the
+  problem: a pile of little boxes stacked in stair steps, every one lined up with the world grid
+  instead of the building. The collision file I sent is correct. The skew happens in the game
+  code: it breaks each building into small world-aligned boxes, and since almost nothing in this
+  city sits at a right angle, every wall turns into a staircase."*
+  Right on every count, and it is m129's finding about the Weirdport cars arriving a second time
+  one asset along: **the AABB of a rotated shape is always bigger than the shape and pointed the
+  wrong way**, and `solidColumns` was making thousands of them per building.
+  **THE ANSWER IS TWO HALVES, AND ONLY ONE OF THEM IS WHAT HE ASKED FOR FIRST.** *"Feed their
+  triangles through the same triangle path as the ground (`triAdd`), and just treat them as
+  solid instead of walkable."*
+      WALKABLE  yes, and it costs nothing: `triAdd` SELF-SELECTS -- it keeps only what faces up,
+                so a dumpster gives its lid, a slanted wall gives the slant, a kerb gives its
+                top and every vertical face drops out by itself. Exact, leaning, curved.
+      SOLID     **`triAdd` cannot do this and saying so is the point.** `triGround` returns a
+                HEIGHT: the triangle collider is a HEIGHTFIELD, and the faces that would stop
+                him walking through a wall are precisely the ones it has just thrown away.
+                What stops him is `resolveBoxes`, and that wants boxes.
+  So the walls are `toon_city_obb.json`, which he exported for exactly this: 491 oriented boxes,
+  71 buildings / 231 props / 189 posts, each the smallest box that fits its object when turned
+  to match it. **AND IT NEEDED NO COLLISION CODE AT ALL** -- `resolveBoxes`, `groundAt`,
+  `boxNear` and `camHit` have all tested a turned box in its OWN FRAME since m146, built for the
+  cars for this exact reason. It is a loader and nothing else.
+  **THE YAW IS NEGATED, AND IT WAS MEASURED RATHER THAN ARGUED.** A three.js rotation of `t`
+  about +Y maps local +X to `(cos t, 0, -sin t)`; melee's `b.cs`/`b.sn` are written so local +X
+  maps to `(cs, sn)` in (x, z), which is `-t`. This file gets handedness backwards about half
+  the time when it reasons, so both signs were run against his own collision geometry -- his
+  file is plain glTF, so every vertex of all 71 buildings is readable here in a second:
+      yaw = -t   worst vertex outside its box **0.0011 m**, mean 0.00001   <- shipped
+      yaw = +t   worst **2.7283 m**, mean 0.197
+  One millimetre over 5,271 vertices is the box sitting on the building. **And it is taken off
+  the QUATERNION the file carries, not off its `yaw` field**, whose sign convention would have
+  been ours to assume.
+  **AND THE AABB IS STILL BUILT, because it is the BROAD PHASE.** Every one of those callers
+  rejects on `minx/maxx/minz/maxz` before it looks at `cs`, so a turned box with no world-
+  aligned bounds is a box nothing ever tests.
+  **WHAT HIS COLLISION FILE ACTUALLY HOLDS, measured:** 78 meshes, 37,702 triangles -- 4 ground,
+  **71 buildings**, and only 2 props and 1 solid. So the buildings get exact walkable roofs and
+  ledges from triangles AND exact walls from boxes, while the 231 props and 189 posts are boxes
+  only: a dumpster's top comes from its box's `maxy`, which is right but FLAT. **Rolling off a
+  leaning dumpster's real slope wants that dumpster's triangles in the collision file**, and
+  that is a stated gap rather than a silent one.
+
+- **THE SWAP ANIMATION WAS AN OVERRIDE IN ONLY ONE OF THE TWO GAIT BRANCHES (m159).** *"When he
+  switches from the blaster to the melee weapon, the animation doesn't play in between those
+  two. It plays between most of the other ones."* Exactly right, and it was WHERE the override
+  lived rather than what it did -- `rigAnim`'s `SPLIT.up` block sat at the BOTTOM of the
+  ordinary gait, and `if (gunOut()) { ...; return; }` sits above it.
+  **`gunOut()` READS `player.slot`, WHICH IS STILL THE OLD SLOT UNTIL `applySlot` FIRES AT
+  `SWAP.at`** -- and the blaster is the only slot with `aim`, which is what makes his "most of
+  the other ones" the exact tell:
+      none -> blaster    slot 0 for the first 48%, so the reach plays and then STOPS DEAD
+      blaster -> hammer  slot 1 for the first 48%, so the half that matters (the hand going
+                         INTO the bag) is silent and the weight fades in past the middle
+      hammer -> none     slot 2 throughout, so it plays -- "most of the other ones"
+  **AN OVERRIDE THAT ONLY EXISTS IN ONE OF TWO BRANCHES IS NOT AN OVERRIDE**, so it is hoisted
+  above both rather than copied into the second -- one `L` and one `add`, read by each.
+  **AND `aimIdle` HAD TO JOIN `SPLIT.legs` FOR THAT TO BE SAFE.** Without a `__legs` half, `L()`
+  falls back to the WHOLE rifle idle, which keys the arms -- and averaging two clips that both
+  key an arm is a shrug, which is what m19 paid a build for. **Sixth time: when a feature does
+  nothing, check WHERE it is called before what it does.**
+
+- **THE BOARD STEERED BY `rel` AND `rel` IS THE FOLD (m159).** *"The left stick on the
+  skateboard just goes the direction that you push. If he's facing 90 degrees to the left but
+  you push up, he should turn to go that way. Right now it's relative to his position -- if he's
+  facing left and I push down he turns to the left. It's not working the same way it works in
+  Shred World."* It is Shredworld's c164 landmine word for word, and the line is one character
+  of intent away from right:
+      const rel = Math.abs(ang) > PI/2 ? wrapAngle(ang - PI) : ang;   // the PUSH/BRAKE fold
+      p.boardH += clamp(rel * 3, ...)                                 // ...used to STEER
+  `rel` folds the thumb onto the NEAREST END of the board, so a thumb more than ninety degrees
+  off his nose brought his TAIL round to it -- the far side of the circle, which is away from
+  where it points. **`ang` is already the signed shortest rotation from his nose to the thumb,
+  so it is the whole answer**; the fold survives only where it belongs, deciding push from
+  brake. The stick was always camera-relative (`stickWorld`) -- that half was never wrong.
+  **AND THE BRAKE HAD TO BE LATCHED WITH IT (`p.braked`, `SK8.brakeZone`).** Steering by `ang`
+  means a thumb held behind him carves him round to face it, `fwdC` flips positive, the brake
+  becomes a push, and a held brake reads as a 180 into an acceleration -- Shredworld's c163.
+  **AND THE ZONE IS NOT A SIGN TEST**: a thumb held exactly sideways puts `fwdC` at +/-1e-17 and
+  whether he is braking would be decided by rounding.
+
+- **CARRYING A BOARD IS NOT RIDING IT (m159, `p.riding`, `boardHeld`, `SK8.hold`).** *"When it's
+  equipped you're just holding it in your hand. You can align it to the weapon joint. The way
+  you get on it is you swipe up on the left stick... and to get off, maybe a swipe down."*
+  Two facts, so two flags: the SLOT says he has a board and `p.riding` says it is under his feet.
+  **AND THE GESTURE COST NOTHING, WHICH IS WHY IT FITS.** Not riding, the left pad's flick is the
+  dodge roll -- so the mount takes only the UP half and a sideways or backward flick still rolls.
+  Riding, `boardFlick` already returned 1 for every GROUND flick and did nothing with it ("a
+  ground flick is deliberately nothing"), so the dismount spends a slot that was already empty.
+  **The air flicks are the two body flips and are untouched**, which is why the dismount is
+  grounded-only -- a flick down in the air is the back flip and always was.
+  **HELD, IT IS PLACED OFF THE MOUNT'S WORLD MATRIX AND NEVER PARENTED TO IT.** The bone lives
+  inside an armature scaled 0.01 and the deck group is in metres, so a child of it would draw a
+  centimetre wide -- the blaster's own mount note pointed the other way, and Shredworld's title
+  card paid for it once. Copy the bone's position and rotation, DISCARD its scale.
+  **AND NOTHING MAY TOUCH `rotation.order` AFTER `quaternion.copy`**: writing it fires Object3D's
+  euler callback, which rebuilds the quaternion from a stale euler and throws the bone away.
+  **WHERE EXACTLY IT SITS IN HIS HAND IS A LOOK-AT-IT DECISION AND IS HIS.** The one fact about
+  that bone's convention is that the blaster's barrel runs along its -X, so the deck's length is
+  laid along it and everything else is a dial: `mel.SK8.hold`, `mel.hold()` prints the line to
+  paste back, `mel.ride()` puts him on and off without a gesture.
+
 - **THE KTX2 BAKE, AND THE NUMBER THAT MATTERS IS RESIDENT MEMORY (m158, `npm run ktx`,
   `tools/ktx.mjs`, `vendor/KTX2Loader.js`).** *"Texture memory is the real problem, and KTX2 is
   the right fix. Tell it yes to the UASTC to KTX2 tool."*
