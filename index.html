@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m169</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m170</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m169</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m170</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,9 +584,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm169';
+const BUILD = 'm170';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_pieces.glb":"54857d40","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"05866750","models/building_kit/building_kit_test_visual_ktx2.glb":"6b5893b1","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1845,7 +1845,7 @@ const WEAP = {
 const WORLD = {
   now: 'test',
   store: 'mel.world',
-  list: { test: 'TEST SITE', weirdport: 'WEIRDPORT', toon: 'TOON CITY' },
+  list: { test: 'TEST SITE', weirdport: 'WEIRDPORT', toon: 'TOON CITY', kit: 'BUILDING KIT' },
 };
 {
   // **THE STORE IS READ INSIDE A TRY, AT MODULE SCOPE.** A throw up here is `init()` never
@@ -1864,6 +1864,9 @@ const inWP = () => WORLD.now === 'weirdport';
 // site's ten boxes, its street grid, its motorcycle and its building. Each of those is now
 // asked the question it actually means.
 const inTC = () => WORLD.now === 'toon';
+// **A FOURTH WORLD IS A FOURTH PREDICATE (m170), for the reason the third one was.** His test
+// house: a building you can go inside, climb and knock down, with nothing else in it.
+const inKit = () => WORLD.now === 'kit';
 const inTest = () => WORLD.now === 'test';
 
 // WEIRDPORT -- his Blender slice, measured off the two files before a line of this was written.
@@ -7999,6 +8002,11 @@ function boltHit(b) {
     // takes out the crate beside the one it hit and a fumble takes out neither.
     brkBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast,
              FOE.dmg.bolt * (WEAP.pow0 + c * (WEAP.pow1 - WEAP.pow0)));
+    // **AND THE SAME BLAST REACHES HIS WALL CHUNKS (m170).** One call beside the other rather
+    // than one function that knows about both: a breakable is a whole PROP with an hp, and a
+    // chunk is a piece of a wall with a flood fill behind it -- the same event, two systems.
+    kitBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast,
+             FOE.dmg.bolt * (WEAP.pow0 + c * (WEAP.pow1 - WEAP.pow0)));
   }
   // and everybody the blast reached wears it
   const R = b.size * .5 + b.blast;
@@ -9034,6 +9042,7 @@ const player = {
   // shape one axis over. **Declared here rather than left undefined**: `undefined -= x` is
   // NaN and a NaN on the root is every bone in the body gone (the m63 lesson).
   barrel: 0, barrelA: 0,
+  climb: null, climbT: 0, climbSide: 0, climbCool: 0,
   sk8Weap: 1,        // what he goes back to holding when he stands on the deck
 
   rail: null, railS: 0, railD: 0, railCool: 0,
@@ -11332,7 +11341,7 @@ function boardStepOff() {
 // MOUNTING, which is a different question and gets its own test in `boardMount` -- a man whose
 // hand is in a bag is not also stepping onto a board.
 function boardBusy() { const p = player; return !!(p.knock || p.roll || p.melee || p.chargeGo ||
-  p.slam || p.wall || p.ledge || p.mphK || (p.swap && !p.riding)); }
+  p.slam || p.wall || p.ledge || p.climb || p.mphK || (p.swap && !p.riding)); }
 
 // **THE GRADE IS SAMPLED, BECAUSE `groundAt` RETURNS A HEIGHT AND NOT A NORMAL.** Two probes
 // `SK8.probe` apart along the way he is pointing is the rise over the run, which is all a
@@ -11790,6 +11799,27 @@ function stepPlayer(dt) {
   if (p.ledgeCool > 0) p.ledgeCool = Math.max(0, p.ledgeCool - dt);
   if (p.ledgeAway > 0) p.ledgeAway = Math.max(0, p.ledgeAway - dt);
   if (p.ledge) { stepLedge(dt); return; }
+  // **AND A LADDER OWNS IT TOO (m170)**, with the states that do, and it RETURNS. Above the
+  // gait and beside the ledge: one place, one order.
+  // **AND IT IS ACQUIRED HERE, WHICH IS THE THING TO CHECK FIRST IF IT EVER DOES NOTHING** --
+  // this repo has spent two builds on features that were correct and called from somewhere the
+  // player never passes through. Walking into one latches it: there is no button, because the
+  // thumb pushed into the rungs IS the gesture.
+  if (p.climbCool > 0) p.climbCool = Math.max(0, p.climbCool - dt);
+  if (p.climb) { stepClimb(dt); return; }
+  if (CLIMB.on && KCLIMB.length && p.climbCool <= 0 && !p.knock && !p.melee && !p.slam &&
+      !p.roll && !p.chargeGo && !p.board && !p.wall && !p.ledge) {
+    const L = climbFind(p.pos.x, p.pos.y, p.pos.z);
+    if (L) {
+      const wide = (L.maxx - L.minx) >= (L.maxz - L.minz);
+      const cx = (L.minx + L.maxx) / 2, cz = (L.minz + L.maxz) / 2;
+      // which side of the ladder he is on, which is the one thing a latch has to measure
+      const side = wide ? Math.sign(p.pos.z - cz) || 1 : Math.sign(p.pos.x - cx) || 1;
+      const nx = wide ? 0 : side, nz = wide ? side : 0;
+      const into = -(s.x * nx + s.z * nz) * s.mag;
+      if (into > CLIMB.grab) { climbGo(L, side); stepClimb(dt); return; }
+    }
+  }
   // THE PUSH. He is on the floor, extending, and the launch is at the end of it -- the clip is
   // already running and `rigAnim` draws it, because the flip branch sits above the air test.
   if (p.bkHang > 0) {
@@ -12179,6 +12209,18 @@ function rigAnim(dt) {
   // THE BOARD, ABOVE EVERYTHING THAT ASKS ABOUT THE GROUND -- he is riding, not walking, and
   // the gait below has no idea. Two pairs blended on the CROUCH, which is how hard he is
   // working, and on whether a stroke is running; the air is the ollie's own three.
+  // **ON A LADDER, THE WALK QUICKENED (m170).** There is no climb clip in this export, and a
+  // walk cycle facing a wall IS legs on rungs and arms reaching -- the grind's and the hang's
+  // own stand-in rule. **Scaled by how fast he is ACTUALLY climbing**, so the hands stop when
+  // the thumb does: a clip driven by the top rate goes hand over hand whether he is moving or
+  // not, which is Shredworld's c185 finding one ladder along. It floors at ZERO rather than at
+  // a gait's idle, because there is no ladder idle to blend into.
+  if (p.climb) {
+    const nm = CLIMB.clip && rig.actions[CLIMB.clip] ? CLIMB.clip : CLIPS.walk;
+    t[nm] = 1;
+    setScale(nm, Math.max(0, p.speed / Math.max(.3, GAIT.walkRef)) * CLIMB.rate);
+    setWeights(t, dt); return;
+  }
   if (p.board) {
     const c = clamp(p.crouch, 0, 1);
     // **RIDING AND SHOOTING IS AN OVERRIDE, NOT A BLEND (m167).** The gun pose keys spine-up
@@ -13897,6 +13939,449 @@ function tcObbBoxes() {
     n++;
   }
   return n;
+}
+
+// ============================================================================================
+// THE BUILDING KIT (m170, `KIT`, `buildKitCol`, `buildKit`, `kitBlast`)
+//
+// *"I built this test scene out in Blender. The whole point is that I want buildings that are
+// breakable, and also buildings you can go inside -- staircases that go up to the next floor,
+// ladders you can climb -- but a big thing is I want to be able to destroy the building piece
+// by piece."*
+//
+// **HIS NOTE IS THE SPEC AND EVERY CLAIM IN IT WAS CHECKED BEFORE A LINE OF THIS WAS WRITTEN**,
+// because a handoff read wrong is a build spent on a file that was always fine:
+//     `_CHUNK`             confirmed, upper-cased exactly as he said
+//     the axis rule        (x, y, z) -> (x, z, -y): **100% of 1,044 chunk vertices land inside
+//                          their own converted box**, against 14% for the identity reading.
+//                          The other sign was ruled out by PRINTING one chunk rather than by a
+//                          tolerance: its verts read z -0.250..0.000 and (x, z, +y) gives
+//                          0.000..0.250 -- the opposite side of the wall.
+//     the transforms       every wall is a PURE +Y rotation at unit scale, under one root that
+//                          is also pure Y at unit scale. So a chunk's collider is an ORIENTED
+//                          box and it is EXACT, not a fitted approximation.
+//     geometry sharing     **mesh 21 is used by TEN wall nodes and mesh 15 by seven**, so his
+//                          "clone the geometry on the first hit" is not a nicety: without it,
+//                          knocking a hole in one wall knocks the same hole in nine others.
+//     the walls            261 chunks, 194 anchored, 3.3 neighbours each; FOUR primitives per
+//                          wall (brick / stucco / concrete core / trim) and `_CHUNK` on all of
+//                          them -- a reader that took primitive[0] would see a tenth of a wall,
+//                          which is the mistake my own first measurement made.
+//     no draco, as he says, which is why any of the above could be read here at all.
+//
+// **AND IT IS A FOURTH WORLD, NOT A FOURTH `else`.** m157's rule: every `if (inWP())` in this
+// file means "Weirdport or the test site", and a world added as an `else` quietly inherits
+// whichever branch it falls into.
+const KIT = {
+  on: 1,
+  // **THE BAKED FILE, NOT HIS EXPORT.** *"Run `npm run ktx` after importing, as with the city
+  // files."* Done, and the reason is resident memory rather than the wire: ten 1024 maps are
+  // 1.7 MB in the GLB and **53 MB on the phone** as full RGBA with mips, which is most of an
+  // iOS budget for one house. ETC1S keeps them GPU-compressed: **53 MB -> about 7**, with 217
+  // non-image bufferViews verified byte-identical so no geometry was re-encoded.
+  // **RE-RUN IT AFTER EVERY RE-EXPORT** (`npm run ktx models/building_kit/building_kit_test_visual.glb etc1s`,
+  // about 20 s), or the phone plays old textures on new geometry. The tell is `npm run bump`
+  // reporting `building_kit_test_visual.glb` CHANGED with the `_ktx2` beside it unmoved.
+  vis: 'models/building_kit/building_kit_test_visual_ktx2.glb',
+  raw: 'models/building_kit/building_kit_test_visual.glb',
+  col: 'models/building_kit/building_kit_test_collision.glb',
+  // HIS OWN NAME PREFIXES, which are the city's. A node in neither family is not in the
+  // collider at all rather than being guessed at -- a silent third answer is how a collider
+  // grows a wall nobody put there.
+  deck: /^(deck|ramp)_/,          // walkable TRIANGLES
+  solid: /^(bld|solid)_/,         // things you stop against
+  climbRe: /^climb_/,             // NEW: a ladder volume
+  // MEASURED, not typed: the house spans x -0.1..9.7, z -6.1..0.1, y -0.2..7.9. This stands
+  // him in front of the door wall with the whole face in view.
+  spawn: [4.5, 6.5],
+  plane: 120, planeY: -.02, planeCol: 0x6f6a63,
+  fog: { near: 60, far: 320 },
+  // **`dmg` CONVERTS THE GAME'S DAMAGE SCALE TO HIS.** `FOE.dmg.bolt` is 1.9 and his chunks are
+  // hp 20, so without it a wall chunk is an eleven-shot object. `BRK.dmg`'s own argument, one
+  // asset along -- and it is ONE number rather than his hp being rewritten, because the hp is
+  // his and a re-export must not lose it.
+  dmg: 12,
+  glassK: 1, doorK: 1,
+  fall: .28,        // how long an orphaned chunk hangs before it goes, so a collapse cascades
+  dust: [.62, .58, .52],
+  cool: .05,        // one blast cannot take the same chunk twice
+};
+// THE STATE. `WALLS` is per wall INSTANCE -- see the geometry sharing above.
+const WALLS = [], KCLIMB = [];
+const kit = { root: null, chunks: 0, dead: 0, cloned: 0 };
+
+// **HIS AXIS RULE, IN ONE PLACE (`kitBox`).** *"Chunk boxes are in Blender axes (Z-up). Map each
+// corner (x, y, z) to (x, z, -y) and re-sort the min and max."* Written once and called by the
+// collider AND by the collapse, so the two cannot disagree about where a chunk is -- which
+// would be a hole you can see through and still walk into.
+function kitBox(b, o) {
+  const ax = b[0], ay = b[2], az = -b[1];
+  const bx = b[3], by = b[5], bz = -b[4];
+  o.minx = Math.min(ax, bx); o.maxx = Math.max(ax, bx);
+  o.miny = Math.min(ay, by); o.maxy = Math.max(ay, by);
+  o.minz = Math.min(az, bz); o.maxz = Math.max(az, bz);
+  return o;
+}
+const _kb = {}, _kv = new THREE.Vector3(), _kq = new THREE.Quaternion(), _ks = new THREE.Vector3();
+
+// ---- 1. HIS STATIC COLLISION FILE ----------------------------------------------------------
+// Every line of this is `buildTCityCol`'s shape with his naming in it, which is the whole return
+// on him having kept the city's conventions.
+function buildKitCol(g) {
+  let nD = 0, nS = 0, nC = 0, nTri = 0, nMetal = 0, skip = 0;
+  const t0 = performance.now();
+  g.scene.updateMatrixWorld(true);
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+  g.scene.traverse(o => {
+    if (!o.isMesh || !o.geometry) return;
+    const nm = o.name || '';
+    // **THE LADDER VOLUME IS TESTED FIRST, because `climb_` is neither walkable nor solid.**
+    // It is a thing you latch to, and putting it in either family would be a box you stop dead
+    // against in a doorway-sized hole -- which is exactly what a ladder must not be.
+    if (KIT.climbRe.test(nm)) {
+      o.geometry.computeBoundingBox();
+      const wb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+      const e = o.userData || {};
+      KCLIMB.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
+                    minz: wb.min.z, maxz: wb.max.z,
+                    // **`climb_top` IS ALREADY IN glTF Y**, which he says and which the numbers
+                    // agree with: 6.0 and 6.9 against a house 7.9 tall. Falling back to the
+                    // box's own top rather than to zero, because a zero here is a ladder that
+                    // ends the instant you touch it.
+                    top: typeof e.climb_top === 'number' ? e.climb_top : wb.max.y, name: nm,
+                    slot: (/__(X\d+)/.exec(nm) || [])[1] || '', mark: null });
+      nC++;
+      return;
+    }
+    const deck = KIT.deck.test(nm), solid = KIT.solid.test(nm);
+    if (!deck && !solid) { skip++; return; }
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    if (mats.some(m => m && m.name === 'metal')) nMetal++;
+    const pos = o.geometry.attributes.position, idx = o.geometry.index;
+    if (!pos) { skip++; return; }
+    // **EVERY TRIANGLE GOES INTO `SURF` WHATEVER FAMILY IT IS IN (m166's rule).** `triAdd`
+    // keeps only what faces up, which is right for WALKING and leaves a parapet with no
+    // surface for a bolt to land on -- and a mark stamped on a box face is the floating decal
+    // this repo spent a build on.
+    const n = idx ? idx.count : pos.count;
+    for (let i = 0; i < n; i += 3) {
+      const ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
+      A.fromBufferAttribute(pos, ia).applyMatrix4(o.matrixWorld);
+      B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
+      C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
+      nTri++;
+      surfAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+      if (deck) triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+    }
+    if (deck) { nD++; return; }
+    // **A SOLID IS ITS OWN BOX AND THAT IS EXACT HERE.** His collision meshes are baked to
+    // world space and every one of them is a parapet, a post or a curb -- so the AABB IS the
+    // shape, and `solidColumns`' rasteriser would be a staircase approximating a box.
+    // `tri: 1` so the bolt lets the TRIANGLES decide where it landed (m166).
+    o.geometry.computeBoundingBox();
+    const wb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+    BOXES.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
+                 minz: wb.min.z, maxz: wb.max.z, plain: 1, tri: 1 });
+    nS++;
+  });
+  console.log('[melee] kit collider: ' + triBuild() + ' walkable tris of ' + nTri + ' from ' +
+    nD + ' decks and ' + nS + ' solids, ' + surfBuild() + ' surface tris, ' + nC +
+    ' climb volumes, ' + nMetal + ' metal (grindable), ' + skip + ' skipped, grid ' +
+    boxGrid() + ' cells, ' + Math.round(performance.now() - t0) + ' ms');
+  if (!nD) note('KIT NO DECKS');
+  if (!nC) note('KIT NO CLIMB');
+}
+
+// ---- 2. THE HOUSE ITSELF --------------------------------------------------------------------
+function buildKit(g) {
+  const root = kit.root = g.scene;
+  root.updateMatrixWorld(true);
+  const seen = new Set();
+  let nW = 0, nG = 0, nDoor = 0, nMark = 0;
+  root.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = true; o.receiveShadow = true;
+      for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+        if (!m || seen.has(m.uuid)) continue;
+        seen.add(m.uuid);
+        // the Blender default on a closed shell is wasted fill; a CARD needs both faces, and
+        // the alpha mode is the structural difference between the two (m158's own test)
+        if (m.side === THREE.DoubleSide && !m.transparent && !m.alphaTest) { m.side = THREE.FrontSide; m.needsUpdate = true; }
+        if (m.map) m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+      }
+    }
+    const e = o.userData || {};
+    // **A MARKER IS AN EMPTY AND IT MUST NOT BE DRAWN.** GLTFLoader gives an empty an Object3D
+    // with no geometry, so there is nothing to hide -- but the nav points are kept, because
+    // they are what a fireman, a repair worker and a police line will stand on.
+    if (e.marker) nMark++;
+    // **AND A LADDER-TOP MARKER IS HUNG ON ITS OWN VOLUME.** *"Moving up past `climb_top` sends
+    // the player to the matching `nav_ladder_top` marker."* The match is the `X#` in the two
+    // names -- `climb_ladder_1f__X1_0` and `nav_ladder_top__X1` -- so it is HIS pairing rather
+    // than a nearest-point guess, and a ladder whose marker is missing falls back to the
+    // volume's own top with that stated in the code rather than silently.
+    if (e.marker === 'ladder_top') {
+      const m = /__(X\d+)/.exec(o.name || '');
+      if (m) { o.updateWorldMatrix(true, false);
+               const w = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
+               for (const L of KCLIMB) if (L.slot === m[1]) L.mark = { x: w.x, y: w.y, z: w.z }; }
+    }
+    if (e.breakable === 'glass') { o.userData.kitHp = (e.hp || 5) * KIT.glassK; nG++; }
+    if (e.door) { o.userData.kitHp = (e.hp || 40) * KIT.doorK; nDoor++; }
+    if (!e.chunks) return;
+    // ---- a breakable wall -------------------------------------------------------------------
+    let recs = null;
+    try { recs = JSON.parse(e.chunks); } catch (err) { note('KIT BAD CHUNKS'); return; }
+    if (!recs || !recs.length) return;
+    // **THE MESHES UNDER IT, because a wall is FOUR primitives** and GLTFLoader gives a
+    // multi-primitive mesh a Group of children. A pass that took the node itself would find no
+    // geometry at all and silently index a wall with nothing in it.
+    const meshes = [];
+    o.traverse(c => { if (c.isMesh && c.geometry && c.geometry.attributes._CHUNK) meshes.push(c); });
+    if (!meshes.length) { note('KIT NO _CHUNK'); return; }
+    o.matrixWorld.decompose(_kv, _kq, _ks);
+    const eu = new THREE.Euler().setFromQuaternion(_kq, 'YXZ');
+    // **THE YAW IS NEGATED, `tcObbBoxes`' OWN RULE.** A three rotation of `t` about +Y maps
+    // local +X to `(cos t, 0, -sin t)`; melee's `cs`/`sn` are written so local +X maps to
+    // `(cs, sn)` in (x, z), which is `-t`. This file gets handedness backwards about half the
+    // time when it argues, so it is taken off the matrix rather than off a field.
+    const yaw = -eu.y, cs = Math.cos(yaw), sn = Math.sin(yaw);
+    const W = { node: o, meshes, yaw, cs, sn, px: _kv.x, py: _kv.y, pz: _kv.z,
+                cloned: 0, chunks: [], alive: 0 };
+    for (const r of recs) {
+      const b = kitBox(r.box, {});
+      const lx = (b.minx + b.maxx) / 2, ly = (b.miny + b.maxy) / 2, lz = (b.minz + b.maxz) / 2;
+      const hx = (b.maxx - b.minx) / 2, hy = (b.maxy - b.miny) / 2, hz = (b.maxz - b.minz) / 2;
+      // the local centre carried out through the wall's own yaw
+      const wx = W.px + lx * cs - lz * sn, wz = W.pz + lx * sn + lz * cs;
+      const ex = hx * Math.abs(cs) + hz * Math.abs(sn), ez = hx * Math.abs(sn) + hz * Math.abs(cs);
+      const box = { minx: wx - ex, maxx: wx + ex, minz: wz - ez, maxz: wz + ez,
+                    miny: W.py + ly - hy, maxy: W.py + ly + hy,
+                    cx: wx, cz: wz, hx, hz, yaw, cs, sn, tri: 1 };
+      const c = { id: r.id, hp: (r.hp || 20), hp0: (r.hp || 20), anchored: !!r.anchored,
+                  nb: r.nb || [], box, dead: 0, fall: 0,
+                  x: wx, y: W.py + ly, z: wz, lx, ly, lz, r: Math.max(hx, hy, hz) };
+      box.chunk = c; box.wall = W;
+      BOXES.push(box);
+      W.chunks.push(c); W.alive++; kit.chunks++;
+    }
+    WALLS.push(W); nW++;
+  });
+  // **THE GROUND IS A BACKSTOP, NOT A COLLIDER.** With `TRI` holding only his decks, every
+  // query outside the house already answers "flat, at zero" -- which is exactly right, because
+  // his house sits ON zero. So this is what you SEE out there and nothing more, and it sits a
+  // hair under y=0 so his own slab wins the depth test.
+  if (KIT.plane) {
+    const gp = new THREE.Mesh(new THREE.PlaneGeometry(KIT.plane, KIT.plane),
+                              new THREE.MeshStandardMaterial({ color: KIT.planeCol, roughness: .95, metalness: 0 }));
+    gp.rotation.x = -Math.PI / 2; gp.position.y = KIT.planeY;
+    gp.name = 'kitground'; gp.receiveShadow = true;
+    gp.userData.noHole = 1;
+    world.add(gp);
+  }
+  world.add(root);
+  console.log('[melee] kit house: ' + nW + ' breakable walls, ' + kit.chunks + ' chunks, ' +
+              nG + ' panes, ' + nDoor + ' doors, ' + nMark + ' markers');
+  if (!nW) note('KIT NO WALLS');
+}
+
+
+// ---- 4. THE LADDERS (m170, `CLIMB`, `climbFind`, `climbGo`, `stepClimb`) --------------------
+// *"Ladders you can climb"* -- and his export does the placing: `climb_` is a VOLUME box with
+// `climb: true` and `climb_top`, and *"while the player is inside it and pushing forward, switch
+// to climbing. Moving up past `climb_top` sends the player to the matching `nav_ladder_top`
+// marker."* That is the whole spec and nothing about where a ladder is is typed here.
+//
+// **A LADDER IS NOT IN THE COLLIDER**, which is why `buildKitCol` tests `climb_` FIRST: it is a
+// thing you latch to, not a wall you stop against, and a box in a doorway-sized gap is exactly
+// what a ladder must not be.
+//
+// **UP AND DOWN COME FROM THE THUMB'S COMPONENT ALONG THE WALL, NEVER ITS RAW Y.** The stick is
+// in world space and the camera can be anywhere, so "up" is the thumb pushed INTO the ladder and
+// "down" is it pulled away. (Shredworld's rule, and the same trap this file has about handedness
+// in general: a screen axis is not a world one.)
+// **AND WHICH WAY IS "INTO" IS MEASURED AT THE LATCH, NOT EXPORTED.** A ladder volume is tall
+// and thin, so its SHORT horizontal axis points out of the wall -- and which SIGN of that axis
+// is "out" is simply where he was standing when he grabbed it. Measured, so it cannot be
+// backwards on one ladder and right on the other, and no extra field is asked of his export.
+const CLIMB = {
+  on: 1,
+  speed: 3.4,       // m/s at a full thumb
+  grab: .30,        // how much thumb INTO the ladder latches one
+  off: .55,         // and how far the thumb has to be pulled away to let go
+  out: .30,         // how far off the rungs his root hangs
+  pad: .35,         // how much bigger than the box the catch volume is
+  cool: .35,
+  top: .45,         // how far above `climb_top` he is set down
+  rate: 1.9,        // the walk clip, quickened -- there is no climb clip in this export and a
+                    // walk cycle facing a wall IS legs on rungs and arms reaching (the grind's
+                    // and the hang's own stand-in rule)
+  clip: '',         // name a real one and it lands: `rigAnim` takes it the moment it resolves
+};
+// WHICH VOLUME HE IS IN, IF ANY. Padded, because a ladder you have to be exactly inside is a
+// ladder you cannot find.
+function climbFind(px, py, pz) {
+  if (!CLIMB.on) return null;
+  const q = CLIMB.pad;
+  for (const L of KCLIMB) {
+    if (px < L.minx - q || px > L.maxx + q) continue;
+    if (pz < L.minz - q || pz > L.maxz + q) continue;
+    if (py < L.miny - 1.2 || py > L.top + 1.0) continue;
+    return L;
+  }
+  return null;
+}
+function climbGo(L, into) {
+  const p = player;
+  p.climb = L; p.climbT = 0; p.climbSide = into;
+  p.vel.set(0, 0, 0); p.speed = 0; p.grounded = false; p.airT = 0; p.jumps = 1;
+  triggerStop(); swapStop();
+  snd('foot', { g: .16, r: 1.15 });
+}
+function climbOff(cool) {
+  const p = player;
+  p.climb = null; p.climbT = 0; p.climbCool = cool === undefined ? CLIMB.cool : cool;
+}
+function stepClimb(dt) {
+  const p = player, L = p.climb, s = stickWorld();
+  p.climbT += dt;
+  // the ladder's SHORT horizontal axis is out of the wall; `climbSide` is which way that is,
+  // measured where he grabbed it
+  const wide = (L.maxx - L.minx) >= (L.maxz - L.minz);
+  const nx = wide ? 0 : p.climbSide, nz = wide ? p.climbSide : 0;
+  // HE FACES THE WALL, which is the opposite of the way he came at it
+  const face = Math.atan2(-nx, -nz);
+  p.faceH += wrapAngle(face - p.faceH) * Math.min(1, 9 * dt);
+  p.heading = p.faceH;
+  // **THE THUMB'S COMPONENT ALONG THE WALL'S NORMAL IS THE WHOLE CONTROL.** Into the rungs is
+  // up, away is down, and sideways is nothing -- which is what a ladder actually offers.
+  const into = -(s.x * nx + s.z * nz) * s.mag;
+  if (into < -CLIMB.off) { climbOff(); return; }              // he pushed off it
+  if (p.jump) { p.jump = 0; climbOff(); p.vel.y = MOVE.jump * .55; return; }   // or hopped off
+  p.speed = Math.abs(into) * CLIMB.speed;
+  p.pos.y += into * CLIMB.speed * dt;
+  // held ON the rungs: centred in the volume across the wall, and `out` off its face
+  const cx = (L.minx + L.maxx) / 2, cz = (L.minz + L.maxz) / 2;
+  if (wide) { p.pos.z = cz + nz * CLIMB.out; p.pos.x = clamp(p.pos.x, L.minx, L.maxx); }
+  else { p.pos.x = cx + nx * CLIMB.out; p.pos.z = clamp(p.pos.z, L.minz, L.maxz); }
+  p.vel.set(0, 0, 0); p.grounded = false; p.airT = 0; p.jumps = 1;
+  // **TOPPING OUT GOES TO HIS OWN MARKER WHEN THERE IS ONE.** `nav_ladder_top__X#` is a real
+  // standing point on the roof; without it the fallback is the volume's own top pushed INTO the
+  // building, which is a guess and is marked as one.
+  if (p.pos.y >= L.top) {
+    const M = L.mark;
+    if (M) { p.pos.set(M.x, M.y + .05, M.z); }
+    else { p.pos.y = L.top + CLIMB.top; p.pos.x = cx - nx * .8; p.pos.z = cz - nz * .8; }
+    p.grounded = true; p.jumps = 0;
+    climbOff();
+    return;
+  }
+  // and off the bottom he simply stands up
+  if (p.pos.y <= L.miny - .1) {
+    p.pos.y = groundAt(p.pos.x, p.pos.z, p.pos.y + .5, MOVE.step);
+    p.grounded = true; p.jumps = 0;
+    climbOff();
+  }
+}
+
+// ---- 3. BREAKING IT -------------------------------------------------------------------------
+// **THE GEOMETRY IS CLONED ON THE FIRST HIT AND NOT BEFORE.** Measured: mesh 21 is shared by TEN
+// wall nodes and mesh 15 by seven, so a hole punched in the shared buffer is the same hole in
+// every copy of that piece -- his note says so and the file agrees. Cloning all twenty up front
+// would be twenty buffers for a house most of which is never touched.
+function kitClone(W) {
+  if (W.cloned) return;
+  W.cloned = 1; kit.cloned++;
+  for (const m of W.meshes) m.geometry = m.geometry.clone();
+}
+// **A DEAD CHUNK'S TRIANGLES COLLAPSE TO A POINT.** Every vertex carrying its id is written to
+// the chunk's own LOCAL centre, so each of its triangles becomes zero-area -- and a degenerate
+// triangle is discarded before rasterisation on every GPU worth the name, so it costs the draw
+// call nothing. **To the point the chunk IS AT, never the origin** (m145): a degenerate triangle
+// still counts toward a bounding sphere, and collapsing to zero grows the wall's sphere to the
+// middle of the world and turns its frustum culling off.
+function kitKill(W, c, loud) {
+  if (c.dead) return 0;
+  c.dead = 1; W.alive--; kit.dead++;
+  kitClone(W);
+  for (const m of W.meshes) {
+    const pos = m.geometry.attributes.position, ch = m.geometry.attributes._CHUNK;
+    if (!ch) continue;
+    let touched = 0;
+    for (let i = 0, n = ch.count; i < n; i++) {
+      if (Math.round(ch.getX(i)) !== c.id) continue;
+      pos.setXYZ(i, c.lx, c.ly, c.lz); touched = 1;
+    }
+    if (touched) pos.needsUpdate = true;
+  }
+  // and its collider goes with it, or the hole is one you can see through and still walk into
+  const i = BOXES.indexOf(c.box);
+  if (i >= 0) BOXES.splice(i, 1);
+  boxGrid();
+  if (loud) {
+    spkBurst(c.x, c.y, c.z, 14, { col: KIT.dust, spread: 3.2, up: 2.4, r: c.r,
+                                  size: .10 + Math.random() * .08, life: .55 + Math.random() * .4 });
+    decalHit(c.x, c.y, c.z, 0, 1, 0, 'rubble', 0, .9, c.r * 1.6);
+    snd('clang', { g: .22, r: .7 + Math.random() * .2 });
+  }
+  return 1;
+}
+// **AND THEN WHAT IS LEFT HAS TO BE HOLDING ON TO SOMETHING (`kitFlood`).** His step 4, and it
+// is the thing that makes this read as a building coming down rather than as pixels going out:
+// flood from every ANCHORED chunk through `nb`, and anything the flood never reaches is a lump
+// of wall with nothing under it. Those do not vanish on the same frame -- `KIT.fall` staggers
+// them, so a hole spreads outward rather than a whole bay blinking off at once.
+function kitFlood(W) {
+  const live = W.chunks.filter(c => !c.dead);
+  if (!live.length) return;
+  const by = new Map();
+  for (const c of live) by.set(c.id, c);
+  const seen = new Set(), q = [];
+  for (const c of live) if (c.anchored) { seen.add(c.id); q.push(c); }
+  while (q.length) {
+    const c = q.pop();
+    for (const id of c.nb) {
+      if (seen.has(id)) continue;
+      const n = by.get(id); if (!n) continue;
+      seen.add(id); q.push(n);
+    }
+  }
+  let n = 0;
+  for (const c of live) if (!seen.has(c.id) && !c.fall) { c.fall = KIT.fall * (1 + n * .35); n++; }
+}
+// ONE DOOR IN, so a bolt, a blast, a hammer and whatever comes next cannot disagree about what
+// damaging a building means. `brkBlast`'s own shape, one asset along.
+function kitBlast(x, y, z, r, dmg) {
+  if (!KIT.on || !WALLS.length) return 0;
+  const D = (dmg || 0) * KIT.dmg;
+  if (D <= 0) return 0;
+  let hit = 0;
+  for (const W of WALLS) {
+    for (const c of W.chunks) {
+      if (c.dead || c.cool > 0) continue;
+      const dx = c.x - x, dy = c.y - y, dz = c.z - z;
+      const R = r + c.r;
+      if (dx * dx + dy * dy + dz * dz > R * R) continue;
+      c.hp -= D; c.cool = KIT.cool; hit++;
+      if (c.hp <= 0) kitKill(W, c, 1);
+    }
+    if (hit) kitFlood(W);
+  }
+  return hit;
+}
+// the orphans, and the cooldown that stops one blast taking the same chunk twice
+function kitStep(dt) {
+  if (!WALLS.length) return;
+  for (const W of WALLS) {
+    let fell = 0;
+    for (const c of W.chunks) {
+      if (c.cool > 0) c.cool -= dt;
+      if (c.dead || !c.fall) continue;
+      c.fall -= dt;
+      if (c.fall <= 0) { kitKill(W, c, 1); fell = 1; }
+    }
+    if (fell) kitFlood(W);       // a chunk falling can orphan the one above it
+  }
 }
 
 // **HIS PAINT TINT (`weirdkit_tint.js`), PORTED RATHER THAN IMPORTED.** *"Also hand it
@@ -17250,6 +17735,9 @@ function strikeSweep(dt, power, live, dmg, body) {
         // fist by construction rather than by a second number. **`p.melFired` does not gate it**
         // -- that is for the SOUND, and a swing through two crates should take out two.
         if (BRK.on && BREAK.length) brkBlast(_sw.x, _sw.y, _sw.z, rad, dmg || FOE.dmg.fist);
+        // AND THE SAME SWING REACHES A WALL CHUNK (m170). A hammer through a brick wall is
+        // the whole reason his chunks carry an hp rather than a flag.
+        kitBlast(_sw.x, _sw.y, _sw.z, rad, dmg || FOE.dmg.fist);
         for (const d of DUMMIES) {
           if (d.cool > 0) continue;
           if (!segBody(q, _sw, d.root.position.x, d.root.position.z, d.K.r + rad,
@@ -19340,6 +19828,7 @@ function frame() {
     // world position, so a bike stepped after him leaves him a frame behind it -- which at 6 m/s
     // is 10 cm of a man sliding along beside his own seat. `stepShip`'s ordering rule one repo over.
     stepMoto(dt);
+    kitStep(dt);
     // **ABOVE `stepDummies` FOR `stepMoto`'s OWN REASON.** The player's resolver is handed each
     // car's box on the frame it is drawn at, so a fleet stepped after him is a fleet he is
     // pushed out of one frame late -- which at 9.5 m/s is sixteen centimetres of being shoved
@@ -19596,6 +20085,11 @@ function frame() {
     // objects, and every one of them looks like the prop beside it. A DISTANCE is a thing you
     // can walk down. **And no `BRK` token at all means there are none in THIS world** -- they
     // are the toon city's -- which is the other half of his sentence and was the same picture.
+    // **AND HIS HOUSE SAYS HOW MUCH OF IT IS LEFT (m170).** `KIT201/261` is chunks standing
+    // over chunks built -- so "nothing happened when I shot it" and "it is breaking and I
+    // cannot see it" are one glance apart, which is this file's oldest rule.
+    const kitC = kit.chunks ? ' \u00b7 KIT' + (kit.chunks - kit.dead) + '/' + kit.chunks +
+      (KCLIMB.length ? ' L' + KCLIMB.length : '') : '';
     const brkC = BREAK.length ? (() => {
       let live = 0, bd = 1e9;
       for (const q of BREAK) {
@@ -19634,7 +20128,7 @@ function frame() {
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + inf + shp + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + kitC + inf + shp + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
     // **THE KEYS SIT UNDER THE CHIP, AND THE CHIP IS THE ONE HUD ELEMENT THAT GROWS (m128).**
@@ -19911,6 +20405,22 @@ async function init() {
     // still a game you can walk round, and the chip says which of the two it is.
     try { trafBuild(); }
     catch (e) { console.error('[melee] weirdport traffic failed', e); note('TRAFFIC FAILED'); }
+  } else if (inKit()) {
+    // **HIS TEST HOUSE AND NOTHING ELSE AT ALL.** *"Just like my own character obviously, to run
+    // around and shoot things."* No crowd, no traffic, no city -- and the crowd is left out
+    // rather than forgotten: every `at` table in this file is a list of TEST-SITE coordinates,
+    // and a body spawned inside a 9 x 6 m house is m24's lesson exactly (nothing on screen
+    // disagrees with anything and he simply cannot walk there).
+    if (KIT.fog) { scene.fog.near = KIT.fog.near; scene.fog.far = KIT.fog.far; }
+    // the impact marks, in parallel: a mark that is not ready simply does not draw, which is
+    // the one failure on this path that costs nothing
+    decalLoad();
+    // **THE COLLISION FIRST, AND IT IS THE ONE THERE IS NO WORLD WITHOUT** -- the visual is a
+    // picture and the collision is the floor he stands on. Both on `side()` all the same:
+    // neither is worth a boot that hangs, and the chip says which one is absent.
+    await side(KIT.col, 'loading the building kit', { name: 'KITCOL', build: buildKitCol });
+    await side(KIT.vis, 'loading the building kit', { name: 'KITVIS', build: buildKit });
+    player.pos.x = KIT.spawn[0]; player.pos.z = KIT.spawn[1];
   } else if (inTC()) {
     // **HIS LEVEL, AND NOTHING ELSE AT ALL.** No collider builder, no street grid, no boxes --
     // which is not an omission, it IS the "flat plane for ground and walkability" he asked
@@ -19963,6 +20473,14 @@ async function init() {
   // SHE HAS NO COLLIDER AT ALL -- `stepShe` writes x and z straight and only snaps y -- so she
   // is only loaded where a circuit has been proved clear. In Weirdport that is `wpLoop`'s job
   // and it may come back empty; the count is kept honest so the bar does not run short.
+  // **AND THE KIT WORLD LOADS NONE OF THEM (m170).** *"Maybe we'll put one character in there,
+  // but just like my own character obviously."* Nine skins is twenty megabytes on the boot path
+  // of a world that is one house, and every `at` table is test-site coordinates.
+  // counted rather than guessed: SHE, MACE, WARRIOR, HICK, HOBO, SKATER, BIKER, DUMMY,
+  // CLANCY and the civil roster. A drifting count leaves the bar monotone and clamped
+  // (m140) rather than broken, but a wrong number is a bar that jumps at the end.
+  if (inKit()) { PROG.done += 9 + CIVILS.length; }
+  else {
   if (!inWP() || WP.she) await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
   else PROG.done++;
   // THE MACE FIRST, because the warrior mounts it as he is built -- and it is only a weapon he
@@ -19986,6 +20504,9 @@ async function init() {
   for (const K of CIVILS)
     await side(K.file, 'loading the locals', { name: mphName(K), build: g => buildCivil(g, K) });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
+  }
+  // **THE DECK LOADS IN EVERY WORLD**, because it is HIS kit rather than a body -- and a house
+  // with a skateboard in it is a house with a skateboard in it.
   // THE DECK AND ITS CLIPS, EACH ON ITS OWN LINE -- a board with no animation is a man gliding
   // in his idle, and an animation with no board is a man crouching on tarmac, and those are two
   // different reports. `side()` names whichever one did not arrive.
@@ -20142,6 +20663,13 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // THE WORLD, LIVE (m124). `mel.world('weirdport')` is the key without the key, which is what
   // a desktop wants; `mel.WP` and `mel.TRI` and `mel.BGRID` are the dials.
   WORLD, WP, TRI, SURF, BGRID, triGround, surfRay, hitFit, boxesNear, wpRoot,
+  // HIS BUILDING KIT. `mel.kitBoom()` takes out the chunks where he stands, so a collapse
+  // can be looked at without a fight -- `mel.smash()`'s rule, one asset along.
+  KIT, WALLS, KCLIMB, kitState: kit, kitBlast,
+  kitBoom: (r, d) => kitBlast(player.pos.x, player.pos.y + 1, player.pos.z, r || 2.5,
+                              (d || 40) / KIT.dmg) + ' chunks hit',
+  kitWipe: () => { let n = 0; for (const W of WALLS) for (const c of W.chunks)
+                   if (!c.dead) { kitKill(W, c, 0); n++; } return n + ' chunks gone'; },
   // THE TINT'S COLOUR SPACE, LIVE (m126). `mel.tint(1)` reads the vertex colours as sRGB and
   // `mel.tint(0)` raw -- a uniform, so it is an A/B on the phone with no rebuild. See `WP.tint`.
   tint: v => { WP.tintMode = clamp(v | 0, 0, 2); WPTINT.value = WP.tintMode;

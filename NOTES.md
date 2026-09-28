@@ -7,6 +7,71 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE BUILDING KIT IS A FOURTH WORLD, AND EVERY CLAIM IN HIS HANDOFF WAS CHECKED BEFORE A
+  LINE WAS WRITTEN (m170, `KIT`, `buildKitCol`, `buildKit`, `kitBlast`, `CLIMB`).** *"I want
+  buildings that are breakable, and also buildings you can go inside -- staircases that go up to
+  the next floor, ladders you can climb -- but a big thing is I want to be able to destroy the
+  building piece by piece."* He shipped three GLBs and a note; the note is the spec and it is
+  accurate, which is worth saying because **a handoff read wrong is a build spent on a file that
+  was always fine**:
+      `_CHUNK`          confirmed, upper-cased exactly as he warned
+      the axis rule     `(x, y, z) -> (x, z, -y)`: **100% of 1,044 chunk vertices land inside
+                        their own converted box**, against 14% for the identity reading
+      the transforms    every wall is a PURE +Y rotation at unit scale under one root that is
+                        also pure Y at unit scale -- so a chunk collider is an ORIENTED box and
+                        it is EXACT rather than a fit
+      geometry sharing  **mesh 21 is used by TEN wall nodes and mesh 15 by seven**
+      the walls         261 chunks, 194 anchored, 3.3 neighbours; FOUR primitives per wall
+      no draco          which is the only reason any of the above could be read here
+  **AND THE SIGN WAS DECIDED BY PRINTING A CHUNK, NOT BY A TOLERANCE.** My first pass reported
+  `(x, z, -y)` AND `(x, z, +y)` both at 100%, which cannot both be true -- the reader was taking
+  `primitives[0]` of a FOUR-primitive wall and seeing 36 vertices of a 396-vertex mesh. Printed,
+  chunk 0's verts read z **-0.250..0.000** and `(x, z, +y)` gives 0.000..0.250, the other side of
+  the wall. **A measurement that agrees with both answers is a measurement that has not run**,
+  and this file's own rule (ask what a check would still pass with) caught it.
+  **THE CHUNK COLLIDER IS PROVEN, NOT ASSUMED.** The one piece of new arithmetic here is the
+  local box -> world oriented box, and getting it wrong is invisible walls or no walls at all.
+  Lifted `kitBox` from the shipped file and ran the same centre/yaw/half-extent maths against
+  every real vertex: **6,264 of 6,264 inside their own collider box, worst escape 0.0000 m.**
+  **CLONE ON THE FIRST HIT OR A HOLE IS NINE HOLES.** His note says it and the file says how
+  badly: ten wall nodes share one mesh. `kitClone` is per INSTANCE and lazy, because cloning all
+  twenty up front is twenty buffers for a house most of which is never touched.
+  **A DEAD CHUNK'S TRIANGLES COLLAPSE TO A POINT**, which is m145's trick surviving m147: every
+  vertex carrying that id is written to the chunk's own LOCAL centre, each of its triangles
+  becomes zero-area, and a degenerate triangle is discarded before rasterisation for free.
+  **To the point the chunk IS AT, never the origin** -- a degenerate triangle still counts toward
+  a bounding sphere, and collapsing to zero grows the wall's sphere to the middle of the world
+  and turns its frustum culling off. And it is ordinary JavaScript on ordinary meshes, which is
+  m147's whole finding: a mechanism that cannot be verified where it fails is the wrong one.
+  **THE FLOOD FILL IS WHAT MAKES IT A BUILDING.** His step 4: flood from every ANCHORED chunk
+  through `nb`, and anything the flood never reaches is a lump of wall with nothing under it.
+  Staggered by `KIT.fall` so a hole SPREADS rather than a bay blinking off at once, and re-run
+  after each fall because a chunk going can orphan the one above it.
+  **`KIT.dmg` IS ONE NUMBER AND HIS hp IS UNTOUCHED.** `FOE.dmg.bolt` is 1.9 and a chunk is hp
+  20, so without it a wall chunk is an eleven-shot object -- `BRK.dmg`'s own argument. The hp is
+  HIS and a re-export must not lose it, so the scale is converted rather than the data rewritten.
+  **THE LADDER IS A VOLUME AND IS NOT IN THE COLLIDER**, which is why `buildKitCol` tests
+  `climb_` FIRST: it is a thing you latch to, not a wall you stop against, and a box in a
+  doorway-sized gap is exactly what a ladder must not be.
+  **UP AND DOWN COME FROM THE THUMB'S COMPONENT ALONG THE WALL, NEVER ITS RAW Y** -- the stick is
+  in world space and the camera can be anywhere. **And which way is "into" is MEASURED at the
+  latch**: a ladder volume is tall and thin, so its short horizontal axis is out of the wall, and
+  which SIGN is out is simply where he was standing when he grabbed it. No extra field is asked
+  of his export and it cannot be backwards on one ladder and right on the other.
+  **TOPPING OUT GOES TO HIS `nav_ladder_top__X#`**, matched to the volume by the `X#` in the two
+  names rather than by a nearest-point guess, with the volume's own top as a stated fallback.
+  **AND THE KTX2 BAKE IS NOT ABOUT THE WIRE.** Ten 1024 maps are 1.7 MB in the GLB and **53 MB
+  on the phone** as full RGBA with mips. ETC1S: **53 -> about 7**, 217 non-image bufferViews
+  verified byte-identical. **Re-run it after every re-export** or the phone plays old textures
+  on new geometry.
+  **`models/building_kit` HAD TO GO INTO `bump.mjs`'s `DIRS`** -- twelfth time.
+  **WHAT IS NOT BUILT YET, STATED RATHER THAN LEFT TO BE FOUND:** the doors, the shutter and the
+  roof hatch are indexed with their hp and their hinge data and **do not open**; the glass is
+  indexed and does not break; there is no debris GEOMETRY (a chunk leaves dust, a rubble decal
+  and a clang); the `nav_*`, `room_*` and `repair` markers are loaded and nothing reads them;
+  and the kit world loads NO bodies at all, deliberately -- every `at` table in this file is a
+  list of test-site coordinates and a body spawned inside a 9 x 6 m house is m24's lesson.
+
 - **THE BARREL ROLL PIVOTED ON HIS CHEST BECAUSE THE NUMBER WAS MEASURED ON ANOTHER BODY
   (m169).** *"When he does the barrel roll he spins about his head when he should be spinning
   about his hips. Also you can't double jump on a skateboard whereas I kind of wish you could,

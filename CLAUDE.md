@@ -576,6 +576,23 @@ a map at all:
   `mel.mark()`, `mel.brk()`, `mel.smash()` and `mel.spout()` fire one of each where he stands.
   `inst`/`merge`/`tex`/`col` want a reload.
 
+- **THE BUILDING KIT IS A FOURTH WORLD** (`KIT`, world key `kit`, `?w=kit`, m170). His test
+  house: two floors, a roof, stairs, two ladders, 20 breakable walls and **261 chunk colliders**
+  that are EXACT (every wall is a pure +Y rotation at unit scale, so a chunk's collider is an
+  oriented box — verified: 6,264 of 6,264 chunk vertices inside their own box, 0.0000 m escape).
+  Shoot or swing at a wall and chunks die, then `kitFlood` drops anything no longer connected to
+  an anchored one. `mel.kitBoom()` / `mel.kitWipe()`; the chip says `KIT<standing>/<built>`.
+  **`KIT.vis` POINTS AT THE BAKED GLB** — his export is `KIT.raw`, and the bake
+  (`npm run ktx models/building_kit/building_kit_test_visual.glb etc1s`, ~20 s) has to be re-run
+  after EVERY re-export or the phone plays old textures on new geometry. 53 MB resident → ~7.
+  **THE CHUNK BOXES ARE BLENDER Z-UP**: `(x, y, z) → (x, z, −y)`, re-sorted, then the wall's
+  world matrix. `kitBox` is the one place that does it. **And the geometry is SHARED** — ten
+  wall nodes on one mesh — so `kitClone` on the first hit is mandatory, not a nicety.
+  **NOT BUILT YET, and stated rather than left to be found:** the doors/shutter/hatch are
+  indexed with their hinge data and do not open; the glass is indexed and does not break; a
+  dead chunk leaves dust and a rubble decal but no debris GEOMETRY; the `nav_*`/`room_*` markers
+  are loaded and nothing reads them; and the world loads **no bodies at all**, deliberately —
+  every `at` table here is test-site coordinates and a body inside a 9 × 6 m house is m24.
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
   his own torso — her hair has head/chest/hips spheres for exactly that reason. The arms are
   pinned at the shoulder under a .85 cone and cannot reach far, so it is left out rather than
