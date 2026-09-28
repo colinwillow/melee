@@ -35,7 +35,9 @@ Each moving part has its own box collider as a child, named `col_*` with `collid
 - `width` is 1.04 m. `breakable: "door"`, `hp` 40.
 - Door wall variants are `_door_L`, `_door_C` and `_door_R`, depending on where the door sits in the bay.
 
-**Window glass** (`breakable: "glass"`, `hp` 5, `blowout: true`)
+**Window glass** (`breakable: "glass"`, `hp` 5, `blowout: true`, `panes: 2`)
+- It is a clear pane now, using material `BK_M_glass`: light blue, alpha 0.32, alpha-blended and double-sided. It has three white toon glint streaks (`BK_M_glint`) that belong to the glass object, so they vanish with it.
+- The window frame (sash) and the center mullion are part of the wall, never break, and split the window visually into two panes.
 - The pivot is at the center of the pane.
 - On break, hide it and spawn glass shards or particles.
 
@@ -97,3 +99,15 @@ This uses the same prefixes as the city:
 - **Stairs:** they run along the back wall and come up through the `floor_hole` cells onto the second floor. A railing runs along the hole.
 - **Interior ladder:** from the second floor up through the roof hatch, in the front-right corner.
 - **Exterior ladder:** on the right wall, from the ground over the parapet onto the roof.
+
+## Pipes and ivy (new)
+
+- **`BK_TestHouse_pipes`**: one mesh per building, parented to the root.
+  - A walker generates the pipe runs on a 0.5 m grid over the outside walls. It only moves straight or turns 90°, so each run is straight segments joined by elbows, with collars.
+  - A run steers around windows, doors and the ladder, and wraps around corners.
+  - Each run either dives into the wall or hooks over the parapet onto the roof.
+  - Extras: `pipes` is the number of runs. It doesn't break yet, so treat it as decoration, or use the wall colliders.
+- **`BK_TestHouse_ivy`**: one mesh per building.
+  - Every leaf vertex has `_HOST`, an index into the object's `hosts` extras, which is a JSON list of wall `piece_id`s. It also has `_CHUNK`, the chunk id on that wall.
+  - When a wall chunk is destroyed, hide the ivy leaves whose host and chunk match, so ivy never floats in mid-air.
+  - `-1` means the leaf isn't on a breakable chunk: it's on a parapet or trim, and it stays.
