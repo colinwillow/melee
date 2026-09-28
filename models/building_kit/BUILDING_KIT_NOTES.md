@@ -111,3 +111,29 @@ This uses the same prefixes as the city:
   - Every leaf vertex has `_HOST`, an index into the object's `hosts` extras, which is a JSON list of wall `piece_id`s. It also has `_CHUNK`, the chunk id on that wall.
   - When a wall chunk is destroyed, hide the ivy leaves whose host and chunk match, so ivy never floats in mid-air.
   - `-1` means the leaf isn't on a breakable chunk: it's on a parapet or trim, and it stays.
+
+## Generated buildings (new)
+
+The files:
+- **building_kit_generated_visual.glb**: four buildings made by the generator (`BKG0` to `BKG3`), built from the same kit pieces.
+- **building_kit_collision.glb**: the static collision for the generated buildings plus the test house, with the same prefixes as before. It replaces `building_kit_test_collision.glb`.
+
+Building roots:
+- Each root empty has extras `building`, `seed`, `cells` (a JSON list of [x, y] 3 m grid cells) and `heights` (JSON: "x,y" to the number of floors).
+- A building is any footprint of 3 m cells (rectangle, L, notch or step) and each cell can have a different height, so there are setbacks with lower roofs.
+
+Slot names for walls are `L<lv>_W<x>_<y>_<s|e|n|w>` (level, cell, which side of the cell). Corners, floors and extras work as before.
+
+What every generated building gets:
+- A stair between each pair of floors, alternating direction, with the stair hole and railing.
+- A roof hatch with an interior ladder.
+- One exterior ladder that runs the full height of a side or back wall.
+- Parapets on every roof edge that drops away, and corner posts wherever the wall turns.
+
+Dressing, all parented under the root:
+- **`<name>_pipes`**: pipe runs made by the grid walker, as described above.
+- **`<name>_ivy`**: ivy leaves, tagged with `_HOST` and `_CHUNK`, as described above.
+- **`<name>_dressing`**: one mesh holding awnings and shop signs, tagged with `_HOST` and `_CHUNK` the same way as the ivy. When the chunk an awning or sign hangs on is destroyed, drop or hide the faces tagged with it.
+- **`<name>_ac#`**: AC units. These are separate objects using the AC model from the city. Extras: `breakable: "ac_unit"`, `hp` 30, `host` (a wall `piece_id`) and `host_chunk`. When that chunk goes, the AC unit falls.
+
+Markers are the same set as on the test house (rooms/fire, door in/out, repair, ladder ends, truck, hose, police), and they are prefixed with the building name.
