@@ -10,6 +10,35 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 
 
+
+- **THE DIAGONAL SLASH WAS THE IMPACT FLASH CUT IN HALF BY THE WALL, AND THE FLOATING GOO WAS A
+  MARK THAT NEVER LAY ON THE WALL (m175, `flashSeen`, `boxRay`, `hitFace` -> `out.x/y/z`).**
+  *"When you shoot a wall there's a big diagonal slash on it -- the light burst goes through half
+  of the triangle."* and *"there's still this green goo floating on nothing."*
+  **THE SLASH.** `boltHit`'s flash is three additive SPRITES up to `6.4 x size` across -- flat
+  cards facing the lens -- set at the impact and depth-tested. Against a wall the depth test keeps
+  the half of each card in front and discards the half behind, and the line where a card's plane
+  crosses the wall's is a hard straight edge through the glow. It was never the wall's triangles.
+  A glow has no surface to be behind, so the flash now draws over everything **when the lens can
+  see the impact** -- `flashSeen` is one camera-to-impact segment against `SURF` and a 35 cm
+  sample of the boxes, once per hit -- and keeps the depth test when something ELSE hides it.
+  **THE GOO, THREE FAULTS IN THE BOX BRANCH:**
+  1. **A box hit stamped the mark where the BALL was**, up to `boltR` (17 cm) off the face or sunk
+     into it. So it floated from the start, and when the chunk died its centre was outside the
+     `decalOff` pad and it stayed. `hitFace` now returns the CONTACT POINT on the face it picked.
+  2. **A fast bolt arrives INSIDE a 25 cm wall** (a half-step is a third of a metre), and "the face
+     it is least deep into" then picked the SIDE of the chunk it was in -- a face that only exists
+     BETWEEN chunks, so the mark stood out of the wall on its edge. `boxRay` is a slab test of the
+     bolt's own segment in each box's frame: the face it came in through, and where. It runs beside
+     `surfRay` and the nearer wins, since his house has floors in one store and walls in the other.
+  3. **`boltBox` took the FIRST box within reach**, which on a wall of touching chunks was often a
+     neighbour's corner, so the normal leaned off the wall. It takes the nearest now.
+  **AND `hitFace` NEVER TOOK ITS ORIENTED BRANCH.** It read `near.x/near.z`; `boxNear` writes
+  `nx/nz/cx/cz`. And when the point was INSIDE, `boxNear` returned -1 and left the record holding
+  the previous call's answer -- so the callers pass null there now.
+  Checked with the scratch kit probe: a point 10 cm off the S0 face and one 5 cm inside it both
+  land at z 0.000 facing +z (before: x 1.456, normal (0.40, 0.92) -- a chunk corner); segments
+  enter the S0, S1 and S2 faces with the right normals and pass through the window opening.
 - **THE FLAT CARDS IN THE WALL WERE A RUBBLE DECAL STAMPED IN MID-AIR (m174, `decalOff`).** *"The
   little debris cards -- they're laid with their faces pointing upward... these weird flat laying
   images just don't read correctly. They're like floating flat 2-D images where you shoot the

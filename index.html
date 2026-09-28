@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m174</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m175</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m174</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m175</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm174';
+const BUILD = 'm175';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_pieces.glb":"54857d40","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"05866750","models/building_kit/building_kit_test_visual_ktx2.glb":"6b5893b1","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -6695,7 +6695,7 @@ function camHit(x, y, z, pad, out) {
     // flight, so against the AABB of a car at 45 degrees a shot aimed well past it died in
     // clear air -- Shredworld's own m161 complaint, one shape along.
     if (b.cs !== undefined) { const d = boxNear(b, x, z, _bnpC); if (d >= 0 && d > pad) continue;
-                              if (out) hitFace(b, x, y, z, pad, _bnpC, out); return true; }
+                              if (out) hitFace(b, x, y, z, pad, d >= 0 ? _bnpC : null, out); return true; }
     if (x > b.minx - pad && x < b.maxx + pad && z > b.minz - pad && z < b.maxz + pad) {
       if (out) hitFace(b, x, y, z, pad, null, out);
       return true;
@@ -6714,19 +6714,79 @@ function camHit(x, y, z, pad, out) {
 // and the cars. Those still hit on a box face, correctly, because a box face is the best answer
 // anything has about them.
 function boltBox(x, y, z, pad, out) {
+  // **THE NEAREST BOX, NOT THE FIRST ONE IN THE LIST (m175).** His walls are stacks of chunks
+  // that TOUCH, so a ball on the face is within reach of two or three of them at once -- and the
+  // first one found was often the neighbour whose corner is nearest, which put the mark on a
+  // corner normal leaning off the wall.
   const skipTri = SURF.on;
+  let best = null, bd = 1e9, bNear = null;
   for (const b of boxesNear(x - pad, x + pad, z - pad, z + pad, _bnB)) {
     if (skipTri && b.tri) continue;
     if (y <= b.miny - pad || y >= b.maxy + pad) continue;
-    if (b.cs !== undefined) { const d = boxNear(b, x, z, _bnpB); if (d >= 0 && d > pad) continue;
-                              if (out) hitFace(b, x, y, z, pad, _bnpB, out); return true; }
-    if (x > b.minx - pad && x < b.maxx + pad && z > b.minz - pad && z < b.maxz + pad) {
-      if (out) hitFace(b, x, y, z, pad, null, out);
-      return true;
+    let d;
+    if (b.cs !== undefined) { d = boxNear(b, x, z, _bnpB); if (d >= 0 && d > pad) continue; }
+    else {
+      if (!(x > b.minx - pad && x < b.maxx + pad && z > b.minz - pad && z < b.maxz + pad)) continue;
+      d = Math.hypot(x - clamp(x, b.minx, b.maxx), z - clamp(z, b.minz, b.maxz));
+      if (d < 1e-4) d = -1;
     }
+    // inside ranks first; then the one whose surface is closest in plan AND height
+    const dy = y > b.maxy ? y - b.maxy : y < b.miny ? b.miny - y : 0;
+    const score = d < 0 ? -1 : Math.hypot(d, dy);
+    if (score < bd) { bd = score; best = b;
+      bNear = (b.cs !== undefined && d >= 0) ? { nx: _bnpB.nx, nz: _bnpB.nz, cx: _bnpB.cx, cz: _bnpB.cz } : null; }
   }
-  return false;
+  if (!best) return false;
+  if (out) hitFace(best, x, y, z, pad, bNear, out);
+  return true;
 }
+// **A BOLT'S SEGMENT AGAINST THE BOXES (m175, `boxRay`).** The point test above is a SAMPLE, and
+// at forty-odd metres a second a half-step is a third of a metre -- so a bolt against a 25 cm
+// wall usually arrives already INSIDE it, and "the face it is least deep into" then picks the
+// side of whichever chunk it is in: a face that only exists BETWEEN two chunks, so the mark stood
+// out of the wall on its edge. The segment says which face it came IN through, and where, which
+// is the only honest answer -- `surfRay`'s own argument, for the stores `SURF` does not hold.
+// A slab test in each box's own frame; the earliest entry wins. A segment that STARTS inside a
+// box has no entry and is left to the point test.
+const _brL0 = { x: 0, z: 0 }, _brL1 = { x: 0, z: 0 };
+function boxRay(ox, oy, oz, ex, ey, ez, out) {
+  const skipTri = SURF.on;
+  let bt = 2, bb = null, bax = 0, bay = 0, baz = 0;
+  const x0 = Math.min(ox, ex), x1 = Math.max(ox, ex), z0 = Math.min(oz, ez), z1 = Math.max(oz, ez);
+  for (const b of boxesNear(x0, x1, z0, z1, _bnB)) {
+    if (skipTri && b.tri) continue;
+    if (Math.max(oy, ey) < b.miny || Math.min(oy, ey) > b.maxy) continue;
+    let ax, az, dx, dz, hx, hz;
+    if (b.cs !== undefined) {
+      boxLocal(b, ox, oz, _brL0); boxLocal(b, ex, ez, _brL1);
+      ax = _brL0.x; az = _brL0.z; dx = _brL1.x - ax; dz = _brL1.z - az; hx = b.hx; hz = b.hz;
+    } else {
+      const cx = (b.minx + b.maxx) * .5, cz = (b.minz + b.maxz) * .5;
+      ax = ox - cx; az = oz - cz; dx = ex - ox; dz = ez - oz;
+      hx = (b.maxx - b.minx) * .5; hz = (b.maxz - b.minz) * .5;
+    }
+    const cy = (b.miny + b.maxy) * .5, hy = (b.maxy - b.miny) * .5, ay = oy - cy, dy = ey - oy;
+    let tin = -1e9, tout = 1e9, fx = 0, fy = 0, fz = 0, ok = true;
+    const slab = (a, d, h, axis) => {
+      if (Math.abs(d) < 1e-9) { if (a < -h || a > h) ok = false; return; }
+      let t0 = (-h - a) / d, t1 = (h - a) / d, sgn = -1;
+      if (t0 > t1) { const q = t0; t0 = t1; t1 = q; sgn = 1; }
+      if (t0 > tin) { tin = t0; fx = axis === 0 ? sgn : 0; fy = axis === 1 ? sgn : 0; fz = axis === 2 ? sgn : 0; }
+      if (t1 < tout) tout = t1;
+    };
+    slab(ax, dx, hx, 0); slab(ay, dy, hy, 1); slab(az, dz, hz, 2);
+    if (!ok || tin > tout || tin < 0 || tin > 1 || tin >= bt) continue;
+    bt = tin; bb = b; bax = fx; bay = fy; baz = fz;
+  }
+  if (!bb) return false;
+  out.t = bt; out.box = bb;
+  out.x = ox + (ex - ox) * bt; out.y = oy + (ey - oy) * bt; out.z = oz + (ez - oz) * bt;
+  out.ny = bay;
+  if (bb.cs !== undefined) { out.nx = bax * bb.cs - baz * bb.sn; out.nz = bax * bb.sn + baz * bb.cs; }
+  else { out.nx = bax; out.nz = baz; }
+  return true;
+}
+const _brH = { t: 0, x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 0, box: null };
 // **HOW BIG THE THING IT LANDED ON ACTUALLY IS (m166, `hitFit`).** *"Some small objects get the
 // blast mark and the blast mark is bigger than the object."* A scorch is sized by the CHARGE,
 // which is right on a wall and absurd on a fire hydrant. So the object gets a say: the NARROWEST
@@ -6757,22 +6817,45 @@ function hitFit(x, y, z) {
 // first, because a bolt that lands on a roof is on the roof and a plan normal there would lay
 // the scorch on its edge; everything else is the plan normal, which for an oriented box is the
 // real face rather than the phantom AABB's.
+// **AND IT SAYS WHERE ON THAT FACE, NOT ONLY WHICH (m175, `out.x/y/z`).** *"There's still this
+// green goo floating on nothing."* A box hit used to stamp its mark where the BALL was -- which
+// is anywhere up to `boltR` (17 cm) in front of the face, or sunk into it -- so a goo splat floated
+// off the wall from the start, and when that chunk died its centre was too far from the dead box
+// for `decalOff` to catch it. The contact point is the query point PROJECTED onto the face it
+// picked, in the box's own frame when it has one, so a mark lies on the surface and dies with it.
+// **`near` IS THE CLOSEST-POINT RECORD ONLY WHEN THE POINT IS OUTSIDE THE FOOTPRINT.** Inside it,
+// `boxNear` returns -1 and leaves the record holding the LAST call's answer -- so the callers pass
+// null there, and this reads `near.nx/nz` (the fields `boxNear` actually writes; m160 read `.x/.z`,
+// which do not exist, so the oriented branch was never taken at all).
+const _hfL = { x: 0, z: 0 };
 function hitFace(b, x, y, z, pad, near, out) {
   out.box = b;
-  if (y >= b.maxy - pad) { out.nx = 0; out.ny = 1; out.nz = 0; return; }
-  if (y <= b.miny + pad) { out.nx = 0; out.ny = -1; out.nz = 0; return; }
-  let nx = 0, nz = 0;
-  if (near && (near.x || near.z)) { nx = near.x; nz = near.z; }
-  else {
-    // the axis-aligned case: the face it is least deep into, which is `resolveBoxes`' own rule
-    const dx1 = b.maxx - x, dx2 = x - b.minx, dz1 = b.maxz - z, dz2 = z - b.minz;
-    const m = Math.min(dx1, dx2, dz1, dz2);
-    if (m === dx1) nx = 1; else if (m === dx2) nx = -1; else if (m === dz1) nz = 1; else nz = -1;
+  out.x = x; out.y = y; out.z = z;
+  if (y >= b.maxy - pad) { out.nx = 0; out.ny = 1; out.nz = 0; out.y = b.maxy; return; }
+  if (y <= b.miny + pad) { out.nx = 0; out.ny = -1; out.nz = 0; out.y = b.miny; return; }
+  out.ny = 0;
+  if (near) { out.nx = near.nx; out.nz = near.nz; out.x = near.cx; out.z = near.cz; return; }
+  if (b.cs !== undefined) {
+    // inside an oriented footprint: the face it is least deep into, in the box's own frame
+    boxLocal(b, x, z, _hfL);
+    const e1 = b.hx - _hfL.x, e2 = _hfL.x + b.hx, e3 = b.hz - _hfL.z, e4 = _hfL.z + b.hz;
+    const m = Math.min(e1, e2, e3, e4);
+    let lx = _hfL.x, lz = _hfL.z, ax = 0, az = 0;
+    if (m === e1) { lx = b.hx; ax = 1; } else if (m === e2) { lx = -b.hx; ax = -1; }
+    else if (m === e3) { lz = b.hz; az = 1; } else { lz = -b.hz; az = -1; }
+    out.nx = ax * b.cs - az * b.sn; out.nz = ax * b.sn + az * b.cs;
+    out.x = b.cx + lx * b.cs - lz * b.sn; out.z = b.cz + lx * b.sn + lz * b.cs;
+    return;
   }
-  const L = Math.hypot(nx, nz) || 1;
-  out.nx = nx / L; out.ny = 0; out.nz = nz / L;
+  // the axis-aligned case: the face it is least deep into, which is `resolveBoxes`' own rule
+  const dx1 = b.maxx - x, dx2 = x - b.minx, dz1 = b.maxz - z, dz2 = z - b.minz;
+  const m = Math.min(dx1, dx2, dz1, dz2);
+  if (m === dx1) { out.nx = 1; out.nz = 0; out.x = b.maxx; }
+  else if (m === dx2) { out.nx = -1; out.nz = 0; out.x = b.minx; }
+  else if (m === dz1) { out.nx = 0; out.nz = 1; out.z = b.maxz; }
+  else { out.nx = 0; out.nz = -1; out.z = b.minz; }
 }
-const _hitF = { nx: 0, ny: 1, nz: 0, box: null };
+const _hitF = { nx: 0, ny: 1, nz: 0, x: 0, y: 0, z: 0, box: null };
 
 // ============================================================================================
 // THE RIG
@@ -7239,6 +7322,24 @@ function glowSprite(colour, size) {
   const sp = new THREE.Sprite(m);
   sp.scale.setScalar(size);
   return sp;
+}
+// CAN THE LENS SEE THIS POINT? (m175) One segment from the camera to it, against both stores: the
+// real triangles (`surfRay`) and the boxes, sampled every `step` metres -- the boxes are where his
+// wall chunks live, and they are not in `SURF`. The last `skip` metres are not asked about, because
+// the point sits just off the very surface that was hit and that surface is not "in the way".
+// Coarse on purpose: it runs once per impact, and a flash that is wrongly depth-tested for one
+// frame costs a clipped glow, which is exactly what it cost before.
+const _fsH = { x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 0 };
+function flashSeen(x, y, z) {
+  const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  const dx = x - cx, dy = y - cy, dz = z - cz, L = Math.hypot(dx, dy, dz);
+  const skip = .3, step = .35;
+  if (L <= skip) return true;
+  const ux = dx / L, uy = dy / L, uz = dz / L, end = L - skip;
+  if (surfRay(cx, cy, cz, cx + ux * end, cy + uy * end, cz + uz * end, _fsH)) return false;
+  for (let t = step; t < end; t += step)
+    if (camHit(cx + ux * t, cy + uy * t, cz + uz * t, 0)) return false;
+  return true;
 }
 // ============================================================================================
 // SPARKS -- ONE DRAW CALL FOR EVERY PARTICLE IN THE GAME (m39)
@@ -7991,6 +8092,17 @@ function boltHit(b) {
   fx.add(glowSprite(0x2ec8ff, b.size * 4.2 * K));
   fx.add(glowSprite(0x7a3cff, b.size * 6.4 * K));
   fx.position.copy(b.pos);
+  // **THE DIAGONAL SLASH ON THE WALL WAS THIS STACK, CUT BY THE WALL (m175).** *"When you shoot a
+  // wall there's a big diagonal slash on it -- the light burst goes through half of the triangle
+  // and makes this big ugly line."* A sprite is a flat card facing the lens, and the biggest of
+  // these is metres across: set against a wall, the depth test keeps the half in front and throws
+  // away the half behind, and the line where the card's plane crosses the wall's is a hard
+  // straight edge in the middle of the glow. It was never the wall's triangles.
+  // **SO THE FLASH DRAWS OVER THE WALL WHEN THE LENS CAN SEE THE SPOT IT HIT**, which is the one
+  // question that matters: a glow is additive light, it has no surface to be behind, and the only
+  // case where depth is right is the impact being hidden behind something ELSE. `flashSeen` asks
+  // exactly that, once, at the moment of impact.
+  if (flashSeen(b.pos.x, b.pos.y, b.pos.z)) for (const sp of fx.children) sp.material.depthTest = false;
   scene.add(fx);
   FLASH.push({ g: fx, t: 0, life: WEAP.flashLife * (.7 + c * .6), base: b.size * K });
   spkBurst(b.pos.x, b.pos.y, b.pos.z, Math.round(10 + 34 * big),
@@ -8834,7 +8946,19 @@ function stepBolts(dt) {
       // **AND THE POINT IS PULLED BACK OFF THE SURFACE BY `WEAP.boltR`**, because the ball has
       // a size: landing its CENTRE on the plane buries half the flash inside the wall.
       if (!dead) {
-        if (surfRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _srH)) {
+        // **BOTH SEGMENT TESTS, AND THE NEARER WINS (m175).** In a world with triangles AND boxes
+        // (his house: floors in `SURF`, walls as chunk boxes) either can be first along the shot.
+        const sHit = surfRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _srH);
+        const bHit = boxRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _brH);
+        const sT = sHit ? Math.hypot(_srH.x - _px, _srH.y - _py, _srH.z - _pz) /
+                          (Math.hypot(b.pos.x - _px, b.pos.y - _py, b.pos.z - _pz) || 1) : 2;
+        if (bHit && _brH.t < sT) {
+          dead = true;
+          b.hitN = [_brH.nx, _brH.ny, _brH.nz]; b.hitBox = _brH.box;
+          b.hitAt = [_brH.x, _brH.y, _brH.z];
+          b.pos.set(_brH.x + _brH.nx * WEAP.boltR, _brH.y + _brH.ny * WEAP.boltR,
+                    _brH.z + _brH.nz * WEAP.boltR);
+        } else if (sHit) {
           dead = true;
           b.pos.set(_srH.x + _srH.nx * WEAP.boltR, _srH.y + _srH.ny * WEAP.boltR,
                     _srH.z + _srH.nz * WEAP.boltR);
@@ -8842,7 +8966,11 @@ function stepBolts(dt) {
           b.hitAt = [_srH.x, _srH.y, _srH.z];
         } else if (boltBox(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR, _hitF)) {
           dead = true; b.hitN = [_hitF.nx, _hitF.ny, _hitF.nz]; b.hitBox = _hitF.box;
-          b.hitAt = null;
+          // ON the face (m175), and the ball set off it by its own radius -- the SURF branch's
+          // own arrangement, so the mark lies on the wall and the flash is not half inside it
+          b.hitAt = [_hitF.x, _hitF.y, _hitF.z];
+          b.pos.set(_hitF.x + _hitF.nx * WEAP.boltR, _hitF.y + _hitF.ny * WEAP.boltR,
+                    _hitF.z + _hitF.nz * WEAP.boltR);
         } else if (b.pos.y < 0) { dead = true; b.hitN = [0, 1, 0]; b.hitBox = null; b.hitAt = null; }
       }
     }
