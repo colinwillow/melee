@@ -7,6 +7,64 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **`stopAllAction()` PUTS A SKELETON IN THE T-POSE, AND m165's COMMENT SAID THE OPPOSITE
+  (m168).** *"The current civilian goes into T-pose and stays there while a warrior alien starts
+  off at the size of a pea and grows over it. They're both there at the same time. There's no
+  proxy mesh, there's no morph... none of it works even close to anything like it's supposed to."*
+  Three separate faults in one picture, and all three were mine.
+  **THE T-POSE IS ONE LINE, READ STRAIGHT OUT OF THE VENDORED BUILD:**
+      _deactivateAction(t){ ... 0 === --s.useCount && (s.restoreOriginalState(), ...) }
+  `restoreOriginalState` writes back the value captured when the binding was MADE, which is the
+  BIND POSE. So `stopAllAction()` -- the one line written to *"leave the skeleton exactly where
+  the last update put it"* -- is the line that snapped it to a T. **A behaviour asserted only in
+  a comment, for the sixth time in this file**, and this one was the thing on screen.
+  **THE HONEST WAY TO FREEZE A SKELETON IS TO STOP UPDATING ITS MIXER**, which costs nothing.
+  **AND THE OTHER TWO FAULTS ARE THE DESIGN, NOT A BUG IN IT.** m165 reasoned that two skins
+  share no topology -- a hick and the warrior are different meshes with different vertex counts,
+  which is TRUE -- and concluded that the only thing left was to put BOTH bodies on screen and
+  cross-fade their scales. **The conclusion was wrong and the counter-example was already in this
+  file.** `MORPH`'s proxy blob (m113) has interpolated between two bodies that share no topology
+  since the DNA gun was built: what two bodies DO share is a SILHOUETTE -- a radius per height
+  band per bearing, which every body has and which two bodies have the same NUMBER of -- and that
+  is a real correspondence to morph across. **The thing he asked for existed and was wired to the
+  other trigger.** *"We were making proxy mesh morphs using joint positions"* -- he was describing
+  the machinery this repo already had, and m165 built a second, worse one beside it.
+  **SO THE VIRUS TURN GETS THE SAME BLOB THE DNA GUN USES.** The old body is REMOVED, the shape
+  travels from its measured silhouette to the new kind's, and the new body arrives INSIDE it at
+  `VIRUS.at` (.48), hidden, and is unveiled at `VIRUS.show` (.72) as the shell opens.
+  **At no point are there two of them**, which is the whole complaint. The husk, the grow and
+  `stopAllAction` are gone together: they were three parts of one wrong shape.
+  **THE PROFILE IS THE KIND'S, NOT A BODY'S, AND THAT IS FORCED.** The kind he is turning INTO
+  does not exist on the frame the turn starts, so the silhouette has to come off `K.P.proto` --
+  `kindProf` is a shim (`mphProf` wants `model.scale.x`, `faceOff` and a traversal; `K.P` has all
+  three in pieces) and a cache. **Cached under `vProf`, not `prof`**: a KIND is not a SKIN, and
+  sharing `mphProf`'s field would be two facts in one variable, which is the bug this build is
+  undoing one scale down.
+  **THE BLOB STOPPED BEING A SINGLETON.** `mphMake()` builds the geometry, material and scratch
+  arrays into a RECORD; `MPH` is still the player's; `mphFill` takes a ninth argument defaulting
+  to it. **That default is what keeps `npm run hull` green** -- it lifts the `PROF:` text and
+  calls `mphFill` with eight arguments against an `MPH` it injects itself, so an instance
+  parameter with a fallback is a new capability rather than a new thing for the harness to be out
+  of step with. Re-run after the refactor: **all ok**, including *"and both ends are the bodies
+  themselves"*, which is the assertion that says the interpolation really does travel.
+  **`VIRUS.blobs` IS 3 AND PAST IT A TURN IS INSTANT, NOT QUEUED.** `mel.outbreak()` is thirty
+  turns, and thirty shader materials compiled mid-frame is a visible hitch for an effect nobody
+  can watch thirty of anyway.
+  **AND `virusGo` RETURNS NOTHING ON THE BLOB PATH**, because the body arrives a beat later --
+  so `mel.virus()` names the kind it is turning INTO rather than reporting `?`, which would read
+  as a failure. `virusArrive` is the ONE place a new body is built, called by the midpoint and by
+  the instant path alike; two descriptions of one man is two that drift apart on the first edit.
+  **`faceOff` IS BAKED INTO BOTH PROFILES ALREADY** (that is what puts two different exports'
+  silhouettes in one frame), so the blob is turned by his BEARING and nothing else -- taking it
+  off per profile would be taking it off twice.
+  **AND AN EMPTY PROFILE SAYS SO (`NO VPROF <kind>`).** Without it the turn falls silently back
+  to the instant swap, which is *"there's no morph"* reported a THIRD time with nothing on screen
+  to say whether the shape was skipped or was drawn and looked wrong. That is the one failure no
+  harness here can reach: every character GLB is draco and **nothing in this container can build
+  a skin**, so whether these particular prototypes yield a silhouette is a device question.
+  `npm run hull` proves the measurement, the hole fill, the smoothing and the wrap turn a cloud
+  of vertices into a body; it cannot prove that THESE clouds arrive.
+
 - **THE BOARD IS SHREDWORLD'S NOW: A FOLLOW CAMERA, THE BARREL ROLL, AND THE BLASTER IN HIS
   HANDS WHILE HE RIDES (m167).** *"There are discrepancies between Shredworld and our version of
   the skateboarding mode... the camera doesn't do a follow cam when you're on the skateboard,

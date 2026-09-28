@@ -648,6 +648,12 @@ a map at all:
   follows their true shape, which is what it is for. The real second fault was the 12-triangle
   shortcut, and m131 fixed it.)
 - No audio at all.
+- **THE VIRUS TURN IS THE PROXY BLOB AS OF m168** — the same `MORPH` shape the DNA gun uses,
+  driven per body from a small pool, travelling between two silhouettes measured off the two
+  KINDS' prototypes. **One shape on screen, never two bodies**; m165's husk, grow and
+  `stopAllAction` are all gone (that last one T-posed the thing it was written to freeze — see
+  `NOTES.md`). `mel.VIRUS.blobs` caps how many run at once; `NO VPROF <kind>` in the chip means
+  a prototype yielded no silhouette and the turn fell back to the instant swap.
 - **Nobody reacts to the disguise.** The DNA gun (m112) changes what he is DRAWN as and nothing
   else -- *"if people see you they get afraid of you, if cops see you they shoot at you, but if
   you transform into one of them they don't think anything of it"* is `foeTarget`'s aggro rule

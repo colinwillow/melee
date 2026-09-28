@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m167</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m168</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m167</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m168</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,7 +584,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm167';
+const BUILD = 'm168';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -15747,8 +15747,11 @@ function mphProf(s) {
   return g;
 }
 
-function mphMesh() {
-  if (MPH.blob) return MPH.blob;
+// **THE BLOB IS BUILT INTO A RECORD NOW, NOT INTO ONE GLOBAL (m168).** The virus turn needs one
+// over a BODY, and possibly a few at once, so the geometry, the material and the scratch arrays
+// belong to an instance. `MPH` is still the PLAYER's and every existing caller is untouched --
+// what changed is that there is a maker under it.
+function mphMake() {
   const rows = MORPH.rings + 1, seg = MORPH.seg, n = rows * seg;
   const pos = new Float32Array(n * 3), nrm = new Float32Array(n * 3), idx = [];
   for (let i = 0; i < rows - 1; i++) for (let j = 0; j < seg; j++) {
@@ -15829,9 +15832,13 @@ function mphMesh() {
   // nothing -- the same reason every effect in this file opts out of culling.
   m.frustumCulled = false; m.renderOrder = 2; m.visible = false;
   scene.add(m);
-  MPH.blob = m; MPH.geo = g; MPH.mat = mat; MPH.pos = pos; MPH.nrm = nrm;
-  MPH.rows = rows; MPH.seg = seg; MPH._r = new Float32Array(rows * seg);
-  return m;
+  return { blob: m, geo: g, mat, pos, nrm, rows, seg, _r: new Float32Array(rows * seg),
+           H: 1, t: 0, e: 0, re: 0 };
+}
+function mphMesh() {
+  if (MPH.blob) return MPH.blob;
+  Object.assign(MPH, mphMake());
+  return MPH.blob;
 }
 
 // **THE NORMAL COMES OFF THE GRID, not a lathe formula** -- the surface is no longer one of
@@ -15841,10 +15848,15 @@ function mphMesh() {
 // row tangent is nothing, and that is the one case guarded.
 // `sw` is the swell THIS FRAME (m118) and defaults to the full one, so `npm run hull` -- which
 // calls this with seven arguments and measures the shape rather than the ramp -- is unchanged.
-function mphFill(A, B, hA, hB, a, w, t, sw) {
-  const rows = MPH.rows, seg = MPH.seg, P = MPH.pos, N = MPH.nrm, R = MPH._r;
+function mphFill(A, B, hA, hB, a, w, t, sw, M) {
+  // **THE NINTH ARGUMENT DEFAULTS TO THE PLAYER'S (m168), AND THAT IS WHAT KEEPS `npm run hull`
+  // WORKING.** That tool lifts this text between the `PROF:` markers and calls it with eight
+  // arguments against an `MPH` it injects itself -- so an instance parameter with a fallback is
+  // a new capability and not a new thing for the harness to be out of step with.
+  const X = M || MPH;
+  const rows = X.rows, seg = X.seg, P = X.pos, N = X.nrm, R = X._r;
   const SW = sw || MORPH.swell;
-  const H = MPH.H = lerp(hA, hB, a), step = H / (rows - 1), TAU = Math.PI * 2;
+  const H = X.H = lerp(hA, hB, a), step = H / (rows - 1), TAU = Math.PI * 2;
   // A SLOW, LOW-FREQUENCY BREATH RATHER THAN A BOIL. A per-cell wobble on a 2D hull is noise,
   // and noise on a shape whose whole job is to be recognisable is what reads as random.
   for (let i = 0; i < rows; i++) for (let j = 0; j < seg; j++) {
@@ -15869,8 +15881,8 @@ function mphFill(A, B, hA, hB, a, w, t, sw) {
     else { nx /= nl; ny /= nl; nz /= nl; }
     N[k] = nx; N[k + 1] = ny; N[k + 2] = nz;
   }
-  MPH.geo.attributes.position.needsUpdate = true;
-  MPH.geo.attributes.normal.needsUpdate = true;
+  X.geo.attributes.position.needsUpdate = true;
+  X.geo.attributes.normal.needsUpdate = true;
 }
 // PROF:END
 
@@ -16737,16 +16749,20 @@ const VIRUS = {
   // just a blink of an eye."* `virusGo` killed one body and spawned the other on the same frame,
   // so there was never a moment with anything in it: the sparks and the flash were decoration on
   // a cut. There is a real transition now and `dur` is how long it takes.
-  // **AND THE TWO BODIES ARE BOTH ON SCREEN FOR IT.** They share no topology -- a hick and the
-  // warrior are different meshes with different vertex counts -- so there is no vertex morph
-  // available here and there never was. What IS available is the thing he described: the old
-  // body stays as a HUSK, frozen in the pose it was standing in, swelling and going white while
-  // the new one grows out of it. *"It's almost like the monster alien is coming out of the last
-  // skin."*
+  // **AND IT IS ONE SHAPE ON SCREEN, NOT TWO BODIES (m168).** m165 put BOTH of them there -- a
+  // frozen husk and a new body growing out of it -- on the reasoning that two skins share no
+  // topology and therefore cannot morph. The first half is true and the conclusion was wrong,
+  // and the counter-example was already in this file: `MORPH`'s proxy blob has interpolated
+  // between two bodies that share no topology since the DNA gun was built. What they share is a
+  // SILHOUETTE, which is a real correspondence. *"There's no proxy mesh, there's no morph...
+  // they're both there at the same time."*
   dur: 1.15,         // seconds, end to end
-  from: .30,         // the new body starts at this share of its size and grows out
-  huskSwell: 1.22,   // and the shell swells to this before it goes
-  huskGo: .45,       // the share of `dur` it spends collapsing, at the end
+  at: .48,           // where in that the new body is spawned, hidden, inside the shell
+  show: .72,         // and where the shell has opened enough to let him be seen
+  blobs: 3,          // how many turns may run at once. Past this a turn is instant rather than
+                     // queued -- `mel.outbreak()` is thirty of them and thirty shader materials
+                     // compiled mid-frame is a visible hitch for an effect nobody can watch
+                     // thirty of anyway.
   white: 6.0,
   // **A POOL RATHER THAN `FOE`, because he has already said there will be more of them.** *"I'm
   // also gonna have different versions of warriors so they're not all the same, but it's fine
@@ -16799,7 +16815,7 @@ function virusBack(d) {
 // **REMOVING A BODY IS THE RISKY HALF, because five things hold a reference to one.** A list
 // that renumbers under a live pointer is the hazard `CLAUDE.md` records about the cars' `c.led`,
 // and a body is worse: other BODIES point at it as their target.
-function bodyGone(d, husk) {
+function bodyGone(d) {
   const i = DUMMIES.indexOf(d);
   if (i >= 0) DUMMIES.splice(i, 1);
   // 1. whoever was hunting him, or fighting him as a sidekick, has nobody now
@@ -16819,22 +16835,76 @@ function bodyGone(d, husk) {
   //    clones the mats per body (so flashing one man does not flash all three) and SHARES the
   //    geometry through `skeletonClone`. Disposing the geometry here would take the mesh out
   //    from under every other body of that kind.
-  // **UNLESS HE IS BECOMING A HUSK.** `stopAllAction` leaves the skeleton exactly where the last
-  // update put it -- nothing rewrites those bones afterwards -- so the shell freezes in the pose
-  // he was actually standing in rather than snapping to the bind pose. That is free, and it is
-  // why the husk is the old ROOT itself rather than a clone: a `skeletonClone` with no mixer
-  // would be a T-pose.
-  d.mixer.stopAllAction();
-  if (husk) {
-    HUSKS.push({ root: d.root, mats: d.mats, t: 0, s0: d.root.scale.x || 1 });
-  } else {
-    scene.remove(d.root);
-    for (const m of d.mats) m.dispose();
-  }
+  // **`stopAllAction()` PUTS THE SKELETON IN THE T-POSE, AND m165's COMMENT SAID THE OPPOSITE
+  // (m168).** *"The current civilian goes into T-pose and stays there."* Read straight out of
+  // the vendored build: `AnimationAction.stop()` -> `_deactivateAction`, and
+  //     0 === --s.useCount && (s.restoreOriginalState(), this._takeBackBinding(s))
+  // `restoreOriginalState` writes back the value captured when the binding was MADE, which is
+  // the bind pose. So the one line written to freeze a body where it stood is the line that
+  // snapped it to a T -- **a behaviour asserted only in a comment**, for the sixth time in this
+  // file, and this one was on screen.
+  // **THE HONEST WAY TO FREEZE A SKELETON IS TO STOP UPDATING ITS MIXER**, which costs nothing
+  // and is what every frozen body here already does. Nothing needs it now (the husk is gone --
+  // see `virusGo`), so the call simply goes: a body being removed has no pose to keep.
+  scene.remove(d.root);
+  for (const m of d.mats) m.dispose();
   d.gone = 1;
 }
-const HUSKS = [];
 
+// **A KIND'S SILHOUETTE, MEASURED OFF ITS PROTOTYPE AND CACHED ON IT (m168).** `mphProf` takes
+// a skin and wants `model.scale.x`, `faceOff` and a traversal; `K.P` has all three in pieces, so
+// this is a shim and a cache. **The PROTOTYPE rather than a live body**, because the kind he is
+// turning INTO does not exist yet on the frame the turn starts -- which is the whole reason the
+// profile has to be a property of the kind and not of a body.
+function kindProf(K) {
+  if (!K || !K.P) return null;
+  // **THE CACHE HAS ITS OWN NAME, NOT `mphProf`'s (`vProf`).** A KIND is not a SKIN -- the
+  // shim is what makes one look like the other for a moment -- and if a kind is ever handed
+  // straight to `mphProf` a shared `prof` field would be two facts in one variable, which is
+  // the bug this build exists to undo, one scale down.
+  if (K.vProf === undefined) {
+    const P = K.P;
+    const shim = { faceOff: P.faceOff, model: { scale: { x: P.scale }, traverse: f => P.proto.traverse(f) } };
+    K.vProf = mphProf(shim) || null;
+    K.vProfH = shim.profH || 0;
+    // **AND A PROFILE THAT COMES BACK EMPTY SAYS SO (m168).** Without this the turn falls
+    // silently back to the instant swap -- which is *"there's no morph"* exactly, reported for
+    // the second time and with nothing on screen to say whether the shape was skipped or was
+    // drawn and looked wrong. `mphProf` returns null when a prototype has no skinned mesh in it
+    // at all, and that is the one failure no harness here can see: these GLBs are draco and
+    // nothing in this container can build a skin.
+    if (!K.vProf) note('NO VPROF ' + mphName(K));
+  }
+  return K.vProf;
+}
+
+// ============================================================================================
+// THE TURN (m168) -- ONE SHAPE ON SCREEN, NOT TWO BODIES
+//
+// *"The transform between the two meshes using the joints is not doing anything like it's
+// supposed to. There's no proxy mesh, there's no morph. All it does is the current civilian
+// goes into T-pose and stays there while a warrior alien starts off at the size of a pea and
+// grows over it. They're both there at the same time."*
+//
+// **EVERY WORD OF THAT IS m165, AND m165 WAS THE WRONG SHAPE.** It reasoned that two skins
+// share no topology -- true -- and concluded that the only thing left was to put BOTH on screen
+// and cross-fade their scales. **That conclusion was wrong, and the counter-example was already
+// in this file**: `MORPH`'s proxy blob (m113) has interpolated between two bodies that share no
+// topology since the DNA gun was built. What two bodies DO share is a SILHOUETTE -- a radius per
+// height band per bearing, which every body has and which two bodies have the same number of --
+// and that is a real correspondence to morph across.
+//
+// So the virus turn gets the same blob the DNA gun uses: the old body is REMOVED, the shape
+// travels from its measured silhouette to the new kind's, and the new body arrives inside it and
+// is unveiled as it deflates. **At no point are there two of them**, which is the complaint.
+// **AND THE HUSK, THE GROW AND `stopAllAction` ARE ALL GONE WITH IT** -- they were three parts
+// of the design that produced the picture he is describing.
+const VTX = [], VFREE = [];
+function vBlob() {
+  if (VFREE.length) return VFREE.pop();
+  if (VTX.length >= VIRUS.blobs) return null;     // past the cap the turn is instant, not queued
+  return mphMake();
+}
 // THE TURN. `to` absent means "the other way from wherever he is".
 function virusGo(d, to) {
   if (!d || d.gone) return null;
@@ -16846,65 +16916,131 @@ function virusGo(d, to) {
   const h = d.h || 0, mark = d.mark, aggro = d.aggro;
   const was = isAlien(d.K) ? null : d.K;     // going alien: remember him. Coming back: forget.
   const going = isAlien(toK);
-  bodyGone(d, VIRUS.dur > .05 ? 1 : 0);
-  const n = bodySpawn(P, toK, x, z, y);
+  // **BOTH SILHOUETTES ARE TAKEN BEFORE THE OLD BODY GOES**, the DNA morph's own rule: the blob
+  // has to BE the old shape at one end and the new one at the other, so a profile taken after
+  // the body it describes has been removed is a profile of nothing.
+  const pA = kindProf(d.K), pB = kindProf(toK);
+  const M = (VIRUS.dur > .05 && MORPH.blob && pA && pB) ? vBlob() : null;
+  bodyGone(d);
+  if (M) {
+    VTX.push({ M, T: vFacts(toK, P, x, y, z, h, mark, aggro, was, going), t: 0, n: null,
+               pA, hA: d.K.vProfH || 0, pB, hB: toK.vProfH || 0, going });
+    // the burst and the zap belong to the START now, where the body actually leaves -- fired
+    // after the spawn they were a noise about something that had already happened
+    spkBurst(x, y + (d.K.h || 1.7) * .5, z, VIRUS.burst,
+             { col: going ? VIRUS.col : VIRUS.colBack, spread: 5.5, up: 3.4, r: .45,
+               size: .14, life: .7 });
+    snd('zap', { g: .42, r: going ? 1.0 : 1.35, dur: .45 });
+    return null;                                  // he arrives at the midpoint, not now
+  }
+  return virusArrive(vFacts(toK, P, x, y, z, h, mark, aggro, was, going), 1);
+}
+// the turn's own facts, in one place, so the instant path and the blob's midpoint cannot end up
+// building two slightly different men
+function vFacts(toK, P, x, y, z, h, mark, aggro, was, going) {
+  return { toK, P, x, y, z, h, mark, aggro, was, going };
+}
+// **HE ARRIVES, AND THIS IS THE ONLY PLACE HE DOES.** Called at the blob's midpoint, or straight
+// away when there is no blob -- one description of what the new body is, rather than two that
+// drift apart the first time one of them is edited.
+function virusArrive(T, loud) {
+  const n = bodySpawn(T.P, T.toK, T.x, T.z, T.y);
   if (!n) return null;
-  n.h = h;
-  n.root.rotation.y = h + n.faceOff;
-  n.wasK = was;
+  n.h = T.h;
+  n.root.rotation.y = T.h + n.faceOff;
+  n.wasK = T.was;
   // **HE COMES OUT ANGRY, AND THAT IS THE WHOLE POINT OF THE MECHANIC.** A civilian who becomes
   // a warrior and then wanders off is a costume change; `mark` and `aggro` are what make him
   // come at you, and they are exactly what the state machine already reads.
-  if (going) { n.mark = 1; n.aggro = 1; }
-  else { n.mark = mark; n.aggro = aggro; }
+  if (T.going) { n.mark = 1; n.aggro = 1; }
+  else { n.mark = T.mark; n.aggro = T.aggro; }
   foeBar(n);
-  // the flash is the NEW body's, because the old one is already gone -- so it is the `back` half
-  // of `MORPH`'s three beats and not all three. A white-out on a body that has been removed is
-  // a white-out nobody sees.
-  n.flash = 1; n.vFlash = VIRUS.dur;
-  // **AND HE GROWS OUT OF IT.** The new body starts small and comes up to its real size across
-  // the whole transition, which is what gives the husk something to be split open BY. `vS` is
-  // the size `bodySpawn` measured off the file, so this is a share of his own scale and nothing
-  // is typed -- a re-export at any size still grows to the right thing.
-  n.vS = n.model.scale.x || 1;
-  n.vGrow = VIRUS.dur;
-  if (VIRUS.dur > .05) n.model.scale.setScalar(n.vS * VIRUS.from);
+  // the white-out is what he is UNVEILED through as the shell deflates off him -- so it rides
+  // the back half of the transition rather than the whole of it.
+  n.flash = 1; n.vFlash = VIRUS.dur * (loud ? 1 : (1 - VIRUS.at));
   // **AND HE BEATS HIS CHEST ON THE WAY OUT.** The taunt state is self-contained -- it plays its
   // clip, fires that clip's own sound beats in order and hands back to `idle` -- so entering it
   // is four fields and no new state. It is only ever the ALIEN's, because a civilian coming back
   // out of one has nothing to crow about.
-  if (going && n.K.ai && n.K.clips.taunt) {
+  if (T.going && n.K.ai && n.K.clips.taunt) {
     const nm = (n.actions[VIRUS.taunt] && VIRUS.taunt) ||
                n.K.clips.taunt[(Math.random() * n.K.clips.taunt.length) | 0];
     if (nm && n.actions[nm]) { n.st = 'taunt'; n.t = 0; n.cur = nm; n.tauntN = 0; skinPlay(n, nm, 1); }
   }
-  spkBurst(x, y + (toK.h || 1.7) * .5, z, VIRUS.burst,
-           { col: going ? VIRUS.col : VIRUS.colBack, spread: 5.5, up: 3.4, r: .45,
-             size: .14, life: .7 });
-  snd('zap', { g: .42, r: going ? 1.0 : 1.35, dur: .45 });
+  // `loud` is the INSTANT path only: with a blob, the burst and the zap already fired where the
+  // old body left, and a second one on arrival is the same event announced twice.
+  if (loud) {
+    spkBurst(T.x, T.y + (T.toK.h || 1.7) * .5, T.z, VIRUS.burst,
+             { col: T.going ? VIRUS.col : VIRUS.colBack, spread: 5.5, up: 3.4, r: .45,
+               size: .14, life: .7 });
+    snd('zap', { g: .42, r: T.going ? 1.0 : 1.35, dur: .45 });
+  }
   return n;
 }
 
 // TURNS ASKED FOR FROM INSIDE A LOOP OVER `DUMMIES`, DRAINED FROM OUTSIDE ONE.
 const VTURN = [];
-// THE SHELL THEY CAME OUT OF. It swells, whitens and collapses; at the end its materials go,
-// which is the one thing `bodyGone` did not do for it.
-function huskStep(dt) {
-  for (let i = HUSKS.length - 1; i >= 0; i--) {
-    const h = HUSKS[i];
-    h.t += dt;
-    const u = Math.min(1, h.t / Math.max(.05, VIRUS.dur));
-    // SWELL, THEN COLLAPSE. The shell stretches as the thing inside it grows, and only gives way
-    // in the last `huskGo` of the transition -- a skin that starts shrinking immediately reads
-    // as the body deflating rather than as something coming out of it.
-    const g = 1 - Math.max(0, (u - (1 - VIRUS.huskGo)) / Math.max(.02, VIRUS.huskGo));
-    const sw = 1 + (VIRUS.huskSwell - 1) * u;
-    h.root.scale.setScalar(h.s0 * sw * (g * g));
-    for (const m of h.mats) m.emissiveIntensity = RIG.emissive + VIRUS.white * u;
+// **THE SHAPE ITSELF (m168).** One blob per turn, travelling from the old kind's measured
+// silhouette to the new one's. Every term here is the DNA morph's -- the same `mphFill`, the
+// same shader, the same scan, wrap and swell -- because it is the same effect asked for by a
+// different trigger, and a second one would be a second thing to keep in step.
+function vtxStep(dt) {
+  for (let i = VTX.length - 1; i >= 0; i--) {
+    const v = VTX[i], M = v.M, T = v.T;
+    v.t += dt;
+    const u = clamp(v.t / Math.max(.06, VIRUS.dur), 0, 1);
+    M.t += dt;
+    // **THE SWELL RIDES THE WEIGHT, so the shell CLOSES over the old body and OPENS off the new
+    // one** -- which is the difference between something swallowing a man and a lump fading up
+    // in front of him. Symmetric by construction, so the far end needs no case of its own.
+    const w = smooth(0, MORPH.fade[0], u) * (1 - smooth(MORPH.fade[1], 1, u));
+    mphFill(v.pA, v.pB, v.hA, v.hB, smooth(MORPH.wrap[0], MORPH.wrap[1], u),
+            MORPH.wob * w, M.t, lerp(MORPH.swell0, MORPH.swell, w), M);
+    M.blob.position.set(T.x, T.y, T.z);
+    // **`faceOff` IS ALREADY BAKED INTO BOTH PROFILES** (see `mphProf`), which is what puts two
+    // different exports' silhouettes in ONE frame -- so what is left to apply here is his own
+    // bearing and nothing else. Taking it off per profile would be taking it off twice.
+    M.blob.rotation.y = T.h;
+    M.blob.visible = w > .01;
+    const U = M.mat.uniforms;
+    U.uA.value = w; U.uRim.value = MORPH.rim; U.uH.value = M.H;
+    U.uBand.value = MORPH.band; U.uLines.value = MORPH.lines || MORPH.rings;
+    U.uT.value = M.t; U.uFlow.value = MORPH.flow;
+    // THE TURN'S OWN COLOUR, so becoming a warrior and being cured are told apart by the shape
+    // itself rather than only by whatever walks out of it.
+    U.uCol.value.fromArray(v.going ? VIRUS.col : VIRUS.colBack);
+    U.uHot.value.fromArray(MORPH.hot);
+    U.uDeep.value.fromArray(MORPH.deep);
+    U.uScan.value = lerp(MORPH.scan[0] - MORPH.band, MORPH.scan[1] + MORPH.band, u);
+    // **HE ARRIVES AT THE MIDPOINT AND IS HIDDEN UNTIL THE SHELL LETS GO OF HIM.** Spawning at
+    // the END is a cut with an effect in front of it; spawning at the START is the two bodies
+    // this build exists to remove. In between, the shape is over him and he is unveiled by it
+    // deflating -- which is the DNA morph's `MORPH.hide` window, one body along.
+    // `1` rather than the body means "tried and failed", so a spawn that returns null is not
+    // retried on every frame for the rest of the transition.
+    if (!v.n && u >= VIRUS.at) {
+      v.n = virusArrive(T, 0) || 1;
+      if (v.n !== 1 && v.n.model) v.n.model.visible = false;
+    }
+    if (v.n && v.n !== 1 && v.n.model && !v.n.gone && u >= VIRUS.show) v.n.model.visible = true;
+    // the swarm, thickening into the wrap and thinning out of it -- the jetpack's own rule that
+    // a run of particles coming faster is a machine winding up
+    M.e -= dt;
+    for (let k = 0; k < 10 && M.e <= 0 && w > .04; k++) {
+      spk(T.x + (Math.random() - .5) * 1.2, T.y + Math.random() * M.H,
+          T.z + (Math.random() - .5) * 1.2, 0, .5 + Math.random(), 0,
+          .09 + Math.random() * .07, .4 + Math.random() * .3,
+          v.going ? VIRUS.col : VIRUS.colBack);
+      M.e += MORPH.every / w;
+    }
+    if (M.e <= 0) M.e = MORPH.every;
     if (u >= 1) {
-      scene.remove(h.root);
-      for (const m of h.mats) m.dispose();
-      HUSKS.splice(i, 1);
+      // **AND IT NEVER LEAVES A BODY HIDDEN**, which is `mphBlobOff`'s rule one body over: a
+      // skin left invisible is a skin that is invisible for the rest of its life.
+      if (v.n && v.n !== 1 && v.n.model) v.n.model.visible = true;
+      M.blob.visible = false; M.mat.uniforms.uA.value = 0; M.t = 0; M.e = 0;
+      VFREE.push(M);
+      VTX.splice(i, 1);
     }
   }
 }
@@ -16912,21 +17048,12 @@ function huskStep(dt) {
 // pushes into the cloned materials, so this is a clock and nothing else.
 function virusStep(dt) {
   while (VTURN.length) { const d = VTURN.shift(); if (d && !d.gone) virusGo(d); }
-  huskStep(dt);
+  vtxStep(dt);
   for (const d of DUMMIES) {
     if (d.vFlash) {
       d.vFlash -= dt;
       d.flash = Math.max(d.flash, Math.max(0, d.vFlash / Math.max(.05, VIRUS.dur)));
       if (d.vFlash <= 0) d.vFlash = 0;
-    }
-    if (d.vGrow) {
-      d.vGrow -= dt;
-      const u = 1 - Math.max(0, d.vGrow / Math.max(.05, VIRUS.dur));
-      // EASED OUT, so he arrives at his size rather than snapping into it on the last frame --
-      // and a body that grows linearly reads as a model being scaled, which is what it is.
-      const e = 1 - (1 - u) * (1 - u);
-      d.model.scale.setScalar(d.vS * (VIRUS.from + (1 - VIRUS.from) * e));
-      if (d.vGrow <= 0) { d.vGrow = 0; d.model.scale.setScalar(d.vS); }
     }
   }
 }
@@ -19411,7 +19538,7 @@ function frame() {
     // phone -- the file never loaded, or it loaded and the shape is just not very good -- and
     // only this tells them apart.
     const shp = (SHAPE.on && MORPH.shape && !shape.ready ? ' \u00b7 NOSHAPE' : '') +
-                (HUSKS.length ? ' \u00b7 HUSK' + HUSKS.length : '');
+                (VTX.length ? ' \u00b7 VTX' + VTX.length : '');
     const inf = (() => { let n = 0; for (const d of DUMMIES) if (d.wasK) n++;
       return n ? ' \u00b7 INF' + n : ''; })();
     // **AND HOW FAR THE NEAREST ONE IS (m166).** *"I'm unable to find anything that's breakable
@@ -19881,8 +20008,13 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
     }
     if (!best) return back === 0 ? 'nobody to cure' : 'nobody to infect';
     const was = mphName(best.K);
+    // **`virusGo` RETURNS NOTHING ON THE BLOB PATH NOW (m168)** -- the new body arrives at the
+    // midpoint, a beat later, so there is no body to name yet and reporting `?` would read as a
+    // failure. The `to` kind is the honest answer and it is known on this frame.
+    const wantK = isAlien(best.K) ? (best.wasK && best.wasK.P ? best.wasK : null) : null;
     const n = virusGo(best);
-    return was + ' -> ' + (n ? mphName(n.K) : '?') + ' at ' + Math.sqrt(bd).toFixed(1) + ' m';
+    const to = n ? mphName(n.K) : (wantK ? mphName(wantK) : 'the other one');
+    return was + ' -> ' + to + ' at ' + Math.sqrt(bd).toFixed(1) + ' m' + (n ? '' : ' (in flight)');
   },
   outbreak: () => {
     // A COPY OF THE LIST, because `virusGo` splices it -- iterating the live array while it is
