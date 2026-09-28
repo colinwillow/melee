@@ -7,6 +7,50 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE OUTBREAK, AND A KIND SWAP IS A RESPAWN RATHER THAN SURGERY (m162, `VIRUS`, `virusGo`,
+  `bodyGone`).** *"Build the warrior thing trigger. I kinda just wanna see it. Maybe you could
+  build another gun mode and I could just shoot them and it turns the civilians into aliens and
+  aliens back into civilians, so I can basically debug it."* A DEBUG TRIGGER by his own
+  description, written to be replaced: a vending machine, a UFO beam or hydrant goo all end up
+  calling `virusGo(d)` and nothing else. **Fourth row in `WEAP.modes`** -- m52 promised a mode
+  costs a row, m112 collected once, this is twice.
+  **A BODY IS A `(P, K)` PAIR AND THAT IS WHY THE SWAP IS FREE.** `bodySpawn(K.P, K, x, z, y)`
+  builds the model, the cloned materials, the mixer, every action, the clip table, the reference
+  speeds, the bar and the smoke joint. Rewriting all of that in place is a second `bodySpawn` to
+  keep in step with the first -- this repo's oldest mistake -- so one is killed and the other
+  spawned at the same spot, and **a kind added tomorrow is infectable with no work at all**.
+  What carries across is the place, the facing, and `wasK`: shoot the alien and he goes back to
+  the civilian he came out of. A body that was ALWAYS a warrior has no `wasK`, so shooting him
+  does nothing, which is right -- there is no civilian under him.
+  **HE COMES OUT ANGRY (`mark`, `aggro`), because a civilian who turns and wanders off is a
+  costume change.** Those two fields are what the state machine already reads.
+  **REMOVING A BODY IS THE RISKY HALF, AND FIVE THINGS HOLD A REFERENCE TO ONE**: `DUMMIES`,
+  another body's `foe`/`sfoe` (bodies point at each other as targets), `player.lock`,
+  `spark.follow` (which holds the body itself, so a swarm would hang in the air where he was) and
+  his health-bar group. **And the MATERIALS are his own while the GEOMETRY is not** -- `bodySpawn`
+  clones the mats per body and shares the mesh through `skeletonClone`, so disposing the geometry
+  would take it out from under every other body of that kind.
+  **AND BEATING HIM DOWN REVERTS HIM, WHICH IS THE ACTUAL MECHANIC HE DESCRIBED.** *"You shoot
+  him and kill him down till he's disabled, and then when he's down on the ground disabled
+  enough, he shrinks back into the normal civilian character."* It hangs off the GET-UP rather
+  than off damage, for a mechanical reason: **`bodyLaunch` resets `d.hp` every time** (a body gets
+  up at full health, deliberately), so hp can never count knock-downs and `d.downs` has to. It
+  reverts INSTEAD of getting up, so the last thing you see is him on the floor turning back.
+  **AND THE TURN IS QUEUED, WHICH IS TWO BUGS AVOIDED IN ONE LINE.** That code sits inside
+  `stepDummies`' own `for (const d of DUMMIES)`: `virusGo` calls `bodyGone`, which SPLICES that
+  array, so turning him on the spot shifts the iterator and **the body after him is skipped**.
+  And my first version used a bare `return`, which exits `stepDummies` outright and **abandons
+  every remaining body for the frame**. `VTURN` is drained from `virusStep`, outside any loop over
+  the list -- `brkDirty`'s rule, one system along. `mel.outbreak()` slices the list for the same
+  reason.
+  **`she` IS DELIBERATELY NOT INFECTABLE.** She is not in `DUMMIES`, `bodyGone` could not clean
+  up after her, and a respawn would have to rebuild her whole 135-bone hair and tail chain. A
+  stated gap rather than a crash.
+  **AND `softNow()` WAS DELETED BEFORE IT SHIPPED.** I wrote it as "either of the two harmless
+  rounds" with an argument for why the question deserves one name -- and then nothing called it,
+  because there turned out to be exactly one shared gate (the ball's colour) and it reads both
+  flags directly. **A helper nothing calls is dead code with a comment arguing for it.**
+
 - **EVERYTHING BREAKS THINGS NOW, AND `brkBlast` NEVER ASKED WHO WAS SWINGING (m161).** *"A
   thrown body, you know, can run into things, break it. I do want the warriors to be able to
   break stuff."* Two call sites and no new system, because that function is a POSITION, a RADIUS

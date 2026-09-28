@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m161</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m162</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m161</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m162</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,7 +584,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm161';
+const BUILD = 'm162';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1648,6 +1648,14 @@ const WEAP = {
     // and this is the build that collects on it: the row, `dnaNow()` and the branch in the bolt
     // are the whole of the gun. It carries no damage and no blast -- see `MORPH`.
     { key: 'dna',    label: 'DNA',    hint: 'hold up \u00b7 release samples', dna: true },
+    // **AND THE FOURTH IS THE OUTBREAK (m162).** *"Maybe you could build another gun mode and I
+    // could just shoot them and it turns the civilians into aliens and aliens back into
+    // civilians, so I can basically debug it and see it, and then eventually we'll have a more
+    // sophisticated trigger."* A DEBUG TRIGGER by his own description, and written to be
+    // replaced: a vending machine, a UFO beam or hydrant goo all end up calling `virusGo(d)`.
+    // It is the m52 promise collecting for the second time -- a row here and a branch in the
+    // bolt, and the arc simply divides four ways.
+    { key: 'virus',  label: 'VIRUS',  hint: 'hold up \u00b7 release infects', virus: true },
   ],
   mode: 0,
   fireAt: .78, keepAt: .48, armT: .09, arc: 1.05,
@@ -7539,6 +7547,21 @@ const BOLTS = [];
 const DNABALL = [0x18b45f, 0x4dff9a, 0xffffff];
 // WHO A SAMPLE SHOT CATCHES. It is not a weapon: no cone, no power, no blast, no `d.cool` -- the
 // nearest body it can actually be WORN as, and nothing else in the game reads it.
+// **THE VIRUS ROUND'S OWN CATCH.** Same scoring as `dnaCatch` -- nearest wins, one rule -- and a
+// different membership test: anything that can catch it OR be cured. `she` is deliberately NOT in
+// here: she is not in `DUMMIES`, `bodyGone` could not clean up after her, and a respawn would have
+// to rebuild her whole hair chain. A stated gap rather than a crash.
+function virusCatch(x, z, r) {
+  let best = null, bd = Infinity;
+  for (const d of DUMMIES) {
+    if (!virusOK(d) && !virusBack(d)) continue;
+    const dx = d.root.position.x - x, dz = d.root.position.z - z;
+    const dd = dx * dx + dz * dz, R = r + d.K.r;
+    if (dd > R * R || dd >= bd) continue;
+    bd = dd; best = d;
+  }
+  return best;
+}
 function dnaCatch(x, z, r) {
   let best = null, bd = Infinity;
   for (const d of DUMMIES) {
@@ -7571,12 +7594,14 @@ function fireBolt(chg) {
   // **THE SAMPLER IS A DIFFERENT COLOUR, NOT A DIFFERENT BALL (m112).** A round that does no
   // damage and a round that flattens a man must not be the same picture -- and `glowSprite`
   // builds its own material per layer, so this is a recolour rather than a second builder.
-  const dna = dnaNow() ? 1 : 0;
-  if (dna) for (let i = 0; i < DNABALL.length; i++)
+  const dna = dnaNow() ? 1 : 0, virus = virusNow() ? 1 : 0;
+  // THE SAMPLER AND THE VIRUS BOTH GET THE GREEN BALL, because they are both rounds that do no
+  // damage and the thing that must not look like a shot is a round that cannot hurt anybody.
+  if (dna || virus) for (let i = 0; i < DNABALL.length; i++)
     if (g.children[i] && g.children[i].material) g.children[i].material.color.setHex(DNABALL[i]);
   g.position.copy(m);
   scene.add(g);
-  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size, dna,
+  BOLTS.push({ g, pos: m, vel: dir.multiplyScalar(WEAP.boltV), t: 0, chg, size, dna, virus,
                auto: autoNow() ? 1 : 0,
                blast: lerp(WEAP.blast0, WEAP.blast1, chg) });
 }
@@ -8418,7 +8443,13 @@ function stepBolts(dt) {
       // **A SAMPLE ROUND HITS NOBODY (m112).** It carries no power and no damage, so it does not
       // go through `dummyHit` at all -- the branch is what keeps "this is a weapon" and "this is
       // a sampler" from being one function with a flag threaded through six arguments.
-      if (!dead && b.dna) {
+      if (!dead && b.virus) {
+        // **IT CATCHES ON THE SAME GEOMETRY AS THE SAMPLER AND ON A DIFFERENT TEST.** `dnaCatch`
+        // asks who you could WEAR; this asks who can catch it or be cured, which is a different
+        // set -- the warrior is excluded from one and is half the point of the other.
+        const got = virusCatch(b.pos.x, b.pos.z, b.size * .5);
+        if (got) { dead = true; b.onVirus = got; }
+      } else if (!dead && b.dna) {
         const got = dnaCatch(b.pos.x, b.pos.z, b.size * .5);
         if (got) { dead = true; b.onDna = got; }
       } else if (!dead) {
@@ -8458,6 +8489,17 @@ function stepBolts(dt) {
       // TRANSFORM is the event and `stepMorph` owns its noise, so the arrival is a small green
       // burst and the `zap` sample -- which has been loaded and unused since m27 took it off the
       // trigger, and which is finally the sound of the thing it was always a recording of.
+      // **THE VIRUS LANDS AND THAT IS THE WHOLE OF IT: no blast, no launch, no damage.** The
+      // TURN is the event and `virusGo` owns its own noise and its own burst, the sampler's rule
+      // one round along -- so a miss is a small green splash and nothing else happens.
+      if (b.virus) {
+        if (b.onVirus) virusGo(b.onVirus);
+        else spkBurst(b.pos.x, b.pos.y, b.pos.z, 14,
+                      { col: VIRUS.col, spread: 4, up: 2, r: b.size * .5, size: .11, life: .4 });
+        b.g.traverse(o => { if (o.material) o.material.dispose(); });
+        scene.remove(b.g); BOLTS.splice(i, 1);
+        continue;
+      }
       if (b.dna) {
         snd('zap', { g: .38, r: 1.25, dur: .38 });
         spkBurst(b.pos.x, b.pos.y, b.pos.z, 22,
@@ -8742,6 +8784,7 @@ function autoNow() { const m = modeNow(); return !!(m && m.auto); }
 // AND THE SAME ANSWER FOR THE SAMPLER. One reader, so the bolt, the sound and the ball's colour
 // cannot disagree about which trigger this is.
 function dnaNow() { const m = modeNow(); return !!(m && m.dna); }
+function virusNow() { const m = modeNow(); return !!(m && m.virus); }
 // THE ARMED GAIT IS THE WHOLE TIME HE IS CARRYING IT, NOT ONLY WHILE HE IS AIMING. `p.aim` is
 // live from the moment the trigger arms, which is a fraction of a second either side of a shot
 // -- and a man walking around with a blaster does not put it away for the rest of the time.
@@ -9014,6 +9057,11 @@ function bodyLaunch(d, dirH, vxz, vy) {
   const K = d.K;
   d.back = Math.cos(dirH - (d.h || 0)) < 0 ? 1 : 0;   // a blow into his front puts him over backwards
   d.st = 'down'; d.t = 0; d.hp = K.hp;
+  // **COUNTED HERE BECAUSE `d.hp` CANNOT COUNT IT.** The line above resets it, deliberately --
+  // a body gets up at full health -- so "how much has this one taken" has nowhere else to live.
+  // A NUMBER rather than `undefined`, because `undefined + 1` is fine and `undefined >= n` is
+  // false for ever, which is an alien that can never be cured and nothing on screen saying why.
+  d.downs = (d.downs || 0) + 1;
   d.vx = Math.sin(dirH) * vxz;
   d.vz = Math.cos(dirH) * vxz;
   d.vy = vy;
@@ -16057,6 +16105,129 @@ function buildMace(g) {
 // the same picture -- which is the whole reason `hp` being 6 rather than 3 needs it.
 // It FACES THE CAMERA each frame and is hidden while he is untouched, so an idle street is not
 // a row of floating gauges.
+// ============================================================================================
+// THE OUTBREAK (m162, `VIRUS`, `virusOK`, `virusGo`, `bodyGone`)
+//
+// *"Build the warrior thing trigger. I'm not sure -- I kinda just wanna see it. Maybe you could
+// build another gun mode and I could just shoot them and it turns the civilians into aliens and
+// aliens back into civilians, so I can basically debug it and see it, and then eventually we'll
+// have a more sophisticated trigger."*
+//
+// So this is a DEBUG TRIGGER standing in for a real one, and it is written to be replaced: a
+// vending machine, a UFO beam or hydrant goo all end up calling `virusGo(d)` and nothing else.
+// The gun is the fourth row in `WEAP.modes`, which m52 promised would cost a row and m112
+// collected on once already.
+//
+// **IT IS A RESPAWN, NOT SURGERY ON A LIVE BODY.** A kind is a table AND a prototype (`K.P`) and
+// a body is the pair -- model, cloned materials, mixer, every action, the clip table, the
+// reference speeds, the health bar, the smoke joint. Rewriting all of that in place is a second
+// `bodySpawn` to keep in step with the first, which is this repo's oldest mistake. Killing one
+// and spawning the other at the same spot reuses the whole factory, so a kind added tomorrow is
+// infectable with no work at all.
+//
+// **WHAT CARRIES ACROSS IS THE PLACE, THE FACING AND WHAT HE WAS.** `wasK` is the whole of the
+// reverse: shoot the alien and he goes back to the civilian he came out of, which is his own
+// *"he shrinks back into the normal civilian character"*. A body that was ALWAYS a warrior has
+// no `wasK`, so shooting him does nothing -- which is right: there is no civilian under him.
+const VIRUS = {
+  on: 1,
+  out: .26,          // the old body flashes white over this ...
+  hold: .16,         // ... holds ...
+  back: .30,         // ... and the new one comes up out of it. `MORPH`'s own three beats.
+  white: 6.0,
+  burst: 26,         // sparks on the turn
+  // **HOW MANY KNOCK-DOWNS BEFORE HE SHRINKS BACK.** One would make him a one-hit alien and the
+  // whole point is a fight; `bodyLaunch` resets his health every time, so this counts EVENTS and
+  // not damage. Three is a guess and wants a look on the phone -- `mel.VIRUS.downs`.
+  downs: 3,
+  col: [.45, 1, .35],        // going alien: the DNA gun's own green
+  colBack: [.6, .85, 1],     // and coming back
+};
+// WHO CAN CATCH IT. Structural rather than a list: anything `dnaOK` would let you WEAR is a
+// body with a full animation set, which is exactly what the warrior's clips need to land on --
+// and the warrior himself is excluded because he is what they turn INTO.
+function virusOK(d) {
+  return !!(VIRUS.on && d && d.K && d.K !== FOE && dnaOK(d.K) && FOE.P);
+}
+// AND WHO CAN BE CURED: a warrior who came out of somebody.
+function virusBack(d) { return !!(VIRUS.on && d && d.K === FOE && d.wasK && d.wasK.P); }
+
+// **REMOVING A BODY IS THE RISKY HALF, because five things hold a reference to one.** A list
+// that renumbers under a live pointer is the hazard `CLAUDE.md` records about the cars' `c.led`,
+// and a body is worse: other BODIES point at it as their target.
+function bodyGone(d) {
+  const i = DUMMIES.indexOf(d);
+  if (i >= 0) DUMMIES.splice(i, 1);
+  // 1. whoever was hunting him, or fighting him as a sidekick, has nobody now
+  for (const o of DUMMIES) {
+    if (o.foe === d) { o.foe = null; o.foeT = 0; }
+    if (o.sfoe === d) o.sfoe = null;
+  }
+  // 2. the aim lock, which is read every frame and would keep the reticle on a ghost
+  if (player.lock === d) player.lock = null;
+  // 3. any spark still clinging to him -- `spark.follow` holds the body itself, and a swarm
+  //    following a removed root is a cloud hanging in the air where he used to be
+  for (let k = 0; k < spark.follow.length; k++) if (spark.follow[k] === d) spark.follow[k] = null;
+  // 4. his health bar, which is its own group in the scene
+  if (d.bar) { scene.remove(d.bar.g); d.bar.g.traverse(o => {
+    if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); d.bar = null; }
+  // 5. and the body itself. **THE MATERIALS ARE HIS OWN AND THE GEOMETRY IS NOT** -- `bodySpawn`
+  //    clones the mats per body (so flashing one man does not flash all three) and SHARES the
+  //    geometry through `skeletonClone`. Disposing the geometry here would take the mesh out
+  //    from under every other body of that kind.
+  scene.remove(d.root);
+  for (const m of d.mats) m.dispose();
+  d.mixer.stopAllAction();
+  d.gone = 1;
+}
+
+// THE TURN. `to` absent means "the other way from wherever he is".
+function virusGo(d, to) {
+  if (!d || d.gone) return null;
+  const toK = to || (d.K === FOE ? d.wasK : FOE);
+  if (!toK || !toK.P) return null;
+  const P = toK.P;
+  const x = d.root.position.x, y = d.root.position.y, z = d.root.position.z;
+  const h = d.h || 0, mark = d.mark, aggro = d.aggro;
+  const was = d.K === FOE ? null : d.K;      // going alien: remember him. Coming back: forget.
+  const going = toK === FOE;
+  bodyGone(d);
+  const n = bodySpawn(P, toK, x, z, y);
+  if (!n) return null;
+  n.h = h;
+  n.root.rotation.y = h + n.faceOff;
+  n.wasK = was;
+  // **HE COMES OUT ANGRY, AND THAT IS THE WHOLE POINT OF THE MECHANIC.** A civilian who becomes
+  // a warrior and then wanders off is a costume change; `mark` and `aggro` are what make him
+  // come at you, and they are exactly what the state machine already reads.
+  if (going) { n.mark = 1; n.aggro = 1; }
+  else { n.mark = mark; n.aggro = aggro; }
+  foeBar(n);
+  // the flash is the NEW body's, because the old one is already gone -- so it is the `back` half
+  // of `MORPH`'s three beats and not all three. A white-out on a body that has been removed is
+  // a white-out nobody sees.
+  n.flash = 1; n.vFlash = VIRUS.back;
+  spkBurst(x, y + (toK.h || 1.7) * .5, z, VIRUS.burst,
+           { col: going ? VIRUS.col : VIRUS.colBack, spread: 5.5, up: 3.4, r: .45,
+             size: .14, life: .7 });
+  snd('zap', { g: .42, r: going ? 1.0 : 1.35, dur: .45 });
+  return n;
+}
+
+// TURNS ASKED FOR FROM INSIDE A LOOP OVER `DUMMIES`, DRAINED FROM OUTSIDE ONE.
+const VTURN = [];
+// THE WHITE-OUT, RIDDEN DOWN. `d.flash` is already what `bodyFlash` drives and what `stepFlash`
+// pushes into the cloned materials, so this is a clock and nothing else.
+function virusStep(dt) {
+  while (VTURN.length) { const d = VTURN.shift(); if (d && !d.gone) virusGo(d); }
+  for (const d of DUMMIES) {
+    if (!d.vFlash) continue;
+    d.vFlash -= dt;
+    d.flash = Math.max(d.flash, Math.max(0, d.vFlash / VIRUS.back));
+    if (d.vFlash <= 0) d.vFlash = 0;
+  }
+}
+
 function foeBar(d) {
   // THE BAR IS THE KIND'S, not the warrior's -- a smaller man gets a smaller gauge, and a kind
   // with no `bar` block simply has none.
@@ -17594,6 +17765,21 @@ function stepDummies(dt) {
         // going down and standing up. "One of them is flipped" is four possibilities and three
         // of them make it worse. **The warrior has ONE fall and ONE get-up and they agree**, so
         // `flip` is a property of the kind rather than a rule about everybody.
+        // **AND AN INFECTED ALIEN BEATEN DOWN ENOUGH SHRINKS BACK, WHICH IS THE ACTUAL MECHANIC
+        // (m162).** *"You shoot him and kill him down till he's disabled, and then when he's down
+        // on the ground disabled enough, he shrinks back into the normal civilian character."*
+        // Here rather than in `bodyLaunch`, because the get-up is where "he is finished being
+        // down" is decided and `bodyLaunch` RESETS `d.hp` every time -- so hp can never count
+        // knock-downs and `d.downs` is what does. **It reverts INSTEAD of getting up**, so the
+        // last thing you see is him on the floor turning back rather than standing up first.
+        // **QUEUED, NEVER DONE HERE, AND BOTH HALVES OF THAT WOULD HAVE BEEN A BUG.** This is
+        // inside `stepDummies`' own `for (const d of DUMMIES)`: `virusGo` calls `bodyGone`, which
+        // SPLICES that array -- so turning him on this line shifts the iterator and the body
+        // after him is skipped for the frame. And a bare `return` here (my first version) exits
+        // `stepDummies` outright and abandons every remaining body. `continue` skips only this
+        // one, which is right because he is about to stop existing. `brkDirty`'s rule, one
+        // system along: a mutation of the list you are walking waits until you are off it.
+        if (virusBack(d) && (d.downs || 0) >= VIRUS.downs) { VTURN.push(d); continue; }
         if (!d.back && K.flip !== 0) d.h += Math.PI;
         d.st = 'up'; d.t = 0;
         bodyVox(d, 'daze');       // groggy, and the one beat in a knock-down with no noise on it
@@ -18292,7 +18478,7 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
-  decalStep(dt); brkStep(dt); spoutStep(dt);
+  decalStep(dt); brkStep(dt); spoutStep(dt); virusStep(dt);
   // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
   // frame's lens is a field that lags every time he turns.
   stepDust(dt);
@@ -18475,6 +18661,10 @@ function frame() {
     // indexed, that crate is not one, or it broke and the pile is behind him -- and a count
     // that goes DOWN is the only thing that tells them apart. Silent where there are none,
     // which is every world but the toon city.
+    // HOW MANY OF THE STREET ARE ALIENS. "I shot him and nothing happened" and "he turned and
+    // walked off" are one picture from a phone, and a count that MOVES is what tells them apart.
+    const inf = (() => { let n = 0; for (const d of DUMMIES) if (d.wasK) n++;
+      return n ? ' \u00b7 INF' + n : ''; })();
     const brkC = BREAK.length ? ' \u00b7 BRK' + BREAK.reduce((n, b) => n + (b.dead ? 0 : 1), 0) +
       '/' + BREAK.length + (WRECKS.length ? 'w' + WRECKS.length : '') +
       (SPOUTS.length ? ' SPOUT' + SPOUTS.length : '') +
@@ -18503,7 +18693,7 @@ function frame() {
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + inf + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
     // **THE KEYS SIT UNDER THE CHIP, AND THE CHIP IS THE ONE HUD ELEMENT THAT GROWS (m128).**
@@ -18892,6 +19082,29 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // THE THREE NEW SYSTEMS, LIVE (m160). Every one of them is a look-at-it decision somewhere,
   // and none of them should need a fight to see one -- which is `mel.fx()`'s own argument.
   DECAL, BRK, SPOUT, BREAK, WRECKS, SPOUTS, decalPut, brkBlast,
+  // THE OUTBREAK, LIVE (m162). `mel.infect()` turns the nearest civilian, `mel.infect(0)` cures
+  // the nearest alien that came out of one, and `mel.outbreak()` turns everybody -- which is the
+  // only way to see what a street of them looks like without shooting eight rounds.
+  VIRUS, virusGo, virusOK, virusBack,
+  infect: back => {
+    const p = player; let best = null, bd = 1e9;
+    for (const d of DUMMIES) {
+      if (back === 0 ? !virusBack(d) : !virusOK(d)) continue;
+      const q = (d.root.position.x - p.pos.x) ** 2 + (d.root.position.z - p.pos.z) ** 2;
+      if (q < bd) { bd = q; best = d; }
+    }
+    if (!best) return back === 0 ? 'nobody to cure' : 'nobody to infect';
+    const was = mphName(best.K);
+    const n = virusGo(best);
+    return was + ' -> ' + (n ? mphName(n.K) : '?') + ' at ' + Math.sqrt(bd).toFixed(1) + ' m';
+  },
+  outbreak: () => {
+    // A COPY OF THE LIST, because `virusGo` splices it -- iterating the live array while it is
+    // being spliced under you skips every other body, which is the `c.led` hazard in miniature.
+    const all = DUMMIES.slice().filter(virusOK);
+    for (const d of all) virusGo(d);
+    return all.length + ' turned';
+  },
   // `mel.mark('blast')` drops one two metres in front of him, on whatever is there;
   // `mel.smash()` breaks the nearest breakable; `mel.spout()` runs one where he stands.
   mark: (k, s2) => {
