@@ -9,6 +9,22 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 
 
+
+- **THE FLAT CARDS IN THE WALL WERE A RUBBLE DECAL STAMPED IN MID-AIR (m174, `decalOff`).** *"The
+  little debris cards -- they're laid with their faces pointing upward... these weird flat laying
+  images just don't read correctly. They're like floating flat 2-D images where you shoot the
+  building and it breaks and it leaves these in its trail."* m170's `kitKill` called
+  `decalHit(c.x, c.y, c.z, 0, 1, 0, 'rubble', ...)` -- a floor mark, face UP, at the dead chunk's
+  CENTRE, which is the middle of the wall. So every chunk that went left a horizontal card hanging
+  in the hole at that chunk's height, which is the banding in his screenshot. **Gone**: the chunk's
+  own triangles already fly out as real 3-D debris (`kitDebrisChunk`), and that IS the rubble.
+  **AND THE SCORCHES HAD THE SAME FAULT ONE STEP LATER.** A bolt's mark lies flat on the chunk face
+  it hit; when the chunk dies the card stays, hanging where the brick was. Every mark now keeps its
+  centre (`decal.at`), and `decalOff(box)` puts out any whose centre is inside a dead chunk's box,
+  tested in the box's own frame with `boxLocal`, so the kill and the collider agree about where the
+  chunk was. A broken pane does the same.
+  **A MARK IS A PICTURE OF A SURFACE**, so anything that removes a surface has to remove its marks.
+  The breakables in the toon city do not do this yet.
 - **JUMP IS A TAP ON EITHER STICK, AND THE WEAPONS ARE A WHEEL (m173, `kitPick`, `WEPROW`).**
   *"If you're charging a shot with the right stick you can't jump and shoot -- so tapping on the
   left stick also needs to make you jump, and to switch weapons we need the same thing we have on
