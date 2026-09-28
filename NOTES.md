@@ -7,6 +7,112 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **IMPACT DECALS, AND NOTHING IS RAYCAST (m160, `DECAL`, `decalPut`, `decalHit`).** *"On a shot
+  hit: raycast the hit point and normal against the collision mesh, pick a decal by weapon/kind
+  ... one shared material, pooled at about 40, oldest recycled first, fading after about 20 s."*
+  **THE THING THAT STOPPED THE BOLT ALREADY KNOWS WHICH FACE IT STOPPED ON.** `camHit` walks the
+  boxes and `boxNear` has returned the outward normal of the nearest face since m89, so a second
+  ray against the collision mesh would be a second opinion about a question that has just been
+  answered -- and the two would disagree at every corner. `camHit` takes an optional `out` and
+  `hitFace` fills it; every existing caller is byte-for-byte what it was.
+  **A ROOF IS TOLD FROM A WALL BY THE BOX'S OWN HEIGHT**, not by the plan normal: a bolt landing
+  on a roof is on the roof, and a plan normal there lays the scorch on its edge.
+  **AND `alphaTest` IS .08, NOT THE .5 HE ASKED FOR.** Those two requests fight: at .5 a mark
+  fading to 40% opacity does not fade, it **VANISHES IN ONE FRAME**. The cutout's real job is the
+  atlas's transparent padding, which is nowhere near .5, so the test kills the padding and a
+  per-vertex alpha (itemSize **4**, which is what puts `USE_COLOR_ALPHA` on) does the fading.
+  **ONE DYNAMIC MESH, ONE DRAW CALL, AND THE POOL IS THE WHOLE STRUCTURE** -- 40 quads is 240
+  non-indexed vertices and the oldest is overwritten. No add, no remove, no material per mark.
+  **AND A DECAL IS TONE-MAPPED AND NOT ADDITIVE**, the slash mark's own lesson: additive over a
+  lit surface has nowhere to go but white.
+  **BOTH THE 1 cm LIFT AND `polygonOffset`**, because the lift alone loses to depth precision at
+  distance and the offset alone loses on a surface seen edge-on -- and z-fighting on a wall reads
+  as the wall flickering.
+
+- **BREAKABLES: THE TAG IS THE FACT AND THE NAME MEANS NOTHING (m160, `BRK`, `brkClaim`).**
+  *"Any node with userData.breakable is a breakable."* Measured before a line was written:
+      179 tagged nodes, SEVEN types   dumpster 38, crate 35, trashbin 30, bench 23,
+                                      lightpost 23, hydrant 20, barrel 10
+      spelt THREE different ways      `prop_crate_000`, `debris_trash_014`,
+                                      `brk_bench_intact_003` -- and **73 of them are NESTED**
+      none of the 179 is in the obb   so its collider can only come from the breakables file
+  A name regex would have found some and silently missed the rest, which is `stripPoses`' rule:
+  the property that makes a thing what it is has to be the structural one.
+  **THEY ARE ALREADY INSTANCED, AND THAT IS THE WHOLE PERFORMANCE STORY.** 179 nodes share SEVEN
+  geometries, so `buildTCity`'s pass collapses them with no help -- and breaking one is writing a
+  **ZERO-SCALE matrix** into its slot, which every GPU discards before rasterisation. Taking them
+  out of the instancing to make them breakable would have been 179 draw calls to buy what one
+  matrix write gives. **The count is fixed and re-packing would renumber every slot after it**,
+  so nothing is ever removed from an InstancedMesh here.
+  **THE TAG IS READ INSIDE THE INSTANCING LOOP, where every node goes past exactly once and the
+  mesh and the slot are both in hand** -- Shredworld's c142 rule about `roadTag`: a second place
+  that registers breakables is a second place to forget to.
+  **THREE THINGS IN HIS FILE'S SHAPE WOULD EACH HAVE SHIPPED A BUG, AND READING THE HIERARCHY IS
+  WHAT CAUGHT THEM:**
+  1. **THE LIBRARY IS PARKED AT x = 3300**, every type 4 m apart in z with its broken copy 3 m
+     beside it. A collider measured through `matrixWorld` therefore lands **three and a third
+     KILOMETRES** from the hydrant it belongs to. It is measured relative to the type's own
+     `brk_<t>_intact` empty instead. (The CHUNKS need no such correction -- they are children of
+     the broken group and that group's matrix is the one `brkBreak` overwrites.)
+  2. **`fx_hydrant_water_spout` IS A CHILD OF `brk_hydrant_broken`**, so the chunk loop would
+     have thrown an invisible empty across the street as a piece of hydrant. The test is that it
+     holds no mesh, which is structural.
+  3. **EVERY CHUNK CARRIES ITS OWN `col_brk_*` MESH AS A CHILD.** Cloned and added, that draws a
+     second coarser copy of each chunk on top of the real one and doubles a pile's draw calls.
+  **AND HIS hp SCALE AND THIS GAME'S DAMAGE SCALE ARE TWO DIFFERENT SYSTEMS (`BRK.dmg`).** His
+  extras run 15 to 150; `FOE.dmg` is **bolt 1.9, fist .8, weap 1.3, finish 3.2** per full-power
+  blow, because that scale was set by what a MAN can take. Handed straight across, a dumpster is
+  a **79-SHOT** object -- which from a phone is indistinguishable from breakables not working at
+  all. The conversion is explicit, it is 12, and it lives in `brkBlast`, which is the one door
+  every blow comes through and therefore the one place the two cannot drift apart:
+      full bolt 22.8   crate 1   trashbin 2   bench 2   hydrant 3   lightpost 3   dumpster 7
+      finisher  38.4   crate 1   trashbin 1   bench 2   hydrant 2   lightpost 2   dumpster 4
+  A crate goes in one shot and a dumpster is a project, which is what his own ten-to-one spread
+  between them was asking for.
+  **`BRK.maxWrecks` IS 6 BECAUSE A PILE IS 3-5 DRAW CALLS and he can shoot all day.** A pile
+  shrinks away rather than fading -- a fade wants a material clone per chunk and a scale wants
+  one number -- and the chunks' drag CONVERGES (`Math.exp(-k*dt)`), because a launch speed with
+  no drag is a number that means nothing without the clock beside it (Shredworld c146, a build).
+  **AND THE BOX GRID IS REBUILT ONCE A FRAME, NOT ONCE A BOX.** `boxGrid` walks all 670 of them
+  and a charged shot takes out several crates on the same frame.
+
+- **THE COLLIDER VIEW SHOWED HALF THE COLLIDER (m160, `BOXV.tri`).** *"Are we using triangles for
+  colliders or are we still using the box collider? It seems like we're using the box collider."*
+  Both, and the reason that had to be asked is that this view drew `BOXES` and nothing else: the
+  491 oriented boxes were on screen and the ~40,000 walkable triangles under his feet were
+  invisible, so the honest reading of the picture was "boxes and nothing else". **A debug view
+  that shows half the thing answers the wrong question**, which is m165's own lesson one repo
+  over about a car box drawn 78 cm above the car. It walks `TRI`'s own grid round him at its own
+  radius, with a `seen` set because a triangle is listed once per CELL it spans and a road slab
+  is in several -- so the number on screen is triangles and not cell entries. **Reserved in
+  `bvCap`** rather than left to the slack, or a dense block of boxes silently eats the very thing
+  it was added to show.
+
+- **THE `fx_*` MARKERS AND THE WATER SPOUT (m160, `SPOUT`, `fxSpawn`).** Every number is in his
+  marker and none is typed here: `fx: 'water_spout'`, `dir: [0,0,1]`, `height_m: 4`,
+  `duration_s: 12`. A second effect is a case in `fxSpawn` and a marker on another breakable
+  lands with no code change at all.
+  **`dir` IS LOCAL AND HAS TO BE TURNED BY THE BREAKABLE'S OWN MATRIX.** 177 of the 179
+  placements carry a yaw, so reading it as a world vector would have every hydrant in the city
+  spraying due north.
+  **THE LAUNCH SPEED IS SOLVED FROM `height_m`** -- `v = sqrt(2 g h)` against the pool's own
+  gravity -- so the jet reaches the height he asked for and keeps reaching it if `SPK.g` moves.
+  A typed speed is a height that is right once. The SPLASH is placed the same way: the flight
+  time back to the ground and the horizontal reach over it, so it lands where the water lands
+  rather than at the nozzle.
+  **IT RIDES `spk()` RATHER THAN GETTING ITS OWN POOL.** `puffPool`'s note says what the pools
+  share (a `Points` sized in world METRES) and what they do not (physics and blending) -- and a
+  fountain is additive debris that FALLS, which is the spark step exactly. What it costs is
+  head-room: `SPK.n` 560 -> **760**, because a pool that recycles every other effect out from
+  under itself while a hydrant runs for twelve seconds is worse than a bigger buffer (m118's own
+  argument about the morph).
+  **THE PUDDLE IS GENERATED, BECAUSE THE ATLAS HAS NO PUDDLE IN IT** -- scorch, crater, bullet
+  holes, goo and rubble, and a goo mark under a hydrant is the alien weapon's colour on a water
+  effect. One 128 px canvas, made once.
+  **AND THERE IS NO SPRAY SOUND, WHICH IS STATED RATHER THAN FAKED.** He asked for a looping one;
+  this repo has clang / drop / foot / hit / lock / plasma / shot / swoosh / thud / zap and not one
+  of them is water. `SPOUT.snd` is the hook -- name a key the day there is a recording.
+
 - **A BOX FITTED ROUND A TURNED SHAPE IS A STAIRCASE, AND HIS COLLISION FILE WAS NEVER THE
   PROBLEM (m159, `tcObbBoxes`, `toon_city_obb.json`).** *"Your screenshot shows exactly the
   problem: a pile of little boxes stacked in stair steps, every one lined up with the world grid

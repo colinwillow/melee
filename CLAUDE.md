@@ -533,11 +533,17 @@ means anything you can carry from one situation to the next.
   71 buildings' triangles and almost nothing else, so a dumpster's top is its box's flat `maxy`
   rather than its real lean. Rolling off a leaning surface wants that object in the collision
   file.
-  **AND THE BREAKABLES, THE DECALS AND THE `fx_*` MARKERS ARE NOT STARTED.**
-  `models/toon_city/toon_city_breakables.glb` (7 types, including `fx_hydrant_water_spout`),
-  `impact_marks_atlas.png` and `impact_marks.json` are all in the repo and nothing reads them.
-  `TCITY.brk` is the path and that is the whole of it.
-  `mel.TCITY` and `mel.LIGHTX` are live; `inst`/`merge`/`tex`/`col` want a reload.
+  **THE BREAKABLES, THE DECALS AND THE WATER SPOUT ALL LANDED AT m160** — 179 breakables in 7
+  types, 16 impact marks in one pooled draw call, and `fx_hydrant_water_spout` off his own
+  marker. See `NOTES.md`. **The collider view draws the walkable TRIANGLES now as well as the
+  boxes**, because it showed only the boxes and the honest reading of that picture was that the
+  triangles were not there.
+  What is still missing on them: **no spray sound** (`SPOUT.snd` is the hook — this repo has no
+  water recording and one is not faked), no breakable reacts to a CAR hitting it, and the piles
+  are capped at 6 because a pile is 3–5 draw calls.
+  `mel.TCITY` / `mel.LIGHTX` / `mel.DECAL` / `mel.BRK` / `mel.SPOUT` are live;
+  `mel.mark()`, `mel.smash()` and `mel.spout()` fire one of each where he stands.
+  `inst`/`merge`/`tex`/`col` want a reload.
 
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
   his own torso — her hair has head/chest/hips spheres for exactly that reason. The arms are

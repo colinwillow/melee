@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m159</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m160</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m159</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m160</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,7 +584,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm159';
+const BUILD = 'm160';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -6415,17 +6415,47 @@ function pushBodies(pos, r, skip) {
   return hit;
 }
 
-function camHit(x, y, z, pad) {
+// **AND IT HANDS BACK THE FACE IT STOPPED ON, WHEN ASKED (m160, `out`).** A decal needs the
+// surface normal, and this loop is the ONE place that knows it: `boxNear` has returned the
+// outward normal of the nearest face since m89, and a roof is told from a wall by where in the
+// box's own height the point sits. **A second raycast against the collision mesh would be a
+// second opinion about a question already answered**, and the two would disagree at every
+// corner. Absent, nothing is written and every existing caller is byte-for-byte what it was.
+function camHit(x, y, z, pad, out) {
   for (const b of boxesNear(x - pad, x + pad, z - pad, z + pad, _bnC)) {
     if (y <= b.miny - pad || y >= b.maxy + pad) continue;
     // AND A TURNED BOX IS TESTED AS THE BOX (m146). This is the camera boom AND the bolt's
     // flight, so against the AABB of a car at 45 degrees a shot aimed well past it died in
     // clear air -- Shredworld's own m161 complaint, one shape along.
-    if (b.cs !== undefined) { const d = boxNear(b, x, z, _bnpC); if (d >= 0 && d > pad) continue; return true; }
-    if (x > b.minx - pad && x < b.maxx + pad && z > b.minz - pad && z < b.maxz + pad) return true;
+    if (b.cs !== undefined) { const d = boxNear(b, x, z, _bnpC); if (d >= 0 && d > pad) continue;
+                              if (out) hitFace(b, x, y, z, pad, _bnpC, out); return true; }
+    if (x > b.minx - pad && x < b.maxx + pad && z > b.minz - pad && z < b.maxz + pad) {
+      if (out) hitFace(b, x, y, z, pad, null, out);
+      return true;
+    }
   }
   return false;
 }
+// WHICH FACE OF `b` THE POINT IS ON. The TOP and the BOTTOM are read off the box's own height
+// first, because a bolt that lands on a roof is on the roof and a plan normal there would lay
+// the scorch on its edge; everything else is the plan normal, which for an oriented box is the
+// real face rather than the phantom AABB's.
+function hitFace(b, x, y, z, pad, near, out) {
+  out.box = b;
+  if (y >= b.maxy - pad) { out.nx = 0; out.ny = 1; out.nz = 0; return; }
+  if (y <= b.miny + pad) { out.nx = 0; out.ny = -1; out.nz = 0; return; }
+  let nx = 0, nz = 0;
+  if (near && (near.x || near.z)) { nx = near.x; nz = near.z; }
+  else {
+    // the axis-aligned case: the face it is least deep into, which is `resolveBoxes`' own rule
+    const dx1 = b.maxx - x, dx2 = x - b.minx, dz1 = b.maxz - z, dz2 = z - b.minz;
+    const m = Math.min(dx1, dx2, dz1, dz2);
+    if (m === dx1) nx = 1; else if (m === dx2) nx = -1; else if (m === dz1) nz = 1; else nz = -1;
+  }
+  const L = Math.hypot(nx, nz) || 1;
+  out.nx = nx / L; out.ny = 0; out.nz = nz / L;
+}
+const _hitF = { nx: 0, ny: 1, nz: 0, box: null };
 
 // ============================================================================================
 // THE RIG
@@ -6913,7 +6943,10 @@ const SPK = {
   // m115's rates about 92 were alive round him at once, which is a drift and not a swarm; at
   // m118's they are nearer 190, and a pool that recycles out from under every other effect on
   // screen during a one-second transform is worse than a slightly bigger buffer.
-  on: 1, n: 560,
+  // **AND 760 AS OF m160**: a water spout is about 100 alive for twelve seconds, and a pool
+  // that recycles every other effect out from under itself while a hydrant runs is worse than
+  // a slightly bigger buffer -- the same argument m118 made about the morph.
+  on: 1, n: 760,
   g: 9.5,            // m/s^2 -- sparks fall, which is most of what says they are debris
   drag: 1.9,
 };
@@ -7626,6 +7659,21 @@ function boltHit(b) {
   spkBurst(b.pos.x, b.pos.y, b.pos.z, Math.round(6 + 18 * big),
            { col: BOLT_VIO, spread: (2.5 + 5 * big) * K, up: 1.2 * K, r: b.size * .8 * K,
              size: .2 + .2 * c, life: .7 + .5 * c });
+  // **THE MARK IT LEAVES ON WHATEVER IT LANDED ON (m160).** `b.hitN` is the face `camHit`
+  // reported, so this is the surface's real normal and not a ray's second opinion; a bolt that
+  // died on a BODY or ran out its life left no surface, and `hitN` is absent, so there is
+  // nothing to mark -- which is right, and is why this is a test rather than a fallback to up.
+  // **`alien` is the kind, because this is the alien weapon** -- the blast marks belong to the
+  // hammer and to anything that detonates later. The footprint rides `hitK` like every other
+  // spatial term in this function, and the CHARGE decides whether the rubble comes with it.
+  if (b.hitN) {
+    decalHit(b.pos.x, b.pos.y, b.pos.z, b.hitN[0], b.hitN[1], b.hitN[2],
+             c > DECAL.bigAt ? 'blast' : 'alien', c, K * (.7 + c * .6));
+    // AND A BREAKABLE TAKES THE HIT. The blast radius is what reaches it, so a charged shot
+    // takes out the crate beside the one it hit and a fumble takes out neither.
+    brkBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast,
+             FOE.dmg.bolt * (WEAP.pow0 + c * (WEAP.pow1 - WEAP.pow0)));
+  }
   // and everybody the blast reached wears it
   const R = b.size * .5 + b.blast;
   for (const d of DUMMIES) {
@@ -7638,6 +7686,672 @@ function boltHit(b) {
     bodyFlash(d, .6 + .4 * c);
   }
 }
+// ============================================================================================
+// THE `fx_*` MARKERS, AND THE WATER SPOUT (m160, `SPOUT`, `fxSpawn`, `spoutStep`)
+//
+// *"When a brk_*_broken group contains an fx_* empty, spawn that effect at its transform. For
+// fx = 'water_spout', use a particle fountain going up dir to about height_m, falling back down
+// with some splash, lasting duration_s, plus a spreading puddle decal and a looping spray
+// sound. Pool the particles, about 150 max, and use additive blending on small soft sprites."*
+//
+// **EVERY NUMBER IS IN HIS MARKER AND NONE OF THEM IS TYPED HERE.** Read straight out of the
+// node's extras: `fx: 'water_spout'`, `dir: [0, 0, 1]`, `height_m: 4.0`, `duration_s: 12`. The
+// second effect is a case in `fxSpawn` and nothing else, and a marker on another breakable
+// lands with no code change at all -- `weapFit`'s rule, one asset along.
+//
+// **`dir` IS LOCAL AND HAS TO BE TURNED BY THE BREAKABLE'S OWN MATRIX.** It is `(0,0,1)` with
+// no rotation on the marker, which is "out of the nozzle" in the hydrant's own frame -- and 177
+// of the 179 placements carry a yaw, so reading it as a world vector would have every hydrant
+// in the city spraying due north.
+//
+// **THE LAUNCH SPEED IS SOLVED FROM `height_m`, NOT TUNED.** `v = sqrt(2 g h)` against the
+// pool's own gravity, so the jet reaches the height he asked for and keeps reaching it if
+// `SPK.g` ever moves. A typed speed is a height that is right once.
+//
+// **IT RIDES `spk()` RATHER THAN GETTING ITS OWN POOL, AND THAT IS DELIBERATE.** `puffPool`'s
+// note says what the pools share (a `Points` sized in world METRES) and what they do not
+// (physics and blending) -- and a fountain is additive debris that FALLS, which is the spark
+// step exactly. A second pool would be a duplicate of that loop to keep in step. What it costs
+// is head-room: about 150 alive at once against a pool m118 sized at 560 for the morph's three
+// populations, so `SPK.n` goes to 760 rather than recycling every other effect out from under
+// itself while a hydrant runs.
+const SPOUT = {
+  on: 1,
+  rate: 90,          // particles a second, which at ~1.1 s of flight is about 100 alive
+  size: .13,
+  jet: .16,          // how tight the cone is, in radians of scatter
+  col: [.72, .92, 1.0],
+  splash: 6,         // a burst of this many where the jet lands, per splash tick
+  splashEvery: .09,
+  puddle: 3.2,       // how wide the puddle grows, in metres ...
+  puddleT: 9,        // ... and how long it takes to get there
+  puddleCol: 0x2b4a63,
+  // **THERE IS NO SPRAY SOUND AND NONE IS FAKED.** He asked for a looping one and this repo has
+  // clang / drop / foot / hit / lock / plasma / shot / swoosh / thud / zap -- not one of them is
+  // water, and a plasma loop under a fire hydrant is worse than silence. `SPOUT.snd` is the hook:
+  // name a key the day there is a recording and it loops with no other change.
+  snd: '',
+};
+const SPOUTS = [];
+let puddleTex = null;
+
+// A WET DISC. Generated rather than an atlas cell, because `impact_marks.json` has scorch,
+// crater, bullet holes, goo and rubble and NO puddle -- and a goo mark under a hydrant would be
+// the alien weapon's colour on a water effect. One 128 px canvas, made once.
+function puddleMake() {
+  if (puddleTex) return puddleTex;
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d');
+  const g = x.createRadialGradient(64, 64, 4, 64, 64, 62);
+  g.addColorStop(0, 'rgba(255,255,255,.85)');
+  g.addColorStop(.55, 'rgba(255,255,255,.55)');
+  g.addColorStop(.86, 'rgba(255,255,255,.20)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  puddleTex = new THREE.CanvasTexture(c);
+  puddleTex.colorSpace = THREE.SRGBColorSpace;
+  return puddleTex;
+}
+
+const _fxP = new THREE.Vector3(), _fxD = new THREE.Vector3(), _fxM = new THREE.Matrix4();
+function fxSpawn(fx, b) {
+  if (!fx || !fx.node) return;
+  const ex = fx.node.userData || {};
+  const kind = ex.fx || fx.kind || '';
+  // the marker's place and direction, carried out through the BREAKABLE's own world matrix
+  _fxM.multiplyMatrices(b.mat, fx.node.matrix);
+  _fxP.setFromMatrixPosition(_fxM);
+  const d = ex.dir || [0, 1, 0];
+  _fxD.set(d[0], d[1], d[2]).transformDirection(_fxM);
+  if (_fxD.lengthSq() < 1e-8) _fxD.set(0, 1, 0);
+  _fxD.normalize();
+  if (kind === 'water_spout') spoutGo(_fxP.x, _fxP.y, _fxP.z, _fxD, ex.height_m || 3, ex.duration_s || 8);
+}
+
+function spoutGo(x, y, z, dir, h, dur) {
+  if (!SPOUT.on) return;
+  // the puddle: a disc lying on the ground under the jet, growing
+  const gy = groundAt(x, z, y, 2.5);
+  const mesh = new THREE.Mesh(
+    new THREE.CircleGeometry(.5, 20),
+    new THREE.MeshBasicMaterial({ map: puddleMake(), color: SPOUT.puddleCol, transparent: true,
+                                  opacity: 0, depthWrite: false,
+                                  polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(x, gy + .012, z);
+  mesh.renderOrder = 1;
+  mesh.userData.noHole = 1; mesh.userData.noPaint = 1;
+  scene.add(mesh);
+  SPOUTS.push({ x, y, z, dx: dir.x, dy: dir.y, dz: dir.z,
+                // SOLVED, not typed: the speed that reaches his height under the pool's gravity
+                v: Math.sqrt(2 * SPK.g * Math.max(.2, h)),
+                dur, t: 0, emit: 0, sp: 0, mesh, gy, snd: null });
+  if (SPOUT.snd) snd(SPOUT.snd, { g: .5, loop: 1 });
+}
+
+function spoutStep(dt) {
+  for (let i = SPOUTS.length - 1; i >= 0; i--) {
+    const S = SPOUTS[i];
+    S.t += dt;
+    // IT DIES DOWN RATHER THAN STOPPING. A jet that is full pressure and then nothing reads as
+    // a switch; a hydrant runs out.
+    const u = S.t / S.dur;
+    const k = u >= 1 ? 0 : u > .75 ? (1 - u) / .25 : 1;
+    if (u >= 1.35) {
+      scene.remove(S.mesh); S.mesh.geometry.dispose(); S.mesh.material.dispose();
+      SPOUTS.splice(i, 1); continue;
+    }
+    // the puddle spreads and then holds, and fades out with the jet
+    const pw = Math.min(1, S.t / SPOUT.puddleT);
+    S.mesh.scale.setScalar(Math.max(.01, (SPOUT.puddle * pw) / .5));
+    S.mesh.material.opacity = Math.min(.72, S.t * 1.6) * (u > 1 ? Math.max(0, 1 - (u - 1) / .35) : 1);
+    if (k <= 0) continue;
+    // the jet
+    S.emit += dt * SPOUT.rate * k;
+    const v = S.v * (.72 + .28 * k);
+    while (S.emit >= 1) {
+      S.emit -= 1;
+      const a = Math.random() * Math.PI * 2, r = Math.random() * SPOUT.jet;
+      // scatter ABOUT the jet axis rather than about +Y, or a sideways nozzle sprays a fan
+      const ux = Math.abs(S.dy) > .9 ? 1 : 0, uy = Math.abs(S.dy) > .9 ? 0 : 1;
+      let tx = uy * S.dz - 0 * S.dy, ty = 0 * S.dx - ux * S.dz, tz = ux * S.dy - uy * S.dx;
+      const tl = Math.hypot(tx, ty, tz) || 1; tx /= tl; ty /= tl; tz /= tl;
+      const bx = S.dy * tz - S.dz * ty, by = S.dz * tx - S.dx * tz, bz = S.dx * ty - S.dy * tx;
+      const jx = S.dx + (tx * Math.cos(a) + bx * Math.sin(a)) * r;
+      const jy = S.dy + (ty * Math.cos(a) + by * Math.sin(a)) * r;
+      const jz = S.dz + (tz * Math.cos(a) + bz * Math.sin(a)) * r;
+      const sv = v * (.82 + Math.random() * .36);
+      spk(S.x, S.y, S.z, jx * sv, jy * sv, jz * sv,
+          SPOUT.size * (.6 + Math.random() * .8), 1.1 + Math.random() * .5, SPOUT.col);
+    }
+    // AND IT LANDS. Where a ballistic jet comes back to the ground is arithmetic, so the splash
+    // goes there rather than at the nozzle: the flight time to fall back to `gy` and the
+    // horizontal reach over it.
+    S.sp += dt;
+    if (S.sp >= SPOUT.splashEvery) {
+      S.sp = 0;
+      const vy = S.dy * v, dy0 = S.y - S.gy;
+      const tf = (vy + Math.sqrt(Math.max(0, vy * vy + 2 * SPK.g * dy0))) / SPK.g;
+      const lx = S.x + S.dx * v * tf, lz = S.z + S.dz * v * tf;
+      spkBurst(lx, S.gy + .05, lz, SPOUT.splash,
+               { col: SPOUT.col, spread: 1.8, up: 1.6, r: .18, size: SPOUT.size * .8, life: .45 });
+    }
+  }
+}
+
+// ============================================================================================
+// BREAKABLES (m160, `BRK`, `brkIndex`, `brkClaim`, `brkBlast`, `brkBreak`, `brkStep`)
+//
+// *"In toon_city_visual.glb, any node with userData.breakable is a breakable. Give it the
+// matching collider from toon_city_breakables.glb (col_brk_<type>_intact_mesh) at the node's
+// transform. When its hp runs out, swap it for a clone of brk_<type>_broken at the same
+// transform and throw the chunks. The static collision file no longer contains these objects."*
+//
+// Measured before a line was written, and every number below comes out of his two files rather
+// than out of here:
+//     179 tagged nodes, SEVEN types   dumpster 38, crate 35, trashbin 30, bench 23,
+//                                     lightpost 23, hydrant 20, barrel 10
+//     hp in the extras                crate 15, trashbin 25, bench 40, barrel 40,
+//                                     lightpost 60, hydrant 50, dumpster 150
+//     the breakables file             7 x (col_brk_*_intact_mesh, brk_*_broken with 3-5 chunks)
+//                                     plus ONE fx marker, `fx_hydrant_water_spout`
+//     and NONE of the 179 is in `toon_city_obb.json`  -- exactly as he said, so their collider
+//                                     has to come from the breakables file and nowhere else
+//
+// **THE NAME MEANS NOTHING AND THE TAG IS THE FACT.** The 179 are spelt three different ways
+// (`prop_crate_000`, `debris_trash_014`, `brk_bench_intact_003`) and 73 of them are NESTED
+// under a parent rather than at the top level. A name regex would have found some of them and
+// silently missed the rest, which is `stripPoses`' rule one repo over: the property that makes
+// a thing what it is has to be the structural one.
+//
+// **THEY ARE ALREADY INSTANCED AND THAT IS THE WHOLE PERFORMANCE STORY.** 179 nodes share
+// SEVEN geometries, so `buildTCity`'s instancing pass collapses them to seven InstancedMeshes
+// with no help -- and breaking one is then writing a ZERO-SCALE matrix into its slot, which is
+// the same trick `CASH` uses one repo over and costs nothing. Taking them out of the instancing
+// to make them breakable would have been 179 draw calls to gain what one matrix write gives.
+const BRK = {
+  on: 1,
+  file: 'models/toon_city/toon_city_breakables.glb',
+  maxWrecks: 6,      // how many broken piles may be on screen. Each is 3-5 draw calls, so the
+                     // worst case is about 30 against the city's ~72 -- and the oldest goes.
+  chunkLife: 9,      // how long a pile lies there ...
+  chunkGo: 1.2,      // ... and how long it takes to shrink away. **SCALE, not a fade**: a fade
+                     // wants a material clone per chunk and a scale wants one number.
+  g: 16,             // chunk gravity. Above the player's, because debris this size is not a man
+  spread: 3.4,       // m/s outward from the middle
+  up: 4.2,           // and up. Debris that only goes sideways reads as a ring, not as a break.
+  spin: 7,           // rad/s of tumble
+  drag: 1.1,         // and it CONVERGES: a launch speed with no drag is a number that means
+                     // nothing without the clock beside it (Shredworld c146, which cost a build)
+  bounce: .28,       // what a chunk keeps when it meets the ground
+  r: 1.1,            // how far from a blast's centre a breakable still counts as hit
+  flash: 1,          // a burst of sparks on the break
+  // **HIS hp SCALE AND THIS GAME'S DAMAGE SCALE ARE TWO DIFFERENT SYSTEMS, AND THIS IS THE ONE
+  // NUMBER BETWEEN THEM.** His extras run crate 15 / trashbin 25 / bench 40 / barrel 40 /
+  // hydrant 50 / lightpost 60 / dumpster 150, which plainly assume damage in the tens; `FOE.dmg`
+  // is **bolt 1.9, fist .8, weap 1.3, finish 3.2** per FULL-POWER blow, because that scale was
+  // set by what a man can take. Handing one straight to the other makes a **dumpster a
+  // 79-SHOT** object, which from a phone is indistinguishable from breakables not working at
+  // all -- so the conversion is explicit and it lives in `brkBlast`, which is the one door
+  // every blow comes through and therefore the one place the two cannot drift apart.
+  // At 12, and these are the numbers rather than a feeling:
+  //     full bolt 22.8   crate 1   trashbin 2   bench 2   hydrant 3   lightpost 3   dumpster 7
+  //     hammer    15.6   crate 1   trashbin 2   bench 3   hydrant 4   lightpost 4   dumpster 10
+  //     fist       9.6   crate 2   trashbin 3   bench 5   hydrant 6   lightpost 7   dumpster 16
+  //     finisher  38.4   crate 1   trashbin 1   bench 2   hydrant 2   lightpost 2   dumpster 4
+  // **A crate goes in one shot and a dumpster is a project**, which is what his own ten-to-one
+  // spread between them was asking for. `mel.BRK.dmg` is the dial.
+  dmg: 12,
+};
+const brkLib = { ready: 0, types: {} };     // type -> { broken, col, fx, hp }
+const BREAK = [];                           // the live tagged objects
+let brkDirty = 0;                           // declared UP HERE on purpose -- see the file's rule
+const WRECKS = [];                          // the piles on the ground
+
+// ---- 1. THE LIBRARY. His file is one flat list of nodes named by convention, so this is a
+//         parse of the names into seven records -- and it keeps the NODES rather than cloning
+//         anything, because a wreck is cloned at the moment it is needed and not before.
+function brkIndex(g) {
+  const root = g.scene;
+  root.updateMatrixWorld(true);
+  const T = brkLib.types;
+  root.traverse(o => {
+    const nm = o.name || '';
+    let m = /^brk_([a-z0-9]+)_broken$/.exec(nm);
+    if (m) { (T[m[1]] || (T[m[1]] = {})).broken = o; return; }
+    m = /^brk_([a-z0-9]+)_intact$/.exec(nm);
+    if (m) { (T[m[1]] || (T[m[1]] = {})).intact = o; return; }
+    m = /^col_brk_([a-z0-9]+)_intact_mesh$/.exec(nm);
+    if (m) { (T[m[1]] || (T[m[1]] = {})).col = o; return; }
+    m = /^fx_([a-z0-9]+)_(.+)$/.exec(nm);
+    if (m) { (T[m[1]] || (T[m[1]] = {})).fx = { node: o, kind: m[2] }; return; }
+  });
+  // **THE COLLIDER'S SIZE IS MEASURED OFF THE GEOMETRY, NOT `Box3.setFromObject`.** These are
+  // not skinned so the difference is small, but the union of each mesh's own bounds through its
+  // own world matrix is the answer that stays right whatever the export does with its nodes --
+  // which is the same union `buildBuildings` was written with and finally collected on at m60.
+  // **AND IT IS MEASURED IN THE PROP'S OWN FRAME, NOT IN THE FILE'S WORLD.** His library is
+  // PARKED off to one side -- every type sits at x = 3300 with the broken copy 3 m beside it --
+  // so a bounds taken through `matrixWorld` puts the collider three and a third KILOMETRES from
+  // the hydrant it belongs to. Measured relative to the type's own `brk_<t>_intact` empty, the
+  // numbers are the shape and nothing else, which is what `brkClaim` then carries out through
+  // the placement's transform. The chunks need no such correction: they are children of the
+  // broken group and that group's matrix is the one `brkBreak` OVERWRITES.
+  const bb = new THREE.Box3(), one = new THREE.Box3(), inv = new THREE.Matrix4(),
+        rel = new THREE.Matrix4();
+  for (const k of Object.keys(T)) {
+    const t = T[k];
+    if (!t.col) continue;
+    const base = t.intact || t.col.parent || t.col;
+    inv.copy(base.matrixWorld).invert();
+    bb.makeEmpty();
+    t.col.traverse(o => {
+      if (!o.isMesh || !o.geometry) return;
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      rel.multiplyMatrices(inv, o.matrixWorld);
+      one.copy(o.geometry.boundingBox).applyMatrix4(rel);
+      bb.union(one);
+    });
+    if (bb.isEmpty()) continue;
+    const c = bb.getCenter(new THREE.Vector3()), s = bb.getSize(new THREE.Vector3());
+    // in the PROP'S OWN local frame: the node's world matrix turns it when one is claimed
+    t.box = { cx: c.x, cy: c.y, cz: c.z, hx: s.x * .5, hy: s.y * .5, hz: s.z * .5 };
+  }
+  brkLib.ready = 1;
+  const have = Object.keys(T).sort();
+  console.log('[melee] breakables: ' + have.length + ' types [' + have.map(k =>
+    k + (T[k].broken ? '/' + T[k].broken.children.length + 'ch' : '/NO BROKEN') +
+    (T[k].box ? '' : '/NO COL') + (T[k].fx ? '/fx:' + T[k].fx.kind : '')).join(' ') + ']');
+  if (!have.length) note('NO BREAKABLES');
+}
+
+// ---- 2. CLAIMING ONE. Called from `buildTCity`'s instancing pass, where every node goes past
+//         exactly once and its InstancedMesh and slot are both in hand.
+//         **THE TAG IS READ THERE AND NOT HERE**, so a third push site tomorrow cannot
+//         reintroduce a breakable nobody registered -- Shredworld's c142 rule about `roadTag`.
+const _bkM = new THREE.Matrix4(), _bkP = new THREE.Vector3(), _bkQ = new THREE.Quaternion(),
+      _bkS = new THREE.Vector3(), _bkE = new THREE.Euler();
+function brkClaim(o, im, slot) {
+  if (!BRK.on || !brkLib.ready) return 0;
+  const ex = o.userData && o.userData.breakable;
+  if (!ex) return 0;
+  const T = brkLib.types[ex];
+  if (!T) return 0;                        // a type his visual has and his breakables file does not
+  o.matrixWorld.decompose(_bkP, _bkQ, _bkS);
+  const b = {
+    type: ex, im, slot,
+    // **AND THE OBJECT ITSELF, for the one that was never instanced.** The merge pass hands
+    // those here with a null `im`, and they stay under the gltf root -- so `visible = false` is
+    // what takes them away, exactly as a zero matrix does for the other 179.
+    obj: im ? null : o,
+    hp: (o.userData.hp | 0) || 40, hp0: (o.userData.hp | 0) || 40,
+    mat: o.matrixWorld.clone(),
+    x: _bkP.x, y: _bkP.y, z: _bkP.z,
+    dead: 0, box: null,
+  };
+  // **ITS COLLIDER IS THE SHAPE FROM HIS BREAKABLES FILE AT THIS NODE'S TRANSFORM**, turned
+  // about +Y by the node's own yaw -- 177 of the 179 carry a rotation, so an axis-aligned box
+  // here would be the exact staircase m159 threw out, one asset along.
+  if (T.box) {
+    _bkE.setFromQuaternion(_bkQ, 'YXZ');
+    const t = _bkE.y, yaw = -t, cs = Math.cos(yaw), sn = Math.sin(yaw);
+    const B = T.box;
+    // the local box centre carried out to world through the node's own matrix
+    _bkM.copy(o.matrixWorld);
+    const cx = B.cx * _bkM.elements[0] + B.cy * _bkM.elements[4] + B.cz * _bkM.elements[8] + _bkM.elements[12];
+    const cy = B.cx * _bkM.elements[1] + B.cy * _bkM.elements[5] + B.cz * _bkM.elements[9] + _bkM.elements[13];
+    const cz = B.cx * _bkM.elements[2] + B.cy * _bkM.elements[6] + B.cz * _bkM.elements[10] + _bkM.elements[14];
+    const hx = B.hx * Math.abs(_bkS.x), hy = B.hy * Math.abs(_bkS.y), hz = B.hz * Math.abs(_bkS.z);
+    const ex2 = hx * Math.abs(cs) + hz * Math.abs(sn), ez2 = hx * Math.abs(sn) + hz * Math.abs(cs);
+    if (hx > .02 && hy > .02 && hz > .02) {
+      b.box = { minx: cx - ex2, maxx: cx + ex2, minz: cz - ez2, maxz: cz + ez2,
+                miny: cy - hy, maxy: cy + hy,
+                cx, cz, hx, hz, yaw, cs, sn, brk: b };
+      BOXES.push(b.box);
+    }
+    b.cx = cx; b.cy = cy; b.cz = cz; b.rad = Math.hypot(hx, hz);
+  } else { b.cx = b.x; b.cy = b.y; b.cz = b.z; b.rad = .6; }
+  BREAK.push(b);
+  return 1;
+}
+
+// ---- 3. TAKING A HIT. Radius rather than a pick, because a blast reaches what is NEAR it and
+//         a punch that grazes a crate should still break the crate.
+function brkBlast(x, y, z, r, dmg) {
+  if (!BRK.on || !BREAK.length) return 0;
+  let n = 0;
+  for (const b of BREAK) {
+    if (b.dead) continue;
+    const R = r + b.rad + BRK.r;
+    const dx = b.cx - x, dy = b.cy - y, dz = b.cz - z;
+    if (dx * dx + dy * dy + dz * dz > R * R) continue;
+    b.hp -= dmg * BRK.dmg;
+    if (b.hp <= 0) { brkBreak(b, x, y, z); n++; }
+    else if (DECAL.on) {
+      // it survived, so it WEARS the hit -- a crate you have shot twice and a crate you have
+      // not are otherwise the same picture, and hp with nothing on screen is a number
+      const L = Math.hypot(dx, dy, dz) || 1;
+      decalPut(b.cx - dx / L * b.rad, b.cy - dy / L * b.rad, b.cz - dz / L * b.rad,
+               dx / L, dy / L, dz / L, 'bullet', .8);
+    }
+  }
+  return n;
+}
+
+// ---- 4. BREAKING. Zero the instance, drop the collider, throw the chunks, fire the fx.
+function brkBreak(b, hx, hy, hz) {
+  b.dead = 1;
+  // **THE INSTANCE IS SCALED TO ZERO, NEVER REMOVED.** An InstancedMesh's count is fixed and
+  // re-packing would renumber every slot after it -- so every other breakable of that type
+  // would be pointing at the wrong object. A zero-scale matrix is a degenerate triangle, which
+  // every GPU worth the name discards before rasterisation.
+  if (b.im && b.im.setMatrixAt) {
+    _bkM.makeScale(0, 0, 0);
+    b.im.setMatrixAt(b.slot, _bkM);
+    b.im.instanceMatrix.needsUpdate = true;
+  } else if (b.obj) b.obj.visible = false;
+  // and the box goes with it, or you walk into a crate that is not there
+  if (b.box) {
+    const i = BOXES.indexOf(b.box);
+    // **THE GRID IS REBUILT ONCE A FRAME, NOT ONCE A BOX.** `boxGrid` walks all 670 of them,
+    // and a charged shot takes out several crates on the SAME frame -- so rebuilding inside
+    // the loop does the whole walk once per crate to reach the same answer.
+    if (i >= 0) { BOXES.splice(i, 1); brkDirty = 1; }
+    b.box = null;
+  }
+  const T = brkLib.types[b.type];
+  if (T && T.broken) {
+    const g = T.broken.clone(true);
+    g.matrixAutoUpdate = false;
+    g.matrix.copy(b.mat);
+    g.matrix.decompose(g.position, g.quaternion, g.scale);
+    g.matrixAutoUpdate = true;
+    g.updateMatrixWorld(true);
+    // **EVERY CHUNK BECOMES ITS OWN OBJECT IN THE WORLD, because they have to fly APART.** A
+    // group thrown as one is a crate sliding away intact, which is the opposite of breaking.
+    const chunks = [];
+    const kids = g.children.slice();
+    for (const c of kids) {
+      // **THE `fx_*` MARKER IS A CHILD OF THE BROKEN GROUP AND IS NOT A CHUNK.** Thrown as one
+      // it is an invisible empty tumbling across the street, and it would have counted toward
+      // the pile. The test is that it holds no mesh, which is structural -- `stripPoses`' rule.
+      let hasMesh = 0;
+      c.traverse(o => { if (o.isMesh) hasMesh = 1; });
+      if (!hasMesh) { g.remove(c); continue; }
+      // **AND EVERY CHUNK CARRIES ITS OWN `col_brk_*` MESH AS A CHILD**, which is the collision
+      // shell and is not meant to be looked at. Cloned and added it draws a second, coarser
+      // copy of each chunk on top of the real one -- and doubles the draw calls of a pile.
+      for (const o of c.children.slice()) if (/^col_brk_/.test(o.name || '')) c.remove(o);
+      c.updateMatrixWorld(true);
+      c.matrixWorld.decompose(_bkP, _bkQ, _bkS);
+      g.remove(c);
+      c.position.copy(_bkP); c.quaternion.copy(_bkQ); c.scale.copy(_bkS);
+      c.castShadow = !!TCITY.cast; c.receiveShadow = true;
+      c.traverse(o => { if (o.material) { o.material.side = THREE.FrontSide; } });
+      tcRoot.add(c);
+      // OUTWARD FROM THE MIDDLE, which is what says it came apart rather than that somebody
+      // dropped it -- and with the BLOW's direction folded in, so a shot from the left throws
+      // the pieces right.
+      let ox = _bkP.x - b.cx, oy = _bkP.y - b.cy, oz = _bkP.z - b.cz;
+      const L = Math.hypot(ox, oy, oz);
+      if (L < 1e-4) { ox = Math.random() - .5; oz = Math.random() - .5; oy = .5; }
+      else { ox /= L; oy /= L; oz /= L; }
+      let bx = 0, bz = 0;
+      if (hx !== undefined) {
+        bx = b.cx - hx; bz = b.cz - hz;
+        const BL = Math.hypot(bx, bz) || 1; bx /= BL; bz /= BL;
+      }
+      const sp = BRK.spread * (.5 + Math.random() * .9);
+      chunks.push({ o: c, base: _bkS.clone(),
+        vx: (ox + bx * .8) * sp, vy: BRK.up * (.5 + Math.random()) + oy * sp * .4,
+        vz: (oz + bz * .8) * sp,
+        sx: (Math.random() * 2 - 1) * BRK.spin, sy: (Math.random() * 2 - 1) * BRK.spin,
+        sz: (Math.random() * 2 - 1) * BRK.spin, rest: 0 });
+    }
+    if (chunks.length) {
+      WRECKS.push({ chunks, t: 0 });
+      // **THE OLDEST PILE GOES, because a pile is 3-5 draw calls and he can shoot all day.**
+      while (WRECKS.length > BRK.maxWrecks) wreckDrop(WRECKS.shift());
+    }
+  }
+  if (BRK.flash) {
+    spkBurst(b.cx, b.cy, b.cz, 16, { col: [.85, .8, .7], spread: 5.5, up: 3, r: b.rad * .6,
+                                     size: .12, life: .5 });
+    snd('clang', { g: .3, r: .8 + Math.random() * .4 });
+  }
+  // AND ITS OWN EFFECT, IF HIS FILE PUT ONE IN IT. `fx_hydrant_water_spout` is the only one
+  // today and the lookup is by name, so the second one is a line in `fxSpawn` and nothing here.
+  if (T && T.fx) fxSpawn(T.fx, b);
+}
+
+function wreckDrop(w) {
+  for (const c of w.chunks) {
+    tcRoot.remove(c.o);
+    c.o.traverse(o => { if (o.geometry) o.geometry.dispose(); });
+  }
+}
+
+function brkStep(dt) {
+  if (brkDirty) { brkDirty = 0; boxGrid(); }
+  for (let i = WRECKS.length - 1; i >= 0; i--) {
+    const w = WRECKS[i];
+    w.t += dt;
+    const go = w.t - BRK.chunkLife;
+    if (go > BRK.chunkGo) { wreckDrop(w); WRECKS.splice(i, 1); continue; }
+    const k = go > 0 ? Math.max(0, 1 - go / BRK.chunkGo) : 1;
+    // **`Math.exp(-k*dt)`, NEVER A BARE `*= k`** -- otherwise the half life depends on the
+    // frame rate and a 120 Hz phone plays a different game.
+    const dr = Math.exp(-BRK.drag * dt);
+    for (const c of w.chunks) {
+      if (!c.rest) {
+        c.vy -= BRK.g * dt;
+        c.vx *= dr; c.vz *= dr;
+        c.o.position.x += c.vx * dt; c.o.position.y += c.vy * dt; c.o.position.z += c.vz * dt;
+        c.o.rotation.x += c.sx * dt; c.o.rotation.y += c.sy * dt; c.o.rotation.z += c.sz * dt;
+        const gy = groundAt(c.o.position.x, c.o.position.z, c.o.position.y + 1, 1.5);
+        if (c.o.position.y <= gy) {
+          c.o.position.y = gy;
+          if (Math.abs(c.vy) < 1.2) { c.rest = 1; c.vx = c.vy = c.vz = 0; c.sx = c.sy = c.sz = 0; }
+          else { c.vy = -c.vy * BRK.bounce; c.vx *= .6; c.vz *= .6;
+                 c.sx *= .5; c.sy *= .5; c.sz *= .5; }
+        }
+      }
+      if (k < 1) c.o.scale.set(c.base.x * k, c.base.y * k, c.base.z * k);
+    }
+  }
+}
+
+// ============================================================================================
+// IMPACT DECALS (m160, `DECAL`, `decalPut`, `decalStep`)
+//
+// *"On a shot hit: raycast the hit point and normal against the collision mesh, pick a decal by
+// weapon/kind, random rotation and +/-20% size, and place a small quad just off the surface.
+// One shared material, merged into a single dynamic mesh or pooled at about 40, oldest recycled
+// first, fading after about 20 s."*
+//
+// **NOTHING IS RAYCAST, AND THAT IS NOT A SHORTCUT -- IT IS THE MORE ACCURATE ANSWER.** The
+// thing that stopped the bolt ALREADY KNOWS which face it stopped on: `camHit` walks the boxes
+// and `boxNear` has returned the outward normal of the face a point is nearest to since m89.
+// A second ray against the collision mesh would be a second opinion about a question that has
+// just been answered, and the two would disagree at every corner -- which is this repo's oldest
+// mistake (a path the game does not take) wearing a geometry hat.
+//
+// **ONE DYNAMIC MESH, ONE DRAW CALL, AND THE POOL IS THE WHOLE STRUCTURE.** 40 quads is 240
+// non-indexed vertices; a decal is written into its slot and the oldest is overwritten. There
+// is no add, no remove, no material per mark and no sorting to get wrong.
+//
+// **THE FADE RIDES IN A VERTEX COLOUR, WHICH IS WHY `alphaTest` IS LOW AND NOT .5.** He asked
+// for both `alphaTest ~0.5` and a fade, and those two fight: at .5 a mark fading to 40% opacity
+// does not fade at all, it VANISHES in one frame. The cutout's real job here is the atlas's
+// transparent padding, which is nowhere near .5 -- so the test kills the padding and
+// `transparent` plus the vertex alpha does the fading. `DECAL.alphaTest` is the dial if the
+// edges ever read soft.
+//
+// **AND A DECAL IS TONE-MAPPED AND NOT ADDITIVE.** A scorch is a mark ON a wall, so it lives in
+// the picture the wall lives in; additive over a lit surface has nowhere to go but white, which
+// is the slash mark's own lesson one repo over.
+const DECAL = {
+  on: 1,
+  file: 'models/toon_city/impact_marks_atlas.png',
+  json: 'models/toon_city/impact_marks.json',
+  n: 40,             // the pool. Past this the oldest is recycled.
+  lift: .01,         // metres off the surface along its normal
+  life: 20,          // seconds before it starts to go
+  fade: 4,           // and how long it takes
+  vary: .2,          // +/- this much size, per mark
+  alphaTest: .08,    // the atlas padding, NOT the fade -- see above
+  rubble: .45,       // how often a big blast also drops a rubble mark beside the scorch
+  bigAt: .55,        // and what counts as a big blast (the bolt's own charge)
+};
+const decal = { mesh: null, pos: null, uv: null, col: null, i: 0, live: 0,
+                by: {}, ready: 0, age: [], life: [] };
+
+function decalBuild(tex, man) {
+  const n = DECAL.n;
+  const geo = new THREE.BufferGeometry();
+  decal.pos = new Float32Array(n * 6 * 3);
+  decal.uv  = new Float32Array(n * 6 * 2);
+  decal.col = new Float32Array(n * 6 * 4);
+  geo.setAttribute('position', new THREE.BufferAttribute(decal.pos, 3));
+  geo.setAttribute('uv', new THREE.BufferAttribute(decal.uv, 2));
+  // ITEM SIZE 4, which is what puts three's `USE_COLOR_ALPHA` on and gives every vertex an
+  // alpha -- the fade needs somewhere to live and a per-mark material is 40 draw calls.
+  geo.setAttribute('color', new THREE.BufferAttribute(decal.col, 4));
+  geo.setDrawRange(0, 0);
+  const mat = new THREE.MeshBasicMaterial({
+    map: tex, transparent: true, alphaTest: DECAL.alphaTest, depthWrite: false,
+    vertexColors: true, side: THREE.DoubleSide,
+    // **POLYGON OFFSET AS WELL AS THE 1 cm LIFT**, because the lift alone loses to depth
+    // precision at distance and the offset alone loses on a surface seen edge-on. Either one
+    // by itself z-fights somewhere, and z-fighting on a wall reads as the wall flickering.
+    polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4,
+  });
+  const m = new THREE.Mesh(geo, mat);
+  m.frustumCulled = false;      // the buffer holds WORLD positions; its own bounds mean nothing
+  m.renderOrder = 2;
+  m.userData.noHole = 1; m.userData.noPaint = 1;
+  scene.add(m);
+  decal.mesh = m;
+  for (let i = 0; i < n; i++) { decal.age.push(0); decal.life.push(0); }
+  // BY KIND, so a caller asks for "blast" and never for an index into his file.
+  decal.by = {};
+  for (const d of man.decals) (decal.by[d.kind] || (decal.by[d.kind] = [])).push(d);
+  decal.ready = 1;
+  console.log('[melee] decals: ' + man.decals.length + ' marks in ' +
+              Object.keys(decal.by).map(k => k + ' x' + decal.by[k].length).join(', ') +
+              ', pool ' + n);
+}
+
+// **THE ATLAS AND THE MANIFEST, FETCHED TOGETHER AND NEITHER AWAITED BY THE BOOT.** Both have
+// to arrive before a mark can be drawn and `decal.ready` is what says so, so a slow atlas is a
+// city with no scorch marks for a second rather than a boot that waits on 2.9 MB of PNG.
+// **AND `colorSpace` GOES ON BEFORE IT IS USED**, or the atlas is decoded as linear and every
+// mark comes out washed out -- Shredworld's own note about `PMREMGenerator`, one texture along.
+function decalLoad() {
+  if (!DECAL.on || decal.ready) return;
+  Promise.all([
+    new Promise(res => new THREE.TextureLoader().load(A(DECAL.file), t => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+      res(t);
+    }, undefined, () => res(null))),
+    fetch(A(DECAL.json)).then(r => r.ok ? r.json() : null).catch(() => null),
+  ]).then(([tex, man]) => {
+    if (!tex) { note('NO DECAL ATLAS'); return; }
+    if (!man || !man.decals || !man.decals.length) { note('NO DECAL JSON'); return; }
+    decalBuild(tex, man);
+  });
+}
+
+// ONE MARK. `nx,ny,nz` is the surface normal it lies on; `k` is the kind; `s` scales its
+// suggested world size.
+const _dcT = new THREE.Vector3(), _dcB = new THREE.Vector3(), _dcN = new THREE.Vector3(),
+      _dcU = new THREE.Vector3();
+function decalPut(x, y, z, nx, ny, nz, k, s) {
+  if (!DECAL.on || !decal.ready) return;
+  const pool = decal.by[k]; if (!pool || !pool.length) return;
+  const d = pool[(Math.random() * pool.length) | 0];
+  _dcN.set(nx, ny, nz);
+  if (_dcN.lengthSq() < 1e-8) return;
+  _dcN.normalize();
+  // A BASIS FROM ONE VECTOR NEEDS A REFERENCE THAT IS NOT PARALLEL TO IT, and the ground's
+  // normal IS +Y -- so the reference has to swap near the poles or the cross product is zero
+  // and every mark on the floor comes out a NaN.
+  _dcU.set(0, 1, 0);
+  if (Math.abs(_dcN.y) > .9) _dcU.set(0, 0, 1);
+  _dcT.crossVectors(_dcU, _dcN).normalize();
+  _dcB.crossVectors(_dcN, _dcT);
+  // the random roll, about the normal -- which is what stops four scorches in one place
+  // reading as one stamp applied four times
+  const a = Math.random() * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a);
+  const tx = _dcT.x * ca + _dcB.x * sa, ty = _dcT.y * ca + _dcB.y * sa, tz = _dcT.z * ca + _dcB.z * sa;
+  const bx = -_dcT.x * sa + _dcB.x * ca, by = -_dcT.y * sa + _dcB.y * ca, bz = -_dcT.z * sa + _dcB.z * ca;
+  const w = d.size_m * (s || 1) * (1 + (Math.random() * 2 - 1) * DECAL.vary);
+  // **THE ASPECT IS THE ART'S AND IT IS IN THE FILE**, so a mark that is not square is not
+  // squashed to fit a square quad.
+  const hw = w * .5, hh = hw / (d.aspect || 1);
+  const ox = x + _dcN.x * DECAL.lift, oy = y + _dcN.y * DECAL.lift, oz = z + _dcN.z * DECAL.lift;
+  const i = decal.i; decal.i = (decal.i + 1) % DECAL.n;
+  if (decal.live < DECAL.n) decal.live = Math.min(DECAL.n, decal.live + 1);
+  decal.age[i] = 0; decal.life[i] = DECAL.life + DECAL.fade;
+  const u0 = d.uv[0], v0 = d.uv[1], u1 = d.uv[2], v1 = d.uv[3];
+  // two triangles, anticlockwise, and `DoubleSide` means the winding cannot be the bug
+  const C = [[-1, -1, u0, v0], [1, -1, u1, v0], [1, 1, u1, v1],
+             [-1, -1, u0, v0], [1, 1, u1, v1], [-1, 1, u0, v1]];
+  for (let q = 0; q < 6; q++) {
+    const p = (i * 6 + q) * 3, t = (i * 6 + q) * 2, c = (i * 6 + q) * 4;
+    const su = C[q][0] * hw, sv = C[q][1] * hh;
+    decal.pos[p]     = ox + tx * su + bx * sv;
+    decal.pos[p + 1] = oy + ty * su + by * sv;
+    decal.pos[p + 2] = oz + tz * su + bz * sv;
+    decal.uv[t] = C[q][2]; decal.uv[t + 1] = C[q][3];
+    decal.col[c] = 1; decal.col[c + 1] = 1; decal.col[c + 2] = 1; decal.col[c + 3] = 1;
+  }
+  decal.mesh.geometry.setDrawRange(0, decal.live * 6);
+  decal.mesh.geometry.attributes.position.needsUpdate = true;
+  decal.mesh.geometry.attributes.uv.needsUpdate = true;
+  decal.mesh.geometry.attributes.color.needsUpdate = true;
+}
+
+function decalStep(dt) {
+  if (!decal.ready || !decal.live) { if (decal.mesh) decal.mesh.visible = false; return; }
+  decal.mesh.visible = !!DECAL.on;
+  if (!DECAL.on) return;
+  let touched = 0;
+  for (let i = 0; i < decal.live; i++) {
+    if (decal.life[i] <= 0) continue;
+    decal.age[i] += dt;
+    const left = decal.life[i] - decal.age[i];
+    if (left > DECAL.fade) continue;             // still in its full-strength stretch
+    const a = Math.max(0, left / DECAL.fade);
+    for (let q = 0; q < 6; q++) decal.col[(i * 6 + q) * 4 + 3] = a;
+    if (a <= 0) decal.life[i] = 0;
+    touched = 1;
+  }
+  if (touched) decal.mesh.geometry.attributes.color.needsUpdate = true;
+}
+
+// WHICH MARK A WEAPON LEAVES. One place deciding, so the bolt, the hammer and anything after
+// them cannot disagree about what a blast looks like -- `kitOut()`'s rule, one system along.
+function decalHit(x, y, z, nx, ny, nz, kind, chg, s) {
+  if (!DECAL.on || !decal.ready) return;
+  decalPut(x, y, z, nx, ny, nz, kind, s);
+  // **AND A BIG BLAST ALSO SCATTERS RUBBLE**, which is what he asked for and is also what makes
+  // a charged shot read as bigger than a fumbled one without a second scorch on top of the first.
+  if (kind === 'blast' && (chg || 0) > DECAL.bigAt && Math.random() < DECAL.rubble) {
+    const a = Math.random() * Math.PI * 2, r = .5 + Math.random() * .9;
+    // beside it, ALONG THE SURFACE -- a rubble mark offset along the normal would float
+    _dcU.set(0, 1, 0);
+    if (Math.abs(ny) > .9) _dcU.set(0, 0, 1);
+    _dcT.set(nx, ny, nz).normalize();
+    _dcB.crossVectors(_dcU, _dcT).normalize();
+    _dcU.crossVectors(_dcT, _dcB);
+    const ox = Math.cos(a) * r, oz = Math.sin(a) * r;
+    decalPut(x + _dcB.x * ox + _dcU.x * oz, y + _dcB.y * ox + _dcU.y * oz,
+             z + _dcB.z * ox + _dcU.z * oz, nx, ny, nz, 'rubble', s);
+  }
+}
+
 const FLASH = [];
 function stepFlashes(dt) {
   for (let i = FLASH.length - 1; i >= 0; i--) {
@@ -7701,7 +8415,14 @@ function stepBolts(dt) {
         // A PAL IS ZAPPED AND PASSED THROUGH -- see `WEAP.palThru`.
         if (got && !(WEAP.palThru && got.K.pal)) { dead = true; b.onMan = got; }
       }
-      if (!dead && (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR) || b.pos.y < 0)) dead = true;
+      // **AND IT REMEMBERS WHAT STOPPED IT, because `boltHit` runs a frame's worth of code
+      // later and by then the only thing left is a position.** The ground is its own case and
+      // its normal is not a guess.
+      if (!dead) {
+        if (camHit(b.pos.x, b.pos.y, b.pos.z, WEAP.boltR, _hitF)) {
+          dead = true; b.hitN = [_hitF.nx, _hitF.ny, _hitF.nz]; b.hitBox = _hitF.box;
+        } else if (b.pos.y < 0) { dead = true; b.hitN = [0, 1, 0]; b.hitBox = null; }
+      }
     }
     b.g.position.copy(b.pos);
     // it flickers, which at sixty frames a second is what plasma looks like for the cost of
@@ -12688,7 +13409,12 @@ function buildTCity(g) {
       if (list.length < 2) continue;
       const im = new THREE.InstancedMesh(list[0].geometry, list[0].material, list.length);
       im.name = 'tc_' + (list[0].name || '');
-      for (let i = 0; i < list.length; i++) im.setMatrixAt(i, list[i].matrixWorld);
+      // **THE BREAKABLE TAG IS READ HERE, IN THE ONE LOOP EVERY NODE GOES PAST EXACTLY ONCE.**
+      // A second place that registers breakables is a second place to forget to, which is
+      // Shredworld's c142 -- a hole in the world from an invariant every producer had to
+      // remember. Here the InstancedMesh and the slot are both in hand, which is precisely
+      // what breaking one needs and what nothing downstream could recover.
+      for (let i = 0; i < list.length; i++) { im.setMatrixAt(i, list[i].matrixWorld); brkClaim(list[i], im, i); }
       im.instanceMatrix.needsUpdate = true;
       // WORLD matrices, so it hangs off the world at identity -- under the gltf root that
       // root's own transform would be applied a second time.
@@ -12719,6 +13445,11 @@ function buildTCity(g) {
       // and an InstancedMesh is not merged either, for the reason above: its placements live
       // in `instanceMatrix` and `applyMatrix4` on the geometry would flatten all of them onto one.
       if (!o.isMesh || o.isInstancedMesh || Array.isArray(o.material)) return;
+      // **AND A BREAKABLE IS NEVER MERGED.** Merging bakes its vertices into a 64 m bucket, and
+      // there is then no object left to take away when it breaks. All seven types are shared by
+      // 179 nodes so the pass above claims every one of them -- this is the guard for the day
+      // an export has exactly ONE of something, which would fall straight through to here.
+      if (o.userData && o.userData.breakable) { brkClaim(o, null, -1); return; }
       {
         const m = o.material; if (!m) return;
         // **THE BUCKET IS KEYED ON THE ATTRIBUTE SET AS WELL AS THE MATERIAL, AND THAT IS NOT
@@ -15450,6 +16181,12 @@ function strikeSweep(dt, power, live, dmg, body) {
       const fast = body ? Math.hypot(dpx, dpz) / Math.max(1e-4, dt) > STRIKE.bodyAt
                         : lv > STRIKE.swing;
       if (fast) {
+        // **AND THE SWING BREAKS THINGS, ON THE SAME FRAME AND OFF THE SAME LIMB (m160).** A
+        // crate that a plasma bolt takes out and a hammer does not is a crate that answers one
+        // weapon; the limb's own tip is the reach, so a hammer's arc reaches further than a
+        // fist by construction rather than by a second number. **`p.melFired` does not gate it**
+        // -- that is for the SOUND, and a swing through two crates should take out two.
+        if (BRK.on && BREAK.length) brkBlast(_sw.x, _sw.y, _sw.z, rad, dmg || FOE.dmg.fist);
         for (const d of DUMMIES) {
           if (d.cool > 0) continue;
           if (!segBody(q, _sw, d.root.position.x, d.root.position.z, d.K.r + rad,
@@ -17011,8 +17748,19 @@ const BOXV = {
   me:   [.30, .74, 1],    // and his own
   car:  [1, .58, .10],    // a DRIVING car -- its own box, turned, handed to the player's resolver
   lane: [.55, .40, 1],    // and the lane graph, which is the only way to see it from a phone
+  // **AND THE WALKABLE TRIANGLES, WHICH THIS VIEW NEVER DREW (m160).** *"Are we using triangles
+  // for colliders or are we still using the box collider? It seems like we're using the box
+  // collider."* Both, and the reason that question had to be asked is that this view showed
+  // ONE of them: the boxes were on screen and the 40,000 triangles under his feet were
+  // invisible, so the honest reading of the picture was "boxes and nothing else". A debug view
+  // that shows half the collider answers the wrong question, which is `mel.BOXV`'s own m165
+  // lesson one repo over about a car box drawn 78 cm above the car.
+  tri:  [1, .84, .22],
+  triR: 9,      // its own radius, because 40 m of triangles is a solid wall of wire
+  triMax: 900,  // and its own ceiling, reserved after the boxes so a dense block cannot eat it
 };
 let bvMesh = null, bvPos = null, bvCol = null, bvN = 0, bvCap = 0;
+const _bvSeen = new Set();
 const _bvL = [];
 
 function bvBuild() {
@@ -17020,7 +17768,9 @@ function bvBuild() {
   // graph are drawn AFTER the static boxes, so a dense block would silently eat them and the
   // one view built to answer "is the graph right" would answer nothing -- which is a diagnostic
   // you have to diagnose. 64 cars at 24 verts and 512 lane segments at 2.
-  bvCap = BOXV.max * 24 + 120 * BOXV.seg * 2 + 64 * 24 + 512 * 2 + 256;
+  // + the walkable triangles (m160): three segments each, RESERVED rather than left to the
+  // slack, or a dense block of boxes silently eats the thing this was added to show.
+  bvCap = BOXV.max * 24 + BOXV.triMax * 6 + 120 * BOXV.seg * 2 + 64 * 24 + 512 * 2 + 256;
   bvPos = new Float32Array(bvCap * 3);
   bvCol = new Float32Array(bvCap * 3);
   const g = new THREE.BufferGeometry();
@@ -17108,6 +17858,35 @@ function stepBoxView() {
   for (const b of boxesNear(p.pos.x - R, p.pos.x + R, p.pos.z - R, p.pos.z + R, _bvL)) {
     if (n++ >= BOXV.max) break;
     bvBox(b, BOXV.grid);
+  }
+  // **THE WALKABLE TRIANGLES, THROUGH `TRI`'s OWN GRID.** The surface he stands on is not a box
+  // and never was -- roads, kerbs, ramps, dumpster lids and every building roof in the toon city
+  // come out of here -- so a view that draws only `BOXES` is a view of half the collider.
+  if (TRI.on && TRI.grid) {
+    const rr = BOXV.triR, v = TRI.v;
+    const i0 = Math.max(0, Math.floor((p.pos.x - rr - TRI.x0) / TRI.cell));
+    const i1 = Math.min(TRI.nx - 1, Math.floor((p.pos.x + rr - TRI.x0) / TRI.cell));
+    const k0 = Math.max(0, Math.floor((p.pos.z - rr - TRI.z0) / TRI.cell));
+    const k1 = Math.min(TRI.nz - 1, Math.floor((p.pos.z + rr - TRI.z0) / TRI.cell));
+    let t = 0;
+    // A CELL LISTS A TRIANGLE ONCE PER CELL IT SPANS, so a big road slab is in several buckets
+    // and would be drawn several times. `seen` is what makes the count on screen the count of
+    // triangles rather than the count of cell entries.
+    const seen = _bvSeen; seen.clear();
+    outer:
+    for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
+      const L = TRI.grid[i * TRI.nz + k];
+      if (!L) continue;
+      for (let q = 0; q < L.length; q++) {
+        const o = L[q];
+        if (seen.has(o)) continue;
+        seen.add(o);
+        if (t++ >= BOXV.triMax) break outer;
+        bvSeg(v[o], v[o + 1], v[o + 2], v[o + 3], v[o + 4], v[o + 5], BOXV.tri);
+        bvSeg(v[o + 3], v[o + 4], v[o + 5], v[o + 6], v[o + 7], v[o + 8], BOXV.tri);
+        bvSeg(v[o + 6], v[o + 7], v[o + 8], v[o], v[o + 1], v[o + 2], BOXV.tri);
+      }
+    }
   }
   // WHATEVER HAS HOLD OF HIM, LAST so it wins the overlap. This is the line the whole view was
   // built for: `LEDGE` in the chip and a man in mid-air is one box, and this is which.
@@ -17475,6 +18254,7 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
+  decalStep(dt); brkStep(dt); spoutStep(dt);
   // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
   // frame's lens is a field that lags every time he turns.
   stepDust(dt);
@@ -17652,6 +18432,15 @@ function frame() {
     // he infers from whether boxes appeared -- that is the very question the view is here to
     // answer, and a diagnostic you have to diagnose is not one. Silent when it is off.
     const cv = BOXV.on ? ' \u00b7 COLLIDERS' : '';
+    // **HOW MANY ARE LEFT, AND WHETHER THE ATLAS ARRIVED (m160).** "I shot the crate and
+    // nothing happened" is three bugs wearing one face from a phone -- the breakables never
+    // indexed, that crate is not one, or it broke and the pile is behind him -- and a count
+    // that goes DOWN is the only thing that tells them apart. Silent where there are none,
+    // which is every world but the toon city.
+    const brkC = BREAK.length ? ' \u00b7 BRK' + BREAK.reduce((n, b) => n + (b.dead ? 0 : 1), 0) +
+      '/' + BREAK.length + (WRECKS.length ? 'w' + WRECKS.length : '') +
+      (SPOUTS.length ? ' SPOUT' + SPOUTS.length : '') +
+      (DECAL.on && !decal.ready ? ' NOATLAS' : '') : '';
     const wn = p.mphK && (() => { const w = WEAP.worn[slotNow().key];
       return w && w.root && !rig.mounts[w.root] ? ' NOHAND' : ''; })();
     // **AND HOW TALL HE IS DRAWN, AGAINST A REAL ONE OF THE SAME KIND (m132).** His drawn
@@ -17676,7 +18465,7 @@ function frame() {
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
     const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
-      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
+      p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
     // **THE KEYS SIT UNDER THE CHIP, AND THE CHIP IS THE ONE HUD ELEMENT THAT GROWS (m128).**
@@ -17727,7 +18516,7 @@ async function init() {
   // home, so the cost of being wrong is a bar that is a little off rather than a broken boot.
   // +2 at m150: the deck and its clips. The toon city is one file where the test site is three
   // (a building, a tower and a motorcycle), so it is 24.
-  PROG.total = inWP() ? 25 : inTC() ? 25 : 26;   // +1 at m158: the toon collision file
+  PROG.total = inWP() ? 25 : inTC() ? 26 : 26;   // +1 at m158 (the collision), +1 at m160 (the breakables)
   // ---- the character. There is no game without him, so a failure here is reported on the
   //      card rather than warned to a console that does not exist on a phone.
   let g;
@@ -17951,11 +18740,19 @@ async function init() {
     // 81 KB of JSON against a rasteriser, and it is the exact shape rather than a staircase.
     // It is not on `side()` -- there is no GLB to build, and a failed fetch is a city with
     // walkable surfaces and nothing solid, which `TC NO OBB` in the chip is what says.
+    // **THE DECALS ARE FETCHED IN PARALLEL AND NOT AWAITED AS A PAIR.** The atlas is 2.9 MB
+    // and the boot path already carries the city; a mark that is not ready yet simply does not
+    // draw (`decal.ready`), which is the one failure here that costs nothing.
+    decalLoad();
     try {
       const r = await fetch(A(TCITY.obbFile));
       TCITY.obb = r.ok ? await r.json() : null;
       if (!TCITY.obb) note('TC NO OBB JSON');
     } catch (e) { TCITY.obb = null; note('TC NO OBB JSON'); console.warn('[melee] obb', e); }
+    // **THE BREAKABLES LIBRARY BEFORE THE CITY, because `buildTCity` CLAIMS against it.** A
+    // tagged node whose type is not in `brkLib` is simply not a breakable, so the order is the
+    // whole of the dependency and there is no second pass to run afterwards.
+    await side(BRK.file, 'loading the toon city', { name: 'TOONBRK', build: brkIndex });
     await side(TCITY.col, 'loading the toon city', { name: 'TOONCOL', build: buildTCityCol });
     await side(TCITY.file, 'loading the toon city', { name: 'TOONCITY', build: buildTCity });
     // AFTER the collider, so the y he lands on is the one his own road actually has.
@@ -18054,6 +18851,30 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   // can reach on the phone rather than a pick shipped with an argument for it. `mel.hold()`
   // prints the line to paste back, and `mel.ride(1|0)` puts him on and off without a gesture.
   SK8, board, boardOut, boardHeld,
+  // THE THREE NEW SYSTEMS, LIVE (m160). Every one of them is a look-at-it decision somewhere,
+  // and none of them should need a fight to see one -- which is `mel.fx()`'s own argument.
+  DECAL, BRK, SPOUT, BREAK, WRECKS, SPOUTS, decalPut, brkBlast,
+  // `mel.mark('blast')` drops one two metres in front of him, on whatever is there;
+  // `mel.smash()` breaks the nearest breakable; `mel.spout()` runs one where he stands.
+  mark: (k, s2) => {
+    const p = player, fx2 = Math.sin(p.faceH), fz2 = Math.cos(p.faceH);
+    const x = p.pos.x + fx2 * 2, z = p.pos.z + fz2 * 2;
+    const y = groundAt(x, z, p.pos.y + 1, 1.5);
+    decalHit(x, y + .002, z, 0, 1, 0, k || 'blast', 1, s2 || 1);
+    return 'mark ' + (k || 'blast') + ' at ' + x.toFixed(1) + ',' + z.toFixed(1);
+  },
+  smash: () => {
+    const p = player; let best = null, bd = 1e9;
+    for (const b of BREAK) { if (b.dead) continue;
+      const d2 = (b.cx - p.pos.x) ** 2 + (b.cz - p.pos.z) ** 2;
+      if (d2 < bd) { bd = d2; best = b; } }
+    if (!best) return 'nothing breakable here';
+    brkBreak(best, p.pos.x, p.pos.y + 1, p.pos.z);
+    return best.type + ' at ' + Math.sqrt(bd).toFixed(1) + ' m';
+  },
+  spout: (h, d2) => { const p = player;
+    spoutGo(p.pos.x, p.pos.y + .4, p.pos.z, new THREE.Vector3(0, 1, 0), h || 4, d2 || 12);
+    return 'spout'; },
   hold: o => { if (o) Object.assign(SK8.hold, o);
     const H = SK8.hold, r = n => Math.round(n * 1000) / 1000;
     return 'hold: { x: ' + r(H.x) + ', y: ' + r(H.y) + ', z: ' + r(H.z) +
