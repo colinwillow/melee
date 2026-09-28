@@ -1,0 +1,198 @@
+{
+ "image": "impact_marks_atlas.png",
+ "note": "UV rects are 0..1 with v=0 at the BOTTOM (glTF/three: flipY handled by TextureLoader default). size_m = suggested world size.",
+ "decals": [
+  {
+   "name": "scorch_1",
+   "kind": "blast",
+   "uv": [
+    0.0223,
+    0.7616,
+    0.2384,
+    0.9801
+   ],
+   "aspect": 0.989,
+   "size_m": 1.6
+  },
+  {
+   "name": "scorch_2",
+   "kind": "blast",
+   "uv": [
+    0.2687,
+    0.764,
+    0.4872,
+    0.9729
+   ],
+   "aspect": 1.045,
+   "size_m": 1.6
+  },
+  {
+   "name": "scorch_3",
+   "kind": "blast",
+   "uv": [
+    0.5199,
+    0.764,
+    0.7337,
+    0.9753
+   ],
+   "aspect": 1.011,
+   "size_m": 1.6
+  },
+  {
+   "name": "crater_1",
+   "kind": "blast",
+   "uv": [
+    0.7663,
+    0.7687,
+    0.9801,
+    0.9753
+   ],
+   "aspect": 1.034,
+   "size_m": 1.4
+  },
+  {
+   "name": "crater_2",
+   "kind": "blast",
+   "uv": [
+    0.0247,
+    0.5247,
+    0.2337,
+    0.7313
+   ],
+   "aspect": 1.011,
+   "size_m": 1.4
+  },
+  {
+   "name": "crater_3",
+   "kind": "blast",
+   "uv": [
+    0.2687,
+    0.5175,
+    0.4872,
+    0.7313
+   ],
+   "aspect": 1.022,
+   "size_m": 1.4
+  },
+  {
+   "name": "bullet_holes_1",
+   "kind": "bullet",
+   "uv": [
+    0.5463,
+    0.5295,
+    0.7169,
+    0.7169
+   ],
+   "aspect": 0.911,
+   "size_m": 0.6
+  },
+  {
+   "name": "bullet_holes_2",
+   "kind": "bullet",
+   "uv": [
+    0.7711,
+    0.5199,
+    0.9705,
+    0.7217
+   ],
+   "aspect": 0.988,
+   "size_m": 0.6
+  },
+  {
+   "name": "bullet_holes_3",
+   "kind": "bullet",
+   "uv": [
+    0.0199,
+    0.2927,
+    0.2241,
+    0.4729
+   ],
+   "aspect": 1.132,
+   "size_m": 0.6
+  },
+  {
+   "name": "goo_1",
+   "kind": "alien",
+   "uv": [
+    0.2687,
+    0.2735,
+    0.4848,
+    0.4944
+   ],
+   "aspect": 0.978,
+   "size_m": 1.2
+  },
+  {
+   "name": "goo_2",
+   "kind": "alien",
+   "uv": [
+    0.5152,
+    0.2735,
+    0.7337,
+    0.4872
+   ],
+   "aspect": 1.022,
+   "size_m": 1.2
+  },
+  {
+   "name": "goo_3",
+   "kind": "alien",
+   "uv": [
+    0.7687,
+    0.2807,
+    0.9825,
+    0.4896
+   ],
+   "aspect": 1.023,
+   "size_m": 1.2
+  },
+  {
+   "name": "rubble_1",
+   "kind": "rubble",
+   "uv": [
+    0.0199,
+    0.0223,
+    0.2337,
+    0.2456
+   ],
+   "aspect": 0.957,
+   "size_m": 1.0
+  },
+  {
+   "name": "rubble_2",
+   "kind": "rubble",
+   "uv": [
+    0.2735,
+    0.0319,
+    0.4801,
+    0.2456
+   ],
+   "aspect": 0.967,
+   "size_m": 1.0
+  },
+  {
+   "name": "rubble_3",
+   "kind": "rubble",
+   "uv": [
+    0.5199,
+    0.0295,
+    0.7289,
+    0.2432
+   ],
+   "aspect": 0.978,
+   "size_m": 1.0
+  },
+  {
+   "name": "rubble_4",
+   "kind": "rubble",
+   "uv": [
+    0.7687,
+    0.0247,
+    0.9753,
+    0.2432
+   ],
+   "aspect": 0.946,
+   "size_m": 1.0
+  }
+ ]
+}
