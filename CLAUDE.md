@@ -484,8 +484,9 @@ means anything you can carry from one situation to the next.
 | | left | right |
 |---|---|---|
 | hold | move | **hold UP**: firing position, charge, release to fire (blaster) / wind up (hammer) |
-| arc row | **Clancy: ROAM / PACK**, or **REVERT** while disguised (m121) | the blaster's CHARGE / AUTO / **DNA** (m112) |
-| tap | next weapon (**live while disguised again -- m122**) | jump |
+| inner wheel | **the WEAPONS, one segment each (m173)** | the blaster's CHARGE / AUTO / **DNA** (m112) |
+| outer wheel | **Clancy: ROAM / PACK**, or **REVERT** while disguised (m121) | — |
+| tap | **jump (m173)** — so a thumb holding the trigger can still jump | jump |
 | flick | dodge roll, in the flicked direction | strike, in the flicked direction |
 | drag | — | orbit the camera |
 
@@ -495,7 +496,7 @@ a map at all:
 | | left | right |
 |---|---|---|
 | hold | steer; forward = push, pulled back = brake (held, latched) | **hold UP**: the blaster, exactly as on foot |
-| tap | next weapon (skips the board slot while he is on it) | ollie — or catch a rail, in the air |
+| tap | ollie (m173) — the same as the right tap | ollie — or catch a rail, in the air |
 | flick | up/down = front/back flip · **left/right = BARREL ROLL** · down while HOLDING it = step on, on it = step off | the deck's own tricks (kickflip / 360 / the two shove-its) |
 | drag | — | orbit the camera (and a follow cam takes over `CAM.idle` after the thumb lifts) |
 

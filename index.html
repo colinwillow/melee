@@ -358,6 +358,19 @@ body.dyn.desk .zone { display: none; }
   width: calc(var(--mr) * 2); height: calc(var(--mr) * 2);
 }
 #palRow.on { display: block; }
+/* THE WEAPON WHEEL (m173) sits on the left stick's INNER ring, where the pal row used to be, and
+   the pal row moves out a ring. *"Make jump a tap on either stick... in order to switch weapons
+   we need the similar thing we have on the right stick, but on the left stick."* Same builder,
+   same positioning maths -- `--mr` is whichever ring the builder drew, so both centre on the pad. */
+#wepRow {
+  position: fixed; z-index: 6; display: none;
+  --mr: 106px;
+  pointer-events: none;
+  left: calc(20px + var(--padr) - var(--mr) + env(safe-area-inset-left));
+  bottom: calc(26px + var(--padr) - var(--mr) + env(safe-area-inset-bottom));
+  width: calc(var(--mr) * 2); height: calc(var(--mr) * 2);
+}
+#wepRow.on { display: block; }
 /* ---- DESKTOP (m79) -------------------------------------------------------------------
    THE PADS ARE THE ONE THING A MOUSE REPLACES, and everything else on screen stays: the
    chip, the mode row and the reticle are all still the right pictures. `body.desk` is set
@@ -382,17 +395,21 @@ body.desk.free #deskHint { display: block; }
    controls, and a row in the other pad's colour reads as belonging to the other pad. */
 #modeRow { --rc: var(--sky); }
 #palRow  { --rc: var(--hot); }
-#modeRow path, #palRow path {
+#wepRow  { --rc: var(--hot); }
+#modeRow path, #palRow path, #wepRow path {
   fill: none; stroke: var(--rc); stroke-width: 2;
   pointer-events: all; cursor: pointer;
 }
-#modeRow path.sel, #palRow path.sel { fill: var(--rc); }
-#modeRow text, #palRow text {
+#modeRow path.sel, #palRow path.sel, #wepRow path.sel { fill: var(--rc); }
+#modeRow text, #palRow text, #wepRow text {
   font-family: var(--ui); font-size: 10px; font-weight: 600; letter-spacing: .10em;
   fill: var(--rc); text-anchor: middle; dominant-baseline: central;
   pointer-events: none; user-select: none;
 }
-#modeRow text.sel, #palRow text.sel { fill: var(--ink); }
+#modeRow text.sel, #palRow text.sel, #wepRow text.sel { fill: var(--ink); }
+/* four names on one ring is a tighter fit than three, and a label that runs into the next
+   segment reads as one long word */
+#wepRow text { font-size: 9px; letter-spacing: .06em; }
 /* ---- the reticle: a geometric portal ----
    IT WAS BIG AND THICK AND THE COLOURS WERE A GUESS. Size, stroke weight and both hues are
    custom properties now, so `mel.retic({...})` moves all of it live on the phone -- how a mark
@@ -516,17 +533,17 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m172</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m173</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m172</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m173</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
 <div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
-<div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
+<div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; tap = jump</div></div>
 <div class="pad" id="padR"><div class="knob"></div><div class="hint">look &middot; tap = jump</div></div>
 
 <!-- THE BLASTER'S TWO MODES (m52). Above the right pad, because that is the thumb they are
@@ -535,6 +552,7 @@ body.desk.free #deskHint { display: block; }
      a third mode is a row in that table and nothing here. -->
 <div id="modeRow" aria-hidden="true"></div>
 <div id="palRow" aria-hidden="true"></div>
+<div id="wepRow" aria-hidden="true"></div>
 
 <!-- DESKTOP CONTROLS (m79). Built from `DESK.hint` so the one place that binds a key is the
      one place that names it -- a printed map and a binding that disagree is worse than none. -->
@@ -584,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm172';
+const BUILD = 'm173';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_pieces.glb":"54857d40","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"05866750","models/building_kit/building_kit_test_visual_ktx2.glb":"6b5893b1","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1615,7 +1633,7 @@ const WEAP = {
   // parent with IDENTITY: no scale, no offset, no rotation, and nothing about where a weapon
   // sits is typed here. An export that moves the joint moves the weapon with it.
   slots: [
-    { key: 'none',    label: 'UNARMED', file: null,                                        melee: 'fist' },
+    { key: 'none',    label: 'UNARMED', short: 'HANDS', file: null,                                        melee: 'fist' },
     { key: 'blaster', label: 'BLASTER', file: 'models/weapons/alien_antenna_blaster_game.glb', melee: 'fist', aim: true },
     // **AND THE RAPID FIRE STOPPED BEING A SLOT (m52).** *"When your blaster is equipped you
     // have a button -- for now, until I build different guns that do different stuff, we'll
@@ -1638,7 +1656,7 @@ const WEAP = {
     // for, and a second control for it would be a second thing on a HUD he has already asked
     // twice to have less on. `stepKit` returns on it, so the right pad's hold means nothing
     // here and the tap is the OLLIE.
-    { key: 'board',   label: 'SKATEBOARD', file: null, board: true },
+    { key: 'board',   label: 'SKATEBOARD', short: 'BOARD', file: null, board: true },
   ],
   // THE TRIGGER IS A FULL PULL, HELD. Four gates, and each rules out a different way of firing
   // by accident: `fireAt` is how far up the pad it arms (a nudge cannot reach it), `keepAt` how
@@ -9220,6 +9238,9 @@ function paintKit() {
   // THE LEFT WHEEL ANSWERS TO THE SAME STATE, and one place deciding is what stops the label,
   // the hint and the button disagreeing about what the controls currently mean.
   paintPalRow();
+  // **THE WEAPON WHEEL LIGHTS WHERE HE IS GOING, NOT WHERE HE WAS (m173)** -- mid-reach that is
+  // `swapTo`, so the press he just made is the segment that answers it on the same frame.
+  paintArcRow(wepRow, 1, player.swap ? player.swapTo : player.slot);
   // **AND THE LABEL IS THE SLOT AGAIN, EVEN WHILE HE IS SOMEBODY ELSE (m122).** *"We need to
   // still be able to swap through the weapons when you're like the NPC characters, which the
   // buttons don't show up."* m112 gave this line to the character's NAME because the kit was
@@ -9241,7 +9262,7 @@ function paintKit() {
   // -- which is the whole point of the row. The hint says which, because that is the line
   // with room in it.
   wepName.textContent = s.label;
-  wepHint.textContent = m ? m.hint : s.charge ? 'hold right = charge' : 'tap left pad';
+  wepHint.textContent = m ? m.hint : s.charge ? 'hold right = charge' : 'left wheel';
   // THE ROW EXISTS ONLY WHERE IT MEANS SOMETHING. A mode row for a weapon with no modes is a
   // HUD element sitting in the play area saying nothing, which is the `actB` lesson one game
   // over: a prompt that is always on screen is a prompt nobody reads.
@@ -9282,39 +9303,54 @@ const MODES = {
 // same bearing -- written as the mirror rather than as 90 so that moving one row moves the other
 // and the two can never lean toward each other again (see `MODES.mid` for what that cost).
 const PALROW = { mid: 180 - MODES.mid };
+// **THE LEFT STICK'S TWO RINGS (m173).** The INNER one is the weapon wheel, because it is always
+// there and it is the one a thumb reaches for mid-fight; the pal row (ROAM/PACK, or REVERT while
+// disguised) moves OUT a ring, because it only exists when Clancy or a disguise does.
+// **CHECKED AS GEOMETRY ON A 390 px PHONE HELD PORTRAIT**, the pad's centre 94 px in and the
+// right pad's 296: the weapon ring's far-left tip (148 deg at r 106) lands at x 4 -- on screen --
+// and its right-hand tip (32 deg) at 184, **28 px clear** of the mode row's inner tip at 212. The
+// outer ring's tips (124 / 56 deg at r 142) land at 15 and 173. Wider than `MODES.span` because four
+// names share it where the right row has three.
+const WEPROW = { mid: PALROW.mid, r0: MODES.r0, r1: MODES.r1, span: 120 };
+const OUTROW = { mid: PALROW.mid, r0: MODES.r1 + 6, r1: MODES.r1 + 36, span: 72 };
 const modeRow = document.getElementById('modeRow');
 const palRow = document.getElementById('palRow');
+const wepRow = document.getElementById('wepRow');
 const SVGNS = 'http://www.w3.org/2000/svg';
 // **ONE BUILDER, TWO ROWS (m104).** *"In the same way that we have the buttons above the right
 // stick, I wanna make the equivalent of those on the left stick."* The whole of m53's geometry
 // was already a function of `MODES` and a table -- so the left row is the same call with a
 // mirrored bearing, and a THIRD row tomorrow is another one. Two copies of this would be two
 // places for an arc to drift.
-function buildArcRow(el, items, mid, onPick) {
-  el.style.setProperty('--mr', MODES.r1 + 'px');
+function buildArcRow(el, items, mid, onPick, G) {
+  // **`G` IS WHICH RING (m173)** -- `MODES` unless a row asks for another, so every existing
+  // call draws exactly what it drew.
+  G = G || MODES;
+  const R0 = G.r0, R1 = G.r1, SPAN = G.span;
+  el.style.setProperty('--mr', R1 + 'px');
   while (el.firstChild) el.removeChild(el.firstChild);
   const svg = document.createElementNS(SVGNS, 'svg');
-  const D = MODES.r1 * 2;
+  const D = R1 * 2;
   svg.setAttribute('viewBox', '0 0 ' + D + ' ' + D);
   svg.setAttribute('width', D); svg.setAttribute('height', D);
-  const c = MODES.r1;
+  const c = R1;
   // SCREEN Y POINTS DOWN, so a maths angle maps with its sine NEGATED -- get that wrong and the
   // whole set mirrors below the pad, which is the one place it must not be.
   const px = (r, a) => (c + r * Math.cos(a * Math.PI / 180)).toFixed(2);
   const py = (r, a) => (c - r * Math.sin(a * Math.PI / 180)).toFixed(2);
   const n = items.length;
-  const each = MODES.span / n;
+  const each = SPAN / n;
   items.forEach((m, i) => {
     // LEFT TO RIGHT ON SCREEN IS DESCENDING ANGLE, so the table reads the way it is drawn.
-    const hi = mid + MODES.span / 2 - i * each - MODES.gap / 2;
+    const hi = mid + SPAN / 2 - i * each - MODES.gap / 2;
     const lo = hi - each + MODES.gap;
     const big = (hi - lo) > 180 ? 1 : 0;
     // out along the far ring from `lo` to `hi` (counter-clockwise on screen, sweep 0), across,
     // back along the near ring, close
-    const d = 'M' + px(MODES.r1, lo) + ' ' + py(MODES.r1, lo) +
-              'A' + MODES.r1 + ' ' + MODES.r1 + ' 0 ' + big + ' 0 ' + px(MODES.r1, hi) + ' ' + py(MODES.r1, hi) +
-              'L' + px(MODES.r0, hi) + ' ' + py(MODES.r0, hi) +
-              'A' + MODES.r0 + ' ' + MODES.r0 + ' 0 ' + big + ' 1 ' + px(MODES.r0, lo) + ' ' + py(MODES.r0, lo) +
+    const d = 'M' + px(R1, lo) + ' ' + py(R1, lo) +
+              'A' + R1 + ' ' + R1 + ' 0 ' + big + ' 0 ' + px(R1, hi) + ' ' + py(R1, hi) +
+              'L' + px(R0, hi) + ' ' + py(R0, hi) +
+              'A' + R0 + ' ' + R0 + ' 0 ' + big + ' 1 ' + px(R0, lo) + ' ' + py(R0, lo) +
               'Z';
     const path = document.createElementNS(SVGNS, 'path');
     path.setAttribute('d', d);
@@ -9326,7 +9362,7 @@ function buildArcRow(el, items, mid, onPick) {
     // bent round a curve is decoration that costs legibility -- and legibility is the whole
     // job of a control that says which of two states you are in.
     const t = document.createElementNS(SVGNS, 'text');
-    const mida = (lo + hi) / 2, midr = (MODES.r0 + MODES.r1) / 2;
+    const mida = (lo + hi) / 2, midr = (R0 + R1) / 2;
     t.setAttribute('x', px(midr, mida)); t.setAttribute('y', py(midr, mida));
     t.textContent = m.label;
     svg.appendChild(t);
@@ -9341,6 +9377,7 @@ function paintArcRow(el, on, sel) {
   for (let i = 0; i < kids.length; i++) kids[i].classList.toggle('sel', (i >> 1) === sel);
 }
 buildArcRow(modeRow, WEAP.modes, MODES.mid, setMode);
+buildArcRow(wepRow, WEAP.slots.map(w => ({ label: w.short || w.label })), WEPROW.mid, i => kitPick(i), WEPROW);
 // ONE PLACE SETS IT, so the lit button, the hint and what the trigger actually does cannot
 // disagree -- and switching mid-hold STANDS THE TRIGGER DOWN rather than handing a wound-up
 // charge to a weapon that does not bank one. A press on the mode you are already in is a
@@ -9472,6 +9509,19 @@ function cycleKit() {
   swapGo(n);
 }
 
+// **A WEAPON BY NAME, NOT BY CYCLING (m173, `kitPick`).** *"Make jump a tap on either stick,
+// because if you're charging a shot with the right stick you can't jump and shoot."* So the left
+// tap went to the jump, and the thing it used to do needed a home: one segment per slot on the
+// left wheel, pressed directly. Every refusal is `cycleKit`'s own, for its own reasons -- the
+// one difference is the board: CYCLING skips it while he rides (a tap meant for the hammer must
+// not throw him off), but PRESSING it is a deliberate ask for the deck in his hands, which is
+// exactly what `applySlot` does with it.
+function kitPick(n) {
+  const p = player;
+  if (p.swap || p.knock || p.wall || p.ledge || p.mphSt) return;
+  if (n === p.slot || !WEAP.slots[n]) return;
+  swapGo(n);
+}
 // ---- melee ---------------------------------------------------------------------------------
 function meleeChain() { return CLIPS[slotNow().melee] || CLIPS.fist; }
 // ONE PLACE ASKS WHETHER A CLIP HAS ITS OWN NUMBERS, so the beat, the contact frame and the
@@ -10460,7 +10510,8 @@ for (const t of ['blur', 'pagehide', 'visibilitychange']) addEventListener(t, ()
 
 // --------------------------------------------------------------------------------------------
 // THE CONTROL MAP. Read this before touching either pad.
-//   LEFT PAD  -- the BODY.  hold = move.  tap = next weapon.  flick = dodge roll that way.
+//   LEFT PAD  -- the BODY.  hold = move.  tap = jump.         flick = dodge roll that way.
+//                            inner wheel = the weapons; outer = Clancy ROAM/PACK or REVERT.
 //   RIGHT PAD -- the VERB.  drag = camera. tap = jump.        flick = strike that way.
 //                            hold = aim (blaster) or charge (hammer); push UP to fire.
 // ON THE BOARD (m167) the two halves mean exactly the same things, which is the whole point:
@@ -10477,7 +10528,12 @@ for (const t of ['blur', 'pagehide', 'visibilitychange']) addEventListener(t, ()
 const padL = document.getElementById('padL'), padR = document.getElementById('padR');
 const zoneL = document.getElementById('zoneL'), zoneR = document.getElementById('zoneR');
 PADS.L = bindStick(padL, stick.L,
-  () => cycleKit(),                                   // tap
+  // **TAP = JUMP, THE SAME AS THE RIGHT PAD (m173).** *"If you're charging a shot with the right
+  // stick you can't jump and shoot."* The right thumb is busy holding the trigger, so the left
+  // one has to be able to do it -- and a tap cannot collide with steering, because a tap is
+  // `trav < tapMove` and `held < tapT`, which no steering hold ever is. Weapons moved to the
+  // left wheel (`kitPick`).
+  () => { player.jump = 1; },                         // tap: jump
   // flick: a BODY FLIP on the board, otherwise the dodge roll in the flicked direction. The
   // board takes it first and says so, because a dodge roll on a moving deck is nothing.
   (dx, dy) => { if (boardMount(dx, dy)) return;
@@ -18566,8 +18622,8 @@ function paintPalRow() {
   const dna = !!player.mphK, want = dna ? 'dna' : 'pal';
   if (palRow._row !== want) {
     palRow._row = want;
-    if (dna) buildArcRow(palRow, MORPH.row, PALROW.mid, () => morphOff());
-    else buildArcRow(palRow, CLANCY.modes, PALROW.mid, setPal);
+    if (dna) buildArcRow(palRow, MORPH.row, OUTROW.mid, () => morphOff(), OUTROW);
+    else buildArcRow(palRow, CLANCY.modes, OUTROW.mid, setPal, OUTROW);
   }
   // LIT, because a one-shot button is not a mode you are IN -- what the fill says here is "this
   // is pressable", which is the whole reason it is on screen.

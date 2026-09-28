@@ -8,6 +8,25 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 ## Landmines
 
 
+
+- **JUMP IS A TAP ON EITHER STICK, AND THE WEAPONS ARE A WHEEL (m173, `kitPick`, `WEPROW`).**
+  *"If you're charging a shot with the right stick you can't jump and shoot -- so tapping on the
+  left stick also needs to make you jump, and to switch weapons we need the same thing we have on
+  the right stick for the blaster modes, on the left stick."* The left tap is `player.jump = 1`,
+  the same line as the right, so every consumer of the jump (the double and its flip, the wall
+  and ledge exits, the ollie, the rail catch, the ladder hop) gets it for nothing. A tap cannot
+  collide with steering: it needs `trav < tapMove` and `held < tapT`, which no hold ever is.
+  **THE WEAPONS ARE ON THE LEFT STICK'S INNER RING, ONE SEGMENT PER SLOT**, built by the same
+  `buildArcRow` the mode row uses (it takes a ring now: `G = { r0, r1, span }`, `MODES` by
+  default, so the existing rows draw what they drew). HANDS / BLASTER / HAMMER / BOARD, from a
+  `short` label on the slot. It lights `swapTo` mid-reach, so the segment answers the press on
+  the same frame. **The pal row (ROAM/PACK, REVERT) moved OUT a ring**, because it only exists
+  when Clancy or a disguise does and the weapons are always there.
+  **PRESSING THE BOARD WHILE RIDING TAKES THE DECK INTO HIS HANDS**, which `cycleKit` deliberately
+  skipped (a cycle meant for the hammer must not throw him off); a direct press is a deliberate
+  ask. `cycleKit` survives for the desktop's right click and `mel.kit()`.
+  Geometry on a 390 px portrait phone: weapon ring tips at x 4 and 184, 28 px clear of the mode
+  row; outer ring tips at 15 and 173.
 - **THE HOUSE HAD NO WALLS IN IT, AND IT WAS THE LOADER, NOT THE HOUSE (m172, `kitCh`).** *"I'm
   unable to shoot or destroy any of the outside of the building -- my bullets don't even touch the
   outside of the wall, it just goes through and hits the inside -- and I can walk through walls
