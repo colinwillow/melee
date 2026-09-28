@@ -599,6 +599,15 @@ a map at all:
   mechanism after three attempts each of which made it worse** — that is not going back in.
   **AND `SK8.trick.rollSide` IS A DIAL, NOT A MEASUREMENT**: no harness here can build a skin,
   so which way a flick rolls him could not be settled offline. `-1` if it is backwards.
+  **m169 FIXED THREE OF ITS NUMBERS AND ONLY ONE WAS TASTE.** The barrel roll's pivot was typed
+  at Shredworld's .95, which is a measurement of COLIN — zap's hips are at **0.772 m** and 0.95
+  is his chest, which is why it read as spinning about his head. It is `rig.hipY`, measured in
+  `buildRig` on the bind pose, with `SK8.trick.pivot` as a multiplier on it. The ollie went
+  9.2 → **12.6** (2.12 m → 3.97, and it was softer than his on-foot jump, which is backwards).
+  And the air tap is the **second jump** now as well as the rail catch — the catch outranks it,
+  and `p.jumps > 0` means rolling off a kerb grants nothing.
+  **ASK WHETHER A BORROWED CONSTANT IS A FACT ABOUT THE PHYSICS OR ABOUT A BODY.** The ollie
+  transferred (same gravity); the pivot could not.
 - **THE SKATEBOARD HAS TRICKS AS OF m152.** Push, roll, steer, ollie, land, and in the AIR:
   **right pad flick** up = kickflip, down = 360 flip, left/right = the two pop shove-its;
   **left pad flick** up/down = front/back flip. **AND IT GRINDS (m153)** -- a tap of the right

@@ -516,10 +516,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m168</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m169</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m168</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m169</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -584,7 +584,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm168';
+const BUILD = 'm169';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -3450,7 +3450,21 @@ const SK8 = {
   // `T / P(now)` and the integral of `dt / P(t)` are the same number only while P is constant.
   plant: .46,       // where in that cycle the foot is actually on the road
   // ---- the air
-  ollie: 9.2, land: .55, scuff: .5,
+  // **A BIG OLLIE (m169).** *"His jump is kind of small."* It was: at `MOVE.g` 20, 9.2 m/s is
+  // `v^2/2g` = **2.12 m** and 0.92 s of air -- three quarters of his ON-FOOT jump (10.6 -> 2.81),
+  // which is backwards. A board should leave the ground harder than a man does. 12.6 is
+  // Shredworld's own number at the identical gravity, where it is written up as "a big ollie,
+  // about 4 m": **3.97 m and 1.26 s**, which is also what gives a flip room to finish.
+  ollie: 12.6,
+  // **AND THE SECOND TAP IS THE SECOND JUMP (m169).** *"You can't double jump on a skateboard
+  // whereas I kind of wish you could."* The gesture was already free: in the air that pad's tap
+  // was the RAIL CATCH and nothing else, so a tap over nothing did nothing at all.
+  // **A FRACTION OF THE FIRST, AND SET RATHER THAN ADDED.** Kicking off nothing is not a leg
+  // press; and ADDING to whatever he has sends a double off the top of an ollie into orbit and
+  // one off the bottom of a fall nowhere. Set, it is the same height whenever it is spent,
+  // which is what makes it a reliable save. (Shredworld's `AIR.second`, and its argument.)
+  second: .92,
+  land: .55, scuff: .5,
   // ---- the look
   crouch: 4, lean: .32, bank: 5, lag: 6,
   // **BOARD TRICKS ARE PURE GEOMETRY, NO CLIP.** The deck runs along its local Z, so with Euler
@@ -3481,7 +3495,10 @@ const SK8 = {
     // origin his head would sweep a 1.7 m circle and he would ORBIT rather than roll. `pivot`
     // is the height held still while the body comes round it, and the offset has to be added
     // to the MAN AND THE DECK alike or the board stays behind while he goes round it.
-    pivot: .95,
+    // **A MULTIPLIER ON HIS MEASURED HIP HEIGHT, NOT A HEIGHT (m169).** See `buildRig`: zap's
+    // hips are at 0.772 m and m167's typed 0.95 was his chest, which is why he rolled about his
+    // head. 1 is his hips; lower drops the pivot toward his feet.
+    pivot: 1,
     // **AND WHICH WAY A FLICK ROLLS HIM IS A DIAL, NOT AN ARGUMENT.** +X is his LEFT here, so
     // a positive `rotation.z` lifts his left side and drops his right -- which makes a flick
     // RIGHT a roll to the right. That is reasoned rather than measured, and **this file gets
@@ -6744,7 +6761,7 @@ const rig = {
   actions: {}, clips: {}, cw: {},          // cw: the damped weight of each action
   // m119: how many of zap's clips the drawn body is wearing (0 = his own), and the ratio its
   // height bears to his, which is what a borrowed reference speed has to be divided by.
-  borrowed: 0, gaitK: 1, bind: null,
+  borrowed: 0, gaitK: 1, bind: null, hipY: 0,
   bones: {}, scale: 1, faceOff: 0, mounts: {},
 };
 
@@ -11433,11 +11450,7 @@ function boardFlick(dx, dy, body) {
     return 1;
   }
   const T = SK8.trick;
-  // how much air is LEFT, from the ballistics at this moment -- that is what the trick fills
-  const vy = p.vel.y, g = MOVE.g;
-  const gy = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
-  const fall = Math.max(.25, (vy + Math.sqrt(Math.max(0, vy * vy + 2 * g * Math.max(0, p.pos.y - gy)))) / g);
-  const dur = Math.max(.25, fall * T.fill);
+  const dur = Math.max(.25, airLeft() * T.fill);
   const up = -dy;                                   // the pad's +Y is DOWN the screen
   if (body) {
     // **SIDEWAYS IS A BARREL ROLL (m167).** It used to bail out here -- left and right were the
@@ -11455,24 +11468,7 @@ function boardFlick(dx, dy, body) {
       snd('swoosh', { r: 1.05, g: .38 });
       return 1;
     }
-    // **THE BODY FLIPS ARE A CLIP AND THE DECK IS CARRIED ROUND WITH HIM**, which is `rotation.x`
-    // -- one axis, and it composes with the other two rather than replacing them.
-    const nm = up > 0 ? SK8.clip.flipF : SK8.clip.flipB;
-    if (!rig.actions[nm] || p.trick) return 1;
-    // **THE RATE IS CLAMPED AND THE STATE'S LENGTH IS DERIVED BACK OUT OF IT (m8's landmine).**
-    // `back_flip` is 1.73 s against a 0.25 s floor on the air, which is x6.9 -- a blur with no
-    // pose in it; and the state has to be exactly as long as the clip ends up being, or it cuts
-    // it off part-way. `rateLo`/`rateHi` is the band a flip stays readable in.
-    const len = clipLen(nm);
-    if (!(len > 0)) return 1;          // a zero-length clip divides into a NaN timeScale, and a
-                                       // NaN on the mixer is every bone in the body gone
-    const rate = clamp(len / dur, SK8.trick.rateLo, SK8.trick.rateHi);
-    p.trick = up > 0 ? 'f' : 'b'; p.trickName = nm; p.trickT = 0;
-    p.trickDur = len / rate;
-    // **RE-ENTERING A `ONCE` CLIP HAS TO REWIND IT, ON THE STATE** -- these are not in `ONCE`,
-    // they loop, so the scale is what ends them and the rewind is what starts them clean.
-    playOnce(nm, rate);
-    snd('swoosh', { r: .95, g: .40 });
+    if (bodyFlip(up > 0, dur)) return 1;
     return 1;
   }
   if (p.bRoll || p.bYaw) return 1;                  // one board trick per airtime
@@ -11483,6 +11479,37 @@ function boardFlick(dx, dy, body) {
   p.trickDur = dur;
   snd('swoosh', { r: 1.35, g: .30 });
   return 1;
+}
+// **THE BODY FLIP IS A FUNCTION BECAUSE TWO GESTURES START ONE (m169)** -- the left pad's
+// up/down flick, and the second tap of the right pad, which flips him as it lifts him. Inline
+// it was the flick's alone, and a second copy is a second thing to keep in step.
+function bodyFlip(front, dur) {
+  const p = player;
+  // **THE BODY FLIPS ARE A CLIP AND THE DECK IS CARRIED ROUND WITH HIM**, which is `rotation.x`
+  // -- one axis, and it composes with the other two rather than replacing them.
+  const nm = front ? SK8.clip.flipF : SK8.clip.flipB;
+  if (!rig.actions[nm] || p.trick) return 0;
+  // **THE RATE IS CLAMPED AND THE STATE'S LENGTH IS DERIVED BACK OUT OF IT (m8's landmine).**
+  // `back_flip` is 1.73 s against a 0.25 s floor on the air, which is x6.9 -- a blur with no
+  // pose in it; and the state has to be exactly as long as the clip ends up being, or it cuts
+  // it off part-way. `rateLo`/`rateHi` is the band a flip stays readable in.
+  const len = clipLen(nm);
+  if (!(len > 0)) return 0;          // a zero-length clip divides into a NaN timeScale, and a
+                                     // NaN on the mixer is every bone in the body gone
+  const rate = clamp(len / dur, SK8.trick.rateLo, SK8.trick.rateHi);
+  p.trick = front ? 'f' : 'b'; p.trickName = nm; p.trickT = 0;
+  p.trickDur = len / rate;
+  // **RE-ENTERING A `ONCE` CLIP HAS TO REWIND IT, ON THE STATE** -- these are not in `ONCE`,
+  // they loop, so the scale is what ends them and the rewind is what starts them clean.
+  playOnce(nm, rate);
+  snd('swoosh', { r: .95, g: .40 });
+  return 1;
+}
+// HOW MUCH AIR IS LEFT, from the ballistics at this moment -- which is what a trick fills.
+function airLeft() {
+  const p = player, vy = p.vel.y, g = MOVE.g;
+  const gy = groundAt(p.pos.x, p.pos.z, p.pos.y, MOVE.step);
+  return Math.max(.25, (vy + Math.sqrt(Math.max(0, vy * vy + 2 * g * Math.max(0, p.pos.y - gy)))) / g);
 }
 
 // THE DECK'S TWO SPINS, AND THEY ARE RADIANS REMAINING SPENT OVER `trickDur`.
@@ -11582,11 +11609,28 @@ function stepSkate(dt) {
     // that keeps going, which is the only thing that makes landing sideways mean anything.
     if (s.mag > 0 && !p.barrel)
       p.boardH += clamp(wrapAngle(Math.atan2(s.x, s.z) - p.boardH), -1, 1) * SK8.turn * 1.6 * s.mag * dt;
-    // **THE AIR TAP IS THE CATCH -- AND IT WAS A LATENT BUG THAT NOTHING CONSUMED IT.** `p.jump`
-    // is set by the pad and was only ever read in the grounded branch, so a tap in mid-air sat
-    // there and ollied him the instant he touched down. It is spent either way now: on a rail
-    // if there is one under him, and on nothing if there is not.
-    if (p.jump) { p.jump = 0; if (railCatch()) return; }
+    // **THE AIR TAP IS THE CATCH, AND THEN THE SECOND JUMP (m169).** *"You can't double jump on
+    // a skateboard whereas I kind of wish you could."* The gesture was already free -- in the
+    // air this tap was the rail catch and nothing else, so a tap over nothing did nothing at all.
+    // **THE CATCH STILL OUTRANKS IT AND THAT COSTS NO NEW RULE**: a tap over a rail is a grind
+    // and a tap over nothing is the double, decided by what is under him rather than by a mode.
+    // **THE GATE IS `p.jumps > 0`, SO ROLLING OFF A KERB GRANTS NOTHING.** The second jump
+    // exists only if he actually took the first -- which is `AIR`'s own rule on foot, and is why
+    // the ollie marks `p.jumps = 1` at the moment the POP fires.
+    // **AND IT FLIPS HIM AS IT LIFTS HIM**, which is what makes it worth having rather than
+    // being a second hop: the flip is fitted to the air he has AFTER the kick, so `bodyFlip`
+    // is called below the velocity rather than above it.
+    if (p.jump) {
+      p.jump = 0;
+      if (railCatch()) return;
+      if (p.jumps > 0 && p.jumps < 2 && !p.rail) {
+        p.jumps = 2;
+        p.vel.y = SK8.ollie * SK8.second;
+        p.coyote = 0;
+        if (!p.trick && !p.barrel) bodyFlip(1, Math.max(.25, airLeft() * SK8.trick.fill));
+        snd('swoosh', { r: 1.1, g: .36 });
+      }
+    }
     p.pushT = 0; p.shoveT = 0; p.pushW = 0;
     trickStep(dt);
   }
@@ -11689,7 +11733,12 @@ function boardPose(dt) {
   // twice is two things to keep in step, and computing it there and reading it here is a frame
   // stale, which at a full turn in under a second is visibly a board lagging its rider.
   if (p.barrelA) {
-    const sa = Math.sin(p.barrelA), h = p.faceH + rig.faceOff + RIG.spin, k = SK8.trick.pivot;
+    // **`rig.hipY` IS MEASURED AND `SK8.trick.pivot` IS NOW A MULTIPLIER ON IT**, not a height.
+    // m167 typed 0.95 -- Shredworld's number, measured on Colin -- and on this rig that is his
+    // CHEST. See `buildRig`. 1 is his hips exactly; the dial is there because where a barrel
+    // roll should turn is a look-at-it decision and those belong on the phone.
+    const sa = Math.sin(p.barrelA), h = p.faceH + rig.faceOff + RIG.spin;
+    const k = (rig.hipY || RIG.height * .44) * SK8.trick.pivot;
     // the pivot point held still while the body comes round it: Rz(a) applied to (0,-k,0) less
     // where it started, taken into world by the yaw he is drawn at. His local +X is his LEFT --
     // Ry(h) sends (1,0,0) to (cos h, 0, -sin h).
@@ -19732,6 +19781,24 @@ async function init() {
   model.updateMatrixWorld(true);
   // measured on the BIND pose, before any clip has been played
   rig.faceOff = -measureFacing(rig.bones);
+  // **AND SO IS HIS HIP HEIGHT (m169), WHICH THE BARREL ROLL TURNS ABOUT.** *"When he does the
+  // barrel roll he spins about his head when he should be spinning about his hips."* Exactly
+  // right, and the cause is that m167 TYPED the pivot -- it took Shredworld's `TRICK.pivot` .95,
+  // which was measured on COLIN, and this is a different rig with different proportions.
+  // Read straight out of `zap.glb`'s node hierarchy, at the scale the game draws him:
+  //     LeftFoot 0.231   Hips **0.772**   Spine 0.860   Spine2 1.039   Head 1.274
+  // **0.95 is between his Spine and his Spine2** -- his chest -- and a body turning about its
+  // chest has a head that barely moves and legs that sweep three quarters of a metre, which is
+  // "spinning about his head" told exactly. **A number carried over from another game is a
+  // number measured on another body**, and this file has the bone right here.
+  // It is the BIND height rather than the live one on purpose: the live hips bob with every
+  // clip, and a pivot that bobs is a wobble welded into the roll.
+  {
+    let hy = 0;
+    for (const n in rig.bones) if (/Hips$/.test(n)) { hy = rig.bones[n].getWorldPosition(_hp).y; break; }
+    rig.hipY = hy > .01 ? hy : RIG.height * .44;   // no Hips bone: the fraction this rig measures
+    console.log('[melee] hips ' + rig.hipY.toFixed(3) + ' m above his root (the barrel roll pivot)');
+  }
   // AND SO IS THIS, FOR THE SAME REASON AND AT THE SAME MOMENT (m119). Every retarget in
   // `mphBorrow` is expressed against it, and one frame later the mixer owns these bones.
   rig.bind = bindPose(rig.bones, model);

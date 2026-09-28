@@ -7,6 +7,45 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE BARREL ROLL PIVOTED ON HIS CHEST BECAUSE THE NUMBER WAS MEASURED ON ANOTHER BODY
+  (m169).** *"When he does the barrel roll he spins about his head when he should be spinning
+  about his hips. Also you can't double jump on a skateboard whereas I kind of wish you could,
+  and his jump is kind of small."* Three, and the first one is the interesting one.
+  **m167 TYPED THE PIVOT AT .95, WHICH IS SHREDWORLD'S `TRICK.pivot` -- MEASURED ON COLIN.**
+  Read straight out of `zap.glb`'s node hierarchy (the skeleton is plain glTF; draco only touches
+  mesh primitives), at the x1.926 the game draws him at:
+      LeftFoot 0.231   **Hips 0.772**   Spine 0.860   Spine2 1.039   Head 1.274
+  **0.95 sits between his Spine and his Spine2 -- his chest.** A body turning about its chest has
+  a head that moves 0.32 m and legs that sweep 0.77, and from a phone that is "spinning about his
+  head" told exactly. The geometry was right, the axis was right, and the one typed number was a
+  fact about a different rig. **A CONSTANT CARRIED OVER FROM ANOTHER GAME IS A MEASUREMENT OF
+  ANOTHER BODY**, and this file had the bone sitting right there.
+  So `rig.hipY` is measured in `buildRig` on the BIND pose, beside `faceOff` and `rig.bind` --
+  the bind height rather than the live one, because the live hips bob with every clip and a pivot
+  that bobs is a wobble welded into the roll -- and `SK8.trick.pivot` becomes a MULTIPLIER on it,
+  1 being his hips exactly. A re-export at any proportions lands right with no edit, which is
+  this repo's rule for every other measured thing and should have been the rule here.
+  **THE OLLIE WAS THREE QUARTERS OF HIS ON-FOOT JUMP, WHICH IS BACKWARDS.** At `MOVE.g` 20:
+      on foot  MOVE.jump 10.6  ->  2.81 m, 1.06 s
+      ollie    was 9.2         ->  2.12 m, 0.92 s      <- a board leaving the ground SOFTER
+      ollie    now 12.6        ->  3.97 m, 1.26 s      <- Shredworld's own, same gravity
+  Shredworld writes 12.6 up as *"a big ollie: about 4 m"* and the gravity is identical, so it is
+  a number that transfers -- unlike the pivot, which is a fact about a BODY rather than about the
+  physics. **Which of the two a constant is, is the question to ask before copying one.**
+  **AND THE SECOND TAP WAS ALREADY FREE.** In the air that pad's tap was the RAIL CATCH and
+  nothing else, so a tap over nothing did nothing at all. The catch still outranks it, which
+  costs no new rule: a tap over a rail is a grind and a tap over nothing is the double, decided
+  by what is under him rather than by a mode. **The gate is `p.jumps > 0`**, so rolling off a
+  kerb grants nothing -- the second jump exists only if he took the first, which is why the ollie
+  marks `p.jumps = 1` at the moment the POP fires and not when it is armed.
+  **SET, NOT ADDED (`SK8.second` .92).** Kicking off nothing is not a leg press; and adding to
+  whatever he has sends a double off the top of an ollie into orbit and one off the bottom of a
+  fall nowhere. Set, it is the same height whenever it is spent, which is what makes it a save.
+  **AND IT FLIPS HIM AS IT LIFTS HIM**, with `bodyFlip` called BELOW the new velocity so the
+  flip is fitted to the air he has after the kick rather than before it. `bodyFlip` became a
+  function for that: two gestures start one now (the left pad's flick and this), and a second
+  copy is a second thing to keep in step.
+
 - **`stopAllAction()` PUTS A SKELETON IN THE T-POSE, AND m165's COMMENT SAID THE OPPOSITE
   (m168).** *"The current civilian goes into T-pose and stays there while a warrior alien starts
   off at the size of a pea and grows over it. They're both there at the same time. There's no
