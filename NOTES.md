@@ -14,6 +14,40 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 
 
+
+- **THE LEDGE AND COVER ARE FOR THE OUTSIDE OF A BUILDING, A FLOOR IS A CEILING, AND THE FIRST
+  INSIDE CAMERA (m179, `KBLD`, `kitLedgeOK`, `kitCoverOK`, `_ceilH`, `KCUT`, `kitCamStep`).**
+  *"The ledge hang happens on a bunch of random stuff and the cover happens inside the building --
+  you just get caught on stuff. Only on the roof and the outside sides for now. You can jump
+  through the floor of the second story. And we need a smart camera for inside the building."*
+  **THE BUILDINGS ARE KNOWN CELL BY CELL** from his roots' own extras (`cells` + `heights` on the
+  generated ones, `footprint_bays` + `levels` on the house), mapped with the convention read off
+  the collision file (BKG0's first floor tile at exactly x 0..3, z -17..-14 under a root at z -14).
+  **INSIDE = in a cell AND below its roof**, so a roof is outside.
+      COVER   only where he is not inside -- the street, or a roof against a parapet
+      LEDGE   only a ROOF EDGE (the lip at or above the roof of the cell it belongs to, so a
+              parapet counts) taken from off the building in plan -- or from a LOWER roof up to a
+              taller one's edge, which is the setback. Sills, floor bands, chunk tops half way up
+              a wall, stairs and railings are all refused.
+  Tabled through the shipped predicates: parapet and bare roof edge from the street ALLOW, BKG3's
+  tall edge from its low roof ALLOW; a sill at 4.0, a chunk top at 1.6, a parapet from the roof
+  side and a railing indoors all refused; cover refused in a room, allowed in the street.
+  `KIT.gate = 0` puts m89/m102 back. **Kit world only** -- the other worlds have no cells to ask.
+  **A FLOOR ABOVE IS A CEILING.** `triAdd` keeps only up-facing faces, so the underside of a floor
+  was nothing to a man rising through it -- m166's lesson ("a collider that rejects is not a file
+  that lacks") one axis over. `SURF` has the undersides: the head's travel each sub-step is one
+  vertical `surfRay`. Driven: a jump in a ground-floor room peaks with his head at 2.77 against an
+  underside at 2.80; the same jump in the street still reaches 2.72 m. Stair holes have no
+  triangle, so the stairs still go up.
+  **THE INSIDE CAMERA IS A CUTAWAY, AND IT IS AN EXPERIMENT ON A SWITCH (the INSIDE chip: CUT /
+  CLOSE / OFF).** CUT: one `discard` in every kit material -- inside the box of the building he is
+  in and above `cutH` (1.45 m) of his storey, nothing is drawn, so the floors over him, the roof
+  and the tops of the walls go; the lens lifts to `cutEl` .86 rad to look down into the room; and
+  `camBlock` lets the boom pass through what is not drawn, or it would be dragged in against walls
+  nobody can see. The uniforms are SHARED objects, so moving the cut never recompiles. CLOSE: no
+  cut, a 2.3 m boom. **No see-through hole existed in melee to borrow** -- the `noHole` flags are
+  set and nothing reads them.
+  **NOT DONE: the shadow pass does not take the cut**, so the cut-away roof still shades the room.
 - **HIS GENERATOR'S ROW IS IN, AND THE REAL WORK WAS DRAW CALLS (m178, `kitBatch`, `kitMerge`,
   `kitHang`, `kitSlot`, AC parts).** *"It made a row of four new buildings behind the test house...
   every awning, sign, ivy leaf and AC unit knows which wall chunk it's hanging on."*

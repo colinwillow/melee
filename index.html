@@ -533,14 +533,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m178</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m179</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m178</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m179</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i><i data-fx="doors">DOORS</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i><i data-fx="doors">DOORS</i><i data-fx="inside">INSIDE</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; tap = jump</div></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm178';
+const BUILD = 'm179';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -10826,6 +10826,7 @@ function fxOn(k) {
        : k === 'paint'  ? (PAINT.on ? 1 : 0)
        : k === 'rim'    ? (LIGHTX.on ? 1 : 0)
        : k === 'doors'  ? (KIT.doorOpen ? 1 : 0)
+       : k === 'inside' ? (KIT.inCam !== 'off' ? 1 : 0)
        :                  (WP.tintMode ? 1 : 0);
 }
 function fxSet(k, on) {
@@ -10849,6 +10850,8 @@ function fxSet(k, on) {
   // intensities are written by `stepLightX` off `LIGHTX.on`, so there is one owner.
   else if (k === 'rim') LIGHTX.on = on;
   else if (k === 'doors') KIT.doorOpen = on;
+  // the INSIDE chip CYCLES rather than toggles -- three looks, and the label says which
+  else if (k === 'inside') { const L = ['cut', 'close', 'off']; KIT.inCam = L[(L.indexOf(KIT.inCam) + 1) % L.length]; }
   else { WP.tintMode = on ? 2 : 0; WPTINT.value = WP.tintMode; }
   return on;
 }
@@ -10861,7 +10864,7 @@ function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
           | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7)
           | (fxOn('toon') << 8) | (fxOn('paint') << 9) | (fxOn('rim') << 10) | (fxOn('doors') << 11)
-          | ((inKit() ? 1 : 0) << 12);
+          | ((inKit() ? 1 : 0) << 12) | (['cut', 'close', 'off'].indexOf(KIT.inCam) << 13);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -10870,6 +10873,8 @@ function fxKeys() {
     // THE LABEL IS THE STATE, the sun key's rule -- and it only exists in the house (m177)
     if (el.dataset.fx === 'doors') { el.textContent = 'DOORS ' + (KIT.doorOpen ? 'SWING' : 'SHUT');
                                      el.classList.toggle('hide', !inKit()); }
+    if (el.dataset.fx === 'inside') { el.textContent = 'INSIDE ' + KIT.inCam.toUpperCase();
+                                      el.classList.toggle('hide', !inKit()); }
     el.classList.toggle('on', !!fxOn(el.dataset.fx));
     // THE TINT SWITCH ONLY EXISTS WHERE IT MEANS SOMETHING, which is `paintKit`'s rule: the
     // vertex tint is Weirdport's, so on the test site that segment would be a control that
@@ -11327,6 +11332,7 @@ function stepKit(dt) {
 //      which *is* the moonwalk. `turnBrake` costs him speed through a hard turn, which is what
 //      plants the feet rather than just pointing them.
 // ============================================================================================
+const _ceilH = { x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 0 };
 function integrate(dt, wantX, wantZ, wantSp, ctl) {
   const p = player;
 
@@ -11372,7 +11378,17 @@ function integrate(dt, wantX, wantZ, wantSp, ctl) {
   const sub = Math.min(MOVE.subMax, Math.max(1, Math.ceil(move / MOVE.sub)));
   let solid = 0;
   for (let k = 0, h = dt / sub; k < sub; k++) {
+    const y0 = p.pos.y;
     p.pos.x += p.vel.x * h; p.pos.z += p.vel.z * h; p.pos.y += p.vel.y * h;
+    // **A FLOOR ABOVE IS A CEILING (m179).** *"You can jump through the floor of the second story --
+    // you should have to go up the stairs."* The walkable store keeps only what faces UP, so the
+    // underside of a floor was nothing at all to a man rising through it. `SURF` holds every
+    // triangle, undersides included, so the head's own travel this sub-step is one ray: meet a
+    // surface and the rise stops just under it. A stair hole has no triangle in it, so the stairs
+    // still go up.
+    if (p.vel.y > 0 && SURF.on && surfRay(p.pos.x, y0 + p.hh, p.pos.z, p.pos.x, p.pos.y + p.hh + .02, p.pos.z, _ceilH)) {
+      p.pos.y = Math.min(p.pos.y, _ceilH.y - p.hh - .03); p.vel.y = 0;
+    }
     solid |= resolveBoxes(p.pos, p.r, p.hh) | pushBodies(p.pos, p.r) | pushCars(p.pos, p.r, p.hh);
   }
   if (solid) {
@@ -12280,7 +12296,7 @@ function stepPlayer(dt) {
     const busy = p.melee || p.roll || p.chargeGo || p.slam || p.knock || p.land || p.block ||
                  p.center || p.aim || p.charge || p.bkOn;
     if (!busy && p.grounded && p.wallCool <= 0 && s.mag > .45) {
-      const W = wallFind(p.pos.x, p.pos.y, p.pos.z, p.r + WALL.reach);
+      const W = kitCoverOK(p) ? wallFind(p.pos.x, p.pos.y, p.pos.z, p.r + WALL.reach) : null;
       if (W && -(s.x * W.nx + s.z * W.nz) > WALL.into && rig.actions[WALL.clips.in]) {
         wallGo(W); return;
       }
@@ -12297,7 +12313,8 @@ function stepPlayer(dt) {
   //      gait, where a man who has jumped actually passes through.
   if (LEDGE.on && !p.grounded && p.ledgeCool <= 0 && !p.knock && !p.melee && !p.slam &&
       !p.roll && !p.chargeGo && rig.actions[LEDGE.clips.hang]) {
-    const L = ledgeFind(p.pos.x, p.pos.y, p.pos.z, p.r + LEDGE.reach);
+    let L = ledgeFind(p.pos.x, p.pos.y, p.pos.z, p.r + LEDGE.reach);
+    if (L && !kitLedgeOK(p, L)) L = null;
     // **AND IF HE IS GOING TO CLEAR IT, HE LANDS ON IT.** A lip is always at least half a metre
     // above his feet (the band is centred on his HANDS), so nothing stops the catch firing at
     // the bottom of a jump onto a 1.15 m box -- which would turn a step-up that has always
@@ -14271,6 +14288,16 @@ const KIT = {
   debrisLife: 3.2, debrisG: 16, debrisOut: 3.8, debrisUp: 3.0, debrisSpin: 7,
   glassCol: [.78, .92, 1],
   ivyCol: [.34, .58, .22],
+  // **THE LEDGE HANG AND COVER ARE FOR THE OUTSIDE OF A BUILDING (m179, `kitLedgeOK`/`kitCoverOK`).**
+  // *"The ledge hang happens on a bunch of random stuff, and the cover on a wall happens inside the
+  // building -- you just get caught on stuff. Only on the roof of the building and on the sides of
+  // the outside for now."* 0 lets both happen anywhere, which is m102/m89 as they were.
+  gate: 1,
+  // **THE INSIDE CAMERA (m179), AN EXPERIMENT AND HIS CALL.** 'cut': everything of THIS building
+  // above `cutH` of his storey is discarded -- the floors over him, the roof, the top of the walls
+  // -- and the lens lifts to `cutEl` to look down into the room. 'close': no cut, a short boom.
+  // 'off': the ordinary camera. The INSIDE chip on the FX key cycles them.
+  inCam: 'cut', cutH: 1.45, cutEl: .86, cutDist: 5.4, closeDist: 2.3,
   // **THE BATCH (m178)** -- one merged mesh per material per file. 0 draws every piece as his
   // export has it, which is the A/B if something looks wrong after the merge.
   batch: 1,
@@ -14367,6 +14394,95 @@ function kitHangDrop(c, loud, bx, by, bz) {
                                             size: .09 + Math.random() * .06, life: .7 + Math.random() * .4 });
     }
   }
+}
+// **WHERE THE BUILDINGS ARE, CELL BY CELL (m179, `KBLD`).** His roots carry it: `cells` (3 m grid)
+// and `heights` (floors per cell) on each generated root, `footprint_bays` + `levels` on the test
+// house. A cell (cx, cy) spans x [T.x + 3cx, +3] and z [T.z - 3cy - 3, T.z - 3cy] -- read off the
+// collision file, where BKG0's first floor tile sits at exactly x 0..3, z -17..-14 under a root at
+// z -14. **INSIDE is in a cell AND below its roof**, so standing ON a roof is outside.
+const KBLD = [];
+function kitBldAdd(o) {
+  const e = o.userData || {};
+  if (!e.bay_m && !e.footprint_bays) return 0;
+  o.updateWorldMatrix(true, false);
+  const T = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
+  const bay = e.bay_m || 3, fl = e.floor_m || 3;
+  let list = null, H = null;
+  try { list = e.cells ? JSON.parse(e.cells) : null; H = e.heights ? JSON.parse(e.heights) : null; } catch (err) { list = null; }
+  if (!list) { list = []; const fb = e.footprint_bays || [0, 0]; for (let x = 0; x < fb[0]; x++) for (let y = 0; y < fb[1]; y++) list.push([x, y]); }
+  const B = { name: o.name, x0: T.x, z0: T.z, bay, fl, cells: new Map(),
+              minx: 1e9, maxx: -1e9, minz: 1e9, maxz: -1e9, top: 0 };
+  for (const [x, y] of list) {
+    const f = (H && H[x + ',' + y]) || e.levels || 1;
+    B.cells.set(x + ',' + y, f);
+    B.minx = Math.min(B.minx, T.x + x * bay); B.maxx = Math.max(B.maxx, T.x + (x + 1) * bay);
+    B.minz = Math.min(B.minz, T.z - (y + 1) * bay); B.maxz = Math.max(B.maxz, T.z - y * bay);
+    B.top = Math.max(B.top, f * fl);
+  }
+  KBLD.push(B);
+  return 1;
+}
+function kitCell(x, z) {
+  for (const B of KBLD) {
+    if (x < B.minx || x > B.maxx || z < B.minz || z > B.maxz) continue;
+    const cx = Math.floor((x - B.x0) / B.bay), cy = Math.floor((B.z0 - z) / B.bay);
+    const f = B.cells.get(cx + ',' + cy);
+    if (f) return { B, f, roof: f * B.fl };
+  }
+  return null;
+}
+function kitInside(x, y, z) {
+  const c = kitCell(x, z);
+  return c && y < c.roof - .35 ? c : null;
+}
+// COVER: anywhere he is not INSIDE -- outside in the street, or up on a roof against a parapet
+function kitCoverOK(p) {
+  if (!KIT.gate || !inKit() || !KBLD.length) return true;
+  return !kitInside(p.pos.x, p.pos.y, p.pos.z);
+}
+// A LEDGE: a ROOF EDGE, taken from OUTSIDE. The lip has to be at the roof of the cell it belongs to
+// (a parapet top is above it, which counts), and he has to be off the building in plan -- or on a
+// LOWER roof reaching up to a taller one's edge, which is the setback case. A window sill, a floor
+// band, a chunk top half way up a wall, a stair or a railing indoors: none of those is a roof edge.
+function kitLedgeOK(p, L) {
+  if (!KIT.gate || !inKit() || !KBLD.length) return true;
+  const lip = kitCell(L.cx - L.nx * .35, L.cz - L.nz * .35);
+  if (!lip || L.y < lip.roof - .45) return false;
+  const me = kitCell(p.pos.x, p.pos.z);
+  if (!me) return true;
+  return p.pos.y >= me.roof - .35 && me.roof < lip.roof - .5;
+}
+// **THE CUTAWAY (m179, `KCUT`, `kitCutMat`).** One discard in every kit material's fragment shader:
+// inside the box of the building he is in and above the cut height, nothing is drawn. The uniform
+// objects are SHARED, so moving the cut is three writes a frame and never a recompile.
+const KCUT = { on: { value: 0 }, y: { value: 1e9 }, box: { value: new THREE.Vector4() }, B: null, lv: -1 };
+function kitCutMat(m) {
+  if (!m || m.userData.kitCut) return;
+  m.userData.kitCut = 1;
+  const prev = m.onBeforeCompile, prevKey = m.customProgramCacheKey;
+  m.onBeforeCompile = function (sh, r) {
+    if (prev) prev.call(this, sh, r);
+    sh.uniforms.uKCutOn = KCUT.on; sh.uniforms.uKCutY = KCUT.y; sh.uniforms.uKCutBox = KCUT.box;
+    sh.vertexShader = 'varying vec3 vKCutW;\n' + sh.vertexShader.replace('#include <begin_vertex>',
+      '#include <begin_vertex>\n  vKCutW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'uniform float uKCutOn;\nuniform float uKCutY;\nuniform vec4 uKCutBox;\nvarying vec3 vKCutW;\n' +
+      sh.fragmentShader.replace('void main() {', 'void main() {\n  if (uKCutOn > .5 && vKCutW.y > uKCutY && ' +
+        'vKCutW.x > uKCutBox.x && vKCutW.x < uKCutBox.z && vKCutW.z > uKCutBox.y && vKCutW.z < uKCutBox.w) discard;');
+  };
+  m.customProgramCacheKey = function () { return (prevKey ? prevKey.call(this) : '') + '|kcut'; };
+  m.needsUpdate = true;
+}
+// WHICH BUILDING HE IS IN, AND WHAT THE CAMERA DOES ABOUT IT -- once a frame, before `stepCam`
+function kitCamStep() {
+  const p = player;
+  const c = (inKit() && KIT.inCam !== 'off' && KBLD.length) ? kitInside(p.pos.x, p.pos.y + .2, p.pos.z) : null;
+  kit.inside = c ? KIT.inCam : '';
+  if (c && KIT.inCam === 'cut') {
+    const B = c.B, lv = Math.max(0, Math.floor((p.pos.y + .3) / B.fl));
+    KCUT.on.value = 1; KCUT.y.value = lv * B.fl + KIT.cutH;
+    KCUT.box.value.set(B.minx - .4, B.minz - .4, B.maxx + .4, B.maxz + .4);
+    KCUT.B = B; KCUT.lv = lv;
+  } else { KCUT.on.value = 0; KCUT.B = null; KCUT.lv = -1; }
 }
 // **ONE LADDER PAIRING PER BUILDING (m178, `kitSlot`).** The house paired a `climb_` volume with its
 // `nav_ladder_top` marker by the `X#` in both names -- and with four generated buildings `X3` exists
@@ -14480,9 +14596,11 @@ function buildKit(g) {
         // the alpha mode is the structural difference between the two (m158's own test)
         if (m.side === THREE.DoubleSide && !m.transparent && !m.alphaTest) { m.side = THREE.FrontSide; m.needsUpdate = true; }
         if (m.map) m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        kitCutMat(m);
       }
     }
     const e = o.userData || {};
+    kitBldAdd(o);
     // **A `col_*` MESH IS A COLLIDER AND IT WAS BEING DRAWN (m171).** Every moving part carries
     // one as a child -- *"the same convention as the breakables GLB"* -- and m170 put fourteen
     // grey boxes over his doors and windows because a mesh in the visual file is a mesh the
@@ -20201,11 +20319,20 @@ function stepDummies(dt) {
 // one to keep in step. Two writers on a camera bearing is a loop that never settles and a
 // picture that shakes, and it is the bug that shows up every single time.
 // ============================================================================================
+// WHAT IS CUT AWAY IS NOT IN THE CAMERA'S WAY (m179): the boom passes through the part of the
+// building the cutaway is not drawing, or it would be dragged in against walls nobody can see
+function camBlock(x, y, z, pad) {
+  if (KCUT.on.value > .5) {
+    const b = KCUT.box.value;
+    if (y > KCUT.y.value - .05 && x > b.x && x < b.z && z > b.y && z < b.w) return false;
+  }
+  return camHit(x, y, z, pad);
+}
 function camFree(tx, ty, tz, dx, dy, dz, want) {
   const step = CAM.probe, n = Math.ceil(want / step), pad = CAM.pad;
   for (let i = 1; i <= n; i++) {
     const d = Math.min(want, i * step);
-    if (!camHit(tx + dx * d, ty + dy * d, tz + dz * d, pad)) continue;
+    if (!camBlock(tx + dx * d, ty + dy * d, tz + dz * d, pad)) continue;
     // BISECT. Walking in fixed steps and returning the last clear one means the answer only
     // ever takes values `probe` apart, so the boom JUMPS half a metre at a time as the shot
     // sways past a wall. A quantised probe is fine for a yes/no and wrong the moment something
@@ -20213,7 +20340,7 @@ function camFree(tx, ty, tz, dx, dy, dz, want) {
     let lo = d - step, hi = d;
     for (let k = 0; k < 4; k++) {
       const m = (lo + hi) * .5;
-      if (camHit(tx + dx * m, ty + dy * m, tz + dz * m, pad)) hi = m; else lo = m;
+      if (camBlock(tx + dx * m, ty + dy * m, tz + dz * m, pad)) hi = m; else lo = m;
     }
     return Math.max(CAM.min, lo);
   }
@@ -20297,14 +20424,17 @@ function stepCam(dt) {
     const want = p.speed > 1.2 ? Math.atan2(p.vel.x, p.vel.z) : p.faceH;
     cam.az += wrapAngle(want - cam.az) * Math.min(1, CAM.follow * dt * clamp(p.speed / 5, .3, 1.4));
   }
-  cam.el = CAM.el;
+  // **INSIDE, THE LENS LIFTS TO LOOK DOWN INTO THE ROOM (m179)** -- eased, so walking through a
+  // door is a camera move and not a cut
+  cam.el = damp(cam.el || CAM.el, kit.inside === 'cut' ? KIT.cutEl : CAM.el, .12, dt);
   // **AND THE LOOK POINT IS CHEST HEIGHT ON THE BODY BEING DRAWN (m112).** `CAM.look` is his own
   // chest; worn as a 1.78 m drunk that is the man's waist, so the lens frames him low. It is the
   // one term the morph moves -- the collider and every speed stay his, deliberately.
   cam.tgt.set(p.pos.x, p.pos.y + CAM.look * bodyK(), p.pos.z);
   const ce = Math.cos(cam.el);
   const bx = -Math.sin(cam.az) * ce, by = Math.sin(cam.el), bz = -Math.cos(cam.az) * ce;
-  const want = CAM.dist + p.speed * CAM.distV;
+  const want = kit.inside === 'cut' ? KIT.cutDist : kit.inside === 'close' ? KIT.closeDist
+             : CAM.dist + p.speed * CAM.distV;
   const free = camFree(cam.tgt.x, cam.tgt.y, cam.tgt.z, bx, by, bz, want);
   // SNAP IN, EASE OUT. Easing IN is time spent inside the wall; easing OUT is what stops every
   // doorway and lamp post making the shot lurch.
@@ -20872,6 +21002,7 @@ function frame() {
     // of a metre of phantom motion through the limbs on every single frame.
     dollStep(dt);
   }
+  kitCamStep();
   stepCam(dt);
   // AFTER the camera, because the rim is placed off the bearing the lens was actually drawn at
   // -- one taken from last frame trails every swing, and a colour sitting on an edge is exactly
