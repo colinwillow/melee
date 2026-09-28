@@ -11,6 +11,33 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 
 
+
+- **HIS SECOND HOUSE EXPORT: GLASS, PIPES AND IVY, AND ONLY THE IVY NEEDED CODE (m176, `kitIvy`,
+  `kitIvyDrop`, `kitAttr`).** *"Glass windows, the pipe system and ivy are built into the test house
+  and re-exported."* Read out of the file before anything was wired:
+      walls      20, chunk data unchanged -- 6,264 / 6,264 chunk vertices still inside their box
+      glass      10 panes, each a Group of TWO primitives (`BK_M_glass` + `BK_M_glint`, both
+                 BLEND + double-sided) with its `col_` child -- so `kitPartAdd`, `kitPartBox` and
+                 `kitPartKill` take them unchanged, and hiding the node takes the glints with it
+      pipes      one mesh, `WK_M_rustmetal` + COLOR_0, extras `pipes: 4`. Decoration by his own
+                 note, and it DOES NOT break: a chunk shot out from behind a pipe leaves the pipe
+                 standing in the air. Tagging it the way the ivy is tagged would fix that.
+      ivy        one mesh, 940 verts / 470 tris, `_HOST` + `_CHUNK` + a `hosts` list of 12 wall
+                 `piece_id`s
+  **THE IVY TAGS WERE CHECKED IN EACH WALL'S OWN FRAME**: every tag resolves to a real wall and
+  chunk, 0 triangles straddle two tags, and 468 of 470 triangle centres sit on (or within a leaf's
+  reach of) the chunk they name. **The two that do not are ONE card on `L1_S3_B0` tagged chunk 10,
+  whose centre is 2.1 m from that chunk** -- reported to him rather than re-tagged here by position,
+  because a second opinion on his data is how two systems start disagreeing.
+  **`_HOST` IS LOWER-CASED BY THE LOADER EXACTLY AS `_CHUNK` WAS (m172)**, so both go through
+  `kitAttr`. A dead chunk collapses its leaves to a point (the chunk's own degenerate-triangle
+  trick) and throws a few green sparks. Probe, with the attributes spelt the way the loader spells
+  them: 732 verts wired across 62 chunks; one kill takes exactly its 16 verts; killing every chunk
+  takes 366 of 470 triangles, and the other 104 are his `-1` parapet and trim leaves.
+  The chip carries `V<n>`: ivy vertices that found their chunk. **0 with ivy on screen is the tags
+  not arriving**, which is m172 wearing a leaf.
+  **Re-baked** (`npm run ktx ... etc1s`): 235 non-image bufferViews byte-identical, tags, `hosts`,
+  glass and pipes all present in the `_ktx2` file.
 - **THE DIAGONAL SLASH WAS THE IMPACT FLASH CUT IN HALF BY THE WALL, AND THE FLOATING GOO WAS A
   MARK THAT NEVER LAY ON THE WALL (m175, `flashSeen`, `boxRay`, `hitFace` -> `out.x/y/z`).**
   *"When you shoot a wall there's a big diagonal slash on it -- the light burst goes through half
