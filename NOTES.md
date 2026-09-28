@@ -7,6 +7,52 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HOW CLOSE A SHAPE TRANSFER GETS WITHOUT A RESCULPT: HUMANS ~11-15%, THE WARRIOR 34% (m163,
+  `npm run morph`).** *"I just wanna see how close we can get without me doing the sculpts, so
+  that I know whether I need to go that route -- cause that's gonna be days or weeks of work."*
+  **THE BASE IS ZAP'S OWN MESH, NOT A PROXY, AND THE CAPSULE IDEA WAS A DETOUR.** What the game
+  needs is one TOPOLOGY carrying every character, because a glTF morph target is a per-vertex
+  delta and deltas only exist between meshes that share a vertex ordering. Zap already has 13,704
+  vertices in the right shape, so he IS the base. A capsule rig would have been a second thing to
+  wrap onto that anyway.
+  **THE SKIN WEIGHTS ARE WHY THE CORRESPONDENCE WORKS.** Every vertex carries JOINTS_0, so a zap
+  vertex on the left forearm is matched only against target vertices on the left forearm, in that
+  bone's own frame. A plain nearest-point in world space snaps an armpit onto the ribs and an
+  inner thigh onto the other leg; this cannot, by construction. **57 of zap's 62 bones are shared
+  with the hick** and the differences are thumbs, weapon mounts and a cigarette.
+  **MEASURED AGAINST THE TARGET'S OWN SILHOUETTE, on the six columns that are trustworthy** --
+  height, head width, and the four limb radii. `chest`/`hip`/`shoulder` are horizontal BANDS and
+  these are T-pose meshes, so those three catch the arms and mean nothing:
+      hick     11%      clancy  13%      hobo  15%      girl  19%      WARRIOR  34%
+      misses      hick 0, hobo 0, warrior 280, clancy 1064, girl 1531 vertices
+  A missed vertex does not move AT ALL, so zap's fingers stay zap's fingers on Clancy (27 joints,
+  no finger bones) and on the girl (135 of her 193 are hair and tail).
+  **AND THE WARRIOR IS THE ONE THAT MATTERS AND THE ONE THAT FAILS.** He is a different species
+  mass -- thigh 0.100 against zap's 0.061, arm 0.099 against 0.050 -- and every limb comes out
+  about half the thickness it should be. He is also exactly who the outbreak turns people into.
+  **TWO THINGS WERE FOUND BY MEASURING RATHER THAN LOOKING, AND ONE WOULD HAVE SHIPPED:**
+  1. **MY 4x4 INVERSE WAS COLUMN-MAJOR IN A ROW-MAJOR FILE**, and the failure mode is the
+     instructive part: the 3x3 came back EXACTLY right and only the translation column was
+     wrong, so bones near their own frame origin (the thighs, 10% error) transferred perfectly
+     while the arms came out **seventeen thousand metres** off. A wrong matrix that is right for
+     a third of the data is worse than one that is wrong everywhere, because the output still
+     looks arguable. `M * inv(M)` against the identity is a two-minute test and it is now in the
+     tool's own comment as the thing to run first.
+  2. **AVERAGING K POSITIONS SHRINKS A CONVEX SURFACE** -- Jensen's inequality -- so every single
+     measurement on all five characters came back SMALLER than its target. That is a systematic
+     bias, not noise, and the fix is to take the direction from the average and the DISTANCE from
+     the average of the candidates' own distances. **It moved the result by 0.2%.** Worth writing
+     down as a thing that is theoretically right and practically negligible here, so nobody
+     spends a build on it again.
+  **AND A KNOB SWEEP IS WHAT SAYS THE REST IS STRUCTURAL.** K of 1/3/6 against 0/2/4 smoothing
+  passes covers 10.6% to 12.0% -- the whole grid. There is no tuning left to find; the remaining
+  error is genuine disagreement between two meshes.
+  **NOTHING IN THE GAME READS THE OUTPUT YET.** The deltas are written to
+  `models/characters/morph/` and gitignored: seconds to regenerate, and stale the moment the
+  method changes. Wiring them in is its own build -- `morphAttributes` on a skinned mesh, the
+  influences, and the swap path -- and is only worth it if his eye agrees with the numbers,
+  **because a silhouette metric is a proxy for "does it look right" and only he can answer that.**
+
 - **THE OUTBREAK, AND A KIND SWAP IS A RESPAWN RATHER THAN SURGERY (m162, `VIRUS`, `virusGo`,
   `bodyGone`).** *"Build the warrior thing trigger. I kinda just wanna see it. Maybe you could
   build another gun mode and I could just shoot them and it turns the civilians into aliens and

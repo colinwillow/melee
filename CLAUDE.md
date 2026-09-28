@@ -73,6 +73,10 @@ npm run rig        # height, facing, and whether the weapon mounts still agree
 npm run icons      # rebuild the home-screen icon set from one square artwork
 npm run sfx        # what is in each sound file, and how hard it hits (needs mpg123-decoder)
 npm run hull       # does the DNA morph's proxy come out shaped like a body
+npm run morph      # transfer each character's SHAPE onto zap's topology and measure how close
+                   # it got. Writes deltas to models/characters/morph/ (gitignored -- seconds
+                   # to regenerate, and stale the moment the method changes). Nothing in the
+                   # game reads them yet. See NOTES.md for what the numbers mean.
 npm run ktx        # UASTC/ETC1S -> KTX2 for a GLB's textures. RUN AFTER EVERY toon_city
                    # RE-EXPORT, or the phone plays old textures on new geometry.
 npm run lanes      # re-bake Weirdport's street centrelines -- RUN IT AFTER A RE-EXPORT OF THE

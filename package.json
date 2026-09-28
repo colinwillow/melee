@@ -16,6 +16,7 @@
     "bld": "node tools/bld.mjs",
     "icons": "node tools/icons.mjs",
     "sfx": "node tools/sfx.mjs",
+    "morph": "node tools/morph.mjs",
     "hull": "node tools/hull.mjs",
     "lanes": "node tools/lanes.mjs",
     "ktx": "node tools/ktx.mjs"
