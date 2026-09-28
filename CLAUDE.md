@@ -588,11 +588,15 @@ a map at all:
   **THE CHUNK BOXES ARE BLENDER Z-UP**: `(x, y, z) → (x, z, −y)`, re-sorted, then the wall's
   world matrix. `kitBox` is the one place that does it. **And the geometry is SHARED** — ten
   wall nodes on one mesh — so `kitClone` on the first hit is mandatory, not a nicety.
-  **NOT BUILT YET, and stated rather than left to be found:** the doors/shutter/hatch are
-  indexed with their hinge data and do not open; the glass is indexed and does not break; a
-  dead chunk leaves dust and a rubble decal but no debris GEOMETRY; the `nav_*`/`room_*` markers
-  are loaded and nothing reads them; and the world loads **no bodies at all**, deliberately —
-  every `at` table here is test-site coordinates and a body inside a 9 × 6 m house is m24.
+  **m171: the doors swing away from you as you walk into them (no button), the roll-up shutter
+  rolls up, the roof hatch opens for you from BELOW and is a lid from above, the glass breaks
+  and blows out the way the shot was going, and a dead chunk throws a real piece of the wall** —
+  its own triangles lifted out before the collapse. The `col_*` colliders are hidden (m170 drew
+  them). `KIT.hatchSign` flips the lid if it lifts the wrong way. The chip adds `P<parts>` and
+  `D<debris>`.
+  **STILL NOT BUILT:** the `nav_*`/`room_*` markers are loaded and nothing reads them (fire,
+  firemen, repair, police don't exist yet), and the world loads **no bodies at all**,
+  deliberately — every `at` table here is test-site coordinates.
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
   his own torso — her hair has head/chest/hips spheres for exactly that reason. The arms are
   pinned at the shoulder under a .85 cone and cannot reach far, so it is left out rather than

@@ -7,6 +7,49 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE KIT'S DOORS OPEN, ITS GLASS BREAKS, AND A WALL THROWS REAL PIECES OF ITSELF (m171,
+  `KPARTS`, `kitPartStep`, `kitPartKill`, `KDEB`, `kitDebrisChunk`).** *"You said it's not built
+  yet -- why isn't it built? What's not built?"* m170 indexed every moving part with its hp and
+  hinge data and did nothing with it; this is that list, done.
+  **m170 WAS ALSO DRAWING FOURTEEN GREY BOXES.** Every moving part carries a `col_*` child mesh
+  as its collider -- the breakables GLB's convention -- and a mesh in the visual file is a mesh
+  the renderer draws. The breakables pass filtered `col_brk_*`; the kit pass never did. They are
+  read for their bounds now and hidden.
+  **THE AXES WERE READ OUT OF THE FILE, NOT TRANSLATED FROM THE NOTE.** The note speaks Blender:
+  a hinged door turns about its local Z. The exporter has already converted the node to Y-up,
+  and the door's own bounds say so -- x 0..1.04, **y 0..2.16**, z +/-0.03 -- so it is
+  `rotation.y`, hinged at local x = 0, face normal local +Z. The shutter hangs DOWN from its
+  pivot (y -2.60..0), the lid lies flat off a hinge at z = 0, a pane is centred. **A note
+  written in one axis convention about a file stored in another is one sign from a bug.**
+  **NO BUTTON OPENS A DOOR.** Walk into it and it swings AWAY from you -- his -100..100 limits
+  exist so it can go either way -- with the direction LATCHED while it is open, because
+  re-deciding every frame flips it the moment you step through and slams it into your back.
+  `Ry(a)(1,0,0) = (cos a, 0, -sin a)`, so a man on the +Z side wants +a: worked, not argued.
+  **The collider swings with it**, rewritten in place in `BOXES` from the `col_*` child's world
+  matrix, so the resolver pushes him out of the slab where the slab actually is.
+  **THE SHUTTER SCALES TOWARD ITS TOP PIVOT RATHER THAN SLIDING.** Sliding by `travel` puts 2.6 m
+  of shutter through the wall above the opening; scaling toward the top edge is a roll-up
+  rolling up and cannot poke through anything.
+  **THE HATCH OPENS FOR HIM FROM BELOW AND IS A LID FROM ABOVE.** One that opened for anyone
+  near it would open under his feet on the roof. Shooting it (hp 60) makes it a hole. **Which
+  way it lifts is `KIT.hatchSign`** -- reasoned, not measured, and stated as such.
+  **`blowout: true` IS A DIRECTION.** The shards go the way the blow travelled, so a pane shot
+  from outside showers the room.
+  **THE DEBRIS IS THE WALL'S OWN TRIANGLES, LIFTED OUT BEFORE THE COLLAPSE** -- every primitive,
+  every attribute, in the materials they were drawn in -- because the collapse is what destroys
+  what it would copy. Checked over the real file: **all 261 chunks yield triangles, and 0 of
+  3,638 triangles straddle two chunk ids**, so testing one vertex per triangle is exact. Capped
+  at `debrisMax` (a piece is up to four draw calls), it lands on the REAL ground (`groundAt`, so
+  a piece off the upper storey lands on the deck inside rather than falling to the street), and
+  it shrinks out rather than fading, because a fade on an opaque mesh is a second material and
+  a sort for something nobody is looking at.
+  **A MULTI-PRIMITIVE NODE IS A GROUP OF MESHES AT IDENTITY; A SINGLE-PRIMITIVE NODE IS THE MESH
+  ITSELF**, whose `matrix` is relative to the root and must not be applied again. All 20 walls
+  here are multi-primitive (measured), so the guard is for the next export and not this one.
+  **STILL NOT BUILT, AND SAID:** the `nav_*` / `room_*` / `repair` markers are loaded and nothing
+  reads them -- they are for fire spread, firemen, repair crews and police, none of which exist
+  yet -- and the kit world still loads no bodies.
+
 - **THE BUILDING KIT IS A FOURTH WORLD, AND EVERY CLAIM IN HIS HANDOFF WAS CHECKED BEFORE A
   LINE WAS WRITTEN (m170, `KIT`, `buildKitCol`, `buildKit`, `kitBlast`, `CLIMB`).** *"I want
   buildings that are breakable, and also buildings you can go inside -- staircases that go up to
