@@ -73,6 +73,8 @@ npm run rig        # height, facing, and whether the weapon mounts still agree
 npm run icons      # rebuild the home-screen icon set from one square artwork
 npm run sfx        # what is in each sound file, and how hard it hits (needs mpg123-decoder)
 npm run hull       # does the DNA morph's proxy come out shaped like a body
+npm run ktx        # UASTC/ETC1S -> KTX2 for a GLB's textures. RUN AFTER EVERY toon_city
+                   # RE-EXPORT, or the phone plays old textures on new geometry.
 npm run lanes      # re-bake Weirdport's street centrelines -- RUN IT AFTER A RE-EXPORT OF THE
                    # VISUAL GLB, because it WRITES `WPLANES` into index.html
 ```
@@ -511,15 +513,14 @@ means anything you can carry from one situation to the next.
 
 ## Still open
 
-- **THE TOON CITY IS A THIRD WORLD AS OF m157** (`TCITY`, world key `toon`, `?w=toon`). Measured:
-  2,327 draw calls down to **72** (34 InstancedMeshes + 25 merged buckets + 12 singles), 471k
-  tris, flat ground at y=0 and **no colliders at all**, which is what he asked for.
-  **The one thing still badly out of budget is TEXTURE MEMORY: ~268 MB resident as authored**
-  (27 images at 1254 px), floored to ~115 by `TCITY.tex` 768. **The real fix is `gltf-transform
-  uastc` to KTX2** — same picture at the same 1254 px, ~67 MB, because it stays GPU-compressed in
-  memory. That is the next build on this level and it is a bake, not a code change.
-  `mel.TCITY` is live (`tex`, `inst`, `merge`, `cast`, `ground`, `fog`); `inst`/`merge`/`tex` want
-  a reload.
+- **THE TOON CITY IS A THIRD WORLD** (`TCITY`, world key `toon`, `?w=toon`). m157 took it from
+  2,327 draw calls to ~72; m158 added his collision file, his `weirdkit_tint` paint, the rim and
+  bounce lights, and **the KTX2 bake — 176 MB of texture down to 22**. What is left:
+  **no spawn search** (0,0, harmless), the bodies still stand at test-site coordinates, and
+  **`TCITY.file` points at the BAKED glb** — his own export is `TCITY.raw` and **the bake has to
+  be re-run (`npm run ktx models/toon_city/toon_city_visual.glb etc1s`) after every re-export**,
+  or the phone keeps playing the old textures on new geometry.
+  `mel.TCITY` and `mel.LIGHTX` are live; `inst`/`merge`/`tex`/`col` want a reload.
 
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
   his own torso — her hair has head/chest/hips spheres for exactly that reason. The arms are

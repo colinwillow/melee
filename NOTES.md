@@ -7,6 +7,129 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE KTX2 BAKE, AND THE NUMBER THAT MATTERS IS RESIDENT MEMORY (m158, `npm run ktx`,
+  `tools/ktx.mjs`, `vendor/KTX2Loader.js`).** *"Texture memory is the real problem, and KTX2 is
+  the right fix. Tell it yes to the UASTC to KTX2 tool."*
+  **IT REWRITES THE GLB RAW AND NEVER DECODES A MESH, WHICH IS THE WHOLE DESIGN.** The obvious
+  build is gltf-transform, and that has to DECODE draco to read the file and RE-ENCODE it to
+  write one -- so the geometry that comes out is not the geometry that went in, and a re-encode
+  artefact would surface as "the city looks different" with nothing pointing at this tool. Here
+  the JSON chunk is edited, the image bufferViews are replaced and **every other bufferView is
+  copied byte for byte** -- and the tool ASSERTS that, reading its own output back and comparing
+  all 1,237 of them. "It produced a file" is not "it produced a GLB".
+  **AND THE TWO ENCODERS ARE A REAL TRADE, MEASURED ON HIS OWN FILE RATHER THAN QUOTED:**
+      as authored   WebP   5.6 MB of image data   **176 MB RESIDENT**  (32 @ 1024, 4 @ 512)
+      UASTC + zstd         38.4 MB                 ~44 MB   <- near-lossless, 47 MB to download
+      **ETC1S q200          7.6 MB                 ~22 MB**  <- SHIPPED
+  **UASTC IS THE WRONG TRADE ON A PHONE AND IT IS NOT CLOSE.** It is the better picture and it
+  is a **47 MB download** against 14.7; ETC1S costs two megabytes on the wire and takes the
+  memory to an eighth. On hand-painted flat colour and grunge, 4 bpp holds up; on smooth
+  gradients it would not, and that is the thing to look at if a future sheet is a sky or a
+  gradient ramp. `npm run ktx <glb>` is UASTC, `npm run ktx <glb> etc1s` is this.
+  **`detectSupport(renderer)` IS NOT OPTIONAL AND IS THE SILENT HALF.** It tells the transcoder
+  which format the DEVICE has -- ASTC on most phones, BC7 on a desktop, ETC2 as the floor -- and
+  without it every KTX2 comes back transcoded to plain RGBA: **the whole 176 MB back, with an
+  extra decode in front of it**, and nothing on screen saying the saving did not happen.
+  **THE TRANSCODER IS LAZY, SO THE OTHER TWO WORLDS PAY NOTHING.** `KTX2Loader.init()` runs on
+  the first KTX2 texture it is handed, so the 527 KB of wasm is never fetched unless something
+  asks. The import itself is ktx-parse + zstddec, about 40 KB.
+  **AND THE LOADER IS ATTACHED UNCONDITIONALLY**, not only in the toon world: GLTFLoader throws
+  outright for a file that REQUIRES an extension with no loader for it, and a world that fails
+  to boot over a loader nobody attached is the one failure he cannot look at and correct.
+  **FOUR VENDORED FILES AND TWO EDITS TO ONE OF THEM.** `KTX2Loader.js`, `WorkerPool.js`,
+  `ktx-parse.module.js`, `zstddec.module.js` and `basis/` came out of `npm pack three@0.180.0`
+  (**unpkg is blocked by the egress proxy -- 403 on CONNECT; npm is not**), and `KTX2Loader.js`
+  imports were repointed at `./` plus one real fix: it imports `DisplayP3ColorSpace` and
+  `LinearDisplayP3ColorSpace` from `'../math/ColorSpaces.js'`, **and the minified r180 build this
+  repo vendors does not export either**. They are plain string constants in three's source and
+  are inlined, rather than patching a build we do not own.
+  **AND THE BOOT GATE'S FAKE RENDERER NEEDED AN `extensions` OBJECT** -- without it
+  `detectSupport` throws at module scope, which is a blank page, which is the one class that
+  gate exists for. It caught this on the first run. It answers NO to every format, which is what
+  a headless node honestly has, and `get()` returns undefined for a format `has()` just refused
+  rather than inventing an object -- m192's rule, that a stub answering every question cannot
+  catch a wrong one.
+  **AND A BACKTICK IN A COMMENT INSIDE THE SHIM'S TEMPLATE LITERAL CLOSED IT**, which is a
+  syntax error pointing at a line that is fine. Shredworld's c145 and c136, third time across
+  these repos, and the first time in `boot.mjs`. There are none in there now.
+  **HIS OWN EXPORT IS UNTOUCHED AT `toon_city_visual.glb` AND THE BAKE IS A SECOND FILE.** He
+  re-exports onto the same path constantly (m61), so a tool that overwrites its own input eats
+  his next export the first time somebody runs it twice -- and `TCITY.raw` is the A/B and is
+  what to point at the day the bake is stale.
+
+- **HIS COLLISION, HIS TINT, AND THE RE-EXPORT CARRIES `EXT_mesh_gpu_instancing` (m158).**
+  *"Its build reads no colliders because it hasn't seen the collision file yet... the objects
+  follow your `road_`, `ground_`, `bld_`, `prop_` and `solid_` naming, and the `metal` material
+  marks grindable surfaces. Also hand it `weirdkit_tint.js`, or the walls will look flatter."*
+  **THE COLLISION IS `buildWpCollision`'S SHAPE WITH HIS NAMING IN IT.** Measured first: 78
+  nodes, 52,614 tris, 7 materials, **no draco**, 0 negative-determinant nodes.
+      road_city            2 tris  asphalt   y 0.00 flat   <- ONE QUAD under the whole map
+      ground_sidewalks  2,862      concrete  y 0.25 flat        ground_lots  682  grass
+      ground_curbs      8,586      metal+concrete  y 0..0.28
+      bld_* (71)       10,258      wall           prop_street  24,730      prop
+      prop_tree_trunks  3,286      wood           solid_posts   2,208      prop+metal
+  **NOT ONE OF THE 78 IS A 12-TRIANGLE BOX**, which is the shortcut Weirdport's 329 props take,
+  so every solid here goes through the rasteriser and that shortcut is dead code on this file.
+  **AND THE WHOLE GROUND MESH GOES INTO `triAdd` UNSORTED**, because it throws away anything
+  steeper than `TRI.up` by itself -- a kerb's SIDE and every underside drop out with nothing
+  separated by hand.
+  **THE GRIND CAME FREE.** m153 catches the top edge of any solid box near him and `BOXES` IS
+  the rail set, so his `metal` kerbs and posts are grindable with **no code at all**; the names
+  are collected into `mel.TCITY.rails` so which they were is answerable.
+  **THE TINT IS PORTED, NOT IMPORTED, AND THE THREE DIFFERENCES ARE WHY.** (1) An instance
+  `onBeforeCompile` SHADOWS the prototype's completely, so his hook as written would have taken
+  the toon ramp and the paint pass off every wall in the city -- m141's whole finding -- so it
+  chains `toonPatch` and `paintPatch`. (2) It is patched LAST so it ends up FIRST in the shader,
+  because his replace and `paintPatch` both target `#include <color_fragment>` and the tint has
+  to settle the base colour before the paint splotches it. (3) `extras` reach `userData` through
+  GLTFLoader, so `wk_tint` is read there. The shader body is his, verbatim.
+  **AND AN `InstancedMesh` MUST BE SKIPPED BY BOTH PASSES, WHICH IS NEW AND WAS A LATENT
+  DISASTER.** His re-export carries `EXT_mesh_gpu_instancing` -- 45 nodes holding 99 instances --
+  and GLTFLoader turns each into a real `InstancedMesh`. **`isInstancedMesh` is also `isMesh`**,
+  so m157's instancing pass would have grouped two of them and built an InstancedMesh OF
+  InstancedMeshes: three reads `instanceMatrix` off the OUTER one, the inner 99 placements are
+  never looked at, and **98 of his objects vanish with nothing on screen saying why.** The merge
+  pass is the same fault wearing the other face -- `applyMatrix4` on the geometry would flatten
+  every instance onto one. Caught by reading the new file's extension list before writing, not
+  by running it.
+  **AND `TCITY.tex` IS 0 NOW.** *"Its size cap can go back up to full size, since the textures
+  are already 1024 or smaller."* Measured on the new export: 32 @ 1024, 4 @ 512, 176 MB resident
+  against the first export's 268. The runtime downscale has nothing left to do and a canvas
+  redraw of every texture at load is cost for no benefit; it stays as the dial for a future one.
+
+- **HIS LIGHTING SPEC, AND TWO OF ITS FOUR POINTS WERE ALREADY SHIPPED (m158, `LIGHTX`,
+  `stepLightX`).** *"One warm key sun that casts shadows, low and golden, 25-35 degrees... keep
+  this as the only shadow caster... two or three directional lights with NO shadows for shape...
+  a hemisphere light: warm from the sky, dark purple from the ground."*
+  **POINTS 1 AND 2a HAVE BEEN IN THE FILE SINCE m140** and are confirmed rather than rebuilt:
+  `sun` is the only shadow caster, it sits at **30 degrees** (his own m140 pick out of 12/30/57,
+  squarely in the 25-35 he asked for), and its shadow camera is a 44 m box that FOLLOWS HIM
+  (m124) at 46 texels per metre. `fill` is the cool blue from the opposite side, casting nothing.
+  **A RIM LIGHT COMES FROM BEHIND THE SUBJECT, NOT FROM BEHIND THE CAMERA.** His sentence says
+  both -- *"from behind the camera's usual direction"* and *"so building edges and characters
+  catch a colored edge"* -- and only one of those puts light on an EDGE: a lamp behind the lens
+  is a frontal fill and flattens everything, which is the opposite of the ask. So it sits on the
+  far side of him along the view direction and shines back toward the camera, and **the sign is
+  settled by what a rim light IS rather than derived**, which is this file's own handedness rule.
+  **AND IT FOLLOWS `cam.az`, WHICH IS THE WHOLE REASON IT IS NOT A CONSTANT.** A fixed bearing
+  rims one wall of the city; a bearing that tracks the lens rims whatever he is looking at. Not
+  physical, and exactly what a rim light is for in a game. **Stepped AFTER `stepCam`**, or it is
+  placed off last frame's bearing and trails every swing -- `stepShip`'s ordering rule, and a
+  colour sitting on an edge is where a frame of lag shows.
+  **AND A DirectionalLight's `target` DEFAULTS TO THE ORIGIN.** Left there, the rim is only
+  correct while he stands on the spawn; both targets are moved to the look point and are in the
+  scene graph, because three reads a target's WORLD matrix and one outside the graph never has
+  one updated for it.
+  **THE COST IS FRAGMENT WORK AND IT IS STATED RATHER THAN HIDDEN.** Neither casts -- a
+  shadow-casting light re-draws the whole city, which at 22 fps is not available -- but three
+  directional lights become five, so every lit pixel runs two more iterations of the lighting
+  loop, maybe **5 to 8 per cent on a fill-bound frame**. `RIM` on the FX key is the A/B, because
+  at 22 fps that is a measurement he can take and I cannot.
+  **AND STREETLIGHTS, NEON AND WINDOWS GET NO LIGHTS AT ALL**, which is his point 4 and is right:
+  a `PointLight` is a per-fragment cost on every surface in range. His export already carries the
+  emissives (`WK_M_glass_lit`, `KHR_materials_emissive_strength`) and the ground pools are decals
+  he is drawing. Nothing here adds a light for them and nothing should.
+
 - **THE TOON CITY: A THIRD WORLD, AND THE OPTIMISATION IS 2,327 DRAW CALLS DOWN TO 72 (m157,
   `TCITY`, `buildTCity`, `inTC`).** *"I added a new level/environment, we need to setup and test
   out. I've been developing it in Blender and need to work out what needs to be optimized or

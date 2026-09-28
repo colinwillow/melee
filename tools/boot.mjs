@@ -50,6 +50,14 @@ class FakeRenderer {
     this.shadowMap = { enabled: false, type: 0 };
     this.info = { autoReset: true, render: { calls: 0, triangles: 0 }, reset() {} };
     this.capabilities = { isWebGL2: true, getMaxAnisotropy: () => 1, precision: 'highp' };
+    // A REAL RENDERER HAS an extensions object, and without it KTX2Loader.detectSupport throws
+    // AT MODULE SCOPE -- which is a blank page, and is the class this gate exists for. It
+    // answers NO to every compressed format, which is what a headless node honestly has.
+    // A stub that answers every question cannot catch a wrong one, so get() returns undefined
+    // for a format has() just refused rather than inventing an object.
+    // NO BACKTICKS IN HERE: this whole shim is a template literal and one in a comment closes
+    // it, which is a syntax error pointing at a line that is fine.
+    this.extensions = { has: () => false, get: () => undefined, init() {} };
     this.outputColorSpace = ''; this.toneMapping = 0; this.toneMappingExposure = 1; }
   setSize(w, h) { this.domElement.width = w; this.domElement.height = h; }
   setPixelRatio() {} setClearColor() {} setRenderTarget() {} clear() {} render() {} dispose() {}

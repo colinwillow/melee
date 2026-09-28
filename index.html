@@ -516,14 +516,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m157</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m158</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m157</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m158</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; flick = roll</div></div>
@@ -572,12 +572,21 @@ body.desk.free #deskHint { display: block; }
 import * as THREE from 'three';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
+// **KTX2, WHICH IS ABOUT RESIDENT MEMORY AND NOT ABOUT DOWNLOAD SIZE (m158).** A WebP in a GLB
+// is compressed on the WIRE and the GPU holds it as full RGBA with mips; a KTX2 stays
+// GPU-COMPRESSED IN MEMORY. The toon city measures **176 MB resident** as 32 x 1024 + 4 x 512
+// WebP and **22 MB** as ETC1S -- and on iOS 176 MB does not throw, it kills the tab, which comes
+// back as the game reloading (m133).
+// **THE TRANSCODER IS LAZY, SO THE OTHER TWO WORLDS PAY NOTHING.** `KTX2Loader.init()` is called
+// on the first KTX2 texture it is actually handed, so the 527 KB of wasm is never fetched unless
+// something asks for it -- the import itself is ktx-parse and zstddec, about 40 KB of JS.
+import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm157';
+const BUILD = 'm158';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/toon_city_visual.glb":"658bfec3","models/toon_city/tex/debris_pack_01_1k.jpg":"a91118e5","models/toon_city/tex/ojbects_pack_4k_1k.jpg":"31802b49","models/toon_city/tex/plant_pack_01_1k.jpg":"969256f4","models/toon_city/tex/tree_pack_01_1k.jpg":"305b66e9","models/toon_city/tex/tripo_rgb_2f6c88d0-a8e7-4528-b2de-cf88db94be24_1k.jpg":"b6d1ec0c","models/toon_city/tex/tripo_rgb_6f6e6543-1fad-4978-90a5-be8e013edbf9_1k.jpg":"6e4c4db3","models/toon_city/tex/tripo_rgb_cb539682-ee48-45b7-b001-4b5b35c02d6f_1k.jpg":"5fe38157","models/toon_city/tex/tripo_rgb_cc72376e-9f51-4ee9-9d59-7661b7cb06bf_1k.jpg":"2937cf67","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/toon_city_collision.glb":"3cb70602","models/toon_city/toon_city_visual.glb":"176f3181","models/toon_city/toon_city_visual_ktx2.glb":"c1ca8535","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -5098,6 +5107,89 @@ sun.castShadow = true;
 // **THE AMBIENT TAKES BACK WHAT THE DIRECTIONAL GIVES UP**, or "flat" reads as "darker" and
 // the two cannot be judged apart -- a hemisphere lights every surface whatever it faces, so it
 // buys back more per unit than the sun gives up.
+// ============================================================================================
+// THE RIM AND THE BOUNCE (m158, `LIGHTX`, `stepLightX`) -- his own spec, and two of its four
+// points were already shipped.
+//
+// *"One warm key sun that casts shadows, low and golden, 25-35 degrees... keep this as the only
+// shadow caster, and fit its shadow area tightly around the player. Two or three directional
+// lights with NO shadows for shape: a cool blue-purple from the opposite side; a pink or orange
+// rim from behind the camera's usual direction, so building edges and characters catch a
+// coloured edge; optionally a soft teal bouncing up from below. A hemisphere light: warm from
+// the sky, dark purple from the ground, instead of flat ambient."*
+//
+// **POINTS 1 AND 2a ARE ALREADY IN THE FILE AND HAVE BEEN SINCE m140.** `sun` is the only
+// shadow caster, it sits at **30 degrees** (`SUNC`, which is his own m140 pick out of 12/30/57),
+// and its shadow camera is a 44 m box that FOLLOWS HIM (`stepSun`, m124) -- 46 texels per metre
+// on a 2048 map. `fill` is the cool blue from the opposite side, casting nothing. So what this
+// adds is 2b, 2c and the hemisphere's ground colour, and the other two are confirmed rather
+// than rebuilt.
+//
+// **A RIM LIGHT COMES FROM BEHIND THE SUBJECT, NOT FROM BEHIND THE CAMERA.** His sentence says
+// both -- "behind the camera's usual direction" and "so edges catch a coloured edge" -- and only
+// one of those is a thing that puts light on an edge: a lamp behind the LENS is a frontal fill
+// and flattens everything, which is the opposite of what he is asking for. So it sits on the far
+// side of him along the view direction and shines back toward the camera. **The sign is settled
+// by what a rim light IS rather than derived**, which is this file's own rule about handedness.
+//
+// **AND IT FOLLOWS `cam.az`, WHICH IS THE WHOLE REASON IT IS NOT A CONSTANT.** A fixed bearing
+// rims one wall of the city and nothing else; a bearing that tracks the lens rims whatever he is
+// looking at, always. That is not physical and it is exactly what a rim light is for in a game.
+//
+// **NEITHER CASTS, AND THAT IS WHAT MAKES THEM AFFORDABLE.** A shadow-casting light re-draws the
+// whole city once more, which at 22 fps is not available. What they DO cost is fragment work:
+// three directional lights become five, so every lit pixel runs two more iterations of the
+// lighting loop -- **maybe 5 to 8 per cent on a fill-bound frame**, which is small and is not
+// nothing. `RIM` on the FX key is the A/B, because at 22 fps that is a measurement he can take
+// and I cannot.
+//
+// **AND STREETLIGHTS, NEON AND WINDOWS GET NO LIGHTS AT ALL**, which is his point 4 and is
+// right: a `PointLight` is a per-fragment cost on every surface in range and a shadow-casting
+// one is six more passes. His export already carries the emissives (`WK_M_glass_lit`,
+// `KHR_materials_emissive_strength`), and the ground pools he is drawing are decals. Nothing
+// here adds a light for them and nothing should.
+const LIGHTX = {
+  on: 1,
+  rimCol: 0xff7a9e, rimI: 1.15, rimUp: .34,   // pink, a little above the horizon
+  bncCol: 0x3fd9c4, bncI: .38,                // teal, up off the street
+  hemiGround: 0x2a1f3d,                       // dark purple, his point 3
+};
+// **THE OLD GROUND COLOUR WAS A WARM GREY AND HIS SPEC ASKS FOR PURPLE.** It is set here rather
+// than in the constructor so `mel.LIGHTX.hemiGround` is a live dial and the number has one home.
+hemi.groundColor.setHex(LIGHTX.hemiGround);
+const rim = new THREE.DirectionalLight(LIGHTX.rimCol, LIGHTX.rimI);
+scene.add(rim);
+const bounce = new THREE.DirectionalLight(LIGHTX.bncCol, LIGHTX.bncI);
+// **STRAIGHT DOWN, SO IT SHINES UP.** A directional light travels from its position toward its
+// target, and the target is the origin -- so a position BELOW is a light coming from under him,
+// which is what a street bouncing back looks like. It never moves.
+bounce.position.set(0, -10, 0);
+scene.add(bounce);
+// AFTER `stepCam`, because it reads the bearing the lens was actually drawn at -- a rim taken
+// from last frame's `cam.az` trails the lens every time it swings, which is `stepShip`'s own
+// ordering rule and is visible on a colour that sits on an edge.
+function stepLightX() {
+  const k = LIGHTX.on ? 1 : 0;
+  rim.intensity = LIGHTX.rimI * k; bounce.intensity = LIGHTX.bncI * k;
+  if (!k) return;
+  // `cam.az` is the direction the lens LOOKS, so +forward is away from the camera: put the lamp
+  // out there and it shines back past him, which rims his silhouette and every wall edge facing
+  // the lens. 40 m out so it is well clear of anything it is lighting.
+  const d = 40;
+  rim.position.set(cam.tgt.x + Math.sin(cam.az) * d, cam.tgt.y + LIGHTX.rimUp * d,
+                   cam.tgt.z + Math.cos(cam.az) * d);
+  // AND THE TARGET MOVES WITH IT. A DirectionalLight aims at `target.position`, which defaults
+  // to the origin -- left there, the rim is only correct while he is standing on the spawn.
+  rim.target.position.copy(cam.tgt); rim.target.updateMatrixWorld();
+  bounce.target.position.copy(cam.tgt); bounce.target.updateMatrixWorld();
+  bounce.position.set(cam.tgt.x, cam.tgt.y - 10, cam.tgt.z);
+}
+// **AND BOTH TARGETS HAVE TO BE IN THE SCENE.** A light's `target` is an ordinary Object3D and
+// three reads its WORLD matrix -- one that is not in the graph never gets one updated for it,
+// so the direction silently stays whatever it was at construction. (`updateMatrixWorld` above
+// covers it either way; this is belt and braces and costs two empty nodes.)
+scene.add(rim.target); scene.add(bounce.target);
+
 const FLAT = { on: 0, sun: .30, fill: .55, hemi: 1.70, shadow: 0,
                sun0: sun.intensity, fill0: fill.intensity, hemi0: hemi.intensity, cast0: true };
 function flatSet(on) {
@@ -6337,7 +6429,16 @@ const rig = {
 };
 
 const dl = new DRACOLoader().setDecoderPath('./vendor/draco/');
-const gltf = new GLTFLoader().setDRACOLoader(dl);
+// **`detectSupport(renderer)` IS NOT OPTIONAL AND IS WHY THIS SITS AFTER THE RENDERER.** It is
+// what tells the transcoder which compressed format the DEVICE has -- ASTC on most phones, BC7
+// on a desktop, ETC2 as the floor -- and without it every KTX2 comes back transcoded to plain
+// RGBA, which is the whole 176 MB back with an extra decode in front of it. Silent, and exactly
+// the shape of a saving that looks applied and is not.
+// **AND IT IS ATTACHED UNCONDITIONALLY**, not only in the toon world: GLTFLoader throws
+// "no DRACOLoader/KTX2Loader instance provided" for a file that REQUIRES the extension, and a
+// world that fails to boot over a loader nobody attached is the one failure he cannot correct.
+const kl = new KTX2Loader().setTranscoderPath('./vendor/basis/').detectSupport(renderer);
+const gltf = new GLTFLoader().setDRACOLoader(dl).setKTX2Loader(kl);
 
 // A SLOW CONNECTION IS NOT A MISSING FILE, and from the call site the two are
 // indistinguishable -- one wants to carry on without the thing, the other wants to ask again.
@@ -9358,6 +9459,7 @@ function fxOn(k) {
        : k === 'flat'   ? (FLAT.on ? 1 : 0)
        : k === 'toon'   ? (TOON.on ? 1 : 0)
        : k === 'paint'  ? (PAINT.on ? 1 : 0)
+       : k === 'rim'    ? (LIGHTX.on ? 1 : 0)
        :                  (WP.tintMode ? 1 : 0);
 }
 function fxSet(k, on) {
@@ -9375,6 +9477,11 @@ function fxSet(k, on) {
   else if (k === 'toon') { TOON.on = on; toonSync(); }
   else if (k === 'paint') { PAINT.on = on; paintSync(); }
   else if (k === 'flat') flatSet(on);
+  // **THE RIM AND THE BOUNCE ARE ONE SWITCH, BECAUSE THEY ARE ONE QUESTION.** Two extra
+  // directional lights cost two more iterations of the lighting loop on every lit fragment, and
+  // "is the shaping worth the fill" is a measurement he can take at 22 fps and I cannot. Their
+  // intensities are written by `stepLightX` off `LIGHTX.on`, so there is one owner.
+  else if (k === 'rim') LIGHTX.on = on;
   else { WP.tintMode = on ? 2 : 0; WPTINT.value = WP.tintMode; }
   return on;
 }
@@ -9386,7 +9493,7 @@ let fxLit = -1;
 function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
           | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7)
-          | (fxOn('toon') << 8) | (fxOn('paint') << 9);
+          | (fxOn('toon') << 8) | (fxOn('paint') << 9) | (fxOn('rim') << 10);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -12188,18 +12295,58 @@ function buildWpVisual(g, trim) {
 // that is not there goes stale silently, and that has been paid for eleven times.
 const TCITY = {
   on: 1,
-  file: 'models/toon_city/toon_city_visual.glb',
+  // **THE KTX2 BAKE IS WHAT SHIPS (m158, `npm run ktx`).** Measured, ETC1S, geometry verified
+  // byte-identical across 1,237 bufferViews: **176 MB resident -> 22**, and the image data on
+  // the wire only goes 5.6 MB -> 7.6 (the whole GLB, 12.5 -> 14.7). UASTC is the other option
+  // and it is the wrong trade on a phone -- 44 MB resident, which is better, against **47 MB of
+  // download**, which is not. `npm run ktx <glb>` for UASTC, `npm run ktx <glb> etc1s` for this.
+  // **HIS OWN EXPORT IS UNTOUCHED AT `toon_city_visual.glb`**, so a re-export lands where he
+  // puts it and the bake is a separate file that has to be re-run -- which is the whole reason
+  // `TCITY.raw` exists: it is the A/B, and it is what to point at if the bake is ever stale.
+  file: 'models/toon_city/toon_city_visual_ktx2.glb',
+  raw: 'models/toon_city/toon_city_visual.glb',
+  // **HIS COLLISION EXPORT (m158).** *"Its build reads no colliders because it hasn't seen the
+  // collision file yet. Hand it `toon_city_collision.glb`. The objects follow your `road_`,
+  // `ground_`, `bld_`, `prop_` and `solid_` naming, and the `metal` material marks grindable
+  // surfaces."* Measured before a line was written -- 78 nodes, 52,614 tris, 7 materials, **no
+  // draco**, 0 negative-determinant nodes, x -93.5..90.5 / y 0..19.2 / z -90.3..93.5:
+  //     road_city            2 tris  asphalt    y 0.00 flat   <- ONE QUAD under the whole map
+  //     ground_sidewalks  2,862      concrete   y 0.25 flat
+  //     ground_lots         682      grass      y 0.23 flat
+  //     ground_curbs      8,586      metal+concrete  y 0..0.28
+  //     bld_* (71)       10,258      wall
+  //     prop_street      24,730      prop
+  //     prop_tree_trunks  3,286      wood
+  //     solid_posts       2,208      prop+metal y 0..2.87
+  // **AND NOT ONE OF THE 78 IS A 12-TRIANGLE BOX**, which is the shortcut Weirdport's 329 props
+  // take -- so every solid here goes through the rasteriser and the shortcut is dead code on
+  // this file rather than something to reach for.
+  col: 'models/toon_city/toon_city_collision.glb',
+  ground: /^(road|ground)_/,     // walkable TRIANGLES -- his decks
+  solid: /^(bld|prop|solid)_/,   // rasterised into BOXES
+  // `solidColumns`' own config. `cell` .8 is tighter than Weirdport's 1.0 because these props
+  // are street furniture rather than buildings, and `maxCells` GROWS the cell to fit rather
+  // than skipping a mesh, so a 24,730-triangle `prop_street` gets coarse columns and a bollard
+  // fine ones. `full`/`fill` are m124's pair: `full` alone says a beam IS its bounding box.
+  cols: { tag: 'TOONCITY', cols: 1, cell: .8, maxCells: 6144, tol: .35, full: .92, fill: .5 },
   spawn: [0, 0],
-  inst: 1,          // 1,257 nodes -> ~34 InstancedMeshes
-  merge: 1,         // 1,070 single-use draws -> ~37 merged buckets
-  tex: 768,         // the longest edge any texture is allowed. 0 = as authored.
-  cast: 0,          // the city RECEIVES shadows and does not cast them -- 75 more draws in the
+  inst: 1,          // ~1,150 nodes -> ~34 InstancedMeshes
+  merge: 1,         // ~1,070 single-use draws -> ~25 merged buckets
+  // **0 NOW, BECAUSE HE RE-EXPORTED AT POWER-OF-TWO (m158).** *"Its size cap (the 768 floor it
+  // set) can go back up to full size now, since the textures are already 1024 or smaller."*
+  // Measured on the new file: 32 @ 1024 and 4 @ 512, **176 MB resident** against the first
+  // export's 268 -- so the runtime downscale has nothing left to do and a canvas redraw of
+  // every texture at load is cost for no benefit. It stays as the dial for a future export.
+  tex: 0,
+  tint: 1,          // his `weirdkit_tint.js`, ported. `extras.wk_tint` names the materials.
+  cast: 0,          // the city RECEIVES shadows and does not cast them -- 72 more draws in the
                     // shadow pass, and a merged bucket's bounds span the whole map so most of
                     // them would never cull out of it. His own shadow still lands on the road.
-  // **THE GROUND IS A PLANE AND `groundAt` ALREADY RETURNS 0.** With `TRI.on` false and `BOXES`
-  // empty every collider query in the file answers "flat, at zero" with no case written -- so
-  // "walkability" is the ABSENCE of the two world builders rather than a third kind of ground.
-  ground: 520, groundY: -.02, groundCol: 0x6f6a63,
+  // **THE PLANE IS A BACKSTOP NOW, NOT THE GROUND.** With the collision file in, `road_city` is
+  // a real walkable quad under the whole map and `triGround` answers off it -- so this is only
+  // what you see past the city's edge. It sits UNDER his asphalt (`groundY`) so his wins the
+  // depth test, and `plane: 0` removes it.
+  plane: 520, groundY: -.04, groundCol: 0x6f6a63,
   fog: { near: 55, far: 300 },
 };
 const tcRoot = new THREE.Group();
@@ -12229,12 +12376,103 @@ function tcShrink(t) {
   return was - c.width * c.height;
 }
 
+// **HIS COLLISION FILE (m158).** Every line of this is `buildWpCollision`'s shape with his
+// naming in it, and both halves are machinery that already exists: `triAdd` for the decks and
+// `solidColumns` for everything you stop against. **The `metal` material marks the grindable
+// surfaces** -- and m153's grind already catches the TOP EDGE of any solid box near him, so
+// `BOXES` being the rail set means the kerbs and posts are grindable with NO code at all. The
+// names are collected so `mel.TCITY.rails` can say which they were.
+function buildTCityCol(g) {
+  let nG = 0, nTri = 0, nBox = 0, nRaster = 0, nMetal = 0, skip = 0;
+  const t0 = performance.now();
+  g.scene.updateMatrixWorld(true);
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+  const rails = [];
+  g.scene.traverse(o => {
+    if (!o.isMesh || !o.geometry) return;
+    const nm = o.name || '';
+    const ground = TCITY.ground.test(nm), solid = TCITY.solid.test(nm);
+    if (!ground && !solid) { skip++; return; }
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    if (mats.some(m => m && m.name === 'metal')) { nMetal++; rails.push(nm); }
+    const pos = o.geometry.attributes.position, idx = o.geometry.index;
+    if (!pos) { skip++; return; }
+    if (ground) {
+      // **THE WHOLE MESH GOES IN AND `triAdd` THROWS AWAY WHAT IS NOT A FLOOR.** A kerb's SIDE
+      // is steeper than `TRI.up` and drops out by itself, and so does every underside -- which
+      // is what makes "a ramp is a floor, not a solid" true here with nothing sorted by hand.
+      nG++;
+      const n = idx ? idx.count : pos.count;
+      for (let i = 0; i < n; i += 3) {
+        const ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
+        A.fromBufferAttribute(pos, ia).applyMatrix4(o.matrixWorld);
+        B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
+        C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
+        nTri++; triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+      }
+      return;
+    }
+    const got = [];
+    solidColumns(o, TCITY.cols, got);
+    if (got.length) { for (const c of got) BOXES.push(c); nBox += got.length; nRaster++; }
+    else skip++;
+  });
+  const n = triBuild();
+  const cells = boxGrid();
+  TCITY.rails = rails; TCITY.tris = n; TCITY.boxes = BOXES.length;
+  console.log('[melee] toon collider: ' + n + ' walkable tris of ' + nTri + ' from ' + nG +
+    ' ground meshes, ' + nBox + ' boxes from ' + nRaster + ' rasterised, ' + nMetal +
+    ' metal (grindable) nodes' + (rails.length ? ' [' + rails.join(' ') + ']' : '') + ', ' +
+    skip + ' skipped, grid ' + cells + ' cells, ' + Math.round(performance.now() - t0) + ' ms');
+  if (!n) note('TC NO GROUND');
+  if (!nBox) note('TC NO SOLIDS');
+}
+
+// **HIS PAINT TINT (`weirdkit_tint.js`), PORTED RATHER THAN IMPORTED.** *"Also hand it
+// `weirdkit_tint.js`, or the walls will look flatter than in Blender."* The shader body is his,
+// verbatim; what changed is the three things a second import could not have known:
+//   1. **IT CHAINS `toonPatch` AND `paintPatch`.** An instance `onBeforeCompile` SHADOWS the
+//      prototype's completely, so his hook as written would have taken the toon ramp and the
+//      paint pass off every wall in the city -- which is m141's whole finding and is why the
+//      City_Trim material chains them too.
+//   2. **AND IT IS PATCHED LAST SO IT ENDS UP FIRST IN THE SHADER.** His replace and
+//      `paintPatch` both target `#include <color_fragment>`, and the tint has to settle the
+//      base colour BEFORE the paint splotches it, or every patch edge is a different hue from
+//      its neighbour. Shredworld's own ordering rule between `palPatch` and `paintPatch`.
+//   3. `extras` reach `material.userData` through GLTFLoader, so `wk_tint` is read there.
+// **AND IT IS DEDUPED BY MATERIAL, NOT BY NODE** -- 1,104 primitives share 43 materials.
+function tcTint(m) {
+  if (!TCITY.tint || !m || !m.userData || !m.userData.wk_tint) return 0;
+  m.vertexColors = true;
+  m.onBeforeCompile = sh => {
+    toonPatch(sh); paintPatch(sh);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', [
+      '#if defined( USE_COLOR ) || defined( USE_COLOR_ALPHA )',
+      '  vec3 wkTex = diffuseColor.rgb;',
+      '  float wkMx = max(max(wkTex.r, wkTex.g), wkTex.b);',
+      '  float wkMn = min(min(wkTex.r, wkTex.g), wkTex.b);',
+      '  float wkSat = wkMx > 1e-4 ? (wkMx - wkMn) / wkMx : 0.0;',
+      '  float wkMask = clamp((wkMx - 0.28) * 2.5, 0.0, 1.0) * clamp((0.75 - wkSat) * 4.0, 0.0, 1.0);',
+      '  vec3 wkTint = vec3(clamp(wkMx * 1.25, 0.0, 1.0)) * pow(max(vColor.rgb, vec3(0.0)), vec3(1.45));',
+      '  diffuseColor.rgb = mix(wkTex, wkTint, wkMask);',
+      '  #ifdef USE_COLOR_ALPHA',
+      '    diffuseColor.rgb *= vColor.a;',   // grime / AO in the vertex alpha -- his own note
+      '  #endif',
+      '#endif'].join('\n'));
+  };
+  // A MATERIAL CARRYING A CUSTOM HOOK NEEDS ITS OWN CACHE KEY or three hands it a program
+  // compiled for something else.
+  m.customProgramCacheKey = () => 'wk-tint';
+  m.needsUpdate = true;
+  return 1;
+}
+
 function buildTCity(g) {
   const root = g.scene;
   root.updateMatrixWorld(true);
 
   // ---- 1. the materials, ONCE EACH. Deduped by uuid because 1,104 primitives share 43 of them.
-  let mats = 0, dbl = 0, px = 0, texN = 0;
+  let mats = 0, dbl = 0, px = 0, texN = 0, tint = 0;
   const seenM = new Set();
   root.traverse(o => {
     if (!o.isMesh) return;
@@ -12249,6 +12487,7 @@ function buildTCity(g) {
       // which is the structural difference between a card and a wall, rather than a list of
       // names to keep in step with his export.
       if (m.side === THREE.DoubleSide && !m.transparent && !m.alphaTest) { m.side = THREE.FrontSide; m.needsUpdate = true; dbl++; }
+      tint += tcTint(m);
       if (m.map) {
         px += tcShrink(m.map); texN++;
         m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
@@ -12266,7 +12505,14 @@ function buildTCity(g) {
   if (TCITY.inst) {
     const by = new Map();
     root.traverse(o => {
-      if (!o.isMesh || Array.isArray(o.material)) return;
+      // **AND AN `InstancedMesh` IS LEFT ALONE, WHICH IS NEW AND IS LOAD-BEARING (m158).** His
+      // re-export carries `EXT_mesh_gpu_instancing` -- 45 nodes holding 99 instances -- and
+      // GLTFLoader turns each of those into a real `InstancedMesh`. `isInstancedMesh` is also
+      // `isMesh`, so without this the pass would group two of them by geometry and build an
+      // InstancedMesh OF InstancedMeshes: three reads `instanceMatrix` off the OUTER one, the
+      // inner one's 99 placements are never looked at, and **98 of his objects vanish** with
+      // nothing on screen saying why. It is already one draw call; there is nothing to win.
+      if (!o.isMesh || o.isInstancedMesh || Array.isArray(o.material)) return;
       const k = o.geometry.uuid + '|' + o.material.uuid;
       let L = by.get(k); if (!L) by.set(k, L = []);
       L.push(o);
@@ -12303,7 +12549,9 @@ function buildTCity(g) {
       // Meshes rather than one Mesh with a material array, so on this file there are none; a
       // future export that has them keeps its draw calls, which is honest and is the one
       // outcome that cannot be wrong.
-      if (!o.isMesh || Array.isArray(o.material)) return;
+      // and an InstancedMesh is not merged either, for the reason above: its placements live
+      // in `instanceMatrix` and `applyMatrix4` on the geometry would flatten all of them onto one.
+      if (!o.isMesh || o.isInstancedMesh || Array.isArray(o.material)) return;
       {
         const m = o.material; if (!m) return;
         // **THE BUCKET IS KEYED ON THE ATTRIBUTE SET AS WELL AS THE MATERIAL, AND THAT IS NOT
@@ -12347,8 +12595,8 @@ function buildTCity(g) {
   // ---- 4. THE GROUND. A plane, and it is the whole of the collider: `groundAt` returns 0 with
   //      `TRI.on` false and `BOXES` empty, so what makes this walkable is that nothing was
   //      built. `groundY` sits it a hair under zero so his own asphalt wins the depth test.
-  {
-    const gp = new THREE.Mesh(new THREE.PlaneGeometry(TCITY.ground, TCITY.ground),
+  if (TCITY.plane) {
+    const gp = new THREE.Mesh(new THREE.PlaneGeometry(TCITY.plane, TCITY.plane),
                               new THREE.MeshStandardMaterial({ color: TCITY.groundCol, roughness: .95, metalness: 0 }));
     gp.rotation.x = -Math.PI / 2; gp.position.y = TCITY.groundY;
     gp.name = 'tcground'; gp.receiveShadow = true;
@@ -12360,7 +12608,8 @@ function buildTCity(g) {
   TCITY.draws = draws;
   console.log('[melee] toon city: ' + mats + ' materials (' + dbl + ' forced FrontSide, ' + texN + ' maps' +
     (px ? ', ' + (px / 1e6).toFixed(1) + ' Mpx of texture dropped at ' + TCITY.tex : '') + '), ' +
-    inst + ' instanced meshes for ' + instN + ' nodes, ' + merged + ' merged buckets from ' + mergedN + ' meshes' +
+    (tint ? tint + ' wk_tint, ' : '') + inst + ' instanced meshes for ' + instN + ' nodes, ' +
+    merged + ' merged buckets from ' + mergedN + ' meshes' +
     (lost ? ', ' + lost + ' REFUSED' : '') + '  ->  DRAW CALLS ' + drew0 + ' -> ' + draws);
   if (lost) note('TC ' + lost + ' NOMERGE');
 }
@@ -17043,6 +17292,10 @@ function frame() {
     dollStep(dt);
   }
   stepCam(dt);
+  // AFTER the camera, because the rim is placed off the bearing the lens was actually drawn at
+  // -- one taken from last frame trails every swing, and a colour sitting on an edge is exactly
+  // where a frame of lag shows.
+  stepLightX();
   stepSun();
   // AFTER the camera, because the reticle is PROJECTED through it -- drawn from last frame's
   // matrix it would trail the shot by a frame every time the lens moved, which is exactly the
@@ -17211,7 +17464,8 @@ function frame() {
     // **AND THE TOON CITY CARRIES ITS DRAW COUNT (m157).** "It never loaded", "it loaded and
     // the optimisation did nothing" and "it loaded and it is slow anyway" are three bugs and
     // one picture from a phone, and the only thing that separates the first two is a number.
-    const tc = inTC() ? ' · TC' + (TCITY.draws === undefined ? '?' : TCITY.draws) + 'd' : '';
+    const tc = inTC() ? ' · TC' + (TCITY.draws === undefined ? '?' : TCITY.draws) + 'd/' +
+      TRI.n + 't/' + BOXES.length + 'b' : '';
     const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b/' + (WP.turned || 0) + 'y' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
       (WP.tinted ? ' · WPTINT' + WP.tinted : '') + (WP.bodies ? ' · WPCROWD' + WP.bodies : '') +
       // **AND THE TRAFFIC, AS CARS ON LANES (m147).** "the cars are not driving" is three bugs
@@ -17306,7 +17560,7 @@ async function init() {
   // home, so the cost of being wrong is a bar that is a little off rather than a broken boot.
   // +2 at m150: the deck and its clips. The toon city is one file where the test site is three
   // (a building, a tower and a motorcycle), so it is 24.
-  PROG.total = inWP() ? 25 : inTC() ? 24 : 26;
+  PROG.total = inWP() ? 25 : inTC() ? 25 : 26;   // +1 at m158: the toon collision file
   // ---- the character. There is no game without him, so a failure here is reported on the
   //      card rather than warned to a console that does not exist on a phone.
   let g;
@@ -17520,7 +17774,15 @@ async function init() {
     // for: with `TRI.on` false and `BOXES` empty every collider query in the file already
     // answers "flat, at zero".
     if (TCITY.fog) { scene.fog.near = TCITY.fog.near; scene.fog.far = TCITY.fog.far; }
+    // **THE COLLISION FIRST, AND IT IS THE ONE THERE IS NO WORLD WITHOUT.** The visual is a
+    // picture; the collision is the ground he stands on -- a slice with no picture is a man
+    // walking round an invisible city and one with no collision is a man falling through a
+    // painting. Both on `side()` all the same: neither is worth a boot that hangs, and the
+    // chip says which one is absent. **And with neither, `groundAt` still answers 0 and the
+    // plane is still there, so a failed fetch is a flat world rather than a void.**
+    await side(TCITY.col, 'loading the toon city', { name: 'TOONCOL', build: buildTCityCol });
     await side(TCITY.file, 'loading the toon city', { name: 'TOONCITY', build: buildTCity });
+    // AFTER the collider, so the y he lands on is the one his own road actually has.
     player.pos.x = TCITY.spawn[0]; player.pos.z = TCITY.spawn[1];
   } else {
     await side(BLD.file, 'loading a building', { name: 'BUILDING',

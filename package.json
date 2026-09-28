@@ -17,10 +17,13 @@
     "icons": "node tools/icons.mjs",
     "sfx": "node tools/sfx.mjs",
     "hull": "node tools/hull.mjs",
-    "lanes": "node tools/lanes.mjs"
+    "lanes": "node tools/lanes.mjs",
+    "ktx": "node tools/ktx.mjs"
   },
   "type": "module",
   "devDependencies": {
-    "mpg123-decoder": "^1.0.3"
+    "ktx2-encoder": "^0.6.0",
+    "mpg123-decoder": "^1.0.3",
+    "sharp": "^0.35.5"
   }
 }
