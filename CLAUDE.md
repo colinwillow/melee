@@ -598,6 +598,12 @@ a map at all:
   its own triangles lifted out before the collapse. The `col_*` colliders are hidden (m170 drew
   them). `KIT.hatchSign` flips the lid if it lifts the wrong way. The chip adds `P<parts>` and
   `D<debris>`.
+  **m178: HIS GENERATOR'S ROW (BKG0..BKG3) loads beside the house** from
+  `building_kit_generated_visual_ktx2.glb` (re-bake `..._generated_visual.glb` after every export),
+  with one combined `building_kit_collision.glb`. **Everything is BATCHED at load** (`kitBatch`:
+  1,505 draws -> 84) -- walls keep a vertex/index RANGE each so chunks still collapse and throw
+  debris. Ladders pair by building (`kitSlot`), AC units are parts that fall with their host chunk,
+  awnings/signs fall and ivy puffs (`kitHang`).
   **STILL NOT BUILT:** the `nav_*`/`room_*` markers are loaded and nothing reads them (fire,
   firemen, repair, police don't exist yet), and the world loads **no bodies at all**,
   deliberately — every `at` table here is test-site coordinates.

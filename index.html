@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m177</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m178</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m177</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m178</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,9 +602,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm177';
+const BUILD = 'm178';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -14211,7 +14211,13 @@ const KIT = {
   // reporting `building_kit_test_visual.glb` CHANGED with the `_ktx2` beside it unmoved.
   vis: 'models/building_kit/building_kit_test_visual_ktx2.glb',
   raw: 'models/building_kit/building_kit_test_visual.glb',
-  col: 'models/building_kit/building_kit_test_collision.glb',
+  // **HIS GENERATOR'S ROW (m178)**: four buildings, BKG0..BKG3, built from the same kit, baked
+  // to KTX2 like the house. `genRaw` is his export; re-run `npm run ktx` on it after every one.
+  gen: 'models/building_kit/building_kit_generated_visual_ktx2.glb',
+  genRaw: 'models/building_kit/building_kit_generated_visual.glb',
+  // **ONE COLLISION FILE FOR ALL FIVE BUILDINGS NOW** -- his combined export replaces the house's
+  // own, same prefixes (`deck_`/`ramp_` walkable, `bld_`/`solid_` solid, `climb_` a ladder).
+  col: 'models/building_kit/building_kit_collision.glb',
   // HIS OWN NAME PREFIXES, which are the city's. A node in neither family is not in the
   // collider at all rather than being guessed at -- a silent third answer is how a collider
   // grows a wall nobody put there.
@@ -14220,7 +14226,11 @@ const KIT = {
   climbRe: /^climb_/,             // NEW: a ladder volume
   // MEASURED, not typed: the house spans x -0.1..9.7, z -6.1..0.1, y -0.2..7.9. This stands
   // him in front of the door wall with the whole face in view.
-  spawn: [4.5, 6.5],
+  // **IN THE STREET BETWEEN THE HOUSE AND THE NEW ROW, FACING THE ROW (m178).** Measured off his
+  // collision file: the house spans z -6.1..0.1 and the row's fronts sit at z -13.9, so z -9.5 is
+  // the middle of an 8 m street; x 24 is between BKG1 and BKG2. `spawnAz` is the camera bearing,
+  // which is the way the lens LOOKS -- pi looks down -z, at the row.
+  spawn: [24, -9.5], spawnAz: Math.PI,
   plane: 120, planeY: -.02, planeCol: 0x6f6a63,
   fog: { near: 60, far: 320 },
   // **`dmg` CONVERTS THE GAME'S DAMAGE SCALE TO HIS.** `FOE.dmg.bolt` is 1.9 and his chunks are
@@ -14261,12 +14271,15 @@ const KIT = {
   debrisLife: 3.2, debrisG: 16, debrisOut: 3.8, debrisUp: 3.0, debrisSpin: 7,
   glassCol: [.78, .92, 1],
   ivyCol: [.34, .58, .22],
+  // **THE BATCH (m178)** -- one merged mesh per material per file. 0 draws every piece as his
+  // export has it, which is the A/B if something looks wrong after the merge.
+  batch: 1,
   dust: [.62, .58, .52],
   cool: .05,        // one blast cannot take the same chunk twice
 };
 // THE STATE. `WALLS` is per wall INSTANCE -- see the geometry sharing above.
 const WALLS = [], KCLIMB = [];
-const kit = { root: null, chunks: 0, dead: 0, cloned: 0, ivy: null, ivyN: 0 };
+const kit = { root: null, chunks: 0, dead: 0, cloned: 0, ivyN: 0, dressN: 0, hangs: 0, plane: 0, draws0: 0, draws1: 0, acs: 0 };
 
 // **THE CHUNK ATTRIBUTE, BY EITHER SPELLING (m172, `kitCh`).** *"My bullets don't even touch the
 // outside of the wall -- and I can walk through walls too."* One bug, and it was the loader, not
@@ -14297,41 +14310,74 @@ function kitCh(geo) { return kitAttr(geo, '_CHUNK'); }
 // **A DEAD LEAF COLLAPSES TO A POINT**, the chunk's own trick: every vertex of it written to the
 // centre of the group, so its triangles are zero-area and cost the draw call nothing. There is
 // one ivy mesh for the whole house and nothing shares it, so no clone is needed.
-function kitIvy(o) {
+// **AND IT IS GENERAL NOW (m178, `kitHang`): IVY AND DRESSING ARE THE SAME TAGS.** His generator
+// hangs awnings and shop signs off the same `_HOST`/`_CHUNK` pair (`<name>_dressing`, one mesh of up
+// to three primitives), so there is one indexer and one drop. The difference is what happens to
+// the pieces: a leaf puffs and is gone, an awning or a sign FALLS -- its own triangles lifted out as
+// debris the way a chunk's are (`kitDebrisVerts`) -- and then both collapse.
+// **PER PRIMITIVE, because a multi-primitive node is a Group of Meshes** and each carries its own
+// tag attributes; the `hosts` list is the node's.
+function kitWallMap() {
+  const M = new Map();
+  for (const W of WALLS) M.set(W.node.userData && W.node.userData.piece_id, W);
+  return M;
+}
+function kitHang(o, kind) {
   let hosts;
-  try { hosts = JSON.parse(o.userData.hosts); } catch (e) { note('KIT BAD IVY'); return 0; }
-  const H = kitAttr(o.geometry, '_HOST'), C = kitAttr(o.geometry, '_CHUNK');
-  if (!H || !C) { note('KIT IVY NO TAGS'); return 0; }
-  const byId = new Map();
-  for (const W of WALLS) byId.set(W.node.userData && W.node.userData.piece_id, W);
+  try { hosts = JSON.parse(o.userData.hosts); } catch (e) { note('KIT BAD HOSTS'); return 0; }
+  const meshes = [];
+  o.traverse(m => { if (m.isMesh && m.geometry && kitAttr(m.geometry, '_HOST')) meshes.push(m); });
+  if (!meshes.length) { note('KIT ' + kind.toUpperCase() + ' NO TAGS'); return 0; }
+  const byId = kitWallMap();
   let n = 0;
-  for (let i = 0; i < H.count; i++) {
-    const h = Math.round(H.getX(i)), c = Math.round(C.getX(i));
-    if (h < 0 || c < 0) continue;
-    const W = byId.get(hosts[h]); if (!W) continue;
-    const ch = W.chunks.find(q => q.id === c); if (!ch) continue;
-    (ch.ivy || (ch.ivy = [])).push(i); n++;
+  for (const m of meshes) {
+    const H = kitAttr(m.geometry, '_HOST'), C = kitAttr(m.geometry, '_CHUNK');
+    if (!C) continue;
+    const per = new Map();
+    for (let i = 0; i < H.count; i++) {
+      const h = Math.round(H.getX(i)), c = Math.round(C.getX(i));
+      if (h < 0 || c < 0) continue;
+      const W = byId.get(hosts[h]); if (!W) continue;
+      const ch = W.byId.get(c); if (!ch) continue;
+      let L = per.get(ch); if (!L) per.set(ch, L = []);
+      L.push(i); n++;
+    }
+    for (const [ch, idx] of per) (ch.hang || (ch.hang = [])).push({ m, idx, kind });
   }
-  kit.ivy = o; kit.ivyN = n;
+  if (kind === 'ivy') kit.ivyN += n; else kit.dressN += n;
+  kit.hangs++;
   return n;
 }
 const _kiv = new THREE.Vector3();
-function kitIvyDrop(c, loud) {
-  const o = kit.ivy, L = c.ivy;
-  if (!o || !L || !L.length) return;
-  const pos = o.geometry.attributes.position;
-  let x = 0, y = 0, z = 0;
-  for (const i of L) { x += pos.getX(i); y += pos.getY(i); z += pos.getZ(i); }
-  x /= L.length; y /= L.length; z /= L.length;
-  for (const i of L) pos.setXYZ(i, x, y, z);
-  pos.needsUpdate = true;
-  c.ivy = null;
-  // a few leaves go with it -- the same pooled sparks as the dust, in the leaf's own green
-  if (loud) {
-    _kiv.set(x, y, z).applyMatrix4(o.matrixWorld);
-    spkBurst(_kiv.x, _kiv.y, _kiv.z, 10, { col: KIT.ivyCol, spread: 2.4, up: 1.6, r: .4,
-                                          size: .09 + Math.random() * .06, life: .7 + Math.random() * .4 });
+function kitHangDrop(c, loud, bx, by, bz) {
+  const L = c.hang;
+  if (!L) return;
+  c.hang = null;
+  for (const H of L) {
+    const m = H.m, pos = m.geometry.attributes.position;
+    if (loud && H.kind !== 'ivy') kitDebrisVerts(m, H.idx, bx, by, bz);
+    let x = 0, y = 0, z = 0;
+    for (const i of H.idx) { x += pos.getX(i); y += pos.getY(i); z += pos.getZ(i); }
+    x /= H.idx.length; y /= H.idx.length; z /= H.idx.length;
+    for (const i of H.idx) pos.setXYZ(i, x, y, z);
+    pos.needsUpdate = true;
+    if (loud && H.kind === 'ivy') {
+      _kiv.set(x, y, z).applyMatrix4(m.matrixWorld);
+      spkBurst(_kiv.x, _kiv.y, _kiv.z, 10, { col: KIT.ivyCol, spread: 2.4, up: 1.6, r: .4,
+                                            size: .09 + Math.random() * .06, life: .7 + Math.random() * .4 });
+    }
   }
+}
+// **ONE LADDER PAIRING PER BUILDING (m178, `kitSlot`).** The house paired a `climb_` volume with its
+// `nav_ladder_top` marker by the `X#` in both names -- and with four generated buildings `X3` exists
+// in BKG0, BKG1 and BKG3, so the bare number would hand one building's ladder another building's
+// roof. The building's own prefix is the other half of the key: `climb_BKG0_ladder_1f__X3_0` and
+// `BKG0_nav_ladder_top__X3` both read `BKG0:X3`; the test house has no prefix and reads `:X1`.
+// Blender's `.001` suffixes (`__X2.001`) fall away because only the digits after X are taken.
+function kitSlot(nm) {
+  const b = (/^(?:climb_)?([A-Za-z]+\d+)_/.exec(nm || '') || [])[1] || '';
+  const x = (/__(X\d+)/.exec(nm || '') || [])[1] || '';
+  return x ? b + ':' + x : '';
 }
 // **HIS AXIS RULE, IN ONE PLACE (`kitBox`).** *"Chunk boxes are in Blender axes (Z-up). Map each
 // corner (x, y, z) to (x, z, -y) and re-sort the min and max."* Written once and called by the
@@ -14372,7 +14418,7 @@ function buildKitCol(g) {
                     // box's own top rather than to zero, because a zero here is a ladder that
                     // ends the instant you touch it.
                     top: typeof e.climb_top === 'number' ? e.climb_top : wb.max.y, name: nm,
-                    slot: (/__(X\d+)/.exec(nm) || [])[1] || '', mark: null });
+                    slot: kitSlot(nm), mark: null });
       nC++;
       return;
     }
@@ -14417,10 +14463,13 @@ function buildKitCol(g) {
 
 // ---- 2. THE HOUSE ITSELF --------------------------------------------------------------------
 function buildKit(g) {
+  // **CALLED ONCE PER FILE (m178)** -- the test house and the generated row are two GLBs, and
+  // everything below appends rather than assumes it is the only house.
   const root = kit.root = g.scene;
   root.updateMatrixWorld(true);
   const seen = new Set();
-  let nW = 0, nG = 0, nDoor = 0, nMark = 0, ivyO = null;
+  let nW = 0, nG = 0, nDoor = 0, nMark = 0, nAC = 0;
+  const hangs = [], acs = [];
   root.traverse(o => {
     if (o.isMesh) {
       o.castShadow = true; o.receiveShadow = true;
@@ -14442,7 +14491,10 @@ function buildKit(g) {
     if (e.collider) { o.visible = false; return; }
     // **AND THE MOVING PARTS ARE COLLECTED, NOT JUST COUNTED.** m170 indexed their hp and did
     // nothing else, which is the "not built yet" he asked about.
-    if (e.door || e.breakable === 'glass') kitPartAdd(o, e);
+    if (e.door || e.breakable === 'glass' || e.breakable === 'ac_unit') {
+      const P = kitPartAdd(o, e);
+      if (P && P.kind === 'ac') { acs.push(P); nAC++; }
+    }
     // **A MARKER IS AN EMPTY AND IT MUST NOT BE DRAWN.** GLTFLoader gives an empty an Object3D
     // with no geometry, so there is nothing to hide -- but the nav points are kept, because
     // they are what a fireman, a repair worker and a police line will stand on.
@@ -14453,16 +14505,17 @@ function buildKit(g) {
     // than a nearest-point guess, and a ladder whose marker is missing falls back to the
     // volume's own top with that stated in the code rather than silently.
     if (e.marker === 'ladder_top') {
-      const m = /__(X\d+)/.exec(o.name || '');
-      if (m) { o.updateWorldMatrix(true, false);
+      const k = kitSlot(o.name);
+      if (k) { o.updateWorldMatrix(true, false);
                const w = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
-               for (const L of KCLIMB) if (L.slot === m[1]) L.mark = { x: w.x, y: w.y, z: w.z }; }
+               for (const L of KCLIMB) if (L.slot === k) L.mark = { x: w.x, y: w.y, z: w.z }; }
     }
     if (e.breakable === 'glass') nG++;
     if (e.door) nDoor++;
-    // the ivy is wired AFTER the traverse, because its tags name walls that may not have been
-    // visited yet
-    if (e.hosts && o.isMesh) ivyO = o;
+    // the ivy AND the dressing are wired AFTER the traverse, because their tags name walls that
+    // may not have been visited yet. Marked as owned so the batcher leaves them their own mesh --
+    // their vertices are collapsed per chunk, which a shared buffer would have to track as well.
+    if (e.hosts) { hangs.push(o); o.userData.kitOwn = 'hang'; return; }
     if (!e.chunks) return;
     // ---- a breakable wall -------------------------------------------------------------------
     let recs = null;
@@ -14482,7 +14535,8 @@ function buildKit(g) {
     // time when it argues, so it is taken off the matrix rather than off a field.
     const yaw = -eu.y, cs = Math.cos(yaw), sn = Math.sin(yaw);
     const W = { node: o, meshes, yaw, cs, sn, px: _kv.x, py: _kv.y, pz: _kv.z, q: _kq.clone(),
-                cloned: 0, chunks: [], alive: 0 };
+                cloned: 0, chunks: [], alive: 0, byId: new Map(), batched: 0, parts: null };
+    o.userData.kitOwn = W;
     for (const r of recs) {
       const b = kitBox(r.box, {});
       const lx = (b.minx + b.maxx) / 2, ly = (b.miny + b.maxy) / 2, lz = (b.minz + b.maxz) / 2;
@@ -14503,7 +14557,7 @@ function buildKit(g) {
                   x: wx, y: W.py + ly, z: wz, lx, ly, lz, r: Math.max(hx, hy, hz) };
       box.chunk = c; box.wall = W;
       BOXES.push(box);
-      W.chunks.push(c); W.alive++; kit.chunks++;
+      W.chunks.push(c); W.byId.set(c.id, c); W.alive++; kit.chunks++;
     }
     WALLS.push(W); nW++;
   });
@@ -14511,7 +14565,8 @@ function buildKit(g) {
   // query outside the house already answers "flat, at zero" -- which is exactly right, because
   // his house sits ON zero. So this is what you SEE out there and nothing more, and it sits a
   // hair under y=0 so his own slab wins the depth test.
-  if (KIT.plane) {
+  if (KIT.plane && !kit.plane) {
+    kit.plane = 1;
     const gp = new THREE.Mesh(new THREE.PlaneGeometry(KIT.plane, KIT.plane),
                               new THREE.MeshStandardMaterial({ color: KIT.planeCol, roughness: .95, metalness: 0 }));
     gp.rotation.x = -Math.PI / 2; gp.position.y = KIT.planeY;
@@ -14519,13 +14574,27 @@ function buildKit(g) {
     gp.userData.noHole = 1;
     world.add(gp);
   }
-  const nIvy = ivyO ? kitIvy(ivyO) : 0;
+  let nHang = 0;
+  for (const o of hangs) nHang += kitHang(o, /_ivy$/.test(o.name || '') ? 'ivy' : 'dress');
+  // **AN AC UNIT FALLS WITH THE BRICK IT IS BOLTED TO.** `host` is a wall `piece_id` and
+  // `host_chunk` the chunk on it -- the dressing's rule, carried as extras on a separate object.
+  const byId = kitWallMap();
+  let acLinked = 0;
+  for (const P of acs) {
+    const W = byId.get(P.host), c = W && W.byId.get(P.hostChunk);
+    if (c) { (c.acs || (c.acs = [])).push(P); acLinked++; }
+  }
+  kit.acs += acs.length;
+  if (acs.length && acLinked < acs.length) note('KIT AC ' + (acs.length - acLinked) + ' UNHOSTED');
+  const drew = kitBatch(root);
   world.add(root);
   // the broad phase has to be rebuilt with the walls in it: `buildKitCol` built it with only his
   // solids, and a grid that predates 261 boxes would hand every query the old list
   boxGrid();
-  console.log('[melee] kit house: ' + nW + ' breakable walls, ' + kit.chunks + ' chunks, ' +
-              nG + ' panes, ' + nDoor + ' doors, ' + nMark + ' markers, ' + nIvy + ' ivy verts on chunks');
+  console.log('[melee] kit ' + (root.children.map(c => c.name).join(',') || 'root') + ': ' + nW +
+              ' breakable walls, ' + kit.chunks + ' chunks so far, ' + nG + ' panes, ' + nDoor + ' doors, ' +
+              nAC + ' AC (' + acLinked + ' hosted), ' + nMark + ' markers, ' + nHang +
+              ' hung verts on chunks, draws ' + drew[0] + ' -> ' + drew[1]);
   if (!nW) note('KIT NO WALLS');
 }
 
@@ -14634,7 +14703,7 @@ function stepClimb(dt) {
 // every copy of that piece -- his note says so and the file agrees. Cloning all twenty up front
 // would be twenty buffers for a house most of which is never touched.
 function kitClone(W) {
-  if (W.cloned) return;
+  if (W.cloned || W.batched) return;
   W.cloned = 1; kit.cloned++;
   for (const m of W.meshes) m.geometry = m.geometry.clone();
 }
@@ -14652,7 +14721,11 @@ function kitKill(W, c, loud, bx, by, bz) {
   // triangles it would be copied from. Only on a `loud` kill: `mel.kitWipe()` takes a whole
   // house down at once and 261 flying pieces is a hitch nobody asked to watch.
   if (loud) kitDebrisChunk(W, c, bx, by, bz);
-  for (const m of W.meshes) {
+  if (W.batched) {
+    // A RANGE OF A SHARED BUFFER (m178): the same collapse, restricted to this wall's vertices and
+    // written in WORLD space, because that is the space the batch was baked in
+    for (const B of W.parts) kitCollapse(B, c.id, c.x, c.y, c.z);
+  } else for (const m of W.meshes) {
     const pos = m.geometry.attributes.position, ch = kitCh(m.geometry);
     if (!ch) continue;
     let touched = 0;
@@ -14662,10 +14735,11 @@ function kitKill(W, c, loud, bx, by, bz) {
     }
     if (touched) pos.needsUpdate = true;
   }
+  // WHAT HANGS ON IT GOES WITH IT (m178): ivy puffs, an awning or a sign falls, an AC unit drops
+  if (c.hang) kitHangDrop(c, loud, bx === undefined ? c.x : bx, by === undefined ? c.y : by, bz === undefined ? c.z : bz);
+  if (c.acs) { for (const P of c.acs) if (!P.dead) kitPartKill(P, c.x, c.y + .5, c.z); c.acs = null; }
   // and any scorch that was on its face, or it hangs in the hole where the brick was
   decalOff(c.box);
-  // and the ivy growing on it (m176)
-  if (c.ivy) kitIvyDrop(c, loud);
   // and its collider goes with it, or the hole is one you can see through and still walk into
   const i = BOXES.indexOf(c.box);
   if (i >= 0) BOXES.splice(i, 1);
@@ -14762,17 +14836,30 @@ function kitStep(dt) {
 const KPARTS = [];
 function kitPartAdd(o, e) {
   const kind = e.door === 'hinged' ? 'door' : e.door === 'rollup' ? 'rollup'
-             : e.door === 'hatch' ? 'hatch' : e.breakable === 'glass' ? 'glass' : '';
-  if (!kind) return;
-  if (kind === 'rollup' && KIT.wide === 'double' && kitDoubleDoors(o, e)) return;
+             : e.door === 'hatch' ? 'hatch' : e.breakable === 'glass' ? 'glass'
+             : e.breakable === 'ac_unit' ? 'ac' : '';
+  if (!kind) return null;
+  if (kind === 'rollup' && KIT.wide === 'double' && kitDoubleDoors(o, e)) return null;
   // its collider is the `col_*` CHILD, read for its bounds and never drawn
   let col = null;
   for (const c of o.children) if (c.userData && c.userData.collider && c.geometry) { col = c; break; }
+  // **AN AC UNIT CARRIES NO COLLIDER, SO IT IS GIVEN ONE OFF ITS OWN BOUNDS (m178)** -- a child
+  // box, so `kitPartBox` reads it exactly as it reads a door's `col_`, and a bolt stops on it.
+  if (!col && kind === 'ac' && o.isMesh && o.geometry) {
+    o.geometry.computeBoundingBox();
+    const bb = o.geometry.boundingBox, sz = bb.getSize(new THREE.Vector3());
+    col = new THREE.Mesh(new THREE.BoxGeometry(Math.max(.05, sz.x), Math.max(.05, sz.y), Math.max(.05, sz.z)));
+    bb.getCenter(col.position);
+    col.visible = false; col.userData.collider = true;
+    o.add(col);
+  }
   const hp0 = (e.hp || (kind === 'glass' ? 5 : 40)) * (kind === 'glass' ? KIT.glassK : KIT.doorK);
   const P = { o, kind, col, hp: hp0, hp0, dead: 0, a: 0, aT: 0, dir: 0, away: 9,
               min: e.open_min_deg !== undefined ? e.open_min_deg : -100,
               max: e.open_max_deg !== undefined ? e.open_max_deg : 100,
-              travel: e.travel || 2.6, box: null, x: 0, y: 0, z: 0, r: .6, lb: null };
+              travel: e.travel || 2.6, box: null, x: 0, y: 0, z: 0, r: .6, lb: null,
+              host: e.host, hostChunk: e.host_chunk, vis: null };
+  o.userData.kitOwn = P;
   if (col) {
     col.geometry.computeBoundingBox();
     P.lb = col.geometry.boundingBox.clone();
@@ -14781,6 +14868,7 @@ function kitPartAdd(o, e) {
     BOXES.push(P.box);
   }
   KPARTS.push(P);
+  return P;
 }
 // **ONE PANEL, CUT INTO TWO LEAVES AT ITS MIDDLE (m177, `kitDoubleDoors`).** Every vertex past
 // the cut is pulled back onto it and its UV re-interpolated along the same edge, so each leaf
@@ -14835,7 +14923,8 @@ function kitDoubleDoors(o, e) {
     leaf.add(col);
     pa.add(leaf);
     const P = { o: leaf, kind: 'door', col, hp, hp0: hp, dead: 0, a: 0, aT: 0, dir: 0, away: 9,
-                min: -100, max: 100, flip, travel: 0, box: null, x: 0, y: 0, z: 0, r: .6, lb: null };
+                min: -100, max: 100, flip, travel: 0, box: null, x: 0, y: 0, z: 0, r: .6, lb: null, vis: null };
+    leaf.userData.kitOwn = P;
     leaf.updateWorldMatrix(true, true);
     col.geometry.computeBoundingBox();
     P.lb = col.geometry.boundingBox.clone();
@@ -14954,6 +15043,8 @@ function kitPartKill(P, bx, by, bz) {
   if (P.box) decalOff(P.box);         // a scorch on the pane goes with the pane (m174)
   kitPartOff(P);
   P.o.visible = false;
+  // a BATCHED pane is a range of a shared buffer, not an object to hide (m178)
+  if (P.vis) for (const B of P.vis) kitCollapse(B, -1, P.x, P.y, P.z);
   if (P.kind === 'glass') {
     // **`blowout: true` IS A DIRECTION**: the shards go the way the blow was travelling, so a
     // pane shot from outside showers the room and one blown from inside showers the street.
@@ -15007,6 +15098,40 @@ function kitLaunch(x, y, z, bx, by, bz) {
 function kitDebrisChunk(W, c, bx, by, bz) {
   const g = new THREE.Group();
   let tris = 0;
+  // BATCHED (m178): the wall is an index range of a world-space buffer, so the triangles are read
+  // from that range, centred on the chunk's WORLD centre, and the piece needs no rotation
+  if (W.batched) {
+    for (const B of W.parts) {
+      const geo = B.geo, ch = geo.attributes._chunk, pos = geo.attributes.position, idx = geo.index;
+      const nrm = geo.attributes.normal, uv = geo.attributes.uv, col = geo.attributes.color;
+      const cN = col ? col.itemSize : 0, P = [], N = [], U = [], C = [];
+      for (let i = B.i0; i < B.i0 + B.in; i += 3) {
+        if (Math.round(ch.getX(idx.getX(i))) !== c.id) continue;
+        for (let k = 0; k < 3; k++) {
+          const v = idx.getX(i + k);
+          P.push(pos.getX(v) - c.x, pos.getY(v) - c.y, pos.getZ(v) - c.z);
+          if (nrm) N.push(nrm.getX(v), nrm.getY(v), nrm.getZ(v));
+          if (uv) U.push(uv.getX(v), uv.getY(v));
+          if (col) for (let q = 0; q < cN; q++) C.push(col.getComponent(v, q));
+        }
+        tris++;
+      }
+      if (!P.length) continue;
+      const pg = new THREE.BufferGeometry();
+      pg.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+      if (N.length) pg.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
+      if (U.length) pg.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2));
+      if (C.length) pg.setAttribute('color', new THREE.Float32BufferAttribute(C, cN));
+      const pm = new THREE.Mesh(pg, B.mat);
+      pm.userData.kitOwn = 1; pm.castShadow = true; pm.frustumCulled = false;
+      g.add(pm);
+    }
+    if (!tris) return 0;
+    g.position.set(c.x, c.y, c.z);
+    const v = kitLaunch(c.x, c.y, c.z, bx, by, bz);
+    kitDebrisAdd(g, v[0], v[1], v[2]);
+    return tris;
+  }
   for (const m of W.meshes) {
     const geo = m.geometry, ch = kitCh(geo), pos = geo.attributes.position;
     if (!ch || !pos) continue;
@@ -15046,6 +15171,171 @@ function kitDebrisChunk(W, c, bx, by, bz) {
   const v = kitLaunch(c.x, c.y, c.z, bx, by, bz);
   kitDebrisAdd(g, v[0], v[1], v[2]);
   return tris;
+}
+// A SET OF A MESH'S VERTICES, THROWN AS ONE PIECE (m178) -- the awning or sign hanging off a dead
+// chunk. Only triangles whose three corners are all in the set, taken to WORLD space and centred
+// on their own middle, so the piece tumbles about itself.
+const _kdn = new THREE.Matrix3(), _kdv = new THREE.Vector3();
+function kitDebrisVerts(m, list, bx, by, bz) {
+  const geo = m.geometry, pos = geo.attributes.position, idx = geo.index;
+  const nrm = geo.attributes.normal, uv = geo.attributes.uv, col = geo.attributes.color;
+  const S = new Set(list), n = idx ? idx.count : pos.count;
+  m.updateWorldMatrix(true, false);
+  _kdn.getNormalMatrix(m.matrixWorld);
+  const cN = col ? col.itemSize : 0, P = [], N = [], U = [], C = [];
+  let x = 0, y = 0, z = 0, k3 = 0;
+  for (let t = 0; t < n; t += 3) {
+    const a = idx ? idx.getX(t) : t, b = idx ? idx.getX(t + 1) : t + 1, c = idx ? idx.getX(t + 2) : t + 2;
+    if (!S.has(a) || !S.has(b) || !S.has(c)) continue;
+    for (const v of [a, b, c]) {
+      _kdv.fromBufferAttribute(pos, v).applyMatrix4(m.matrixWorld);
+      P.push(_kdv.x, _kdv.y, _kdv.z); x += _kdv.x; y += _kdv.y; z += _kdv.z; k3++;
+      if (nrm) { _kdv.fromBufferAttribute(nrm, v).applyMatrix3(_kdn).normalize(); N.push(_kdv.x, _kdv.y, _kdv.z); }
+      if (uv) U.push(uv.getX(v), uv.getY(v));
+      if (col) for (let q = 0; q < cN; q++) C.push(col.getComponent(v, q));
+    }
+  }
+  if (!k3) return;
+  x /= k3; y /= k3; z /= k3;
+  for (let i = 0; i < P.length; i += 3) { P[i] -= x; P[i + 1] -= y; P[i + 2] -= z; }
+  const pg = new THREE.BufferGeometry();
+  pg.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+  if (N.length) pg.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
+  if (U.length) pg.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2));
+  if (C.length) pg.setAttribute('color', new THREE.Float32BufferAttribute(C, cN));
+  const g = new THREE.Group(), pm = new THREE.Mesh(pg, m.material);
+  pm.castShadow = true; pm.frustumCulled = false; g.add(pm);
+  g.position.set(x, y, z);
+  const v = kitLaunch(x, y, z, bx, by, bz);
+  kitDebrisAdd(g, v[0], v[1], v[2]);
+}
+// COLLAPSE A RANGE OF A BATCH to a point: every vertex (chunk -1) or only one chunk's. The upload
+// is the RANGE, not the whole buffer -- a row of four buildings is one buffer per material.
+function kitCollapse(B, id, x, y, z) {
+  const pos = B.geo.attributes.position, ch = B.geo.attributes._chunk;
+  let lo = -1, hi = -1;
+  for (let i = B.v0, e = B.v0 + B.vn; i < e; i++) {
+    if (id >= 0 && Math.round(ch.getX(i)) !== id) continue;
+    pos.setXYZ(i, x, y, z);
+    if (lo < 0) lo = i; hi = i;
+  }
+  if (lo < 0) return;
+  pos.addUpdateRange(lo * 3, (hi - lo + 1) * 3);
+  pos.needsUpdate = true;
+}
+
+// ---- 7. THE BATCH (m178, `kitBatch`, `kitMerge`) ----------------------------------------------
+// **1,405 DRAW PRIMITIVES IN THE GENERATED ROW ALONE**, on top of the house's ~300 -- and a draw
+// call is the first thing that costs anything on a phone. Every floor, roof, corner, parapet,
+// stair, ladder and pipe is one object per primitive in his export, which is right for an editor
+// and ruinous for a phone. So a house is BAKED at load, one merged mesh per material, in world
+// space:
+//     static       everything that never moves or breaks -- merged, source meshes emptied
+//     walls        merged per material with a RANGE per wall; a chunk kill collapses inside its
+//                  own wall's range and the debris is cut from its own index range
+//     glass        merged per material with a range per pane; a broken pane collapses its range
+//     left alone   doors, leaves, hatches, AC units (they MOVE or FALL), the ivy and the dressing
+//                  (they collapse per chunk on their own buffers), colliders, markers
+// **A SOURCE IS EMPTIED, NOT REMOVED**: `material = []` draws nothing and casts nothing, and the
+// node stays in the graph -- because a door is a CHILD of its wall node and a lid of its hatch,
+// and removing a parent would take the moving part with it.
+const _kbN = new THREE.Matrix3(), _kbV = new THREE.Vector3();
+function kitMerge(list, withChunk) {
+  let nv = 0, ni = 0, cN = 0, hasUv = false;
+  for (const m of list) {
+    const g = m.geometry, n = g.attributes.position.count;
+    nv += n; ni += g.index ? g.index.count : n;
+    if (g.attributes.color) cN = Math.max(cN, g.attributes.color.itemSize);
+    if (g.attributes.uv) hasUv = true;
+  }
+  const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3);
+  const U = hasUv ? new Float32Array(nv * 2) : null;
+  const C = cN ? new Float32Array(nv * cN).fill(1) : null;
+  const K = withChunk ? new Float32Array(nv).fill(-1) : null;
+  const I = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
+  let v = 0, i = 0;
+  const ranges = [];
+  for (const m of list) {
+    const g = m.geometry, pos = g.attributes.position, nrm = g.attributes.normal;
+    const uv = g.attributes.uv, col = g.attributes.color, ch = withChunk ? kitCh(g) : null;
+    m.updateWorldMatrix(true, false);
+    const M = m.matrixWorld, flip = M.determinant() < 0;
+    _kbN.getNormalMatrix(M);
+    const v0 = v, i0 = i;
+    for (let k = 0; k < pos.count; k++, v++) {
+      _kbV.fromBufferAttribute(pos, k).applyMatrix4(M);
+      P[v * 3] = _kbV.x; P[v * 3 + 1] = _kbV.y; P[v * 3 + 2] = _kbV.z;
+      if (nrm) { _kbV.fromBufferAttribute(nrm, k).applyMatrix3(_kbN).normalize();
+                 N[v * 3] = _kbV.x; N[v * 3 + 1] = _kbV.y; N[v * 3 + 2] = _kbV.z; }
+      else N[v * 3 + 1] = 1;
+      if (U && uv) { U[v * 2] = uv.getX(k); U[v * 2 + 1] = uv.getY(k); }
+      if (C && col) for (let q = 0; q < col.itemSize; q++) C[v * cN + q] = col.getComponent(k, q);
+      if (K && ch) K[v] = ch.getX(k);
+    }
+    const idx = g.index, n = idx ? idx.count : pos.count;
+    // a MIRRORED placement reverses the winding, so the merge reverses it back
+    for (let t = 0; t < n; t += 3) {
+      const a = idx ? idx.getX(t) : t, b = idx ? idx.getX(t + 1) : t + 1, c = idx ? idx.getX(t + 2) : t + 2;
+      I[i++] = v0 + a;
+      if (flip) { I[i++] = v0 + c; I[i++] = v0 + b; } else { I[i++] = v0 + b; I[i++] = v0 + c; }
+    }
+    ranges.push({ v0, vn: v - v0, i0, in: i - i0 });
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+  if (U) geo.setAttribute('uv', new THREE.BufferAttribute(U, 2));
+  if (C) geo.setAttribute('color', new THREE.BufferAttribute(C, cN));
+  if (K) geo.setAttribute('_chunk', new THREE.BufferAttribute(K, 1));
+  geo.setIndex(new THREE.BufferAttribute(I, 1));
+  geo.computeBoundingBox(); geo.computeBoundingSphere();
+  return { geo, ranges };
+}
+function kitOwner(o, root) {
+  for (let a = o; a && a !== root; a = a.parent) if (a.userData && a.userData.kitOwn) return a.userData.kitOwn;
+  return null;
+}
+function kitBatch(root) {
+  let before = 0;
+  root.traverse(o => { if (o.isMesh && o.visible && !(o.userData && o.userData.collider)) before++; });
+  if (!KIT.batch) return [before, before];
+  root.updateMatrixWorld(true);
+  const stat = new Map(), glass = new Map(), wall = new Map();
+  const add = (M, m, tag) => { let L = M.get(m.material.uuid); if (!L) M.set(m.material.uuid, L = { mat: m.material, list: [], tags: [] }); L.list.push(m); L.tags.push(tag); };
+  root.traverse(o => {
+    if (!o.isMesh || !o.visible || Array.isArray(o.material) || !o.geometry || !o.geometry.attributes.position) return;
+    if (o.userData && o.userData.collider) return;
+    const own = kitOwner(o, root);
+    if (own === 'hang') return;
+    if (own && own.chunks) { if (own.meshes.indexOf(o) >= 0) add(wall, o, own); else add(stat, o, null); return; }
+    if (own && own.kind) { if (own.kind === 'glass') add(glass, o, own); return; }
+    add(stat, o, null);
+  });
+  const out = new THREE.Group(); out.name = 'kitBatch';
+  const emit = (L, withChunk) => {
+    const { geo, ranges } = kitMerge(L.list, withChunk);
+    const mesh = new THREE.Mesh(geo, L.mat);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    out.add(mesh);
+    for (const m of L.list) m.material = [];
+    return { mesh, geo, ranges };
+  };
+  for (const L of stat.values()) emit(L, false);
+  for (const L of wall.values()) {
+    const R = emit(L, true);
+    L.tags.forEach((W, k) => { if (!W.parts) W.parts = []; W.batched = 1; W.cloned = 1;
+      W.parts.push({ geo: R.geo, mat: L.mat, ...R.ranges[k] }); });
+  }
+  for (const L of glass.values()) {
+    const R = emit(L, false);
+    L.tags.forEach((P, k) => { (P.vis || (P.vis = [])).push({ geo: R.geo, ...R.ranges[k] }); });
+  }
+  world.add(out);
+  let after = 0;
+  root.traverse(o => { if (o.isMesh && o.visible && !Array.isArray(o.material) && !(o.userData && o.userData.collider)) after++; });
+  after += out.children.length;
+  kit.draws0 += before; kit.draws1 += after;
+  return [before, after];
 }
 // a door, a shutter, a lid: the node itself is cloned into the world at its world transform
 function kitDebrisMesh(o, bx, by, bz) {
@@ -20809,7 +21099,11 @@ function frame() {
       (KDEB.length ? ' D' + KDEB.length : '') +
       // IVY: how many leaf vertices found their chunk -- 0 with ivy on screen is "the tags never
       // arrived", which is m172's bug wearing a leaf (m176)
-      (kit.ivy ? ' V' + kit.ivyN : '') : '';
+      (kit.hangs ? ' V' + kit.ivyN + (kit.dressN ? ' A' + kit.dressN : '') : '') +
+      (kit.acs ? ' AC' + KPARTS.filter(q => q.kind === 'ac' && !q.dead).length + '/' + kit.acs : '') +
+      // DRAWS: what the batch took the house from and to -- the one number that says whether a
+      // phone can draw this row at all (m178)
+      (kit.draws0 ? ' DC' + kit.draws0 + '>' + kit.draws1 : '') : '';
     const brkC = BREAK.length ? (() => {
       let live = 0, bd = 1e9;
       for (const q of BREAK) {
@@ -21140,7 +21434,9 @@ async function init() {
     // neither is worth a boot that hangs, and the chip says which one is absent.
     await side(KIT.col, 'loading the building kit', { name: 'KITCOL', build: buildKitCol });
     await side(KIT.vis, 'loading the building kit', { name: 'KITVIS', build: buildKit });
+    await side(KIT.gen, 'loading the generated buildings', { name: 'KITGEN', build: buildKit });
     player.pos.x = KIT.spawn[0]; player.pos.z = KIT.spawn[1];
+    if (KIT.spawnAz != null) { cam.az = KIT.spawnAz; player.faceH = player.heading = KIT.spawnAz; }
   } else if (inTC()) {
     // **HIS LEVEL, AND NOTHING ELSE AT ALL.** No collider builder, no street grid, no boxes --
     // which is not an omission, it IS the "flat plane for ground and walkability" he asked

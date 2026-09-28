@@ -13,6 +13,40 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 
 
+
+- **HIS GENERATOR'S ROW IS IN, AND THE REAL WORK WAS DRAW CALLS (m178, `kitBatch`, `kitMerge`,
+  `kitHang`, `kitSlot`, AC parts).** *"It made a row of four new buildings behind the test house...
+  every awning, sign, ivy leaf and AC unit knows which wall chunk it's hanging on."*
+  Read out of both files first:
+      generated   4 roots BKG0..3 at z -14, 897 nodes: 138 chunked walls (`chunk_attr` "_CHUNK"),
+                  84 panes, 9 hinged doors, 2 "rollup" panels (the double-door art again), 4 hatches,
+                  12 AC units (`host` + `host_chunk`), 4 each of ivy / dressing / pipes
+      collision   one file for all five buildings, same prefixes, 10 climb volumes with `climb_top`
+      **1,405 DRAW PRIMITIVES in the generated file alone**, 552 of them walls, on top of the
+      house's ~200. That was never going to run on a phone.
+  **THE BATCH**: at load, per file, one merged mesh per material in world space. Static pieces
+  (floors, roofs, corners, parapets, stairs, ladders, pipes) are merged outright; WALLS are merged
+  keeping each wall's vertex and index RANGE, so a chunk kill collapses inside its own range and
+  the debris is cut from its own index range; GLASS keeps a range per pane. Doors, leaves, hatches
+  and ACs stay objects (they move or fall); ivy and dressing keep their own buffers (they collapse
+  per chunk). **A source mesh is EMPTIED (`material = []`), never removed** -- a door is a child of
+  its wall node and a lid of its hatch, and removing the parent would take the moving part with it.
+  Measured through the shipped builders on both files: **draws 1,505 -> 84** (house 197 -> 21,
+  row 1,308 -> 63). `KIT.batch = 0` is the A/B. The chip carries `DC<before>><after>`.
+  **LADDERS PAIR BY BUILDING** (`kitSlot`): `X3` exists in BKG0, BKG1 and BKG3, so the house's bare
+  `X#` pairing would have handed one building's ladder another's roof. `BKG0:X3` against `:X1` for
+  the house; all ten volumes found their own marker.
+  **IVY AND DRESSING ARE ONE SYSTEM** (`kitHang`), per primitive because a multi-primitive node is
+  a Group. A leaf puffs; an awning or sign FALLS -- its own triangles lifted out (`kitDebrisVerts`)
+  -- then both collapse. **AN AC UNIT IS A PART** with a box collider built off its own bounds; it is
+  shootable (hp 30) and it falls when its host chunk goes. 12 of 12 hosted.
+  **CHECKED OFFLINE WITH THE SCENE BUILT THE WAY GLTFLoader BUILDS IT** -- a Group of Meshes for a
+  multi-primitive node, extras on `userData`, custom attributes lower-cased -- because m172 is what
+  fabricating it the file's way costs. A kill on a batched wall collapses exactly its 4 vertices
+  and throws the chunk plus the awning on it; a pane collapses 4/4; walking at the row from the
+  street stops at every front and passes only through the three gaps between buildings.
+  **THE SPAWN MOVED** to the street between the house and the row (24, -9.5), facing the row.
+  **Re-baked** the generated file: 64 MB resident -> ~8, 372 non-image bufferViews byte-identical.
 - **FIRING IN AUTO TURNED HIM 90 DEGREES OFF THE SHOT, AND IT WAS A HELD NUMBER NOBODY REFRESHED
   (m177, `aimComp`).** *"When I'm shooting my character points 90 degrees to the right instead of
   straight down the direction."* Driven first, so the guess was not the fix: through the shipped
