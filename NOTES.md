@@ -7,6 +7,34 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **EVERYBODY IN THE KIT WORLDS, AND THAT IS WHAT THE VIRUS GUN WAS MISSING (m197, `KCROWD.crowd`,
+  `crowdDeal`).** *"I meant everybody, like the warrior aliens, and I'm unable to change anybody
+  into a warrior with the virus gun."* One fault, not two. `alienKinds()` only offers a kind
+  whose prototype LOADED (`FOE.P`), and m196 loaded only the civilians. With no alien to turn
+  anyone into, `virusOK` refused everybody, while the gun itself was fine.
+  The kit worlds now load what the other worlds load: the mace and warrior, hick, hobo, skater,
+  biker, officer, the nine civilians and Clancy. The one exception is SHE, who has no collider and
+  only walks a circuit that has been proven clear. `KCROWD.crowd` is Weirdport's table at about
+  half size, 22 bodies in all.
+  The round-robin deal is `crowdDeal` now, shared with `wpPopulate` rather than copied, and
+  `crowdWant` counts the table the same way for both. `?crowd=0` is still the empty world.
+- **FIRE IS A FLIPBOOK OF TONGUES THROUGH A HEAT RAMP (m197, `FLAMEBOOK`, `FIRE.body/lick/ember/
+  glow`).** *"More fiery, rather than no-detail subtle glowing balls."* m192 was one soft round
+  dot tinted yellow to red, which is a colour with no SHAPE.
+  Now 16 flame tongues are drawn once at load from value noise on a 4 x 4 atlas (0.2 s in node):
+  rounded base, tapering tip, turbulence climbing it, and the base letting go late in the life.
+  Each card plays the book once over its own life, blending between adjacent frames.
+  **THE COLOUR COMES FROM THE TEXTURE'S INTENSITY, NOT THE PARTICLE.** It goes through a heat ramp
+  (black, red, orange, yellow, white), which is what puts a white core inside a red edge on every
+  card. The first draw was a flat white slab because the core-to-edge falloff was a step. It has
+  to be a GRADIENT or the ramp has nothing to walk across. Looked at as a rendered atlas before
+  shipping, not argued.
+  Four layers in ONE draw call: `aFrame` < 0 is not a frame (-1 is an ember, -2 the ground glow).
+  **HIS SHEET DROPS IN**: `images/fire_sheet.png`, frame 0 top-left, row-major, `FIRE.grid`
+  (8 x 8 default), flame on black or transparent. A 404 is silence and the drawn book stays. The
+  chip's fire token gains an `S` when his sheet is the one in use. It is not in `ASSETS` until a
+  bump has hashed it.
+
 - **THE KIT WORLDS HAVE A CROWD, AS A FRAME-RATE EXPERIMENT (m196, `KCROWD`, `kitPopulate`).**
   *"I'm thinking we try adding the civilians in and see how much it crashes the frame rate, also
   maybe Clancy."* Both kit worlds loaded only the construction worker. Now they load all nine

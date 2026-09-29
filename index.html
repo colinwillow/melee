@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m196</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m197</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m196</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m197</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm196';
+const BUILD = 'm197';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -8272,31 +8272,175 @@ function fireBolt(chg) {
 // **WHAT IT DOES NOT DO YET:** it does not hurt anybody, it does not burn the walls down, and
 // nothing catches from a body. Those are the next rules, not this build's.
 const FIRE = {
-  on: 1, n: 320, max: 28,
-  rate: 30,                 // flames a second from a fire at full strength
-  life: [.42, .85], rise: [1.3, 2.6], size0: .62, size1: .10,
-  jitter: .45,              // how wide a fire's base is, as a fraction of its radius
-  col0: [1, .93, .55], col1: [1, .46, .10], col2: [.50, .07, .02],
-  smokeEvery: .14, smokeK: 3.8, smokeLife: 2.4, smokeCol: [.20, .18, .17],
+  on: 1, n: 760, max: 28,
+  // **FOUR LAYERS, NOT ONE (m197).** *"More fiery, rather than no-detail subtle glowing balls."*
+  // m192 was one soft dot tinted yellow to red -- a colour with no SHAPE. A flame is a tongue:
+  // narrow at the tip, broad at the base, torn by turbulence that climbs it, white at the core and
+  // red at the edge. So the body and the licks are a FLIPBOOK (`FLAMEBOOK`) of such tongues, drawn
+  // once at load, and the colour comes from a HEAT RAMP on the texture's intensity rather than
+  // from the particle -- which is what puts a white core inside a red edge on every single card.
+  // Under them a flickering ground GLOW, and over them EMBERS that climb and wobble.
+  body:  { rate: 15, size: [1.05, 1.75], life: [.55, .95], rise: [.45, 1.1], jit: .45 },
+  lick:  { rate: 11, size: [.42, .78],   life: [.32, .58], rise: [1.1, 2.1], jit: .75 },
+  ember: { rate: 6,  size: [.045, .09],  life: [1.1, 2.4], rise: [2.2, 3.8], wob: .9 },
+  glow:  { rate: 7,  k: 3.0, a: .30, life: [.35, .6], col: [1, .42, .10] },
+  tilt: .2,                 // radians either way a tongue may lean
+  // HIS SHEET, WHEN THERE IS ONE. Drop `images/fire_sheet.png` in and it replaces the drawn
+  // flipbook with no code change: frame 0 top-left, row-major, `grid` columns x rows. White/yellow
+  // flame on BLACK (or on transparent) -- it is added onto the scene, so black is nothing.
+  sheet: 'images/fire_sheet.png', grid: [8, 8],
+  smokeEvery: .12, smokeK: 4.2, smokeLife: 2.8, smokeCol: [.16, .14, .13],
   igniteR: 6,               // how far from the blast a room may be and still catch
   room: { r: 1.3, grow: .07, spreadT: 9, spreadR: 7, perBld: 8 },
   ground: { r: .75, life: 12 },
   steam: [.86, .88, .9],
 };
 const FIRES = [];
-const flame = { P: null, v: [], life: [], age: [], s0: [] };
+// ---- THE FLIPBOOK. 16 tongues on a 4 x 4 atlas, drawn from value noise at load. Each frame is
+// one moment of a tongue's life: it rises broad and round, stretches, the turbulence climbing it
+// tears the tip into wisps, and the base lets go and lifts. A particle plays it once over its own
+// life, so no two cards are on the same frame and nothing reads as a loop.
+const FLAMEBOOK = (() => {
+  const G = 4, S = 96, W = G * S, F = G * G;
+  const data = new Uint8Array(W * W * 4);
+  const h2 = (x, y) => { let n = Math.imul(x, 374761393) + Math.imul(y, 668265263);
+    n = Math.imul(n ^ (n >>> 13), 1274126177); return ((n ^ (n >>> 16)) >>> 0) / 4294967295; };
+  const vn = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+    const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+    const a = h2(xi, yi), b = h2(xi + 1, yi), c = h2(xi, yi + 1), d = h2(xi + 1, yi + 1);
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; };
+  const fbm = (x, y) => .5 * vn(x, y) + .3 * vn(x * 2.03 + 5.1, y * 2.03 + 1.7) + .2 * vn(x * 4.1 + 9.3, y * 4.1 + 3.2);
+  const ss = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  for (let f = 0; f < F; f++) {
+    const u = f / (F - 1), cx0 = (f % G) * S, cy0 = (G - 1 - Math.floor(f / G)) * S;  // frame 0 top-left
+    const H = .5 + .45 * ss(0, .4, u), base = .45 * ss(.55, 1, u);
+    for (let j = 0; j < S; j++) {
+      const py = (j + .5) / S;                           // 0 at the bottom of the card
+      const y = (py - base - .08) / Math.max(.05, H - base - .08);
+      for (let i = 0; i < S; i++) {
+        const px = (i + .5) / S * 2 - 1;
+        let v = 0;
+        if (y > -.14 && y < 1.3) {
+          // rounded at the base, tapering to a point; the core-to-edge falloff is a GRADIENT so the
+          // heat ramp has room to go white -> yellow -> orange -> red across one tongue
+          const w = .78 * Math.sqrt(Math.min(1, Math.max(0, (y + .14) / .34))) * Math.pow(Math.max(0, 1 - Math.min(y, 1)), .75);
+          const cx = .55 * (fbm(py * 2.1, u * 2.7 + 7.3) - .5) * py;
+          const n = fbm(px * 2.9 + 11, py * 3.6 - u * 5.5);
+          const d = Math.abs(px - cx) / Math.max(w, .002);
+          v = Math.pow(1 - ss(0, 1, d + (n - .5) * 1.25 * (.3 + y)), 1.5);
+          v *= 1 - ss(.5, 1.1, y + (n - .5) * .7);
+          v *= 1 - .45 * Math.max(0, Math.min(1, y));       // cooler toward the tip
+          v *= 1 - .65 * ss(.72, 1, u);
+          v *= ss(1, .86, Math.abs(px)) * ss(1, .9, py) * ss(0, .04, py);
+        }
+        const q = ((cy0 + j) * W + cx0 + i) * 4, b8 = Math.round(Math.max(0, Math.min(1, v)) * 255);
+        data[q] = data[q + 1] = data[q + 2] = data[q + 3] = b8;
+      }
+    }
+  }
+  const t = new THREE.DataTexture(data, W, W, THREE.RGBAFormat);
+  // NO MIPS: an atlas mipped bleeds each tongue into its neighbour at a distance
+  t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.needsUpdate = true;
+  return { tex: t, grid: G };
+})();
+// THE FLAME POOL: a `puffPool` with three more attributes -- which frame of the book, how far the
+// card is turned, and how HOT it is. `aFrame` below zero is not a frame: -1 is an ember (a hard
+// bright dot) and -2 is the ground glow (a wide soft one), so all four layers are one draw call.
+const flame = { P: null, vx: [], vy: [], vz: [], life: [], age: [], s0: [], kind: [], h0: [], a0: [], sheet: 0 };
 {
-  flame.P = puffPool(FIRE.n, THREE.AdditiveBlending);
-  for (let i = 0; i < FIRE.n; i++) { flame.v.push(0); flame.life.push(0); flame.age.push(0); flame.s0.push(0); }
+  const n = FIRE.n, geo = new THREE.BufferGeometry();
+  const P = { pos: new Float32Array(n * 3), col: new Float32Array(n * 3), siz: new Float32Array(n),
+              alp: new Float32Array(n), frm: new Float32Array(n), rot: new Float32Array(n),
+              heat: new Float32Array(n), i: 0, live: 0 };
+  geo.setAttribute('position', new THREE.BufferAttribute(P.pos, 3));
+  geo.setAttribute('aCol', new THREE.BufferAttribute(P.col, 3));
+  geo.setAttribute('aSize', new THREE.BufferAttribute(P.siz, 1));
+  geo.setAttribute('aAlpha', new THREE.BufferAttribute(P.alp, 1));
+  geo.setAttribute('aFrame', new THREE.BufferAttribute(P.frm, 1));
+  geo.setAttribute('aRot', new THREE.BufferAttribute(P.rot, 1));
+  geo.setAttribute('aHeat', new THREE.BufferAttribute(P.heat, 1));
+  P.mat = new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: FLAMEBOOK.tex }, uGrid: { value: new THREE.Vector2(FLAMEBOOK.grid, FLAMEBOOK.grid) },
+                uSheet: { value: 0 }, uPx: { value: 300 } },
+    vertexShader: `
+      attribute vec3 aCol; attribute float aSize; attribute float aAlpha;
+      attribute float aFrame; attribute float aRot; attribute float aHeat;
+      varying vec3 vCol; varying float vA; varying float vF; varying float vR; varying float vH;
+      uniform float uPx;
+      void main() {
+        vCol = aCol; vA = aAlpha; vF = aFrame; vR = aRot; vH = aHeat;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = aSize * uPx / max(0.05, -mv.z);
+      }`,
+    fragmentShader: `
+      uniform sampler2D uMap; uniform vec2 uGrid; uniform float uSheet;
+      varying vec3 vCol; varying float vA; varying float vF; varying float vR; varying float vH;
+      vec3 ramp(float h) {
+        h = clamp(h, 0.0, 1.5);
+        vec3 c = mix(vec3(0.0), vec3(0.55, 0.06, 0.01), smoothstep(0.0, 0.25, h));
+        c = mix(c, vec3(1.0, 0.36, 0.03), smoothstep(0.2, 0.5, h));
+        c = mix(c, vec3(1.0, 0.78, 0.22), smoothstep(0.45, 0.8, h));
+        return mix(c, vec3(1.0, 0.97, 0.82), smoothstep(0.8, 1.2, h));
+      }
+      void main() {
+        vec2 pc = vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y) - 0.5;
+        float r = length(pc) * 2.0;
+        if (vF < -1.5) {
+          float g = pow(max(0.0, 1.0 - r), 2.2);
+          gl_FragColor = vec4(vCol * g * vA, g * vA); return;
+        }
+        if (vF < -0.5) {
+          float g = smoothstep(1.0, 0.15, r);
+          vec3 col = ramp(vH * (0.7 + 0.6 * g));
+          gl_FragColor = vec4(col * g * vA, g * vA); return;
+        }
+        float c = cos(vR), s = sin(vR);
+        pc = vec2(c * pc.x - s * pc.y, s * pc.x + c * pc.y) + 0.5;
+        if (pc.x < 0.0 || pc.y < 0.0 || pc.x > 1.0 || pc.y > 1.0) discard;
+        float nF = uGrid.x * uGrid.y;
+        float f0 = floor(vF), q = vF - f0, f1 = min(f0 + 1.0, nF - 1.0);
+        vec2 cell = 1.0 / uGrid;
+        vec2 a0 = (vec2(mod(f0, uGrid.x), uGrid.y - 1.0 - floor(f0 / uGrid.x)) + pc) * cell;
+        vec2 a1 = (vec2(mod(f1, uGrid.x), uGrid.y - 1.0 - floor(f1 / uGrid.x)) + pc) * cell;
+        vec4 t = mix(texture2D(uMap, a0), texture2D(uMap, a1), q);
+        if (uSheet > 0.5) {
+          vec3 col = t.rgb * t.a * (0.55 + 0.6 * vH) * vA;
+          gl_FragColor = vec4(col, max(col.r, max(col.g, col.b))); return;
+        }
+        float v = t.r;
+        gl_FragColor = vec4(ramp(v * vH * 1.3) * v * vA * 1.4, v * vA);
+      }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+  });
+  P.pts = new THREE.Points(geo, P.mat);
+  P.pts.frustumCulled = false; P.pts.renderOrder = 3; P.geo = geo;
+  scene.add(P.pts);
+  flame.P = P;
+  for (let i = 0; i < n; i++) for (const k of ['vx', 'vy', 'vz', 'life', 'age', 's0', 'kind', 'h0', 'a0']) flame[k].push(0);
+  // HIS SHEET, if it is in the repo. A 404 is silence and the drawn book stays.
+  if (FIRE.sheet) new THREE.TextureLoader().load(A(FIRE.sheet), t => {
+    t.colorSpace = THREE.SRGBColorSpace; t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false;
+    P.mat.uniforms.uMap.value = t; P.mat.uniforms.uGrid.value.set(FIRE.grid[0], FIRE.grid[1]);
+    P.mat.uniforms.uSheet.value = 1; flame.sheet = 1;
+    console.log('[melee] fire sheet ' + FIRE.sheet + ' ' + FIRE.grid[0] + 'x' + FIRE.grid[1]);
+  }, undefined, () => {});
 }
-function flameAt(x, y, z, k) {
-  const i = flame.P.i; flame.P.i = (flame.P.i + 1) % FIRE.n;
-  const P = flame.P;
-  P.pos[i * 3] = x; P.pos[i * 3 + 1] = y; P.pos[i * 3 + 2] = z;
-  flame.v[i] = rnd(FIRE.rise) * (.6 + .4 * k);
-  flame.life[i] = rnd(FIRE.life); flame.age[i] = 0;
-  flame.s0[i] = FIRE.size0 * (.6 + .4 * k) * (.75 + Math.random() * .5);
-  P.siz[i] = flame.s0[i]; P.alp[i] = 1;
+// ONE CARD. `kind` 0 body, 1 lick, 2 ember, 3 glow.
+function flameAt(x, y, z, k, kind) {
+  const P = flame.P, i = P.i; P.i = (P.i + 1) % FIRE.n;
+  const L = kind === 0 ? FIRE.body : kind === 1 ? FIRE.lick : kind === 2 ? FIRE.ember : FIRE.glow;
+  const s = kind === 3 ? 0 : rnd(L.size) * (.55 + .45 * k);
+  P.pos[i * 3] = x; P.pos[i * 3 + 1] = y + (kind < 2 ? s * .4 : 0); P.pos[i * 3 + 2] = z;
+  flame.kind[i] = kind; flame.age[i] = 0; flame.life[i] = rnd(L.life);
+  flame.vy[i] = kind === 3 ? 0 : rnd(L.rise) * (.6 + .4 * k);
+  flame.vx[i] = (Math.random() - .5) * .35; flame.vz[i] = (Math.random() - .5) * .35;
+  flame.s0[i] = s; flame.h0[i] = .85 + Math.random() * .3;
+  P.siz[i] = s; P.alp[i] = 0; P.heat[i] = 1;
+  P.rot[i] = (Math.random() - .5) * 2 * FIRE.tilt;
+  P.frm[i] = kind === 2 ? -1 : kind === 3 ? -2 : 0;
+  if (kind === 3) { P.col[i * 3] = L.col[0]; P.col[i * 3 + 1] = L.col[1]; P.col[i * 3 + 2] = L.col[2]; }
+  return i;
 }
 function fireStart(x, y, z, o) {
   if (!FIRE.on) return null;
@@ -8373,12 +8517,17 @@ function stepFire(dt) {
       if (f.life <= 0) { fireEnd(f); continue; }
       if (f.life < 3) f.k = Math.min(f.k, f.life / 3);          // it dies down, it does not blink out
     }
-    // the flames, at a rate that follows its strength
-    f.acc += FIRE.rate * f.k * dt;
-    while (f.acc >= 1) {
-      f.acc -= 1;
-      const a = Math.random() * Math.PI * 2, rr = f.r * FIRE.jitter * Math.sqrt(Math.random());
-      flameAt(f.x + Math.cos(a) * rr, f.y + Math.random() * .15, f.z + Math.sin(a) * rr, f.k);
+    // the four layers, each at a rate that follows its strength
+    const big = f.room ? 1.2 : 1;
+    for (const [kind, L] of [[0, FIRE.body], [1, FIRE.lick], [2, FIRE.ember], [3, FIRE.glow]]) {
+      f['acc' + kind] = (f['acc' + kind] || 0) + L.rate * (kind === 3 ? 1 : f.k) * dt;
+      while (f['acc' + kind] >= 1) {
+        f['acc' + kind] -= 1;
+        const a = Math.random() * Math.PI * 2, rr = f.r * (L.jit || .5) * Math.sqrt(Math.random());
+        const i = flameAt(f.x + Math.cos(a) * rr, f.y + Math.random() * .1, f.z + Math.sin(a) * rr, f.k, kind);
+        if (kind === 3) { flame.s0[i] = (f.r * L.k + .8) * (.8 + .2 * f.k) * big; flame.a0[i] = L.a * (.5 + .5 * f.k); }
+        else flame.s0[i] *= big;
+      }
     }
     f.sm += dt;
     if (f.sm > FIRE.smokeEvery / Math.max(.25, f.k)) {
@@ -8387,23 +8536,43 @@ function stepFire(dt) {
               FIRE.smokeK * (.6 + .4 * f.k), FIRE.smokeLife, FIRE.smokeCol);
     }
   }
-  // the flame pool: up, smaller, and yellow -> orange -> red as it goes
-  const P = flame.P; let live = 0;
+  // the flame pool: a tongue plays its flipbook once over its life, rising and cooling; an ember
+  // climbs and wobbles and flickers; a glow breathes where it was lit
+  const P = flame.P, nF = P.mat.uniforms.uGrid.value.x * P.mat.uniforms.uGrid.value.y; let live = 0;
   for (let i = 0; i < FIRE.n; i++) {
     if (flame.life[i] <= 0) { P.alp[i] = 0; continue; }
     flame.age[i] += dt;
-    const u = flame.age[i] / flame.life[i];
+    const u = flame.age[i] / flame.life[i], kind = flame.kind[i];
     if (u >= 1) { flame.life[i] = 0; P.alp[i] = 0; continue; }
     live++;
-    P.pos[i * 3 + 1] += flame.v[i] * dt;
-    P.pos[i * 3] += (Math.random() - .5) * .6 * dt; P.pos[i * 3 + 2] += (Math.random() - .5) * .6 * dt;
-    P.siz[i] = lerp(flame.s0[i], FIRE.size1, u);
-    const c0 = u < .45 ? FIRE.col0 : FIRE.col1, c1 = u < .45 ? FIRE.col1 : FIRE.col2, q = u < .45 ? u / .45 : (u - .45) / .55;
-    P.col[i * 3] = lerp(c0[0], c1[0], q); P.col[i * 3 + 1] = lerp(c0[1], c1[1], q); P.col[i * 3 + 2] = lerp(c0[2], c1[2], q);
-    P.alp[i] = u < .15 ? u / .15 : 1 - (u - .15) / .85;
+    const ag = flame.age[i];
+    if (kind === 2) {
+      P.pos[i * 3] += (flame.vx[i] + Math.sin(ag * 6.5 + i) * FIRE.ember.wob) * dt;
+      P.pos[i * 3 + 2] += (flame.vz[i] + Math.cos(ag * 5.3 + i * 1.7) * FIRE.ember.wob) * dt;
+      P.pos[i * 3 + 1] += flame.vy[i] * (1 - .5 * u) * dt;
+      P.heat[i] = flame.h0[i] * (.55 + .45 * Math.sin(ag * 23 + i * 3.1)) * (1 - .5 * u);
+      P.alp[i] = 1 - u; P.siz[i] = flame.s0[i];
+    } else if (kind === 3) {
+      P.siz[i] = flame.s0[i];
+      P.alp[i] = flame.a0[i] * Math.sin(Math.PI * u);
+    } else {
+      P.pos[i * 3] += (flame.vx[i] + Math.sin(ag * 3.1 + i) * .25) * dt;
+      P.pos[i * 3 + 2] += (flame.vz[i] + Math.cos(ag * 2.7 + i) * .25) * dt;
+      P.pos[i * 3 + 1] += flame.vy[i] * dt;
+      P.frm[i] = u * (nF - 1.001);
+      P.siz[i] = flame.s0[i] * (.8 + .3 * Math.sin(Math.PI * Math.min(1, u * 1.4)));
+      P.heat[i] = flame.h0[i] * (1 - .45 * u);
+      P.alp[i] = Math.min(1, u / .08) * (1 - ss01(.72, 1, u));
+    }
   }
-  puffFlush(P, live);
+  P.live = live; P.pts.visible = live > 0;
+  if (live) {
+    const at = P.geo.attributes;
+    for (const k of ['position', 'aAlpha', 'aCol', 'aSize', 'aFrame', 'aRot', 'aHeat']) at[k].needsUpdate = true;
+    P.mat.uniforms.uPx.value = renderer.domElement.height * .5 / Math.tan(camera.fov * Math.PI / 360);
+  }
 }
+const ss01 = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
 
 // ============================================================================================
 // THE ROCKET (m189, `ROCKET`, `fireRocket`)
@@ -17410,7 +17579,14 @@ function wpLoop(pool, n, lo, hi, maxY) {
 // round the spawn, kept only where there is level STREET-LEVEL ground, no building (`kitInside`)
 // and no collider (`resolveBoxes` at a body's radius and height) -- `wpStand`'s test with the kit's
 // own floor -- then spread farthest-point so they are streets apart rather than a queue.
-const KCROWD = { on: 1, per: 1, r: { tkit: 70, kit: 34 }, near: 6, gap: 7, top: 1.2, tries: 3000 };
+const KCROWD = { on: 1, r: { tkit: 70, kit: 38 }, near: 6, gap: { tkit: 6.5, kit: 4.5 }, top: 1.2,
+                 tries: 4000,
+                 // **EVERYBODY (m197)** -- *"I meant everybody, like the warrior aliens and stuff, and
+                 // I'm unable to change anybody into a warrior with the virus gun."* The second half is
+                 // the first: `alienKinds()` asks for a LOADED `FOE.P`, so a world with no warrior in
+                 // it has no alien for the virus to make and `virusOK` says no to everyone. Weirdport's
+                 // own table, about half size -- this is a frame-rate test and the house is small.
+                 crowd: { FOE: 3, HICK: 2, HOBO: 2, SKATER: 2, BIKER: 2, DUMMY: 2, CIVIL: 1 } };
 function kitStand(x, z) {
   const y = groundAt(x, z, KCROWD.top, MOVE.step);
   if (y > KCROWD.top) return null;
@@ -17424,19 +17600,42 @@ function kitStand(x, z) {
   if (resolveBoxes(_wpP, r, WPSPOT.hh)) return null;
   return y;
 }
+// DEALT ROUND-ROBIN, one spot to each kind in turn, so every kind is spread over the whole area
+// rather than one kind getting the far edge -- `wpPopulate`'s rule, and now its code too.
+function crowdDeal(spots, crowd) {
+  const KIND = { FOE, HICK, HOBO, SKATER, BIKER, DUMMY };
+  for (const K of CIVILS) KIND[mphName(K)] = K;
+  const civN = crowd.CIVIL || 0;
+  const keys = Object.keys(crowd).filter(k => KIND[k] && crowd[k] > 0);
+  const left = {}; for (const k of keys) { left[k] = crowd[k]; KIND[k].at = []; }
+  if (civN) for (const K of CIVILS) { const k = mphName(K); keys.push(k); left[k] = civN; K.at = []; }
+  let i = 0;
+  while (i < spots.length) {
+    let dealt = 0;
+    for (const k of keys) {
+      if (!left[k] || i >= spots.length) continue;
+      const q = spots[i++]; KIND[k].at.push([q.x, q.z, q.y]); left[k]--; dealt++;
+    }
+    if (!dealt) break;
+  }
+}
+function crowdWant(crowd) {
+  let want = 0;
+  for (const k in crowd) if (k !== 'CIVIL') want += crowd[k];
+  return want + (crowd.CIVIL || 0) * CIVILS.length;
+}
 function kitPopulate() {
-  const R = inTK() ? KCROWD.r.tkit : KCROWD.r.kit, sx = player.pos.x, sz = player.pos.z;
+  const tk = inTK(), R = tk ? KCROWD.r.tkit : KCROWD.r.kit, sx = player.pos.x, sz = player.pos.z;
   const pool = [];
   _wpSeed = WPSPOT.seed >>> 0;
-  for (let i = 0; i < KCROWD.tries && pool.length < 300; i++) {
+  for (let i = 0; i < KCROWD.tries && pool.length < 400; i++) {
     const a = wpRand() * Math.PI * 2, d = KCROWD.near + Math.sqrt(wpRand()) * (R - KCROWD.near);
     const x = sx + Math.cos(a) * d, z = sz + Math.sin(a) * d, y = kitStand(x, z);
     if (y !== null) pool.push({ x, y, z });
   }
-  const want = CIVILS.length * KCROWD.per;
-  const spots = wpSpread(pool, want, KCROWD.gap);
-  for (const K of CIVILS) K.at = [];
-  spots.forEach((q, i) => CIVILS[i % CIVILS.length].at.push([q.x, q.z, q.y]));
+  const want = crowdWant(KCROWD.crowd);
+  const spots = wpSpread(pool, want, tk ? KCROWD.gap.tkit : KCROWD.gap.kit);
+  crowdDeal(spots, KCROWD.crowd);
   // Clancy beside you, the nearest clear spot to the spawn
   CLANCY.at = [[sx + 2, sz]];
   for (let rr = 2; rr <= 9; rr += .75) {
@@ -17457,28 +17656,9 @@ function wpPopulate() {
   // EXPANDED RATHER THAN LISTED -- see `WP.crowd`. Each civil is his own kind with his own `at`,
   // because `bodySpawn` reads the table the body was built from; what is shared is the COUNT.
   for (const K of CIVILS) KIND[mphName(K)] = K;
-  const civN = WP.crowd.CIVIL || 0;
-  const pool = wpPool();
-  let want = 0;
-  for (const k in WP.crowd) if (KIND[k]) want += WP.crowd[k];
-  want += civN * CIVILS.length;
+  const pool = wpPool(), want = crowdWant(WP.crowd);
   const spots = wpSpread(pool, want, WPSPOT.gap);
-  // **DEALT ROUND-ROBIN, NOT SLICED.** `wpSpread` returns them in the order it found them --
-  // furthest-first -- so a slice would hand one kind the far edge of the city and another the
-  // middle. Dealing one to each in turn means every kind is spread over the whole slice, which
-  // is the half of "randomly" that a spread alone does not buy.
-  const keys = Object.keys(WP.crowd).filter(k => KIND[k] && WP.crowd[k] > 0);
-  const left = {}; for (const k of keys) { left[k] = WP.crowd[k]; KIND[k].at = []; }
-  if (civN) for (const K of CIVILS) { const k = mphName(K); keys.push(k); left[k] = civN; K.at = []; }
-  let i = 0;
-  while (i < spots.length) {
-    let dealt = 0;
-    for (const k of keys) {
-      if (!left[k] || i >= spots.length) continue;
-      const q = spots[i++]; KIND[k].at.push([q.x, q.z, q.y]); left[k]--; dealt++;
-    }
-    if (!dealt) break;
-  }
+  crowdDeal(spots, WP.crowd);
   // **THE SIDEKICK IS NOT SCATTERED, WHICH IS WHAT HE IS FOR.** `foeWander`'s leash would walk
   // him back across the city from wherever he was dropped, so he is placed beside you -- the
   // nearest clear spot to the spawn, which is the one question the pool cannot answer because
@@ -17500,7 +17680,7 @@ function wpPopulate() {
   if (loop) SHE.path = loop.map((q, n) => [q.x, q.z, n % 2 ? 'walk' : 'run']);
   WP.bodies = spots.length;
   console.log('[melee] weirdport crowd: ' + pool.length + ' clear spots pooled, ' + spots.length +
-    ' of ' + want + ' placed, ' + keys.map(k => k + ' ' + KIND[k].at.length).join(' ') +
+    ' of ' + want + ' placed, ' + Object.keys(KIND).map(k => k + ' ' + KIND[k].at.length).join(' ') +
     ', clancy at ' + CLANCY.at[0][0].toFixed(1) + ',' + CLANCY.at[0][1].toFixed(1) +
     (loop ? ', her circuit ' + loop.map(q => q.x.toFixed(0) + ',' + q.z.toFixed(0)).join(' -> ') : ', NO CIRCUIT'));
   // "THE STREET IS EMPTY" IS THREE BUGS AND ONE PICTURE FROM A PHONE: the sweep found nothing,
@@ -23092,7 +23272,7 @@ function frame() {
       (inTK() ? ' SW' + kit.swapped : '') +
       // F: fires burning now / started this session (m192) -- 0 after a rocket into a building is
       // "no room marker was near the blast", which is a different bug from "the flames do not draw"
-      (kit.fires ? ' F' + FIRES.length + '/' + kit.fires : '') +
+      (kit.fires ? ' F' + FIRES.length + '/' + kit.fires + (flame.sheet ? 'S' : '') : '') +
       // REP: the construction worker's state and the chunks he has put back (m187) -- `REPidle0`
       // with a hole in a wall beside him is "he cannot see the job", `REPgo` for ever is "he
       // cannot reach it", and no token at all is "he never loaded" (NO CLIP / WORKER in the chip)
@@ -23521,39 +23701,23 @@ async function init() {
   // SHE HAS NO COLLIDER AT ALL -- `stepShe` writes x and z straight and only snaps y -- so she
   // is only loaded where a circuit has been proved clear. In Weirdport that is `wpLoop`'s job
   // and it may come back empty; the count is kept honest so the bar does not run short.
-  // **AND THE KIT WORLD LOADS NONE OF THEM (m170).** *"Maybe we'll put one character in there,
-  // but just like my own character obviously."* Nine skins is twenty megabytes on the boot path
-  // of a world that is one house, and every `at` table is test-site coordinates.
+  // (m170 loaded none of them in the kit worlds; m196/m197 load them all -- see below.)
   // counted rather than guessed: SHE, MACE, WARRIOR, HICK, HOBO, SKATER, BIKER, DUMMY,
   // CLANCY and the civil roster. A drifting count leaves the bar monotone and clamped
   // (m140) rather than broken, but a wrong number is a bar that jumps at the end.
+  const crowdOn = KCROWD.on && !/[?&]crowd=0/.test(location.search);
+  if (kitWorld() && crowdOn) kitPopulate();
   if (kitWorld()) {
-    // **THE CROWD, AS A FRAME-RATE TEST (m196).** *"Let's try adding the civilians in and see how
-    // much it crashes the frame rate -- also maybe Clancy."* The biker loads first as a DONOR only
-    // (every civilian wears his gait, `CIVIL.borrow`) with nobody of his own spawned, then the
-    // nine civilians -- `KCROWD.per` each -- and Clancy beside you. SHE, the mace, the warrior,
-    // the hick, the hobo, the skater and the dummy stay out: seven files not fetched.
+    // **THE CROWD (m196, EVERYBODY at m197).** *"I meant everybody, like the warrior aliens and
+    // stuff."* The kit worlds now load exactly what the other worlds load, placed by
+    // `kitPopulate` instead of the test-site tables -- all but SHE, who has no collider and walks
+    // only a circuit proved clear (`wpLoop`), which nothing here has proved.
     // `?crowd=0` (or `KCROWD.on = 0`) is the empty world back, for the A/B.
-    const crowdOn = KCROWD.on && !/[?&]crowd=0/.test(location.search);
-    PROG.done += crowdOn ? 7 : 9 + CIVILS.length;
-    if (crowdOn) {
-      kitPopulate();
-      BIKER.at = [];
-      await side(BIKER.file, 'loading the crowd', { name: 'BIKER', build: buildBikers });
-      for (const K of CIVILS)
-        await side(K.file, 'loading the crowd', { name: mphName(K), build: g => buildCivil(g, K) });
-      await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
-    }
-    // **ONE MAN WITH A HAMMER (m187)** -- the one body these worlds do load, because the thing he is
-    // for only exists here. Beside the spawn, in the street, so the first wall you break has him
-    // walking over to it inside a few seconds. The hammer first: he mounts it as he is built.
-    WORKER.at = inTK() ? WORKER.atTK : WORKER.atKit;
-    await side(WORKER.hammer, 'loading the worker', { name: 'HAMMER', build: buildWorkerHammer });
-    await side(WORKER.file, 'loading the worker', { name: 'WORKER', build: buildWorkers });
+    PROG.done += 1 + (crowdOn ? 0 : 8 + CIVILS.length);
   }
-  else {
-  if (!inWP() || WP.she) await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
-  else PROG.done++;
+  if (!kitWorld() || crowdOn) {
+  if (!kitWorld() && (!inWP() || WP.she)) await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
+  else if (!kitWorld()) PROG.done++;
   // THE MACE FIRST, because the warrior mounts it as he is built -- and it is only a weapon he
   // is missing if it does not arrive, not a warrior.
   await side(FOE.weapon, 'loading the mace', { name: 'MACE', build: buildMace });
@@ -23575,6 +23739,14 @@ async function init() {
   for (const K of CIVILS)
     await side(K.file, 'loading the locals', { name: mphName(K), build: g => buildCivil(g, K) });
   await side(CLANCY.file, 'loading clancy', { name: 'CLANCY', build: buildClancy });
+  }
+  if (kitWorld()) {
+    // **ONE MAN WITH A HAMMER (m187)** -- beside the spawn, in the street, so the first wall you
+    // break has him walking over to it inside a few seconds. The hammer first: he mounts it as he
+    // is built.
+    WORKER.at = inTK() ? WORKER.atTK : WORKER.atKit;
+    await side(WORKER.hammer, 'loading the worker', { name: 'HAMMER', build: buildWorkerHammer });
+    await side(WORKER.file, 'loading the worker', { name: 'WORKER', build: buildWorkers });
   }
   // **THE DECK LOADS IN EVERY WORLD**, because it is HIS kit rather than a body -- and a house
   // with a skateboard in it is a house with a skateboard in it.
