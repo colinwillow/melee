@@ -7,6 +7,23 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A KERB IS EASED IN THE PICTURE, NOT IN THE BODY (m228, `STEPUP`, `stepEase`).** *"When I go from the
+  street up onto a curb he just teleports up the foot."* The collider snaps up to `MOVE.step` in one
+  frame and must -- a body that climbed over several frames would be inside the kerb. So a grounded
+  rise of `min` .03 .. one step in a single frame is taken off the DRAWN height (`player.stepOff`)
+  and damped back to 0 over `hl` .055; the board rides the same offset. Down adds nothing (falling is
+  the physics'), and anything bigger than a step (ladder top, respawn) is ignored. Tune: KERB.
+- **20 FPS AFTER m219-m227 -- AND THE SWITCHES TO FIND OUT WHY, ON THE PHONE (m228, PERF -> anti-tile,
+  `detileUse`, `kT` in the chip).** Measured offline, his m226 buildings export went 261k -> 342k
+  triangles (+31%: `WK_M_paint_decals` 32k, `WK_M_paint_flat` 20k, more ivy) and 23 -> 27 materials,
+  which is a few more draw calls after `kitBatch` -- real, not a cliff. The per-PIXEL suspect is the
+  anti-tiling shader: value-noise fbm plus a second (and on `WK_M_brick`/`WR_Lot` a third) texture
+  fetch on every fragment of road, lot and wall, which is the kind of cost that scales with the
+  screen rather than with the scene. The per-VERTEX one is the wobble (three 3D noises per vertex on
+  342k triangles). So: `anti-tile` 0/1 restores each material's exact pre-detile hook and cache key
+  (one recompile each way), `wobble` 0 skips its maths, and the chip now reads `N DC NkT` (draw calls
+  and thousands of triangles) beside the FPS, so each switch is one look.
+
 - **THE KIT BUILDINGS WOBBLE, BY WORLD POSITION ONLY (m226, `KWOB`, `kitWobMat`, the KIT row).**
   His spec: offset each vertex by a smooth 3D noise of its WORLD position, ~0.03 m at ~3 m, never by
   normal or object, so a vertex two pieces share moves the same and no seam opens. So the offset is
