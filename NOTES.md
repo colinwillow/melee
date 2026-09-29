@@ -7,6 +7,22 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **RES AUTO WAS PINNING 2.0 FOR A MINUTE AT A TIME (m234, `perfStep`).** m233 chip: `pr2.00h`, 20 fps, no
+  fire and no water on screen -- where m232 read 44 fps at pr 1.55. The auto rule stepped BACK UP when
+  a drop "did not help" (the next 2 s window was not `gain` better) and then held for `hold` 60 s. A
+  heat spike or a turn of the camera inside that window reads as "did not help", so it climbed to the
+  top and froze there. Now down is always allowed and the hold only blocks going UP. With the city
+  geometry fixed (m232) the frame is fill-bound enough for the pixel ratio to matter again -- which
+  it did not at m20x, when a million triangles were the wall.
+- **THE KERB EASE WAS INVISIBLE BECAUSE THE CAMERA SNAPPED (m234).** m228 eased his drawn height, but
+  `cam.tgt` read `p.pos.y` raw -- the lens is damped but its LOOK POINT is not, so the whole view
+  pitched up the kerb on the frame he did and his easing body read as the same teleport. The look
+  point rides `stepOff` now; the trigger also takes `vel.y < 1` as well as `grounded` (the frame of a
+  snap is not always a grounded frame) and up to 1.5 steps, and the chip counts them (`ke<n>`) so
+  "it does nothing" and "it never fires" are one glance apart.
+- **WATER GETS THE FIRE'S OVERDRAW RULE (m234, `SPOUT.maxPx/near/nearK`).** Drops clamp to .2 of the
+  screen height and thin toward .45 within 14 m. On the tune panel under WATER.
+
 - **A FIRE IN YOUR FACE WAS THE REST OF THE 20 FPS (m233, `FIRE.maxPx/dens/near/nearK`).** m232's
   chips: the same ~400k triangles gave 45 fps a street away and 20 facing a burning building -- so it
   was no longer geometry, it was OVERDRAW: every window fire is big additive cards, and at arm's length

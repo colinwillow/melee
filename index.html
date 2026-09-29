@@ -555,10 +555,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m233</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m234</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m233</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m234</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -624,7 +624,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm233';
+const BUILD = 'm234';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"5540a364","models/toon_city_kit/toon_city_kit_buildings.glb":"590e53f0","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e6dff3a3","models/toon_city_kit/toon_city_kit_pieces.glb":"8232bd6f","models/toon_city_kit/toon_city_kit_twins.glb":"3b1cba2b","models/toon_city_kit/toon_city_visual.glb":"45cf2957","models/toon_city_kit/toon_city_visual_ktx2.glb":"f26a6984","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/geyser_sprites_01.png":"b6325470","images/hdri_game.png":"dac55f41","images/water_sprites_01.png":"31e12659","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
 /* ASSETS:END */
@@ -9176,6 +9176,9 @@ const SPOUT = {
   // foam is white, and white is the thing a blue sky and a grey street both lack -- and past 1,
   // which with tone mapping off lifts the brightest cores to pure white. All three on the tune panel.
   bright: 1.4,       // x the drop's colour
+  // m234, THE FIRE'S OVERDRAW RULE: no drop taller than `maxPx` of the screen, and within `near`
+  // metres of the lens the spray thins toward `nearK`
+  maxPx: .2, near: [4, 14], nearK: .45,
   white: .4,         // how far toward white
 
   // **HIS GEYSER SHEET (m219, `geyserLoad`, `geyserCards`).** `images/geyser_sprites_01.png`: 8 x 4
@@ -9281,16 +9284,16 @@ function watPool() {
   P.mat.dispose();
   P.mat = P.pts.material = new THREE.ShaderMaterial({
     uniforms: { uMap: { value: DOT }, uPx: { value: 300 }, uGrid: { value: new THREE.Vector2(1, 1) },
-                uKey: { value: 0 }, uBright: { value: 1 }, uWhite: { value: 0 } },
+                uKey: { value: 0 }, uBright: { value: 1 }, uWhite: { value: 0 }, uMax: { value: 1e4 } },
     vertexShader: `
       attribute vec3 aCol; attribute float aSize; attribute float aAlpha; attribute float aFrame; attribute float aRot;
       varying vec3 vCol; varying float vA; varying float vF; varying float vR;
-      uniform float uPx;
+      uniform float uPx; uniform float uMax;
       void main() {
         vCol = aCol; vA = aAlpha; vF = aFrame; vR = aRot;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
         gl_Position = projectionMatrix * mv;
-        gl_PointSize = aSize * uPx / max(0.05, -mv.z);
+        gl_PointSize = min(aSize * uPx / max(0.05, -mv.z), uMax);
       }`,
     fragmentShader: `
       uniform sampler2D uMap; uniform vec2 uGrid; uniform float uKey; uniform float uBright; uniform float uWhite;
@@ -9377,6 +9380,7 @@ function watStep(dt) {
   }
   puffFlush(P, live);
   P.mat.uniforms.uBright.value = SPOUT.bright; P.mat.uniforms.uWhite.value = SPOUT.white;
+  P.mat.uniforms.uMax.value = renderer.domElement.height * SPOUT.maxPx;
   if (live) { P.geo.attributes.aFrame.needsUpdate = true; P.geo.attributes.aRot.needsUpdate = true; }
 }
 // THE JET'S LOOK: streaks scrolling up a tapering tube, brightest at the silhouette
@@ -9506,7 +9510,10 @@ function spoutStep(dt) {
     if (!S.jet) {
       // THE SPRAY (m160's jet): straight out of the spout on a cone, fast enough to reach
       // `height_m`, arcing over and landing -- as big soft alpha drops, and plenty of them
-      S.emit += dt * SPOUT.jetN * k * (S.cards && S.cards.length ? SPOUT.geyser.drops : 1);
+      // fewer drops when the spout is in your face (m234) -- the fire's own rule, same reason
+      const sd = camera.position.distanceTo(_fiV.set(S.x, S.y + S.h * .5, S.z));
+      const thin = SPOUT.nearK + (1 - SPOUT.nearK) * ss01(SPOUT.near[0], SPOUT.near[1], sd);
+      S.emit += dt * SPOUT.jetN * k * thin * (S.cards && S.cards.length ? SPOUT.geyser.drops : 1);
       const v = S.v * (.8 + .2 * k);
       const ux = Math.abs(S.dy) > .9 ? 1 : 0, uy = Math.abs(S.dy) > .9 ? 0 : 1;
       let tx = uy * S.dz, ty = -ux * S.dz, tz = ux * S.dy - uy * S.dx;
@@ -14068,13 +14075,15 @@ const _roll = new THREE.Vector3();
 // nothing -- falling is the physics' job -- and a teleport (ladder top, respawn) is bigger than a step
 // and ignored. The board rides the same offset, so a skater pops up the kerb with the deck under him.
 // A real step-up clip is the honest fix; this is what makes the snap stop reading as one until then.
-const STEPUP = { on: 1, hl: .055, min: .03 };
+const STEPUP = { on: 1, hl: .07, min: .03, n: 0 };
 function stepEase(dt) {
   const p = player, y = p.pos.y;
   const dy = p.stepLastY === undefined ? 0 : y - p.stepLastY;
   p.stepLastY = y;
-  if (STEPUP.on && p.grounded && dy > STEPUP.min && dy <= MOVE.step + .05)
-    p.stepOff = Math.max(-MOVE.step, (p.stepOff || 0) - dy);
+  if (STEPUP.on && (p.grounded || p.vel.y < 1) && dy > STEPUP.min && dy <= MOVE.step * 1.5) {
+    p.stepOff = Math.max(-MOVE.step * 1.5, (p.stepOff || 0) - dy);
+    STEPUP.n = (STEPUP.n || 0) + 1;
+  }
   if (p.stepOff) { p.stepOff = damp(p.stepOff, 0, STEPUP.hl, dt); if (p.stepOff > -.002) p.stepOff = 0; }
 }
 function boardPose(dt) {
@@ -23778,21 +23787,20 @@ function perfStep(dt) {
     perfMode(m);
   }
   if (PERF.mode !== 'auto') return;
-  if (PERF.holdT > 0) { PERF.holdT -= dt; return; }
+  // **HOLD ONLY STOPS IT GOING UP (m234).** It used to step back UP when a drop "did not help" and
+  // then freeze for `hold` seconds -- a heat spike or a change of view inside the 2 s window reads
+  // as "did not help", so it sat at 2.0 and 20 fps for a minute at a time (his m233 chip: `pr2.00h`
+  // at 20 fps where m232 had 44 at pr 1.55). Down is always allowed; up waits out the hold.
+  if (PERF.holdT > 0) PERF.holdT -= dt;
   if (PERF.upT > 0) PERF.upT -= dt;
   PERF.t += dt; PERF.n++;
   if (PERF.t < PERF.win) return;
   const f = PERF.n / PERF.t; PERF.t = PERF.n = 0;
-  if (PERF.dropped) {
-    // did the last step down buy anything? if not, the frame is not fill bound
-    const helped = f >= PERF.last + PERF.gain;
-    PERF.dropped = 0;
-    if (!helped) { perfSetPR(PERF.pr + PERF.step); PERF.holdT = PERF.hold; PERF.last = f; return; }
-  }
-  if (f < PERF.target - 3 && PERF.pr > PERF.prMin + .01) { PERF.last = f; PERF.dropped = 1; perfSetPR(PERF.pr - PERF.step); }
+  PERF.dropped = 0;
+  if (f < PERF.target - 3 && PERF.pr > PERF.prMin + .01) { PERF.last = f; perfSetPR(PERF.pr - PERF.step); PERF.holdT = PERF.hold; }
   // AND UP ONLY SLOWLY (m202): stepping up on every good window and down on every bad one is a
   // picture that keeps changing sharpness, and each change was a black frame
-  else if (f > PERF.target + PERF.upAt && PERF.upT <= 0 && PERF.pr < perfMax() - .01) { perfSetPR(PERF.pr + .1); PERF.upT = PERF.upEvery; }
+  else if (f > PERF.target + PERF.upAt && PERF.holdT <= 0 && PERF.upT <= 0 && PERF.pr < perfMax() - .01) { perfSetPR(PERF.pr + .1); PERF.upT = PERF.upEvery; }
   PERF.last = f;
 }
 // ONCE A FRAME, BEFORE THE BODIES STEP: last frame's camera is what was drawn, which is close
@@ -24068,7 +24076,9 @@ function stepCam(dt) {
   // **AND THE LOOK POINT IS CHEST HEIGHT ON THE BODY BEING DRAWN (m112).** `CAM.look` is his own
   // chest; worn as a 1.78 m drunk that is the man's waist, so the lens frames him low. It is the
   // one term the morph moves -- the collider and every speed stay his, deliberately.
-  cam.tgt.set(p.pos.x, p.pos.y + CAM.look * bodyK(), p.pos.z);
+  // + the kerb ease (m234): the LOOK POINT has to ride it too, or the whole view jumps up the kerb
+  // on the frame he does while his body eases -- which reads as exactly the teleport it replaced
+  cam.tgt.set(p.pos.x, p.pos.y + (p.stepOff || 0) + CAM.look * bodyK(), p.pos.z);
   const ce = Math.cos(cam.el);
   const bx = -Math.sin(cam.az) * ce, by = Math.sin(cam.el), bz = -Math.cos(cam.az) * ce;
   const want = kit.inside === 'cut' ? KIT.cutDist : kit.inside === 'close' ? KIT.closeDist
@@ -24618,6 +24628,8 @@ const TUNE = [
   ['drop size', SPOUT, 'sheet.sizeK', .5, 6, .1],
   ['density',   SPOUT, 'jetN',     20, 400, 5],
   ['spread',    SPOUT, 'jetCone',   0, .6, .01],
+  ['max size',  SPOUT, 'maxPx',   .05, 1, .01],
+  ['up close',  SPOUT, 'nearK',    .1, 1, .05],
   ['KIT'],
   ['wobble',    KWOB.u, 'value',    0, .15, .005],
   ['PERF'],
@@ -25125,7 +25137,7 @@ function frame() {
     const mp = p.mphSt ? ' · DNA' + p.mphSt.toUpperCase() + p.mphT.toFixed(2)
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
-    const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC ' + Math.round(renderer.info.render.triangles / 1000) + 'kT' + (CELL.list.length ? ' c' + CELL.shown + '/' + CELL.list.length : '') + PROF.sum + ' · pr' + PERF.pr.toFixed(2) + (PERF.holdT > 0 ? 'h' : '') + ' B' + PERF.seen + '/' + DUMMIES.length + ' · ' +
+    const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC ' + Math.round(renderer.info.render.triangles / 1000) + 'kT' + (CELL.list.length ? ' c' + CELL.shown + '/' + CELL.list.length : '') + (STEPUP.n ? ' ke' + STEPUP.n : '') + PROF.sum + ' · pr' + PERF.pr.toFixed(2) + (PERF.holdT > 0 ? 'h' : '') + ' B' + PERF.seen + '/' + DUMMIES.length + ' · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + kitC + inf + shp + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
