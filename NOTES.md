@@ -7,6 +7,45 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE LONG STRIDE IS THE SPRINT, THE GAIT IS PHASE-SYNCED, THE LADDER HAS ITS CLIP, AND THE
+  LAUNCHER IS A SLOT (m189, `GAIT.sprintHi`, `gaitSync`, `CLIMB.ref`, `ROCKET`, `rocketUp`).**
+  *"I added a run fast with a longer stride -- make sure he's actually using that instead of just
+  speeding up the normal run... a weird blending at lower speeds, his feet start to stutter... a
+  climbing ladder animation... an alien launcher with a hold and a fired pose -- a hybrid, spine up
+  over the rifle hips and legs."*
+  **WHAT THE NEW FILE HAS** (diffed against m188's): `Running_fast_stride` 1.00 s, `climbing_Ladder`
+  0.83 s, `rocket_launcher` and `rocket_launcher_fire` (one key each), and four `Skateboarding_*`
+  clips nothing uses yet. 54 -> 62, none lost.
+  **THE STRIDE, MEASURED** (toes relative to hips, frame by frame, at x1.926):
+      run_fwd_fast          0.50 s cycle   foot travel 0.93   stance 4.84 m/s
+      Running_fast_stride   1.00 s cycle   foot travel 1.15   stance 3.19 m/s
+  so `sprintRef` 3.00 on the old calibration -- a longer and SLOWER-cadence stride, which is the
+  point. At `MOVE.max` 7.2 it wants ~3.4x, and `tsHi` 1.6 would have capped it into a slow-motion
+  skate, so it has its own ceiling, **`GAIT.sprintHi` 2.6**: 2.6 strides a second (the old fast
+  run capped at 3.2) with the feet sliding about a fifth at full tilt.
+  **THE STUTTER WAS TWO CLOCKS.** Walk (1.42 s) and run (0.75 s) blended at their own rates put
+  one clip's feet forward while the other's were back. Now every moving clip shares one phase
+  advancing at the weighted cycle rate, placed by where ITS left foot is furthest forward --
+  measured: walk .259, run .278, stride .250 -- and held at time scale 0 while it is written.
+  `GAIT.sync = 0` is the old behaviour. **What sync cannot fix is the walk band**: at `walkAt` 1.3
+  the scaled walk (ref 0.60) wants 2.2x and is capped at 1.6, so the top of the walk still slides.
+  **THE LADDER** plays `climbing_Ladder` at the rate he climbs: the gripping hand's travel past the
+  hips says **0.73 m/s** at 1x (x1.926), capped at `CLIMB.hi` 3.2 because `CLIMB.speed` 3.4 asks ~6x.
+  **THE LAUNCHER** is `models/weapons/alien_launcher.glb`, `weapon_root_right` / `weapon_tip_2` at
+  (-14.3102, 0, 0) -- the blaster's pair, so it parents with identity. No modes and no charge: hold
+  up to aim, release fires a rocket (`ROCKET`: 30 m/s, 3.6 m blast, up to 5 bodies, 2.2x the bolt's
+  damage on bodies/walls/props, the explosion file, a camera knock, smoke and fire behind it) with
+  `ROCKET.cool` between shots. It rides `stepBolts` as a flag, so every collider the bolt knows
+  about stops it. Probed: fired at the BKG1 front from 5.8 m, landed in 0.20 s, 84 chunks gone.
+  **THE TWO POSES ARE BYTE-IDENTICAL IN HIS EXPORT** -- one key at 1/24 s on all 186 channels, the
+  same values -- so the kickback never left the file and the fire beat looks like the hold until it
+  is re-exported. Both are wired (`CLIPS.rocket` / `rocketFire`, `SPLIT.up`).
+  **AND THE LEGS ARE THE ORDINARY GAIT'S, NOT THE RIFLE'S, ON PURPOSE.** The pose's hips are square
+  (0 deg) and `rifle_run`'s are bladed (-34.6); the `__up` half carries the hips ROTATION
+  (`isUpper`), so rifle legs under a square pose point 35 deg off the way he is going. Carried, he
+  walks/runs/strides on the plain gait's `__legs` (phase-synced); aiming, the strafes, the back-run
+  and the plain run; in the air, `in_air`'s. `rocketUp()` is the one reader of which pose.
+
 - **THE COLLISION GRID HELD INDICES, AND AUTO-FIRE INTO A KIT CITY BROKE IT FOR EVER (m188, `boxDel`,
   `BGRID`).** A screen of `undefined is not an object (evaluating 'b.minx')` @ `groundAt` and
   `'b.tri'` @ `boxRay`, repeating every frame. `boxGrid` filed each box as its INDEX in `BOXES`, and
