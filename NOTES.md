@@ -7,6 +7,28 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE STRIDE CLIP DRAGS ITS SWING FOOT, THE WALK BAND OUTRAN THE WALK, AND THE SLAM CRATER WAS
+  NEVER SHRUNK (m191, `GAIT.runSets`, the RUN key, `DECAL.slam`).** *"The new run is actually worse
+  -- it looks sped up way more in game, his feet are sticking to the ground... a problem with him
+  walking at a certain speed... the slam mark is still absolutely unreasonably massive, you said you
+  fixed it."* I had not: m188 halved the BOLT's mark and the slam has its own size.
+  **MEASURED BY DRIVING THE REAL CLIPS THROUGH A REAL MIXER** (the `zap.glb` animations on its own
+  node tree at his in-game scale, the shipped band weights, rates and phase sync, the body moving at
+  each speed) and reading how fast the lowest foot slides across the ground:
+      walk band, m190     from ~1 m/s the walk (0.60 m/s at 1x, capped 0.96) slid 70-100% of speed
+      walk band, m191     walkAt .8 / runAt 1.4 / sprintAt 3.6 -> 26% at 1.0 m/s
+      run_fwd_fast        19-40% at 4.6-7.2 m/s
+      Running_fast_stride 117-240% at EVERY rate swept (ref 1.2 to 3.0, uncapped)
+  **THE STRIDE'S NUMBER IS NOT A RATE PROBLEM.** Frame by frame, its swinging foot comes forward at
+  floor height -- ~0.4 m of travel within a centimetre of the ground for the first fifth of each
+  stride, as low as the planted foot -- so the lowest foot is always the one gliding forward. That
+  is "his feet are sticking to the ground" and it is in the clip. **FAST (m188's run) is the
+  default again; STRIDE is one tap on the RUN key in the FX row** (remembered per phone,
+  `runSetUse`), at ref 3.0 with a 3.4 ceiling so it is never capped into a slide on top of that.
+  Lift the swing foot in the export and flip the key.
+  **THE CRATER** was `k` .72 of the 3.4 m slam radius each side, **4.9 m across** plus a rubble ring
+  1.9 m out. Now .24 (~1.6 m), the ring .30 and the rubble at .42 of its size.
+
 - **HIS OWN BOARD POSES REPLACE THE BORROWED ONES, ROLE BY ROLE (m190, `SK8.own`, `SK8.dip`).**
   *"The borrowed ones look kinda whack on his proportions, so I exported them on his skeleton. Up,
   down, middle and turbulent -- same animation, knees at different heights. Down is before he

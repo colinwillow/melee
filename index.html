@@ -533,14 +533,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m190</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m191</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m190</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m191</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i><i data-fx="doors">DOORS</i><i data-fx="inside">INSIDE</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i><i data-fx="doors">DOORS</i><i data-fx="inside">INSIDE</i><i data-fx="run">RUN</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; tap = jump</div></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm190';
+const BUILD = 'm191';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1044,7 +1044,23 @@ const GAIT = {
   // skate. 2.6 is 2.6 strides a second -- calmer than the old fast run ever played (3.2 at its
   // cap) and with the feet sliding about a fifth at full tilt. `mel.GAIT.sprintHi` is the dial:
   // up is fewer slides and quicker legs, down is the opposite.
-  sprintHi: 2.6,
+  sprintHi: 3.4,
+  // **m190 -> m191: 2.6 WAS THE WORST OF BOTH.** *"The new run is actually worse... it looks sped up
+  // way more in game... his feet are sticking to the ground."* Driven offline through a real mixer
+  // on `zap.glb` at his in-game size: the stride covers only ~2.1 m/s at 1x (he is 1.25 m tall), so
+  // at 7.2 it needs 3.4x -- and capped at 2.6 it was BOTH sped up and sliding. At 3.4 the feet are
+  // planted at full tilt and the cadence (3.4 strides/s) is still under the 4.4 the old fast run
+  // needs for the same speed. **The honest limit is his size**: a long stride at 1x is ~2 m/s.
+  // AND THE KEY IS HIS (`runSet`, the RUN key in the FX row): STRIDE is this, FAST is m188 exactly.
+  // **FAST IS THE DEFAULT AGAIN, AND THE REASON IS IN THE CLIP.** Measured frame by frame: in
+  // `Running_fast_stride` the SWINGING foot comes forward at floor height -- for the first fifth of
+  // each stride it travels ~0.4 m forward within a centimetre of the ground, as low as the planted
+  // foot. So whichever foot reads as "down" is gliding, at every playback rate: swept through a real
+  // mixer, the lowest foot never slides less than his whole speed (117-240%), against 19-40% for
+  // `run_fwd_fast`. No number here can fix that; lifting the swing foot in the export does.
+  runSet: 'fast',
+  runSets: { stride: { clip: 'Running_fast_stride', ref: 3.00, hi: 3.4 },
+             fast:   { clip: 'run_fwd_fast',        ref: 4.55, hi: 1.6 } },
   // **THE CROSSFADES ARE PHASE-SYNCED (m189, `gaitSync`).** *"There's a weird blending at lower
   // speeds between his really slow walk and his walk or run -- his feet start to stutter."* That
   // was two clips of DIFFERENT cycle lengths (1.42 s against 0.75 s) blended at their own rates,
@@ -1074,7 +1090,12 @@ const GAIT = {
   // **3.7x apart, with nothing authored between them** -- so the only real fix is to spend as
   // little of the stick in there as possible. A jog clip is what would close it properly.
   idleAt: .45,                                 // he is MOVING at all past this
-  walkAt: 1.30, runAt: 2.60, sprintAt: 4.60,
+  // **m191: THE BANDS FOLLOW THE CLIPS AT HIS SIZE.** *"A problem with him walking at a certain
+  // speed."* `walk_fwd` covers 0.60 m/s at 1x in-game and `tsHi` caps it at 0.96 -- but it OWNED the
+  // pad up to 1.3 and blended to 2.6, so from ~1 m/s his feet slid 70-100% of his speed (measured
+  // through a real mixer). Now the walk hands over where it runs out, and the run where IT does:
+  //     walk to 0.8 (~30% of the stick)   run pure at 1.4 (~39%)   sprint pure at 3.6 (~66%)
+  walkAt: .80, runAt: 1.40, sprintAt: 3.60,
   // AND THE CEILING CAME DOWN. At 1.9 the walk clip is a cartoon scramble for the whole of the
   // crossfade; 1.6 is the most a cycle here takes before it stops reading as the gait it is.
   tsLo: .62, tsHi: 1.6,
@@ -4336,7 +4357,9 @@ const SPLIT = {
             'skate_ollie_init_air', 'skate_ollie_air', 'skate_ollie_landing',
             // his own (m190) -- in `zap.glb`, so these halves are made at load with the rest
             'Skateboarding_middle', 'Skateboarding_turbulent', 'Skateboarding_down', 'Skateboarding_up',
-            'Skateboarding_push', 'Skateboarding_pushing', 'skateboarding_push'],
+            'Skateboarding_push', 'Skateboarding_pushing', 'skateboarding_push',
+            // BOTH SPRINTS (m191), so the RUN key can swap them with the gun override intact
+            'Running_fast_stride', 'run_fwd_fast'],
 };
 // CLIPS THAT PLAY ONCE AND HOLD THEIR LAST FRAME. Anything in here is rewound BY THE STATE
 // that starts it, never by its own damped weight -- see `playOnce`.
@@ -8938,7 +8961,13 @@ const DECAL = {
   // actually catches, so the mark says how far it reached -- and rubble thrown round it. `kind`
   // is tried first: **add a mark of kind `crack` to `impact_marks.json` and it is used with no code
   // change**; until then it is the craters.
-  slam: { kind: 'crack', fall: 'crater', k: .72, rubble: 4, ring: .55, life: 30 },
+  // **m191: A THIRD OF WHAT IT WAS.** *"The impact mark for this slam down to the street is still
+  // absolutely unreasonably massive."* m188 halved the BOLT's mark and never touched this one: `k`
+  // .72 of a 3.4 m catch radius on each side was a crater **4.9 m across** plus a rubble ring
+  // 1.9 m out -- a man-sized hit painting a lane of road. `k` .24 is ~1.6 m, the ring comes in to
+  // match, and the rubble is smaller (`rubbleS`). The mark no longer says how far the blow REACHES;
+  // it says where it LANDED, which is what he is looking at.
+  slam: { kind: 'crack', fall: 'crater', k: .24, rubble: 3, ring: .30, rubbleS: .42, life: 30 },
   // **AND THE BOLT SCORCHES WHAT IT SKIMS (m186).** *"When you shoot the blaster it skims along the
   // ground -- it'd be cool if it left a trail."* A small scorch every `every` metres while the ball
   // is within `h` of the floor, sized by the charge, gone in `life` seconds so a trail cannot eat
@@ -10817,7 +10846,7 @@ function slamMark(x, y, z) {
     const a = (i + Math.random() * .7) / S.rubble * Math.PI * 2, r = SLAM.r * S.ring * (.7 + Math.random() * .5);
     const rx = x + Math.sin(a) * r, rz = z + Math.cos(a) * r, ry = groundAt(rx, rz, gy + .6, .8);
     if (Math.abs(ry - gy) > .6) continue;          // not over a kerb drop or up a wall
-    decalPut(rx, ry + .002, rz, 0, 1, 0, 'rubble', .7 + Math.random() * .4, 0, S.life);
+    decalPut(rx, ry + .002, rz, 0, 1, 0, 'rubble', (S.rubbleS || 1) * (.7 + Math.random() * .4), 0, S.life);
   }
 }
 function slamLand() {
@@ -11379,11 +11408,21 @@ function fxSet(k, on) {
 // One packed compare a frame, so it is a DOM write when something actually changed and
 // nothing at all the rest of the time.
 let fxLit = -1;
+// WHICH SPRINT (m191). One place writes the clip, its ref (on the load-time scale) and its ceiling,
+// and the footstep stride follows, so the three cannot disagree. Remembered per phone.
+function runSetUse(key, save) {
+  const R = GAIT.runSets[key]; if (!R) return;
+  GAIT.runSet = key; CLIPS.sprint = R.clip;
+  GAIT.sprintRef = R.ref * (GAIT.refK || 1); GAIT.sprintHi = R.hi;
+  if (rig.clips && rig.clips[R.clip]) STEP.clip.sprint = { d: rig.clips[R.clip].duration, r: GAIT.sprintRef };
+  if (save) { try { localStorage.setItem('mel.run', key); } catch (e) {} }
+}
 function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
           | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7)
           | (fxOn('toon') << 8) | (fxOn('paint') << 9) | (fxOn('rim') << 10) | (fxOn('doors') << 11)
-          | ((kitWorld() ? 1 : 0) << 12) | (['xray', 'cut', 'close', 'off'].indexOf(KIT.inCam) << 13);
+          | ((kitWorld() ? 1 : 0) << 12) | (['xray', 'cut', 'close', 'off'].indexOf(KIT.inCam) << 13)
+          | ((GAIT.runSet === 'stride' ? 1 : 0) << 16);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -11394,6 +11433,7 @@ function fxKeys() {
                                      el.classList.toggle('hide', !kitWorld()); }
     if (el.dataset.fx === 'inside') { el.textContent = 'INSIDE ' + KIT.inCam.toUpperCase();
                                       el.classList.toggle('hide', !kitWorld()); }
+    if (el.dataset.fx === 'run') { el.textContent = 'RUN ' + GAIT.runSet.toUpperCase(); el.classList.toggle('on', GAIT.runSet === 'stride'); continue; }
     el.classList.toggle('on', !!fxOn(el.dataset.fx));
     // THE TINT SWITCH ONLY EXISTS WHERE IT MEANS SOMETHING, which is `paintKit`'s rule: the
     // vertex tint is Weirdport's, so on the test site that segment would be a control that
@@ -11406,6 +11446,7 @@ function fxKeys() {
     el.addEventListener('pointerdown', e => {
       e.preventDefault(); e.stopPropagation();
       if (el.dataset.fx === 'sun') sunCycle();
+      else if (el.dataset.fx === 'run') runSetUse(GAIT.runSet === 'stride' ? 'fast' : 'stride', 1);
       else fxSet(el.dataset.fx, !fxOn(el.dataset.fx));
     });
   }
@@ -22894,6 +22935,7 @@ async function init() {
     // THE REFS ALWAYS SCALE -- that half is a FACT about the model, not a choice.
     for (const n of ['walkRef', 'runRef', 'sprintRef', 'backRef', 'strafeRef', 'aimRunRef'])
       GAIT[n] *= k;
+    GAIT.refK = k;         // kept, so the RUN key can put a different sprint on the same scale (m191)
     // HIS SPEED IS THE CHOICE. See `GAIT.scaleSpeed`. The BANDS go with `MOVE.max` and never
     // apart from it: they are speeds, and where each one lands on the PAD is `band / MOVE.max`
     // -- so moving one without the other is the m27 finding undone, and moving both together
@@ -22984,6 +23026,9 @@ async function init() {
     STEP.clip.walk = st(CLIPS.walk, GAIT.walkRef);
     STEP.clip.run = st(CLIPS.run, GAIT.runRef);
     STEP.clip.sprint = st(CLIPS.sprint, GAIT.sprintRef);
+    // HIS LAST RUN KEY PICK (m191), on the scale just measured
+    { let r = null; try { r = localStorage.getItem('mel.run'); } catch (e) {}
+      runSetUse(r && GAIT.runSets[r] ? r : GAIT.runSet, 0); }
     const sh = (C, sp) => C ? strideOf(sp, C.d, C.r, GAIT.tsLo, GAIT.tsHi).toFixed(2) : '-';
     console.log('[melee] stride walk ' + sh(STEP.clip.walk, 1.5) + ' m @1.5, run ' +
                 sh(STEP.clip.run, 3.5) + ' @3.5, sprint ' + sh(STEP.clip.sprint, MOVE.max) +
