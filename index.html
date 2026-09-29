@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m200</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m201</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m200</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m201</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm200';
+const BUILD = 'm201';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -22862,29 +22862,25 @@ const DUST = {
   // box was only 13 m across and the edge fade starts at .72 of that: **every mote in the game
   // lived within 9.4 m of the lens.** A field you have to stand inside is not an atmosphere.
   n: 520,
-  r: 22,                 // the half-width of the box kept round him
-  // **A MOTE IS SEEN AGAINST WHATEVER IS BEHIND IT, AND EVERYTHING HERE IS PALE (m137).**
-  // 0xfff4de at alpha .16 on a near-white sky and a white floor is invisible by construction,
-  // and .020 m at 13 m is **1.2 CSS px** -- under the threshold of being an effect (m99).
-  // A warm mid-tone is darker than the sky AND lighter than tarmac, which is the one value
-  // that reads in both halves of this world.
-  // **AND m137's WARM MID-TONE WAS MY CALL AND HE HAS TURNED IT DOWN (m139).** *"The little
-  // floating dust look like little football balls. I thought they would be white. They're
-  // like dark, just kind of odd."* Both halves are mine: the colour is m137's headroom
-  // argument (a mote DARKER than a bright sky is the one value that reads against both halves
-  // of this world) and the size is m138's answer to their being invisible. The argument is
-  // still sound and it is not what he wants to look at -- **which settles it, because what a
-  // speck should look like is a taste question and those are his.** Near-white with a little
-  // warmth in it, and fine: at 13 m, .026 m is about 3 CSS px and .062 is 7 -- specks rather
-  // than balls, and still well over m99's threshold of being visible at all.
-  size: [.026, .062],    // metres -- `aSize` is world units, see `puffFlush`
-  col: 0xe9e2d4,
+  // **m201: CLOSER, BIGGER, GOLD AND TWINKLING.** *"The rays and the dust still don't really
+  // seem like they do anything."* They did not: near-white specks of 3-7 px at alpha .16-.5 over
+  // a pale pink pavement and a pale sky are the same value as what is behind them, so switching
+  // the key changed nothing you could point at. What reads as a GLIMMER is a speck that FLASHES:
+  // additive gold (it can only add light, so it shows on anything darker than white) with a sharp
+  // `twinkle` pulse per mote on its own clock, so the field is mostly quiet and a few catch the
+  // light at any moment. The box came in to 13 m so the same 520 are denser where you look.
+  r: 13,                 // the half-width of the box kept round the lens
+  size: [.035, .085],    // metres -- `aSize` is world units, see `puffFlush`
+  col: 0xffdf9e,
   drift: [.10, .40],     // m/s sideways
   rise: [-.08, .20],     // and vertically, so they do not all fall or all climb
-  glim: [.5, 2.2],       // the glimmer, in cycles a second
-  deep: .55,             // how much of the alpha the glimmer actually swings
+  glim: [.25, .9],       // the twinkle, in cycles a second
+  deep: .55,             // how much of the base alpha the slow shimmer swings
+  twinkle: 1.6,          // how bright the flash at the top of each mote's cycle is
+  twinkPow: 14,          // and how brief -- higher is a sharper, rarer flash
+  nearFade: [.7, 2.2],   // metres from the lens: a mote closer than this is a blob, so it fades
   // and a pale mote needs LESS of itself present than a dark one, or a field of them is a haze
-  alpha: [.16, .50],
+  alpha: [.10, .30],
   // **AND A MOTE BETWEEN YOU AND THE SUN CATCHES IT.** That back-lit term is what separates a
   // speck from noise in Kasumigawa -- its petals carry `pow(max(dot(V, sun), 0), 4)` -- and it
   // is the whole difference between dust that is there and dust you look at.
@@ -22894,11 +22890,11 @@ const DUST = {
   // **AND IT IS COMPUTED PER MOTE ON THE CPU, NOT IN THE SHADER**, because `puffPool` is shared
   // with the smoke and a back-lit term on a cigarette plume is wrong. 520 dot products a frame
   // against a second material and a second draw call.
-  back: 1.6,             // how much alpha a mote dead in front of the sun gains. Lower than
+  back: 1.2,             // how much alpha a mote dead in front of the sun gains. Lower than
                          // m138's 2.2 because a NEAR-WHITE mote taken to alpha 1 is a glare
                          // rather than a catch -- the same headroom, one colour brighter.
   backPow: 5,            // and how tightly it keys on it. Higher = only very near the sun.
-  add: 0,                // 0 alpha-blends, 1 is additive. `mel.dust({add:1})` -- see below.
+  add: 1,                // 0 alpha-blends, 1 is additive (m201). `mel.dust({add:1})` -- see below.
                          // **AND m130's NOTE HAD THAT POLARITY BACKWARDS**: additive against a
                          // BRIGHT sky has almost no headroom (it clips to white), and what reads
                          // against a bright backdrop is something DARKER. Alpha is the default
@@ -22951,12 +22947,15 @@ function stepDust(dt) {
     const edge = 1 - smooth(.72, 1, d);
     // THE GLIMMER IS THE WHOLE POINT, so it is its own rate and its own phase per mote -- one
     // shared clock is 220 motes pulsing together, which is a strobe and not dust.
-    const g = 1 - DUST.deep * .5 * (1 - Math.sin(dustT * dust.rt[i] + dust.ph[i]));
+    const sn = Math.sin(dustT * dust.rt[i] + dust.ph[i]);
+    const g = 1 - DUST.deep * .5 * (1 - sn);
+    const tw = DUST.twinkle * Math.pow(Math.max(0, sn), DUST.twinkPow);
     // BACK-LIT: how nearly the line from the lens THROUGH this mote points at the sun.
     const dl = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
     const face = (dx * snx + dy * sny + dz * snz) / dl;
     const lit = 1 + DUST.back * Math.pow(Math.max(0, face), DUST.backPow);
-    P.alp[i] = Math.min(1, dust.a0[i] * g * edge * lit);
+    const near = smooth(DUST.nearFade[0], DUST.nearFade[1], dl);
+    P.alp[i] = Math.min(1, (dust.a0[i] * g + tw) * edge * lit * near);
   }
   puffFlush(P, n);
 }
@@ -22972,35 +22971,23 @@ function stepDust(dt) {
 // near the lens are overdraw by definition. `SHAFT.n` is the dial and it is deliberately small.
 const SHAFT = {
   on: 1,
-  n: 9,
-  len: 64,           // how long each card is, along the sun's own axis
-  w: [1.1, 4.8],     // and how wide
-  spread: 11,        // how far off that axis they are scattered
-  col: 0xffe9c0,
-  // **THE WHITE THING IN THE BACKGROUND IS THESE (m139).** *"I don't know what this white thing
-  // we introduced is."* Nine additive cards, and every one of the three things that made them
-  // a shape rather than rays only became true at m138:
-  //   1. **`gain` HAD NEVER ONCE BEEN SEEN.** m130 typed .26 against a 57 deg sun, where
-  //      `pow(camFwd . sunDir, 3.2)` could reach at best .35 and the material drew at **opacity
-  //      0.009** -- m135's own measurement. m133 brought the sun to 12 deg and m138 finally let
-  //      the light agree with it, so the first build in which this number meant anything is the
-  //      build he is looking at. At .19, nine cards deep, the seam adds ~.4 linear on a sky
-  //      already near .65 and it clips.
-  //   2. **THE SET WAS CENTRED ON HIM AND EACH CARD IS 64 m LONG.** At a high sun that is right
-  //      -- the cards stand UP and you look through them. At 12 deg they lie DOWN, so a card
-  //      reaches ~32 m *behind* him, which is past a lens only `CAM.dist` back: a card through
-  //      the near plane is a full-screen wash, and nine of them converging on the sun's
-  //      vanishing point is a bright wedge rising off the horizon. `ahead` pushes the whole set
-  //      along the sun axis so the nearest card end clears the camera, which is also what makes
-  //      them read as light in the middle distance rather than as an object in your face.
-  //   3. **AND `toneMapped: false` MEANT THEY COULD NOT SHARE THE SKY'S HEADROOM.** Everything
-  //      else in the frame rolls off through `NeutralToneMapping` and this alone went straight
-  //      to the framebuffer, so it clipped where the sky it sits on top of does not. That is
-  //      the DUST's own m137 correction -- additive against a bright sky has nowhere to go --
-  //      one effect over.
-  ahead: 46,         // pushed along the sun axis, so the near end of every card clears the lens
-  gain: .12,         // the ceiling, when you are looking straight at the sun
-  pow: 3.2,          // how tightly it keys on that. Higher = only near the sun.
+  // **m201: BEAMS IN THE STREET, NOT SLABS IN THE SKY.** m130's cards were centred 46 m out along
+  // the sun axis and drew only while you looked TOWARD the sun, at `gain` .12 x `pow(k, 3.2)` --
+  // with the lens pitched down and the sun at 30 degrees that is about 2% at best, on top of a
+  // bright sky it cannot add to. So the key changed nothing. Now each shaft stands on the GROUND
+  // in front of you and leans up along the sun, a few metres wide, and fades in, holds and fades
+  // out over several seconds before moving somewhere else in view -- a spot detail, the way a
+  // beam through a gap in a roof is, rather than a sky effect. Seen from any bearing; looking
+  // toward the sun makes them brighter (`face`), it is no longer what lets them exist.
+  n: 7,
+  len: [12, 24],     // metres along the sun, from the ground up
+  w: [.9, 2.6],      // and how wide
+  near: 5, far: 26,  // how far in front of the lens a new one may stand
+  cone: .75,         // and how far off the view axis (radians either side)
+  life: [5, 9],      // seconds, fade in to fade out
+  a: .13,            // brightness at the peak of its life
+  face: .18,         // extra when you are looking toward the sun
+  col: 0xfff0c8,
 };
 let shaftMesh = null;
 // THE TWO REBUILDS ARE NAMED, BECAUSE THERE ARE TWO CALLERS NOW (m135). `mel.dust(0)` from a
@@ -23022,72 +23009,92 @@ function shaftDrop() {
 }
 const _shX = new THREE.Vector3(), _shY = new THREE.Vector3(), _shZ = new THREE.Vector3(),
       _shT = new THREE.Vector3(), _shM = new THREE.Matrix4();
+const shafts = [];
 function shaftBuild() {
-  // ONE MERGED GEOMETRY, so N cards are one draw call. Each card is a plane in local XY, long
-  // along +Y -- which becomes the sun's direction once the group is oriented.
-  const pos = [], col = [];
-  const c = new THREE.Color().setHex(SHAFT.col, THREE.SRGBColorSpace);
-  const R = (a, b) => a + Math.random() * (b - a);
-  for (let k = 0; k < SHAFT.n; k++) {
-    const w = R(SHAFT.w[0], SHAFT.w[1]) * .5, L = SHAFT.len * R(.55, 1);
-    const ox = R(-SHAFT.spread, SHAFT.spread), oz = R(-SHAFT.spread, SHAFT.spread);
-    const oy = R(-SHAFT.len * .2, SHAFT.len * .2);
-    // **THE FALLOFF IS IN THE VERTEX COLOUR AND THE BLENDING IS ADDITIVE**, so the card's own
-    // intensity IS its colour and no custom shader is needed -- three's `vertexColors` on a
-    // `MeshBasicMaterial` does it. The two ends go to black, which under additive is invisible,
-    // so a shaft fades out at both ends rather than stopping at an edge.
-    // **THE LIGHT IS DOWN THE MIDDLE, WHICH A SINGLE QUAD CANNOT SAY.** Six vertices can only
-    // put the brightness at corners, so the card is split lengthways into two halves that share
-    // a bright SEAM -- dark at both long edges, bright up the centre, dark at both ends.
-    const seam = [[-w, -L / 2, 0, 0], [0, -L / 2, 0, .35], [0, L / 2, 0, .35],
-                  [-w, -L / 2, 0, 0], [0, L / 2, 0, .35], [-w, L / 2, 0, 0],
-                  [0, -L / 2, 0, .35], [w, -L / 2, 0, 0], [w, L / 2, 0, 0],
-                  [0, -L / 2, 0, .35], [w, L / 2, 0, 0], [0, L / 2, 0, .35]];
-    for (const v of seam) {
-      pos.push(v[0] + ox, v[1] + oy, v[2] + oz);
-      col.push(c.r * v[3], c.g * v[3], c.b * v[3]);
-    }
-  }
+  // ONE MESH, N cards, one draw call. Every vertex carries its card's ANCHOR and its own corner
+  // (across -1..1, along 0..1); the vertex shader builds the card round the sun axis facing the
+  // lens, per card, which a single object quaternion cannot do for cards in different places.
+  const n = SHAFT.n, pos = new Float32Array(n * 6 * 3), anc = new Float32Array(n * 6 * 3),
+        crn = new Float32Array(n * 6 * 2), dim = new Float32Array(n * 6 * 3);
+  const Q = [[-1, 0], [1, 0], [1, 1], [-1, 0], [1, 1], [-1, 1]];
+  for (let k = 0; k < n; k++) for (let v = 0; v < 6; v++) { crn[(k * 6 + v) * 2] = Q[v][0]; crn[(k * 6 + v) * 2 + 1] = Q[v][1]; }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  shaftMesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({
-    vertexColors: true, blending: THREE.AdditiveBlending, transparent: true,
-    depthWrite: false, side: THREE.DoubleSide, toneMapped: true, opacity: 0 }));
-  // THE BUFFER IS LOCAL but the group is written every frame, so its bounds move with it --
-  // culling it is fine and is left ON, unlike the world-space pools.
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aAnc', new THREE.BufferAttribute(anc, 3));
+  g.setAttribute('aCrn', new THREE.BufferAttribute(crn, 2));
+  g.setAttribute('aDim', new THREE.BufferAttribute(dim, 3));   // len, half width, alpha
+  const c = new THREE.Color().setHex(SHAFT.col, THREE.SRGBColorSpace);
+  shaftMesh = new THREE.Mesh(g, new THREE.ShaderMaterial({
+    uniforms: { uSun: { value: new THREE.Vector3(0, 1, 0) }, uCol: { value: new THREE.Vector3(c.r, c.g, c.b) } },
+    vertexShader: `
+      attribute vec3 aAnc; attribute vec2 aCrn; attribute vec3 aDim;
+      uniform vec3 uSun;
+      varying vec2 vC; varying float vA;
+      void main() {
+        vC = aCrn; vA = aDim.z;
+        vec3 toCam = cameraPosition - aAnc;
+        vec3 side = cross(uSun, toCam);
+        float sl = length(side);
+        side = sl > 1e-4 ? side / sl : vec3(1.0, 0.0, 0.0);
+        vec3 p = aAnc + uSun * (aCrn.y * aDim.x) + side * (aCrn.x * aDim.y);
+        gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+      }`,
+    fragmentShader: `
+      uniform vec3 uCol; varying vec2 vC; varying float vA;
+      void main() {
+        float across = 1.0 - abs(vC.x); across *= across;
+        float along = smoothstep(0.0, 0.12, vC.y) * (1.0 - smoothstep(0.35, 1.0, vC.y));
+        // a little banding up the beam, so it reads as light through air and not a panel
+        float band = 0.8 + 0.2 * sin(vC.y * 23.0 + vC.x * 3.0);
+        float k = across * along * band * vA;
+        gl_FragColor = vec4(uCol * k, k);
+      }`,
+    blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    toneMapped: false }));
+  // THE ANCHORS ARE WORLD POSITIONS AND THE SHADER PLACES THE CARD, so the mesh's own bounds mean
+  // nothing -- the world-space pools' rule.
+  shaftMesh.frustumCulled = false;
   shaftMesh.renderOrder = 2;
   shaftMesh.userData.noHole = 1;
   scene.add(shaftMesh);
+  shafts.length = 0;
+  // staggered, so they do not all fade in together on the first frame
+  for (let k = 0; k < n; k++) shafts.push({ x: 0, y: 0, z: 0, len: 0, w: 0, age: 0, life: 0, stag: k / n });
 }
-function stepShafts() {
+function shaftPlace(S) {
+  const R = (a, b) => a + Math.random() * (b - a);
+  camera.getWorldDirection(_shT);
+  const h = Math.atan2(_shT.x, _shT.z) + R(-SHAFT.cone, SHAFT.cone), d = R(SHAFT.near, SHAFT.far);
+  S.x = camera.position.x + Math.sin(h) * d; S.z = camera.position.z + Math.cos(h) * d;
+  S.y = groundAt(S.x, S.z, player.pos.y + 2, MOVE.step) - .2;
+  S.len = R(SHAFT.len[0], SHAFT.len[1]); S.w = R(SHAFT.w[0], SHAFT.w[1]) * .5;
+  S.life = R(SHAFT.life[0], SHAFT.life[1]); S.age = 0;
+}
+function stepShafts(dt) {
   if (!SHAFT.on) { if (shaftMesh) shaftMesh.visible = false; return; }
   if (!shaftMesh) shaftBuild();
+  shaftMesh.visible = true;
   // THE SUN'S OWN VECTOR, the same `_sunOff` the light and the sky's disc come off -- so all
   // three agree by construction rather than by three numbers being kept in step.
   _shY.copy(_sunOff).normalize();
-  // **ONLY WHEN YOU ARE LOOKING TOWARD IT.** That is what makes this read as sun rays rather
-  // than as slabs of fog standing in the street, and it is also most of what makes it cheap:
-  // pointed away, it does not draw at all.
+  if (_shY.y < .05) { shaftMesh.visible = false; return; }        // no sun, no beams
+  shaftMesh.material.uniforms.uSun.value.copy(_shY);
   camera.getWorldDirection(_shT);
-  const k = Math.max(0, _shT.dot(_shY));
-  const a = SHAFT.gain * Math.pow(k, SHAFT.pow);
-  if (a < .004) { shaftMesh.visible = false; return; }
-  shaftMesh.visible = true;
-  shaftMesh.material.opacity = a;
-  // AND THE CARDS ROLL ABOUT THE SUN AXIS TO FACE THE LENS. A shaft is a cylinder of light, so
-  // the card standing in for it has to keep its long axis on the sun and turn about THAT --
-  // a full billboard would swing it off the sun and stop it being a shaft at all.
-  // AHEAD OF HIM ALONG THE SUN, never centred on him -- see `SHAFT.ahead`.
-  shaftMesh.position.copy(player.pos).addScaledVector(_shY, SHAFT.ahead);
-  _shZ.copy(camera.position).sub(shaftMesh.position);
-  _shZ.addScaledVector(_shY, -_shZ.dot(_shY));      // the part of it across the sun axis
-  // DEGENERATE WHEN YOU LOOK STRAIGHT DOWN THE SUN, which is exactly when this is brightest --
-  // so it needs a fallback rather than a normalise of nothing, which is a NaN and a black hole.
-  if (_shZ.lengthSq() < 1e-6) _shZ.set(_shY.y, -_shY.x, 0).normalize(); else _shZ.normalize();
-  _shX.crossVectors(_shY, _shZ).normalize();
-  _shM.makeBasis(_shX, _shY, _shZ);
-  shaftMesh.quaternion.setFromRotationMatrix(_shM);
+  const facing = SHAFT.face * Math.pow(Math.max(0, _shT.dot(_shY) + .3) / 1.3, 2);
+  const g = shaftMesh.geometry, anc = g.attributes.aAnc.array, dim = g.attributes.aDim.array;
+  for (let k = 0; k < shafts.length; k++) {
+    const S = shafts[k];
+    if (S.stag > 0) { S.stag -= dt / 3; continue; }
+    S.age += dt;
+    if (S.age >= S.life || !S.life) shaftPlace(S);
+    const a = (SHAFT.a + facing) * Math.sin(Math.PI * Math.min(1, S.age / S.life));
+    for (let v = 0; v < 6; v++) {
+      const o = (k * 6 + v) * 3;
+      anc[o] = S.x; anc[o + 1] = S.y; anc[o + 2] = S.z;
+      dim[o] = S.len; dim[o + 1] = S.w; dim[o + 2] = S.stag > 0 ? 0 : a;
+    }
+  }
+  g.attributes.aAnc.needsUpdate = true; g.attributes.aDim.needsUpdate = true;
 }
 
 // ============================================================================================
@@ -23179,7 +23186,7 @@ function frame() {
   // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
   // frame's lens is a field that lags every time he turns.
   stepDust(dt);
-  stepShafts();
+  stepShafts(dt);
   // AFTER `stepDummies` and after the player, because it draws where they ACTUALLY are -- a
   // wire a frame behind the body it is describing is the second-thing-to-be-wrong this view
   // exists not to become.
@@ -24204,7 +24211,7 @@ window.melee = window.mel = { fireSheet, PERF, perfMode, RIG, MOVE, GAIT, CAM, F
   shafts: o => { if (typeof o === 'object' && o) Object.assign(SHAFT, o);
     else if (o != null) SHAFT.on = o ? 1 : 0;
     shaftDrop();
-    return { on: SHAFT.on, n: SHAFT.n, gain: SHAFT.gain, pow: SHAFT.pow }; },
+    return { on: SHAFT.on, n: SHAFT.n, a: SHAFT.a, face: SHAFT.face }; },
   emis: v => { for (const m of Object.values(rig.mats || {})) m.emissiveIntensity = v; RIG.emissive = v; return v; },
 };
 

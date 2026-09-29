@@ -7,6 +7,22 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE RAYS AND THE DUST KEYS DID NOTHING YOU COULD SEE, SO THEY ARE REBUILT (m201).** *"They
+  still don't really seem like they do anything."*
+  - **Rays.** m130's cards hung 46 m out along the sun axis and drew only while the lens faced
+    the sun, at `gain` .12 x `pow(k, 3.2)`. With the camera pitched down and the sun at 30 deg
+    that is about 2% opacity on top of a bright sky. Now there are seven BEAMS standing on the
+    ground in front of the lens, leaning up along `_sunOff`. Each one fades in, holds and fades
+    out over 5-9 s, then moves somewhere else in view. The vertex shader builds each card round
+    the sun axis facing the camera from its own anchor, so it is still ONE draw call. Facing the
+    sun adds `face`; it is no longer what lets them exist.
+  - **Dust.** Near-white 3-7 px specks at alpha .16-.5 are the same value as a pale pavement and a
+    pale sky, so switching them off changed nothing. It is now additive gold (it can only add
+    light), a 13 m box so the same 520 are denser where you look, and a sharp per-mote
+    `twinkle` pulse so a few catch the light at any moment. Motes within 2 m of the lens fade
+    rather than becoming blobs.
+  Taste numbers, all live: `mel.DUST.twinkle/twinkPow/size`, `mel.SHAFT.a/face/w/len`.
+
 - **20 FPS WITH THE CROWD: TWO COSTS PAID FOR THINGS NOBODY COULD SEE (m200, `PERF`, `bodyCull`,
   `bodyMix`, `perfStep`, the `RES` key).**
   1. **Every body was drawn, shadowed and animated wherever it was.** Bodies are
