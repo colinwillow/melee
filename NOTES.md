@@ -7,6 +7,16 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **"Script error. @ ?:?:?" IS A MUTED ERROR, AND THE FRAME NOW CATCHES WHAT THE WINDOW CANNOT READ
+  (m235, `frame` -> `frameBody`, `FRAMEERR`).** He got it "going to game". Nothing on the page is
+  another origin, but Safari also mutes errors from a module brought in with `import()` -- which is
+  how `weirdkit_detile.js` arrives (m219), and its hook runs inside every city material's compile,
+  i.e. inside `renderer.render`. A muted error carries no message, file or line to `window.onerror`,
+  so `#crash` could only print the placeholder. An Error CAUGHT in our own code is never muted: the
+  whole frame body runs in a try, the first occurrence of each message paints `FRAME <build>` and its
+  STACK, and the loop keeps going instead of dying. Not reproduced here (check:boot passes and m234
+  touched none of that path) -- this makes the next report name the line.
+
 - **RES AUTO WAS PINNING 2.0 FOR A MINUTE AT A TIME (m234, `perfStep`).** m233 chip: `pr2.00h`, 20 fps, no
   fire and no water on screen -- where m232 read 44 fps at pr 1.55. The auto rule stepped BACK UP when
   a drop "did not help" (the next 2 s window was not `gain` better) and then held for `hold` 60 s. A
