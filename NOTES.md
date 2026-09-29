@@ -7,6 +7,14 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE TUNE PANEL FOLDS AND SCROLLS BY HAND (m229, `tuneOpen`).** *"I can't scroll the tune panel and
+  it's too long."* It was `overflow: hidden` inside a page that is `touch-action: none` with every
+  touch cancelled for the sticks -- native scrolling could never reach it. Headings are now fold
+  toggles (remembered in `mel.tuneOpen`, all shut by default), and a drag anywhere that is not a
+  slider track moves `scrollTop` directly. The heading toggles on POINTERUP with under 8 px of travel,
+  not on `click`: a synthesised click is exactly what the double-tap guard cancels, and a drag to
+  scroll must not open a section on the way past.
+
 - **A KERB IS EASED IN THE PICTURE, NOT IN THE BODY (m228, `STEPUP`, `stepEase`).** *"When I go from the
   street up onto a curb he just teleports up the foot."* The collider snaps up to `MOVE.step` in one
   frame and must -- a body that climbed over several frames would be inside the kerb. So a grounded
