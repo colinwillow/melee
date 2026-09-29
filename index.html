@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m191</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m192</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m191</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m192</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm191';
+const BUILD = 'm192';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -2985,6 +2985,8 @@ const KREP = { on: 1, range: 90, arrive: .6, stuck: 3, per: 1, scan: .6, rate: 1
 const NAV = { cell: .6, pad: 12, max: 70000, expand: 25000, stepH: .45, head: 1.7, near: 3.5,
               next: .5, replan: 1.0, tries: 3 };
 const KREPAIR = new Map();      // wall piece_id -> where his `nav_repair` marker stands
+const KROOMS = [];              // every `room` marker with `fire_spawn`, in world space (m192)
+const KFIREPOS = {};            // building -> { truck, hose } -- where a firefighter goes (m192)
 
 // ============================================================================================
 // THE SKATER -- A KIND IS A TABLE, AND THIS ONE IS THE CHEAPEST YET (m80)
@@ -8219,6 +8221,158 @@ function fireBolt(chg) {
 }
 
 // ============================================================================================
+// FIRE (m192, `FIRE`, `fireIgnite`, `fireDouse`, `stepFire`)
+//
+// *"I was thinking about making things light on fire with the rocket launcher, because eventually
+// when I put in the firefighter he would come and put out fires."*
+// **HIS KIT ALREADY SAYS WHERE A BUILDING BURNS.** Every building carries `room` markers flagged
+// `fire_spawn` (934 in the kit city, 89 on the generated row, 12 in the house) plus a
+// `fire_truck_park` and a `fire_hose_stand` -- so a rocket that lands in or against a building
+// lights the ROOM nearest the blast, and a room fire grows, then spreads to the next room of the
+// same building every `spreadT` seconds, up to `perBld`. It burns until it is PUT OUT: that is the
+// firefighter's job, and `fireDouse(f, amount)` is the whole of what he will need, with
+// `fireNear(x, z, r)` to find one and `KFIREPOS[f.bld]` for where to park and where to stand.
+// A rocket that lands in the open leaves a GROUND fire instead, which burns out on its own.
+// **THE FLAME IS ITS OWN POOL, not the sparks.** A spark falls and holds its colour; a flame
+// rises, shrinks and cools from yellow through orange to red -- additive, one draw call. The
+// smoke is the shared smoke pool, dark and big.
+// **WHAT IT DOES NOT DO YET:** it does not hurt anybody, it does not burn the walls down, and
+// nothing catches from a body. Those are the next rules, not this build's.
+const FIRE = {
+  on: 1, n: 320, max: 28,
+  rate: 30,                 // flames a second from a fire at full strength
+  life: [.42, .85], rise: [1.3, 2.6], size0: .62, size1: .10,
+  jitter: .45,              // how wide a fire's base is, as a fraction of its radius
+  col0: [1, .93, .55], col1: [1, .46, .10], col2: [.50, .07, .02],
+  smokeEvery: .14, smokeK: 3.8, smokeLife: 2.4, smokeCol: [.20, .18, .17],
+  igniteR: 6,               // how far from the blast a room may be and still catch
+  room: { r: 1.3, grow: .07, spreadT: 9, spreadR: 7, perBld: 8 },
+  ground: { r: .75, life: 12 },
+  steam: [.86, .88, .9],
+};
+const FIRES = [];
+const flame = { P: null, v: [], life: [], age: [], s0: [] };
+{
+  flame.P = puffPool(FIRE.n, THREE.AdditiveBlending);
+  for (let i = 0; i < FIRE.n; i++) { flame.v.push(0); flame.life.push(0); flame.age.push(0); flame.s0.push(0); }
+}
+function flameAt(x, y, z, k) {
+  const i = flame.P.i; flame.P.i = (flame.P.i + 1) % FIRE.n;
+  const P = flame.P;
+  P.pos[i * 3] = x; P.pos[i * 3 + 1] = y; P.pos[i * 3 + 2] = z;
+  flame.v[i] = rnd(FIRE.rise) * (.6 + .4 * k);
+  flame.life[i] = rnd(FIRE.life); flame.age[i] = 0;
+  flame.s0[i] = FIRE.size0 * (.6 + .4 * k) * (.75 + Math.random() * .5);
+  P.siz[i] = flame.s0[i]; P.alp[i] = 1;
+}
+function fireStart(x, y, z, o) {
+  if (!FIRE.on) return null;
+  o = o || {};
+  if (FIRES.length >= FIRE.max) {
+    // the oldest GROUND fire gives way; a building fire is never dropped for a new one
+    const i = FIRES.findIndex(f => !f.room);
+    if (i < 0) return null;
+    FIRES.splice(i, 1);
+  }
+  const f = { x, y, z, k: o.k || .25, r: o.r || FIRE.ground.r, room: o.room || null, bld: o.room ? o.room.bld : null,
+              life: o.room ? Infinity : FIRE.ground.life, t: 0, acc: 0, sm: 0, st: 0 };
+  if (f.room) f.room.fire = f;
+  FIRES.push(f);
+  kit.fires = (kit.fires || 0) + 1;
+  return f;
+}
+// A BLAST AT (x, y, z) SETS FIRE TO WHAT IS THERE: the nearest unburnt room of a building within
+// `igniteR`, or failing that the ground it landed on.
+function fireIgnite(x, y, z, k) {
+  let best = null, bd = FIRE.igniteR;
+  for (const R of KROOMS) {
+    if (R.fire || Math.abs(R.y - y) > 3.2) continue;
+    const d = Math.hypot(R.x - x, R.z - z);
+    if (d < bd) { bd = d; best = R; }
+  }
+  if (best) return fireStart(best.x, best.y + .15, best.z, { room: best, r: FIRE.room.r, k: .35 + (k || 0) * .3 });
+  // on the ground under the blast when there is ground close under it; on the wall where it hit if not
+  const gy = groundAt(x, z, y + .3, .6);
+  return fireStart(x, y - gy < 1.5 ? gy + .05 : y, z, { k: .7 + (k || 0) * .3 });
+}
+// **THE FIREFIGHTER'S HOOK.** Takes `amount` of strength off it (a full fire is 1); at zero it is
+// out, with a puff of steam. Returns whether it went out.
+function fireDouse(f, amount) {
+  if (!f || FIRES.indexOf(f) < 0) return false;
+  f.k -= amount;
+  if (f.k > 0) return false;
+  for (let i = 0; i < 6; i++) smokeAt(f.x + (Math.random() - .5) * f.r, f.y + .3, f.z + (Math.random() - .5) * f.r, 3, 1.4, FIRE.steam);
+  fireEnd(f);
+  return true;
+}
+function fireEnd(f) {
+  const i = FIRES.indexOf(f); if (i >= 0) FIRES.splice(i, 1);
+  if (f.room) f.room.fire = null;
+}
+function fireNear(x, z, r) {
+  let best = null, bd = r || Infinity;
+  for (const f of FIRES) { const d = Math.hypot(f.x - x, f.z - z); if (d < bd) { bd = d; best = f; } }
+  return best;
+}
+function stepFire(dt) {
+  for (let n = FIRES.length - 1; n >= 0; n--) {
+    const f = FIRES[n];
+    f.t += dt;
+    if (f.room) {
+      f.k = Math.min(1, f.k + FIRE.room.grow * dt);
+      // AND IT SPREADS, room to room inside the same building
+      f.st += dt;
+      if (f.st > FIRE.room.spreadT) {
+        f.st = 0;
+        let burning = 0; for (const g of FIRES) if (g.bld === f.bld) burning++;
+        if (burning < FIRE.room.perBld) {
+          let best = null, bd = FIRE.room.spreadR;
+          for (const R of KROOMS) {
+            if (R.fire || R.bld !== f.bld) continue;
+            const d = Math.hypot(R.x - f.x, R.y - f.y, R.z - f.z);
+            if (d < bd) { bd = d; best = R; }
+          }
+          if (best) fireStart(best.x, best.y + .15, best.z, { room: best, r: FIRE.room.r, k: .2 });
+        }
+      }
+    } else {
+      f.life -= dt;
+      if (f.life <= 0) { fireEnd(f); continue; }
+      if (f.life < 3) f.k = Math.min(f.k, f.life / 3);          // it dies down, it does not blink out
+    }
+    // the flames, at a rate that follows its strength
+    f.acc += FIRE.rate * f.k * dt;
+    while (f.acc >= 1) {
+      f.acc -= 1;
+      const a = Math.random() * Math.PI * 2, rr = f.r * FIRE.jitter * Math.sqrt(Math.random());
+      flameAt(f.x + Math.cos(a) * rr, f.y + Math.random() * .15, f.z + Math.sin(a) * rr, f.k);
+    }
+    f.sm += dt;
+    if (f.sm > FIRE.smokeEvery / Math.max(.25, f.k)) {
+      f.sm = 0;
+      smokeAt(f.x + (Math.random() - .5) * f.r, f.y + .9 + Math.random() * .5, f.z + (Math.random() - .5) * f.r,
+              FIRE.smokeK * (.6 + .4 * f.k), FIRE.smokeLife, FIRE.smokeCol);
+    }
+  }
+  // the flame pool: up, smaller, and yellow -> orange -> red as it goes
+  const P = flame.P; let live = 0;
+  for (let i = 0; i < FIRE.n; i++) {
+    if (flame.life[i] <= 0) { P.alp[i] = 0; continue; }
+    flame.age[i] += dt;
+    const u = flame.age[i] / flame.life[i];
+    if (u >= 1) { flame.life[i] = 0; P.alp[i] = 0; continue; }
+    live++;
+    P.pos[i * 3 + 1] += flame.v[i] * dt;
+    P.pos[i * 3] += (Math.random() - .5) * .6 * dt; P.pos[i * 3 + 2] += (Math.random() - .5) * .6 * dt;
+    P.siz[i] = lerp(flame.s0[i], FIRE.size1, u);
+    const c0 = u < .45 ? FIRE.col0 : FIRE.col1, c1 = u < .45 ? FIRE.col1 : FIRE.col2, q = u < .45 ? u / .45 : (u - .45) / .55;
+    P.col[i * 3] = lerp(c0[0], c1[0], q); P.col[i * 3 + 1] = lerp(c0[1], c1[1], q); P.col[i * 3 + 2] = lerp(c0[2], c1[2], q);
+    P.alp[i] = u < .15 ? u / .15 : 1 - (u - .15) / .85;
+  }
+  puffFlush(P, live);
+}
+
+// ============================================================================================
 // THE ROCKET (m189, `ROCKET`, `fireRocket`)
 //
 // A bolt with `rocket` set, so it rides the whole of `stepBolts` -- the segment tests against
@@ -9568,6 +9722,9 @@ function stepBolts(dt) {
       // A ROCKET IS A DETONATION, which is exactly what m55 said a plasma bolt was not -- so this
       // is the one weapon that gets the explosion file, and the lens takes the knock
       if (b.rocket) {
+        // AND IT SETS WHAT IT HIT ON FIRE (m192) -- the room nearest the blast, or the ground
+        // -- only if it HIT something: one that ran out of range in mid-air sets fire to nothing
+        if (b.hitAt || b.onMan || b.hitN) fireIgnite(b.hitAt ? b.hitAt[0] : b.pos.x, b.hitAt ? b.hitAt[1] : b.pos.y, b.hitAt ? b.hitAt[2] : b.pos.z, 1);
         snd('boom', { g: .75, r: .9 + Math.random() * .12 });
         camShake(ROCKET.shake);
         for (let k = 0; k < 10; k++) {
@@ -15703,6 +15860,17 @@ function buildKit(g) {
     // with no geometry, so there is nothing to hide -- but the nav points are kept, because
     // they are what a fireman, a repair worker and a police line will stand on.
     if (e.marker) nMark++;
+    // HIS FIRE MARKERS (m192): the rooms a fire can start in, and where a truck parks and a hose
+    // stands -- per building, by the prefix on the node's own name (`kit_000_room_...`, `BKG0_...`;
+    // the test house's are bare, so it is `house`)
+    if (e.marker === 'room' || e.marker === 'fire_truck_park' || e.marker === 'fire_hose_stand') {
+      o.updateWorldMatrix(true, false);
+      const w = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
+      const bm = /^(.*?)_(?:room|nav)_/.exec(o.name), bld = (bm && bm[1]) || 'house';
+      if (e.marker === 'room') { if (e.fire_spawn !== false) KROOMS.push({ x: w.x, y: w.y, z: w.z, bld, room: e.room || '', level: e.level | 0, fire: null }); }
+      else (KFIREPOS[bld] || (KFIREPOS[bld] = {}))[e.marker === 'fire_hose_stand' ? 'hose' : 'truck'] =
+        { x: w.x, y: w.y, z: w.z, yaw: (e.yaw_deg || 0) * Math.PI / 180 };
+    }
     // HIS REPAIR MARKERS (m187): where a worker stands to fix the wall it names
     if (e.marker === 'repair' && e.wall_piece) {
       o.updateWorldMatrix(true, false);
@@ -22568,7 +22736,7 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
-  decalStep(dt); brkStep(dt); stepLoose(dt); spoutStep(dt); virusStep(dt);
+  decalStep(dt); brkStep(dt); stepLoose(dt); spoutStep(dt); virusStep(dt); stepFire(dt);
   // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
   // frame's lens is a field that lags every time he turns.
   stepDust(dt);
@@ -22777,6 +22945,9 @@ function frame() {
       // SW: intact city walls swapped for their chunked twins so far (m180) -- 0 after a hit
       // means the swap never ran, which is a different bug from the twin not breaking
       (inTK() ? ' SW' + kit.swapped : '') +
+      // F: fires burning now / started this session (m192) -- 0 after a rocket into a building is
+      // "no room marker was near the blast", which is a different bug from "the flames do not draw"
+      (kit.fires ? ' F' + FIRES.length + '/' + kit.fires : '') +
       // REP: the construction worker's state and the chunks he has put back (m187) -- `REPidle0`
       // with a hole in a wall beside him is "he cannot see the job", `REPgo` for ever is "he
       // cannot reach it", and no token at all is "he never loaded" (NO CLIP / WORKER in the chip)
@@ -23411,6 +23582,11 @@ window.melee = window.mel = { RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WE
   WORKER, KREP,
   // THE LAUNCHER AND THE GAIT (m189): `mel.ROCKET` (blast, max, dmgK, v, cool), `mel.CLIMB` (ref, hi), `mel.GAIT` (sprintHi, sync)
   ROCKET, CLIMB,
+  // FIRE (m192): `mel.fire()` lights the nearest room to him (or the ground), `mel.douse()` puts the
+  // nearest fire out -- the firefighter's own two calls, from the console
+  FIRE, FIRES, KROOMS, KFIREPOS,
+  fire: () => { const f = fireIgnite(player.pos.x, player.pos.y + .5, player.pos.z, 1); return f ? (f.room ? 'room ' + f.bld + ' ' + f.room.room : 'ground') : 'no fire'; },
+  douse: () => { const f = fireNear(player.pos.x, player.pos.z); return f ? (fireDouse(f, 9) ? 'out' : 'less') : 'none'; },
   worker: () => { const d = DUMMIES.find(q => q.K === WORKER); if (!d) return 'no worker';
     d.root.position.set(player.pos.x + 2, player.pos.y, player.pos.z + 2); d.rst = 'idle'; d.rT = 9; return 'here'; },
   kitBoom: (r, d) => kitBlast(player.pos.x, player.pos.y + 1, player.pos.z, r || 2.5,

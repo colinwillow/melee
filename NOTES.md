@@ -7,6 +7,26 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **ROCKETS SET THINGS ON FIRE, AND HIS KIT ALREADY SAID WHERE (m192, `FIRE`, `fireIgnite`,
+  `fireDouse`, `fireNear`, `KROOMS`, `KFIREPOS`).** *"Making things light on fire with the rocket
+  launcher, because eventually when I put in the firefighter he would come and put out fires."*
+  Every kit building carries `room` markers with `fire_spawn: true` -- 934 in the kit city, 89 on
+  the generated row, 12 in the house -- plus a `fire_truck_park` (with `yaw_deg`) and a
+  `fire_hose_stand`. `buildKit` collects them by the building prefix on the node's own name
+  (`kit_000_...`, `BKG0_...`, bare = `house`). A rocket that HITS something lights the nearest
+  unburnt room within `igniteR` (6 m, within 3.2 m of height); failing that a ground fire where it
+  landed, which burns out on its own in 12 s. A room fire grows to full and spreads to the nearest
+  room of the SAME building every `spreadT` (9 s), up to `perBld` (8), and **burns until it is put
+  out** -- which is the firefighter's job: `fireNear(x, z, r)` finds one, `fireDouse(f, amount)`
+  takes strength off (1 = a full fire; it goes out with steam at 0), `KFIREPOS[f.bld]` is where to
+  park and stand. `mel.fire()` / `mel.douse()` do the same where he stands.
+  Probed through the real kit world: a rocket into BKG1 lit `L0_1_0`, 40 s later 8 of its rooms
+  were burning at full, and four douses of .25 put one out.
+  **Flames are their own additive pool** (a spark falls and holds its colour; a flame rises,
+  shrinks and cools yellow -> orange -> red), smoke is the shared pool, dark. The chip says
+  `F<burning>/<started>`. **Not yet:** fire hurts nobody, burns no walls, and does not catch on
+  bodies -- those are rules still to decide.
+
 - **THE STRIDE CLIP DRAGS ITS SWING FOOT, THE WALK BAND OUTRAN THE WALK, AND THE SLAM CRATER WAS
   NEVER SHRUNK (m191, `GAIT.runSets`, the RUN key, `DECAL.slam`).** *"The new run is actually worse
   -- it looks sped up way more in game, his feet are sticking to the ground... a problem with him
