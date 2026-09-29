@@ -43,7 +43,7 @@ const DIRS = ['models', 'models/characters', 'models/vehicles', 'models/weapons'
 // the old one on his phone for ever** with nothing on screen to say why. It surfaced only
 // because m164's `shapes.bin` reported "none changed" on a file that had just been written.
 // The extension list is the hash's real reach, not `DIRS`.
-const EXT = /\.(glb|png|jpe?g|webp|mp3|ogg|wav|json|bin)$/i;
+const EXT = /\.(glb|png|jpe?g|webp|mp3|ogg|wav|json|bin|js)$/i;   // js: his detile module (m219)
 const map = {};
 for (const d of DIRS) {
   if (!fs.existsSync(d)) continue;

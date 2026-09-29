@@ -7,6 +7,22 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS ANTI-TILING SHADER IS HIS OWN MODULE, IMPORTED AS IS (m219, `DETILE`, `cityDetile`,
+  `models/toon_city_kit/weirdkit_detile.js`).** Pushed on `assets/city-detile` (2afa55e) with the
+  three kit-city exports; fast-forwarded into main. What the files carry, read out of them:
+  visual 6 `wk_detile` materials + 5 `dt_carrier_*` nodes (the B textures), buildings 9, pieces 9
+  -- so **15 patched** is the right number (visual + buildings; the pieces only feed the twins,
+  which wear the BUILDINGS' materials by name, so theirs are never drawn).
+  **Loaded with `import('./' + A(...))`**: the `./` is load-bearing (a bare `models/...` is a bare
+  specifier and the import map refuses it), and `A()` needs `js` in `bump.mjs`'s `EXT`, which it
+  now has. It runs once, after `buildKit`, over the whole `scene`: it CHAINS onto whatever hook a
+  material already has, so it is last -- after `tcTint` and `kitCutMat` -- and the tint still
+  reads the mixed colour because `map_fragment` precedes `color_fragment`. The merge and the kit
+  batch both keep material OBJECTS, and a carrier is one mesh with a unique material, so neither
+  pass can merge or drop one. **The chip says `DT<n>`**; `DT0` is lost extras, `NO DETILE JS` is
+  the module. **Re-run after his exports:** `npm run ktx` on the visual and the buildings, and
+  `npm run twins` (the twins went 42 -> 60 on this export: 6 kinds x 10 styles).
+
 - **A FIRE ON A PROP BURNS FROM THE GROUND, AND THE WATER WAS DARK BECAUSE OF ITS BLEND (m218,
   `fireFloor`, `FIRE.propA`, `watPool`, `SPOUT.sheet`).** *"When I shoot the fire hydrant the fire
   starts at the very top of it... it needs to burn around the ground"* and *"the water looks
