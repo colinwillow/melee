@@ -7,6 +7,25 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **20 FPS WITH THE CROWD: TWO COSTS PAID FOR THINGS NOBODY COULD SEE (m200, `PERF`, `bodyCull`,
+  `bodyMix`, `perfStep`, the `RES` key).**
+  1. **Every body was drawn, shadowed and animated wherever it was.** Bodies are
+     `frustumCulled = false`, so all 22 were drawn behind the camera, drawn again into the sun's
+     shadow map, and had their mixer evaluated every frame. Now each skinned mesh gets three's own
+     `computeBoundingSphere` on the SKINNED pose, inflated x`PERF.inflate` so a swing stays
+     inside it, and culling goes back on, which culls the shadow pass too. That is two bodies a
+     frame, because the sphere runs every vertex through the bones. Off screen the mixer runs at
+     `animHz` with the time ACCUMULATED, so nothing falls behind. Within `near` of him it always
+     runs, because a hit behind the lens still reads the limbs.
+  2. **The resolution was a fixed 2x with MSAA**, which on a phone is the fill rate. `RES` on the
+     FX bar cycles AUTO / 2 / 1.5 / 1.2 and is remembered in `mel.res`. AUTO walks the pixel ratio
+     toward `target` fps, and **it checks that dropping it helped**. If a step down buys under
+     `gain` fps, the frame is not fill bound: it steps back up and holds for `hold` seconds, so it
+     never blurs the picture for nothing. The chip reads `pr1.65` (with `h` while holding) and
+     `B<seen>/<bodies>`.
+  **Not measured here.** Nothing in this container has a GPU, so which of the two was the 20 fps
+  is a device question. `RES 2` against `RES AUTO`, and `mel.PERF.cull = 0`, are the two A/Bs.
+
 - **HIS TWO FIRE SHEETS, ON A SWITCH (m198, `FIRE.sheets`, `fireSheet`, `?fire=N`).** *"I want to
   try the second one, but it's five by two rather than four by four."* The shape is not a problem.
   The lookup is in UV, so any `grid` works, and so do cells that are not a whole number of pixels.

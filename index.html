@@ -533,14 +533,14 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m199</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m200</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m199</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m200</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
-<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i><i data-fx="doors">DOORS</i><i data-fx="inside">INSIDE</i><i data-fx="run">RUN</i></div>
+<div id="fxKey"><b>FX</b><i data-fx="sun">SUN</i><i data-fx="sky">HDRI</i><i data-fx="shafts">RAYS</i><i data-fx="ibl">IBL</i><i data-fx="dust">DUST</i><i data-fx="tint">TINT</i><i data-fx="flat">FLAT</i><i data-fx="rim">RIM</i><i data-fx="toon">TOON</i><i data-fx="paint">PAINT</i><i data-fx="doors">DOORS</i><i data-fx="inside">INSIDE</i><i data-fx="run">RUN</i><i data-fx="res">RES</i></div>
 
 <div class="zone" id="zoneL"></div><div class="zone" id="zoneR"></div>
 <div class="pad" id="padL"><div class="knob"></div><div class="hint">move &middot; tap = jump</div></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm199';
+const BUILD = 'm200';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -11806,7 +11806,8 @@ function fxKeys() {
           | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7)
           | (fxOn('toon') << 8) | (fxOn('paint') << 9) | (fxOn('rim') << 10) | (fxOn('doors') << 11)
           | ((kitWorld() ? 1 : 0) << 12) | (['xray', 'cut', 'close', 'off'].indexOf(KIT.inCam) << 13)
-          | ((GAIT.runSet === 'stride' ? 1 : 0) << 16);
+          | ((GAIT.runSet === 'stride' ? 1 : 0) << 16)
+          | ((PERF.modes.indexOf(PERF.mode) * 64 + Math.round(PERF.pr * 20)) << 17);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -11818,6 +11819,8 @@ function fxKeys() {
     if (el.dataset.fx === 'inside') { el.textContent = 'INSIDE ' + KIT.inCam.toUpperCase();
                                       el.classList.toggle('hide', !kitWorld()); }
     if (el.dataset.fx === 'run') { el.textContent = 'RUN ' + GAIT.runSet.toUpperCase(); el.classList.toggle('on', GAIT.runSet === 'stride'); continue; }
+    // THE LABEL IS THE STATE: the mode, and the pixel ratio it is actually at
+    if (el.dataset.fx === 'res') { el.textContent = 'RES ' + (PERF.mode === 'auto' ? 'AUTO ' : '') + PERF.pr.toFixed(1); el.classList.toggle('on', PERF.mode === 'auto'); continue; }
     el.classList.toggle('on', !!fxOn(el.dataset.fx));
     // THE TINT SWITCH ONLY EXISTS WHERE IT MEANS SOMETHING, which is `paintKit`'s rule: the
     // vertex tint is Weirdport's, so on the test site that segment would be a control that
@@ -11831,6 +11834,7 @@ function fxKeys() {
       e.preventDefault(); e.stopPropagation();
       if (el.dataset.fx === 'sun') sunCycle();
       else if (el.dataset.fx === 'run') runSetUse(GAIT.runSet === 'stride' ? 'fast' : 'stride', 1);
+      else if (el.dataset.fx === 'res') perfMode(PERF.modes[(PERF.modes.indexOf(PERF.mode) + 1) % PERF.modes.length]);
       else fxSet(el.dataset.fx, !fxOn(el.dataset.fx));
     });
   }
@@ -22244,8 +22248,99 @@ function bodyVox(d, k) {
                  x: d.root.position.x, z: d.root.position.z });
 }
 
+// ============================================================================================
+// PERFORMANCE (m200, `PERF`, `perfStep`, `bodyCull`)
+//
+// *"It sits around 20 frames per second -- is there any optimisation we can do?"* Two costs that
+// grew with m197's crowd, and both were paid for things nobody could see:
+// 1. **EVERY BODY WAS DRAWN, SHADOWED AND ANIMATED WHEREVER IT WAS.** A skinned mesh here is
+//    `frustumCulled = false`, because its bounds come from the bind pose and a clip can carry a
+//    limb out of them. So all 22 bodies were drawn behind the camera, drawn AGAIN into the sun's
+//    shadow map, and had their whole mixer evaluated every frame. The fix is three's own answer:
+//    `computeBoundingSphere` on the SKINNED pose (it runs the bones), INFLATED so a swing cannot
+//    carry an arm outside it, and culling turned back on -- which culls the shadow pass too.
+//    Off screen the mixer runs at `animHz` rather than every frame, with the time ACCUMULATED so
+//    nothing falls behind; within `near` of him it always runs, because a melee hit behind the
+//    lens still reads the limbs.
+// 2. **THE RESOLUTION WAS FIXED AT 2x WITH MSAA.** On a phone that is the fill rate, and it is
+//    the one lever that scales with every pixel of every effect at once. `RES` on the FX bar:
+//    AUTO walks the pixel ratio between `prMin` and the device's own (capped at 2) toward
+//    `target` fps -- and **it checks that dropping it HELPED**: if a step down buys under
+//    `gain` fps the frame is not fill bound, so it steps back up and leaves it alone for `hold`
+//    seconds rather than blurring the picture for nothing.
+const PERF = {
+  cull: 1, inflate: 1.7, near: 9, animHz: 6,
+  modes: ['auto', 2, 1.5, 1.2], mode: 'auto',
+  target: 30, prMin: 1.1, step: .15, win: 2, gain: 1.5, hold: 20,
+  pr: 0, t: 0, n: 0, last: 0, dropped: 0, holdT: 0, seen: 0,
+};
+const _pfFr = new THREE.Frustum(), _pfM = new THREE.Matrix4(), _pfS = new THREE.Sphere();
+function perfMax() { return Math.min(devicePixelRatio || 1, 2); }
+function perfSetPR(pr) {
+  pr = Math.max(PERF.prMin, Math.min(perfMax(), pr));
+  if (Math.abs(pr - PERF.pr) < .01) return;
+  PERF.pr = pr; renderer.setPixelRatio(pr); resize();
+}
+function perfMode(m) {
+  PERF.mode = m; PERF.t = PERF.n = 0; PERF.dropped = 0; PERF.holdT = 0;
+  perfSetPR(m === 'auto' ? perfMax() : +m);
+  try { localStorage.setItem('mel.res', String(m)); } catch (e) {}
+}
+function perfStep(dt) {
+  if (!PERF.pr) {
+    let m = 'auto';
+    try { const v = localStorage.getItem('mel.res'); if (v && PERF.modes.map(String).includes(v)) m = v === 'auto' ? v : +v; } catch (e) {}
+    perfMode(m);
+  }
+  if (PERF.mode !== 'auto') return;
+  if (PERF.holdT > 0) { PERF.holdT -= dt; return; }
+  PERF.t += dt; PERF.n++;
+  if (PERF.t < PERF.win) return;
+  const f = PERF.n / PERF.t; PERF.t = PERF.n = 0;
+  if (PERF.dropped) {
+    // did the last step down buy anything? if not, the frame is not fill bound
+    const helped = f >= PERF.last + PERF.gain;
+    PERF.dropped = 0;
+    if (!helped) { perfSetPR(PERF.pr + PERF.step); PERF.holdT = PERF.hold; PERF.last = f; return; }
+  }
+  if (f < PERF.target - 3 && PERF.pr > PERF.prMin + .01) { PERF.last = f; PERF.dropped = 1; perfSetPR(PERF.pr - PERF.step); }
+  else if (f > PERF.target + 12 && PERF.pr < perfMax() - .01) perfSetPR(PERF.pr + .1);
+  PERF.last = f;
+}
+// ONCE A FRAME, BEFORE THE BODIES STEP: last frame's camera is what was drawn, which is close
+// enough to decide whether to bother animating someone.
+function bodyCull() {
+  _pfM.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  _pfFr.setFromProjectionMatrix(_pfM);
+  let seen = 0, init = 2;   // the sphere runs every vertex through the bones: two bodies a frame, not 22 at once
+  for (const d of DUMMIES) {
+    if (!d._bs && init > 0) {
+      d._bs = 1; init--;
+      if (PERF.cull) {
+        d.root.updateMatrixWorld(true);
+        d.root.traverse(o => {
+          if (!o.isSkinnedMesh) return;
+          try { o.skeleton.update(); o.computeBoundingSphere(); o.boundingSphere.radius *= PERF.inflate; o.frustumCulled = true; }
+          catch (e) { o.boundingSphere = null; o.frustumCulled = false; }
+        });
+      }
+    }
+    const h = d.K.h || 1.8, R = d.root.position;
+    _pfS.center.set(R.x, R.y + h * .5, R.z); _pfS.radius = h;
+    d.seen = !PERF.cull || _pfFr.intersectsSphere(_pfS) ||
+             Math.hypot(R.x - player.pos.x, R.z - player.pos.z) < PERF.near;
+    if (d.seen) seen++;
+  }
+  PERF.seen = seen;
+}
+function bodyMix(d, dt) {
+  d.mixAcc = (d.mixAcc || 0) + dt;
+  if (d.seen || d.mixAcc >= 1 / PERF.animHz) { d.mixer.update(d.mixAcc); d.mixAcc = 0; }
+}
+
 function stepDummies(dt) {
   bodySep(dt);
+  bodyCull();
   for (const d of DUMMIES) {
     const K = d.K;
     bodyFly(d, dt);
@@ -22272,7 +22367,7 @@ function stepDummies(dt) {
     // for the same reason: a man on a bike has no gait, no roam and nothing to be separated from.
     if ((K.pal && stepPack(d, dt, t)) || stepRide(d, dt, t) || motoSeek(d, dt, t)) {
       skinWeights(d, t, dt, .06, K.clips.idle);
-      d.mixer.update(dt);
+      bodyMix(d, dt);
       d.root.rotation.y = d.h + d.faceOff + (d.spin || 0);
       stepFlash(d, dt);
       continue;
@@ -22347,7 +22442,7 @@ function stepDummies(dt) {
       t[K.clips.idle] = 1;
     }
     skinWeights(d, t, dt, .06, K.clips.idle);
-    d.mixer.update(dt);
+    bodyMix(d, dt);
     d.root.rotation.y = d.h + d.faceOff + (d.spin || 0);
     stepFlash(d, dt);
     if (d.bar) foeBarStep(d, dt);
@@ -23099,6 +23194,7 @@ function frame() {
   // here overwrote it with a hard-coded 56.6-degree offset, every frame, since m124.)
 
   renderer.render(scene, camera);
+  perfStep(dt);
 
   frames++; fpsT += dt;
   if (fpsT > .5) {
@@ -23346,7 +23442,7 @@ function frame() {
     const mp = p.mphSt ? ' · DNA' + p.mphSt.toUpperCase() + p.mphT.toFixed(2)
              : p.mphK ? ' · DNA ' + mphName(p.mphK) + dh +
                         (rig.borrowed ? '+' + rig.borrowed : ' NOBORROW') + (wn || '') : '';
-    const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · ' +
+    const line = fps.toFixed(0) + ' FPS · ' + renderer.info.render.calls + ' DC · pr' + PERF.pr.toFixed(2) + (PERF.holdT > 0 ? 'h' : '') + ' B' + PERF.seen + '/' + DUMMIES.length + ' · ' +
       p.speed.toFixed(1) + ' m/s · ' + st + lk + hue + bx + cv + brkC + kitC + inf + shp + cl + sk + sk8 + vs + mo + fl + wp + tc + mp +
       bk + ' · HP' + p.hp.toFixed(0) + (DUMMIES.length ? ' ' + DUMMIES.length + 'B' : '') +
       (MISSING.length ? ' · ' + MISSING.join(' · ') : '');
@@ -23815,7 +23911,7 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { fireSheet, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { fireSheet, PERF, perfMode, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
