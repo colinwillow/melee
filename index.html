@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m208</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m209</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m208</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m209</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,7 +620,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm208';
+const BUILD = 'm209';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -7196,6 +7196,39 @@ function loadGLB(url, label) {
 // If a future export animates a finger's position or a bone's scale on purpose, `npm run clips`
 // says so and these filters are what to revisit.
 // --------------------------------------------------------------------------------------------
+// **A CLIP AUTHORED FACING THE OTHER WAY, AND OFF TO ONE SIDE (m209, `CLIPFIX`).** *"His back is
+// to the ladder, he's significantly off of it -- every ladder is the same."* Read off the file:
+// `climbing_Ladder`'s Hips carry a rotation of **~180 deg about up** (q = 0.045, 0.990, 0.130, 0.013
+// against the rest pose's identity) and a translation of **x 33.9** armature units against the rest
+// pose's 0 -- so he was drawn facing AWAY from the wall and about 65 cm to one side of the rungs, on
+// every ladder, whatever the placement code did. The catch volumes were measured as well and are
+// exactly where they should be: 0.35 m in front of each ladder, 0.00 to the side.
+// So the clip is corrected once at load: the Hips rotation and translation are turned by `yaw` about
+// the parent's up, then the translation's mean in plan is put back on the rest pose's, keeping the
+// climb's own height. Values are CLONED first -- a track's arrays can be shared (rollergirl's worst bug).
+const CLIPFIX = { climbing_Ladder: { yaw: Math.PI, center: 1 } };
+function clipFix(clip) {
+  const F = CLIPFIX[clip.name]; if (!F) return;
+  const qy = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), F.yaw || 0);
+  const q = new THREE.Quaternion(), c = Math.cos(F.yaw || 0), sn = Math.sin(F.yaw || 0);
+  for (const t of clip.tracks) {
+    const bone = t.name.split('.')[0], path = t.name.slice(t.name.lastIndexOf('.') + 1);
+    if (!/Hips$/.test(bone)) continue;
+    t.values = Float32Array.from(t.values);
+    const v = t.values;
+    if (path === 'quaternion') {
+      for (let i = 0; i < v.length; i += 4) { q.set(v[i], v[i + 1], v[i + 2], v[i + 3]).premultiply(qy); v[i] = q.x; v[i + 1] = q.y; v[i + 2] = q.z; v[i + 3] = q.w; }
+    } else if (path === 'position') {
+      let mx = 0, mz = 0; const n = v.length / 3;
+      for (let i = 0; i < v.length; i += 3) { const x = v[i], z = v[i + 2]; v[i] = c * x + sn * z; v[i + 2] = -sn * x + c * z; mx += v[i]; mz += v[i + 2]; }
+      if (F.center && n) {
+        const R = F.rest || [0, 1.2917];                 // zap's rest Hips x, z, off the file
+        const ox = R[0] - mx / n, oz = R[1] - mz / n;
+        for (let i = 0; i < v.length; i += 3) { v[i] += ox; v[i + 2] += oz; }
+      }
+    }
+  }
+}
 function normaliseClips(clips) {
   const out = [];
   for (const clip of clips) {
@@ -7211,6 +7244,7 @@ function normaliseClips(clips) {
       keep.push(t);
     }
     clip.tracks = keep;
+    clipFix(clip);
     let t0 = Infinity;
     for (const t of clip.tracks) if (t.times.length) t0 = Math.min(t0, t.times[0]);
     if (isFinite(t0) && t0 > 0) for (const t of clip.tracks) for (let i = 0; i < t.times.length; i++) t.times[i] -= t0;
@@ -22257,6 +22291,16 @@ function palFoe(d) {
 
 // WHAT HE DOES NEXT, once he is in range and off cooldown. One place decides, so the mix can be
 // read as a sentence rather than reconstructed from four scattered branches.
+// **A BLOW HAS A HEIGHT (m209).** *"The warrior was at the bottom of the ladder, twenty feet below
+// me, and he swung and still hit me."* Every reach test here was PLAN distance only, so standing
+// directly above a man was standing inside his arc. The target's feet have to be between a little
+// under his and most of his own height over them -- a man on a step or a kerb is still in reach, a
+// man up a ladder or on a roof is not -- and he will not start a swing at somebody who is not.
+const FOEY = { below: .8, above: .9 };
+function foeReachY(d, y) {
+  const y0 = d.root.position.y, h = d.K.h || 1.8;
+  return y >= y0 - FOEY.below && y <= y0 + h * FOEY.above;
+}
 function foePlan(d, dd) {
   const K = d.K, V = d.v || (d.v = foeRoll(K)), r = Math.random();
   if (r < V.guard) {                       // a guard
@@ -22273,7 +22317,8 @@ function foePlan(d, dd) {
     d.backT = K.backDur[0] + Math.random() * (K.backDur[1] - K.backDur[0]);
     return;
   }
-  if (dd <= K.hitR + .4) { d.combo = Math.random() < K.combo ? 1 : 0; foeSwing(d, 0); }
+  const ty = d.sfoe && d.sfoe.root ? d.sfoe.root.position.y : player.pos.y;
+  if (dd <= K.hitR + .4 && foeReachY(d, ty)) { d.combo = Math.random() < K.combo ? 1 : 0; foeSwing(d, 0); }
   else d.gap = V.react;                    // not close enough yet -- look again shortly
 }
 
@@ -22433,6 +22478,7 @@ function foeStrike(d) {
       if (o === d || o.K.pal || o.cool > 0 || o.st === 'down' || o.st === 'up') continue;
       const ox = o.root.position.x - d.root.position.x, oz = o.root.position.z - d.root.position.z;
       if (Math.hypot(ox, oz) > K.hitR + o.K.r) continue;
+      if (!foeReachY(d, o.root.position.y)) continue;
       const to = Math.atan2(ox, oz);
       if (Math.abs(wrapAngle(to - d.h)) > K.hitArc) continue;
       // `pal` 1, so his own blow does not re-mark the man and keep him hunting for ever
@@ -22452,6 +22498,7 @@ function foeStrike(d) {
   const dx = TP.x - d.root.position.x, dz = TP.z - d.root.position.z;
   const dd = Math.hypot(dx, dz);
   if (dd > K.hitR + (T ? T.K.r : player.r)) return;
+  if (!foeReachY(d, TP.y)) return;              // twenty feet up a ladder is not in reach (m209)
   const to = Math.atan2(dx, dz);
   if (Math.abs(wrapAngle(to - d.h)) > K.hitArc) return;
   // **AND HE PASSES HIMSELF AS THE AUTHOR**, so the pal is never MARKED: `d.mark` is YOUR
@@ -24514,7 +24561,7 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { fireSheet, BEND, BENDS, bendBlast, PROPFIT, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { fireSheet, CLIPFIX, BEND, BENDS, bendBlast, PROPFIT, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.

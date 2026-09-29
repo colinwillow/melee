@@ -7,6 +7,25 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE LADDER WAS THE CLIP, NOT THE PLACEMENT, AND THREE BUILDS FIXED THE WRONG THING (m209,
+  `CLIPFIX`, `clipFix`).** *"His back is to the ladder and he's significantly off it -- every ladder
+  is the same."* Measured, both halves:
+  - **The volumes are right.** Paired by slot against the visual `climb` nodes in
+    `toon_city_kit_buildings.glb`, every one of the 120 sits **0.35 m in front of its ladder along
+    the node's +Z, 0.00 to the side**. So its 0.7 m axis is out of the wall, as `kitClimbAdd`
+    already assumed. m208's axis swap is harmless, but it was never the cause.
+  - **`climbing_Ladder`'s Hips are the cause.** Rotation ~180 deg about up (0.045, 0.990, 0.130,
+    0.013 against the rest pose's identity) and translation x **33.9** against rest 0: about 65 cm
+    to the side at his scale, facing AWAY from the wall. The game plays the Hips as authored, so
+    every ladder drew him backwards and off the rungs whatever the placement did.
+  `clipFix` turns that clip's Hips by `yaw` about up at load and puts the plan-mean of its
+  translation back on the rest pose's (0, 1.29), keeping its height. The values are cloned first.
+  **Three builds of placement fixes before anyone read the clip.** When every instance is wrong
+  the same way, suspect the one thing they all share.
+- **THE WARRIOR HIT HIM TWENTY FEET UP A LADDER (m209, `foeReachY`).** Every reach test was plan
+  distance only. A blow now needs the target's feet between `below` .8 m under his and `above` .9
+  of his height over them, and he will not START a swing at someone who is not.
+
 - **THE RED WALL OF `w.x`, AND THE LADDER HE CLIMBED SIDE-ON (m208).**
   - `workerAI`: `navPath` can return `[]`, which is truthy, so `|| [spot]` never ran and
     `d.path[0].x` threw every frame he had a job. An empty plan now falls back to the marker, and
