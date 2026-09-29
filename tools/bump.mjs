@@ -33,7 +33,9 @@ s = s.replace(/<span id="bootBuild">[^<]*<\/span>/, `<span id="bootBuild">${next
 const DIRS = ['models', 'models/characters', 'models/vehicles', 'models/weapons', 'models/buildings', 'models/towers', 'models/streets', 'models/toon_city', 'models/building_kit', 'models/toon_city_kit', 'models/characters/morph', 'images', 'audio', 'audio/plasma_sounds', 'audio/alien_orc_grunt_sounds', 'audio/hit_sounds', 'audio/creature_noises', 'audio/footsteps',
   // m124: his Portland slice. THREE new folders, because readdirSync is not recursive -- the
   // ninth time this tax has been paid across these repos, and the one that bites silently.
-  'models/portland/slice_downtown', 'models/portland/textures', 'models/portland/three'];
+  'models/portland/slice_downtown', 'models/portland/textures', 'models/portland/three',
+  // m215: his props folder
+  'models/props'];
 // **`.json` AND `.bin` WERE MISSING AND THAT WAS A SILENT STALENESS BUG FOR TWO BUILDS (m164).**
 // `DIRS` is the tax everybody remembers; this is the one underneath it. m159 shipped
 // `toon_city_obb.json` (491 collider boxes) and m160 shipped `impact_marks.json` -- both went

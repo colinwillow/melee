@@ -7,6 +7,29 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS HYDRANT REPLACES THE OLD ONE BY STANDING ON ITS CLAIM (m215, `HYD`, `buildHydrant`,
+  `hydBreak`).** *"I added a props folder with the fire hydrant and the fire hydrant collider...
+  let me know how that fares, cause if I need to break it up more I can."*
+  **What the file is, read straight out of it:** one node tagged `breakable: hydrant, hp 50,
+  on_break: water_geyser`, one mesh, three WK materials (panels 236 tris, post metal 318, trim 48)
+  with COLOR_0, no draco, and **no broken pieces and no `fx_*` spout marker**. The collision file is
+  one 12-triangle box, x +/-.22, y 0..0.88, z -.22..0.30 -- identical to the `cols` in the visual's
+  extras.
+  **THE OLD TWENTY ARE STILL WHAT SAYS WHERE.** `debris_hydrant_*` in both city visuals are already
+  claimed by `brkClaim` with his hp and yaw, so `buildHydrant` hides each old instance, drops its
+  box, and stands the new model on `groundAt` at that spot (the old node's origin was 22 cm up
+  inside a mesh whose own base sat 8 cm above that -- typed placement would float it).
+  **Loaded after BOTH the visual (the claims) and the collider (the ground)** -- in the kit city the
+  collider comes after the visual, which is why it is not a `buildTCity` hook.
+  **THE CAP IS CUT IN CODE AT A MEASURED SEAM, `capY` .53.** Panels have no triangle between y .48
+  and .56, the post metal none between .50 and .80, the trim stops at .525 -- so the dome and the
+  nut split off cleanly by triangle centroid. Five InstancedMeshes (body x3, cap x2) for all twenty.
+  Breaking one zeroes its cap slot, throws a real copy into `WRECKS` at `BRK.capUp`, cuts the box
+  down to the body, and starts `spoutGo` at the seam.
+  **If he wants control:** export the cap as its own node (and an `fx_` spout marker) and this can
+  read those instead of cutting. `mel.HYD.capY` is the dial.
+  **`models/props` went into `bump.mjs`'s `DIRS`** -- the twelfth time.
+
 - **HIS GROUND SHEET, RE-CUT ON BLACK (m214).** The haze is gone at the source: flames on pure black,
   added onto the scene, and black adds nothing. `groundSheet.key` came down from [.16, .42] to
   [.015, .10], so it now drops only near-black and leaves the dim flame edges and embers. The
