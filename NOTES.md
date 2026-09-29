@@ -7,6 +7,19 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HE SANK INTO THE GRASS BECAUSE THE COLLISION GRASS HAD HOLES WHERE THE OLD BUILDINGS STOOD (m185,
+  `kcGroundCapture`, `KCITY.fill`).** *"He just sinks through the grass, so the collider is not
+  doing a great job."* Measured, not guessed: the collision grass (`ground_lots`) is flat at 0.23
+  and the drawn grass (`ground_wr_lots`) at 0.20 -- so where both exist he stands 3 cm ABOVE it.
+  The sink was the gaps: sampling round all sixty old lots outside the new kit footprints, **4,812 of
+  17,046 points had no ground but `road_city` at 0**, 20 cm under the drawn grass. The old
+  buildings covered those patches, so nobody ever needed collision there, and the kit buildings
+  are smaller than the ones they replaced. The VISUAL file's own lots and dirt cover them, so
+  `buildTCity` captures their triangles before the merge and `buildKCityCol` adds them under
+  everything (the kit city now loads the visual BEFORE the collider). After: 0 of 17,046.
+  **His fix, if he wants the collision file to be the whole truth, is to fill `ground_lots` under
+  the old footprints** -- the capture then adds nothing new and costs nothing.
+
 - **LOOSE PROPS FLY, AND A CHARGE HELD THROUGH A JUMP KEEPS THE GUN UP (m184, `LOOSE`,
   `looseRay`, `looseBlast`, `stepLoose`, `rigAirSpine`).** *"I want to be able to shoot small
   objects -- the trash bag, the rubble. It could go flying off or pop into small trash. See how one
