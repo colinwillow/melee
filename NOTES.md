@@ -7,6 +7,15 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A FIRE IN YOUR FACE WAS THE REST OF THE 20 FPS (m233, `FIRE.maxPx/dens/near/nearK`).** m232's
+  chips: the same ~400k triangles gave 45 fps a street away and 20 facing a burning building -- so it
+  was no longer geometry, it was OVERDRAW: every window fire is big additive cards, and at arm's length
+  each one covers a slab of the screen, all of them on top of each other (`rend` 4 -> 11 exactly in
+  those shots). Three dials, all on the tune panel under FIRE: `gl_PointSize` is clamped to `maxPx`
+  (.3) of the framebuffer height in both flame pools; `dens` scales every emission rate; and within
+  `near` [4, 16] m of the lens the rate falls to `nearK` (.4). A card that would have covered half
+  the screen now covers under a third, and there are fewer of them exactly when each is expensive.
+
 - **20 FPS WAS THE GPU DRAWING THE WHOLE CITY EVERY FRAME, AND THE MERGE IS WHY (m232, `CELL`).** His
   m230 chips, one view: `cpu4 rend3 /24ms` (41 fps) and `cpu14 rend10 /50ms` (20 fps). The JS is a
   few ms and done; `rend` only swells when the draw call blocks on a GPU that is behind; and it swings
