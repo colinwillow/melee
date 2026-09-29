@@ -7,6 +7,22 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A ROCKET SETS THE PEOPLE IT HITS ON FIRE, AND THE FIRE GOES WITH THEM (m210, `BURN`,
+  `burnStart`, `burnStep`).** *"The fire burns where it hit them and stays there while they go
+  flying off -- it should be on them, little bits and big bits, and follow them."*
+  - Every body inside the blast (plan radius plus its own, and within reach vertically) gets
+    `BURN.spots` flame spots on random bones of its own rig: hips, spines, head, upper/fore arms,
+    upper/lower legs. Each spot has its own size (`size` .22-.62 of a full fire), flicker rate
+    and phase, so it is not uniform.
+  - They emit into the ordinary flame pool at the bone's WORLD position every frame, so the fire
+    rides him through the flight, the landing and the get-up, and streams off him when he moves
+    fast. Embers and smoke come off the highest spot. It builds in .25 s, burns 6-9 s and dies
+    down over the last 2.5. Caught again, it starts over.
+  - The rocket's own mark keeps only a LITTLE fire (`markLife` 5 s, k .38) when it went into
+    somebody. A rocket into a wall or the street still lights the room or the ground as before.
+  - `d.burn` is the hook for a running-on-fire clip. `mel.burn()` lights the nearest body.
+  - Not built: burning does no damage and does not spread between bodies.
+
 - **THE LADDER WAS THE CLIP, NOT THE PLACEMENT, AND THREE BUILDS FIXED THE WRONG THING (m209,
   `CLIPFIX`, `clipFix`).** *"His back is to the ladder and he's significantly off it -- every ladder
   is the same."* Measured, both halves:

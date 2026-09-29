@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m209</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m210</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m209</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m210</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,7 +620,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm209';
+const BUILD = 'm210';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -8553,7 +8553,7 @@ function fireStart(x, y, z, o) {
     FIRES.splice(i, 1);
   }
   const f = { x, y, z, k: o.k || .25, r: o.r || FIRE.ground.r, room: o.room || null, bld: o.room ? o.room.bld : null,
-              life: o.room ? Infinity : FIRE.ground.life, t: 0, acc: 0, sm: 0, st: 0 };
+              life: o.room ? Infinity : (o.life || FIRE.ground.life), t: 0, acc: 0, sm: 0, st: 0 };
   if (f.room) f.room.fire = f;
   FIRES.push(f);
   kit.fires = (kit.fires || 0) + 1;
@@ -8561,7 +8561,7 @@ function fireStart(x, y, z, o) {
 }
 // A BLAST AT (x, y, z) SETS FIRE TO WHAT IS THERE: the nearest unburnt room of a building within
 // `igniteR`, or failing that the ground it landed on.
-function fireIgnite(x, y, z, k) {
+function fireIgnite(x, y, z, k, small) {
   let best = null, bd = FIRE.igniteR;
   for (const R of KROOMS) {
     if (R.fire || Math.abs(R.y - y) > 3.2) continue;
@@ -8571,7 +8571,77 @@ function fireIgnite(x, y, z, k) {
   if (best) return fireStart(best.x, best.y + .15, best.z, { room: best, r: FIRE.room.r, k: .35 + (k || 0) * .3 });
   // on the ground under the blast when there is ground close under it; on the wall where it hit if not
   const gy = groundAt(x, z, y + .3, .6);
-  return fireStart(x, y - gy < 1.5 ? gy + .05 : y, z, { k: .7 + (k || 0) * .3 });
+  // a rocket that went into somebody leaves only a LITTLE fire on its mark, which burns out -- the
+  // fire that matters went with him (m210, `BURN`)
+  return fireStart(x, y - gy < 1.5 ? gy + .05 : y, z,
+                   small ? { k: .38, r: .45, life: BURN.markLife } : { k: .7 + (k || 0) * .3 });
+}
+// ============================================================================================
+// A BODY ON FIRE (m210, `BURN`, `burnStart`, `burnStep`)
+//
+// *"When I shoot somebody with a rocket the fire burns where it hit them and just stays there while
+// they go flying off. It should light them on fire -- on them, in different sizes, little bits and
+// big bits -- and follow them."* Each victim gets a handful of flame SPOTS riding his own bones
+// (hips, spine, head, both arms, both legs, whichever the rig has), every spot its own size, rate
+// and phase so it is not uniform. They emit into the ordinary flame pool at the bone's WORLD
+// position each frame, so the fire goes wherever he goes -- flying, landing, getting up -- and
+// streams off him when he moves fast, which is what a burning body does. It builds fast, holds,
+// and dies down over `fade`. `d.burn` is there for a running-on-fire clip the day there is one.
+const BURN = {
+  on: 1,
+  life: [6, 9],          // seconds he burns
+  fade: 2.5,             // and the last of those it dies down over
+  spots: 7,              // flame spots per body
+  size: [.22, .62],      // each spot's flame size, as a fraction of a full fire's -- little and big bits
+  rate: 9,               // flames a second from a full-size spot
+  markLife: 5,           // the little fire left on the rocket's own mark
+  bones: /Hips$|Spine1?$|Spine2$|Head$|LeftArm$|RightArm$|LeftForeArm$|RightForeArm$|LeftUpLeg$|RightUpLeg$|LeftLeg$|RightLeg$/,
+};
+const BURNING = [];
+const _buV = new THREE.Vector3();
+function burnStart(d) {
+  if (!BURN.on || !d || !d.root || d.gone) return;
+  if (d.burn) { d.burn.t = 0; return; }           // caught again: it starts over
+  const bones = [];
+  d.root.traverse(o => { if (o.isBone && BURN.bones.test(o.name)) bones.push(o); });
+  const spots = [];
+  for (let i = 0; i < BURN.spots; i++) {
+    const b = bones.length ? bones[(Math.random() * bones.length) | 0] : null;
+    spots.push({ b, ox: (Math.random() - .5) * .25, oy: (Math.random() - .5) * .25, oz: (Math.random() - .5) * .25,
+                 s: rnd(BURN.size), acc: Math.random(), ph: Math.random() * 6.28, w: .6 + Math.random() * .8 });
+  }
+  d.burn = { t: 0, life: rnd(BURN.life), spots, sm: 0 };
+  BURNING.push(d);
+}
+function burnStep(dt) {
+  for (let n = BURNING.length - 1; n >= 0; n--) {
+    const d = BURNING[n], B = d.burn;
+    if (!B || d.gone || DUMMIES.indexOf(d) < 0) { if (d) d.burn = null; BURNING.splice(n, 1); continue; }
+    B.t += dt;
+    if (B.t >= B.life) { d.burn = null; BURNING.splice(n, 1); continue; }
+    const k = Math.min(1, B.t / .25) * Math.min(1, (B.life - B.t) / BURN.fade);
+    let top = null;
+    for (const S of B.spots) {
+      // each spot breathes on its own clock, so the fire gutters rather than streams evenly
+      const flick = .65 + .35 * Math.sin(B.t * 7 * S.w + S.ph);
+      S.acc += BURN.rate * S.s * 2.2 * k * flick * dt;
+      if (S.acc < 1) continue;
+      if (S.b) S.b.getWorldPosition(_buV); else _buV.copy(d.root.position).setY(d.root.position.y + (d.K.h || 1.7) * .5);
+      _buV.x += S.ox; _buV.y += S.oy; _buV.z += S.oz;
+      if (!top || _buV.y > top.y) top = { x: _buV.x, y: _buV.y, z: _buV.z };
+      while (S.acc >= 1) {
+        S.acc -= 1;
+        const kind = Math.random() < .55 ? 0 : 1;
+        const i = flameAt(_buV.x + (Math.random() - .5) * .12, _buV.y - .1, _buV.z + (Math.random() - .5) * .12, .5 + .5 * k, kind);
+        flame.s0[i] *= S.s; flame.P.siz[i] = flame.s0[i];
+        flame.P.pos[i * 3 + 1] = _buV.y - .1 + flame.s0[i] * .3;
+        flame.vy[i] *= .7;
+        if (Math.random() < .12) flameAt(_buV.x, _buV.y, _buV.z, k, 2);      // an ember off him
+      }
+    }
+    B.sm += dt;
+    if (top && B.sm > .22) { B.sm = 0; smokeAt(top.x, top.y + .3, top.z, 1.6 * k + .4, 1.4, FIRE.smokeCol); }
+  }
 }
 // **THE FIREFIGHTER'S HOOK.** Takes `amount` of strength off it (a full fire is 1); at zero it is
 // out, with a puff of steam. Returns whether it went out.
@@ -10292,7 +10362,18 @@ function stepBolts(dt) {
       if (b.rocket) {
         // AND IT SETS WHAT IT HIT ON FIRE (m192) -- the room nearest the blast, or the ground
         // -- only if it HIT something: one that ran out of range in mid-air sets fire to nothing
-        if (b.hitAt || b.onMan || b.hitN) fireIgnite(b.hitAt ? b.hitAt[0] : b.pos.x, b.hitAt ? b.hitAt[1] : b.pos.y, b.hitAt ? b.hitAt[2] : b.pos.z, 1);
+        // AND EVERYBODY THE BLAST REACHED CATCHES (m210) -- the fire rides them, and the mark only
+        // keeps a little one of its own
+        const Rb = b.size * .5 + b.blast;
+        let lit = 0;
+        for (const d of DUMMIES) {
+          if (d.gone || (d.K && d.K.pal && !WEAP.palBlast)) continue;
+          const dx = d.root.position.x - b.pos.x, dz = d.root.position.z - b.pos.z;
+          if (dx * dx + dz * dz > (Rb + (d.K.r || .4)) * (Rb + (d.K.r || .4))) continue;
+          if (Math.abs(d.root.position.y + (d.K.h || 1.7) * .5 - b.pos.y) > Rb + 1.2) continue;
+          burnStart(d); lit++;
+        }
+        if (b.hitAt || b.onMan || b.hitN) fireIgnite(b.hitAt ? b.hitAt[0] : b.pos.x, b.hitAt ? b.hitAt[1] : b.pos.y, b.hitAt ? b.hitAt[2] : b.pos.z, 1, !!(lit || b.onMan || hitBodies));
         snd('boom', { g: .75, r: .9 + Math.random() * .12 });
         camShake(ROCKET.shake);
         for (let k = 0; k < 10; k++) {
@@ -23822,7 +23903,7 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
-  decalStep(dt); brkStep(dt); stepLoose(dt); bendStep(dt); spoutStep(dt); virusStep(dt); stepFire(dt);
+  decalStep(dt); brkStep(dt); stepLoose(dt); bendStep(dt); burnStep(dt); spoutStep(dt); virusStep(dt); stepFire(dt);
   // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
   // frame's lens is a field that lags every time he turns.
   stepDust(dt);
@@ -24561,7 +24642,10 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { fireSheet, CLIPFIX, BEND, BENDS, bendBlast, PROPFIT, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { fireSheet, BURN, burnStart,
+  // set the nearest body on fire, to look at it without a rocket (m210)
+  burn: () => { let b = null, bd = 1e9; for (const d of DUMMIES) { const q = Math.hypot(d.root.position.x - player.pos.x, d.root.position.z - player.pos.z); if (q < bd) { bd = q; b = d; } } if (b) burnStart(b); return b ? mphName(b.K) + ' ' + bd.toFixed(1) + 'm' : 'nobody'; },
+  CLIPFIX, BEND, BENDS, bendBlast, PROPFIT, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
