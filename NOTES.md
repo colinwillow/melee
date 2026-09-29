@@ -7,6 +7,12 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS WORN BLEND (956877f, m231).** Six `WK_M_*_worn` partners on six more `dt_carrier_*` nodes in the
+  visual (11 carriers now). Three walls take one as `extra`: `brick_peeking_through_plaster` in
+  `reveal` mode, siding and brick in `mix`. `weirdkit_detile.js`'s `fragBody` lays the extra AFTER
+  whichever base mode ran, so reveal + extra needed no change -- read, not assumed. Pieces file
+  unchanged, so the twins are byte-identical.
+
 - **THE FRAME IS TIMED BY PART, IN THE CHIP (m230, `PROF`, `pT`).** *"Neither of them really do
   anything -- 20-21 both on and off."* Anti-tile off, wobble off and (m20x) resolution down all left
   the frame rate where it was, which is what a CPU-bound frame looks like: the GPU's pixel and vertex
