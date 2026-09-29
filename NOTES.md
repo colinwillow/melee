@@ -7,6 +7,15 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **WITH THE X-RAY ON, A KIT BUILDING NEVER PULLS THE CAMERA IN (m183, `camHit(..., skipKit)`).**
+  *"When you rotate so a rim of the roof ledge is between you and the camera, the camera goes way
+  in -- I don't know that there's any point of it doing that since now we have other things to
+  deal with that."* Right: shortening the boom in front of an obstacle was the only answer before
+  the x-ray, and it turned a rooftop shot into a close-up of his face every time the parapet came
+  round. `camBlock` now skips every kit box (`b.kit`, chunks, parts) while `KCUT.xOn` is set, so the
+  boom keeps its length and the parapet between them dithers instead. Hero buildings, props and
+  the old city still stop it -- they have no x-ray. CUT / CLOSE / OFF modes collide as before.
+
 - **THE X-RAY LEAVES THE CAMERA ALONE, AND ITS CIRCLE IS HIS SIZE (m182, `KIT.xrayW`, `KCUT.camY`).**
   *"When you go inside a building the camera angle changes, and since we have the x-ray I don't
   think it should. On the roof it x-rays through the side rim of the wall -- there's no need."*
