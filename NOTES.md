@@ -7,6 +7,21 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **20 FPS WAS THE GPU DRAWING THE WHOLE CITY EVERY FRAME, AND THE MERGE IS WHY (m232, `CELL`).** His
+  m230 chips, one view: `cpu4 rend3 /24ms` (41 fps) and `cpu14 rend10 /50ms` (20 fps). The JS is a
+  few ms and done; `rend` only swells when the draw call blocks on a GPU that is behind; and it swings
+  41 -> 20 in the same spot, which is a GPU at its limit (and heat). The chip also said `987kT`, and
+  the files say why: visual 554k triangles, kit buildings 342k, and **m157/m178 merged each material
+  into ONE mesh spanning the whole city** -- a bounding sphere the size of the map is never outside
+  the frustum, so the triangles behind the lens and past the fog were all drawn, always.
+  So `kitBatch`, `buildTCity`'s instancing and its merge all key on a 48 m cell as well as the
+  material (`cellOf`), every emitted mesh is registered (`cellReg`), and `cellStep` hides one whose
+  sphere is wholly past `fog.far` + 10 -- the frustum cannot, because `camera.far` is 400 and the fog
+  is opaque at 300. More draw calls, far fewer triangles; the chip reads `c<shown>/<cells>`.
+  **The shaders were never it** -- anti-tile and wobble off moved nothing, which in hindsight was the
+  first proof it was geometry and not pixels.
+- **m232 also ships his 956877f bakes**: visual 6 detile + 11 carriers, buildings 9 detile.
+
 - **HIS WORN BLEND (956877f, m231).** Six `WK_M_*_worn` partners on six more `dt_carrier_*` nodes in the
   visual (11 carriers now). Three walls take one as `extra`: `brick_peeking_through_plaster` in
   `reveal` mode, siding and brick in `mix`. `weirdkit_detile.js`'s `fragBody` lays the extra AFTER
