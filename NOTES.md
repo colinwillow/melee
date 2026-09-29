@@ -7,6 +7,17 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE RED WALL OF `w.x`, AND THE LADDER HE CLIMBED SIDE-ON (m208).**
+  - `workerAI`: `navPath` can return `[]`, which is truthy, so `|| [spot]` never ran and
+    `d.path[0].x` threw every frame he had a job. An empty plan now falls back to the marker, and
+    `d.pi` is clamped into the path.
+  - The ladder volumes are **0.7 x 0.8 m** (all 120, read off the file), so "the long horizontal
+    axis runs along the wall" was decided by ten centimetres. Where the export has it the other
+    way round he latched side-on, faced along the wall and hung in the air beside the rungs,
+    which is his screenshot. `ladderFront` now probes BOTH axes: if the short one finds no wall
+    and the long one finds a wall on exactly one side, they swap. It runs before the latch
+    measures his side, because that measurement is along the axis it may swap.
+
 - **EACH LADDER MEASURES ITS OWN FRONT, AND A HEAD IN A SLAB GOES DOWN (m207, `ladderFront`,
   `rbY`).**
   **Ladders:** *"I had to hold down to get on it, I couldn't tell which side."* m181 took the front
