@@ -7,6 +7,26 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A HELD POSE THAT IS SQUARE TO THE HIPS MUST NOT OWN THE HIPS' ROTATION (m194, `UPS`/`LEGH`,
+  `isUpperSq`, `upKey`, `legKey`, `SPLIT.upSq`).** *"The hips rotation is missing -- they move up
+  and down with no rotation, very static hips with the legs moving back and forth."*
+  **THE FILE HAS IT AND THE ORDINARY GAIT PLAYS IT.** Hips rotation per cycle, world frame:
+      walk_fwd     twist 19.3  tilt  9.0  lean  6.0 deg
+      run_fwd      twist 16.7  tilt 29.8  lean  7.5
+      run_fwd_fast twist 16.2  tilt 27.4  lean  3.9
+      Running_fast_stride  twist 32.3  tilt 29.0  lean 17.1
+  `normaliseClips` keeps every rotation track, and the only runtime write to a hips or spine bone
+  is `rigAirSpine`. **What froze them is the half-body split**: `isUpper` hands the Hips ROTATION
+  to the `__up` half, which is right for a BLADED stance (m184: the rifle poses stand on hips
+  turned 35-62 deg and their spine is authored against that) and wrong for a pose held square over
+  a gait. The launcher's two are single keys and the swap reach is not a stance, so carrying the
+  launcher or reaching into the bag put STILL hips under running legs. Those three now use `__ups`
+  (spine-up without the hips) over `__legh` (the legs with the hips' rotation), everywhere a held
+  pose is laid on legs -- the gait, the strafes, the air (no spine correction needed: the pose
+  rides the jump's own hips) and the board. The bladed poses keep the old pair on purpose.
+  **What still holds the hips to the pose**: aiming or charging the BLASTER while strafing -- that
+  is the rifle stance and is the m184 rule, not this bug.
+
 - **THE STRIDE LEAPS: CONTACTS AT THE PLANTED-FOOT RATE, THE AIR AT `hang` OF IT, AND A LIFT
   THROUGH EACH AIRBORNE PART (m193, `GAIT.runSets.stride.leap`, `leapContact`, `leapAir`).**
   *"Are you not using the Y of the hips?"* -- we are, and it was checked rather than argued:

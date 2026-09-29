@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m193</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m194</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m193</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m194</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm193';
+const BUILD = 'm194';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -4351,6 +4351,17 @@ const isUpper = name => {
   return UPPER.test(bone);
 };
 const UP = '__up', LEGS = '__legs';
+// **AND A SECOND SPLIT FOR POSES THAT ARE SQUARE TO THE HIPS (m194).** *"The hips rotation is
+// missing -- they move perfectly up and down with no rotation, and you get very static hips with
+// the legs moving back and forth."* The file is fine (the stride's hips swing 32 deg of twist, 29 of
+// tilt, 17 of lean per cycle); what froze them was THIS split. `__up` carries the hips' ROTATION,
+// which is right for a BLADED pose (the rifle stances, m184) and wrong for one held square over a
+// gait: the launcher's two poses are one key each and the swap reach is not a stance, so the hips
+// sat still under running legs. For those, `__ups` is spine-up WITHOUT the hips and `__legh` is
+// the legs WITH the hips' rotation -- so the gait sways its hips and the held pose rides on them.
+const UPS = '__ups', LEGH = '__legh';
+const isUpperSq = name => { const i = name.lastIndexOf('.'), bone = i < 0 ? name : name.slice(0, i);
+  return !/Hips$/.test(bone) && UPPER.test(bone); };
 const SPLIT = {
   // **`aimIdle` IS IN BOTH HALVES (m167), AND THAT IS NOT A MISTAKE.** Its `__legs` half is
   // what the ordinary armed gait stands on; its `__up` half is the gun CARRIED AT REST,
@@ -4358,6 +4369,8 @@ const SPLIT = {
   // one. Without it the only upper pose available is `aimPose` -- the SIGHTED hold -- and he
   // would ride the whole city down the barrel.
   up: ['aimPose', 'aimIdle', 'shoot', 'chargeUp', 'chargeGo', 'swap', 'block', 'rocket', 'rocketFire'],
+  // the ones held SQUARE, which get the hips-free `__ups` and ride on `__legh` legs (m194)
+  upSq: ['swap', 'rocket', 'rocketFire'],
   // `air` (m184): a charge held through a jump is the gun pose over the in-air LEGS
   legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimIdle', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR', 'air'],
   // **AND THE BOARD'S OWN CLIPS, BY RAW NAME (m167).** *"I want to make it so that I can still
@@ -7331,7 +7344,8 @@ function deriveClips(clips) {
   // `KeyframeTrack.clone()` slices its own times AND values, so these are new arrays and the
   // shared-buffer landmine cannot follow them here.
   const half = (clip, wantUpper, suffix) => {
-    const keep = clip.tracks.filter(t => isUpper(t.name) === wantUpper);
+    const sq = suffix === UPS || suffix === LEGH;
+    const keep = clip.tracks.filter(t => (sq ? isUpperSq(t.name) : isUpper(t.name)) === wantUpper);
     if (!keep.length) return null;
     return new THREE.AnimationClip(clip.name + suffix, clip.duration, keep.map(t => t.clone()));
   };
@@ -7339,7 +7353,9 @@ function deriveClips(clips) {
   for (const c of out) byName[c.name] = c;
   let made = 0;
   for (const [suffix, wantUpper, keys, raw] of [[UP, true, SPLIT.up, 0], [LEGS, false, SPLIT.legs, 0],
-                                               [LEGS, false, SPLIT.legsRaw, 1]]) {
+                                               [LEGS, false, SPLIT.legsRaw, 1],
+                                               [UPS, true, SPLIT.upSq, 0], [LEGH, false, SPLIT.legs, 0],
+                                               [LEGH, false, SPLIT.legsRaw, 1]]) {
     for (const k of keys) {
       const nm = raw ? k : CLIPS[k];
       const src = byName[nm];
@@ -9991,6 +10007,10 @@ function slotNow() { return WEAP.slots[player.slot]; }
 function modeNow() { const s = slotNow(); return s.aim && !s.rocket ? WEAP.modes[WEAP.mode] : null; }
 // THE LAUNCHER'S TWO POSES (m189), or null for anything else -- one answer, read by every branch of
 // `rigAnim` that puts a gun pose on his top half, so they cannot disagree about what he holds.
+// WHICH HALVES A HELD POSE USES (m194): square poses ride the gait's own hips
+function isSq(nm) { return nm === CLIPS.rocket || nm === CLIPS.rocketFire || nm === CLIPS.swap; }
+function upKey(nm) { return isSq(nm) && rig.actions[nm + UPS] ? nm + UPS : nm + UP; }
+function legKey(n, sq) { return sq && rig.actions[n + LEGH] ? n + LEGH : n + LEGS; }
 function rocketUp() {
   const s = slotNow(); if (!s.rocket) return null;
   const nm = player.fireT > 0 && rig.actions[CLIPS.rocketFire + UP] ? CLIPS.rocketFire : CLIPS.rocket;
@@ -13231,12 +13251,13 @@ function rigAnim(dt) {
     // the same three the committed branch picks between, in the same order, so the two cannot
     // disagree about what holding a gun looks like: the recoil, the sighted hold, the carry.
     const upNm = gunOut() ? (rocketUp() || (p.fireT > 0 ? CLIPS.shoot : p.aim ? CLIPS.aimPose : CLIPS.aimIdle)) : '';
-    const gu = upNm && rig.actions[upNm + UP] ? upNm + UP : '';
+    const gu = upNm && rig.actions[upKey(upNm)] ? upKey(upNm) : '';
+    const gSq = !!upNm && isSq(upNm);
     if (gu) t[gu] = 1;
     // **AND `L` FALLS BACK TO THE WHOLE CLIP**, so a board clip with no `__legs` half is drawn
     // exactly as it was before this existed rather than vanishing -- the file is a separate
     // download and a missing half must not be a missing body.
-    const L = n => (gu && rig.actions[n + LEGS] ? n + LEGS : n);
+    const L = n => (gu && rig.actions[legKey(n, gSq)] ? legKey(n, gSq) : n);
     // HIS OWN SET (m190), role by role -- see `SK8.own`. `mine(role)` is his clip or null.
     const O = SK8.own, mine = n => (n && rig.actions[n] ? n : null);
     const myPush = (Array.isArray(O.push) ? O.push : [O.push]).find(n => rig.actions[n]) || null;
@@ -13289,7 +13310,7 @@ function rigAnim(dt) {
       if (p.pushSync) {
         p.pushSync = 0;
         for (const nm of myPush ? [myPush] : [SK8.clip.push, SK8.clip.pushC])
-          for (const k2 of [nm, nm + LEGS]) { const a = rig.actions[k2]; if (a) a.time = p.pushT * clipLen(nm); }
+          for (const k2 of [nm, nm + LEGS, nm + LEGH]) { const a = rig.actions[k2]; if (a) a.time = p.pushT * clipLen(nm); }
       }
     } else {
       // **THE PUSH CLIP IS SCALED TO THE CYCLE THE SHOVE IS FIRED FROM**, so the foot meets the
@@ -13318,7 +13339,7 @@ function rigAnim(dt) {
         for (const nm of [SK8.clip.push, SK8.clip.pushC]) {
           // BOTH HALVES, because which one carries the weight changes with the gun -- and a
           // seek written to the one that is not playing is a seek that does nothing.
-          for (const k2 of [nm, nm + LEGS]) { const a = rig.actions[k2]; if (a) a.time = p.pushT * clipLen(nm); }
+          for (const k2 of [nm, nm + LEGS, nm + LEGH]) { const a = rig.actions[k2]; if (a) a.time = p.pushT * clipLen(nm); }
         }
       }
     }
@@ -13407,8 +13428,10 @@ function rigAnim(dt) {
     // AND THE LAUNCHER IS HELD THROUGH EVERY JUMP, aimed or not (m189) -- it sits on his shoulder
     if (committed() || rocketUp()) {
       const up = rocketUp() || (p.fireT > 0 ? CLIPS.shoot : p.charge ? CLIPS.chargeUp : CLIPS.aimPose);
-      if (rig.actions[up + UP] && rig.actions[CLIPS.air + LEGS]) {
-        t[up + UP] = 1; t[CLIPS.air + LEGS] = 1; rig.airUp = up;
+      const aL = legKey(CLIPS.air, isSq(up));
+      if (rig.actions[upKey(up)] && rig.actions[aL]) {
+        // a SQUARE pose rides the jump's own hips and needs no spine correction (m194)
+        t[upKey(up)] = 1; t[aL] = 1; rig.airUp = isSq(up) ? '' : up;
         setWeights(t, dt); return;
       }
     }
@@ -13490,10 +13513,10 @@ function rigAnim(dt) {
     // The hybrid is for moving left and right and nothing else.
     if (!moving) { add(bare ? CLIPS.idle : up, rest, 0); setWeights(t, dt); return; }
     // the UPPER half: what he is doing with the weapon
-    if (!bare) add(rig.actions[up + UP] ? up + UP : up, rest, 0);
+    if (!bare) add(rig.actions[upKey(up)] ? upKey(up) : up, rest, 0);
     // the LOWER half: which way he is travelling RELATIVE TO HIS NOSE, because he is facing
     // the target and "how fast" no longer picks the clip -- "which way" does.
-    const L = n => (!bare && rig.actions[n + LEGS] ? n + LEGS : n);
+    const L = n => (!bare && rig.actions[legKey(n, isSq(up))] ? legKey(n, isSq(up)) : n);
     {
       const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
       const c = Math.cos(rel), sn = Math.sin(rel);
@@ -13527,9 +13550,9 @@ function rigAnim(dt) {
   // ORDINARY gait's legs -- walk, run, the long stride, all phase-synced -- rather than the rifle
   // carry, whose bladed hips would turn the legs out from under a square pose.
   const upNm = p.swap ? CLIPS.swap : (rocketUp() || '');
-  const sw = upNm && rig.actions[upNm + UP];
-  if (sw) add(upNm + UP, rest, 0);
-  const L = n => (sw && rig.actions[n + LEGS] ? n + LEGS : n);
+  const sw = upNm && rig.actions[upKey(upNm)];
+  if (sw) add(upKey(upNm), rest, 0);
+  const L = n => (sw && rig.actions[legKey(n, isSq(upNm))] ? legKey(n, isSq(upNm)) : n);
 
   // ---- carrying it, but not committed: the ordinary armed gait, whole body ----
   if (gunOut() && !slotNow().rocket) {
