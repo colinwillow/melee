@@ -7,6 +7,17 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE LADDER FRONT WAS BACKWARDS ON EVERY LADDER, AND MY GEOMETRY TEST SAID IT WAS RIGHT (m195,
+  `CLIMB.frontSign`).** *"They're all the wrong side -- you can walk up the inside and not the
+  outside."* m181 made the front the piece's local +Z and backed it with a measurement: which side
+  of each ladder has a collider box within 0.3-0.7 m. Re-run now through both worlds it still says
+  the same -- the open side is +Z on 82 of 83 decided kit-city ladders (37 undecided: no wall that
+  close on EITHER side) and 8 of 8 on the row. **He is standing at them and it is wrong on all of
+  them**, so that test measures something other than which way the rungs face; a gap behind the
+  rungs is the likeliest reason (the undecided 37 show there is room back there). Flipped to -Z,
+  as a dial rather than a rewrite: `mel.CLIMB.frontSign = 1` is m181. **A geometry proxy is not
+  the thing it stands in for** -- when he says every one is wrong, the device outranks the probe.
+
 - **A HELD POSE THAT IS SQUARE TO THE HIPS MUST NOT OWN THE HIPS' ROTATION (m194, `UPS`/`LEGH`,
   `isUpperSq`, `upKey`, `legKey`, `SPLIT.upSq`).** *"The hips rotation is missing -- they move up
   and down with no rotation, very static hips with the legs moving back and forth."*
