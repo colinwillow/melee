@@ -7,6 +7,28 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **TREES AND SIGNS BEND ON THE FIRST HIT AND SNAP ON THE SECOND (m206, `BEND`, `bendBlast`,
+  `bendRay`, `bendStep`, `bendSigns`).** *"A bend on first shot, and then a snap -- two hits."*
+  - **Trees** are instances (101 nodes on six shared meshes, which the instancing pass already
+    builds), so a bend is one instance matrix: `T(base) R T(-base) M`. A tree left un-instanced
+    stays its own mesh and bends through `matrix` instead.
+  - **Signs** are ONE merged mesh (`prop_wk_signs`, two primitives). At load it is split by
+    CONNECTIVITY (weld at 1 mm, union-find over triangles) and the pieces are grouped by plan
+    position, posts first so a plate joins the post under it. Decoded offline off the real file
+    with the draco wrapper: **247 pieces -> 63 signs, every one grounded, 2.5-3.0 m tall.** They
+    stay TWO draw calls. A sign is a list of vertex indices into those buffers, and a bend
+    rewrites just those from a kept original.
+  - **First hit:** leans away from the blow on a spring (`k`, `c`: it overshoots and settles).
+    **Second hit:** topples about its base like a rod, `w' = (3g/2L) sin a`, with one bounce, to
+    `fall` (trees 1.32 rad, so the crown lands before the trunk would). Its box and its impact
+    triangles go with it (`looseUnpin`'s sweep), so a fallen one is not an obstacle. A rocket
+    counts as both hits.
+  - **A bolt stops ON them (`bendRay`)**, an upright cylinder each. A sign post has no impact
+    surface, so without it a shot went straight through the sign it was aimed at.
+  Wired to the bolt landing (the shot's own direction), the rocket (away from the blast) and the
+  melee sweep (his facing). `BEND.cool` keeps one swing from counting twice.
+  **Not built:** a fallen tree as something to stand on or collide with, and debris. It lies there.
+
 - **POLES AND TRUNKS: A LIGHT POST'S BOX WAS ITS ARM, AND NARROW THINGS WERE COVER (m205,
   `PROPFIT`, `thinBox`).** *"The collide on street signs and trees is still just box collide and
   it doesn't fit ... he gets caught on them standing way away, covering on them."*

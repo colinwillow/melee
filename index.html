@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m205</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m206</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m205</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m206</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,7 +620,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm205';
+const BUILD = 'm206';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -8814,6 +8814,9 @@ function boltHit(b) {
     looseBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast + (b.onLoose ? .2 : 0),
                WEAP.pow0 + c * (WEAP.pow1 - WEAP.pow0));
   }
+  // AND A TREE OR A SIGN IT REACHED BENDS, OR SNAPS ON ITS SECOND (m206). A rocket is both hits.
+  bendBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast,
+            b.rocket ? 0 : b.vel.x, b.rocket ? 0 : b.vel.z, b.rocket ? 2 : 1);
   // and everybody the blast reached wears it
   const R = b.size * .5 + b.blast;
   for (const d of DUMMIES) {
@@ -9606,6 +9609,244 @@ function stepFlashes(dt) {
 }
 
 // ============================================================================================
+// TREES AND SIGNS BEND, THEN SNAP (m206, `BEND`, `bendBlast`, `bendStep`)
+//
+// *"A bend on first shot and then a snap on the second -- two hits."* The first hit leans it away
+// from the shot on a spring (it overshoots and settles, so it reads as a thing with some give in
+// it); the second topples it the rest of the way about its BASE, like a real pivot under gravity,
+// with one small bounce when it meets the ground, and takes its collider with it. A rocket is both
+// hits at once.
+// **THE TREES ARE INSTANCES** -- 101 nodes on six shared meshes, which `buildTCity` already turns
+// into six InstancedMeshes -- so bending one is writing one instance matrix, `T(base) R T(-base) M`.
+// **THE SIGNS ARE ONE MERGED MESH** (`prop_wk_signs`: two primitives, every sign in the city in
+// each), so at load it is split into signs by CONNECTIVITY (positions welded at a millimetre, a
+// union-find over the triangles) and the pieces grouped by plan position -- a plate joins the post
+// under it. They stay two draw calls: a sign is a list of vertex indices into those two buffers,
+// and bending it rewrites just those vertices from a kept original. Nothing is typed per sign.
+// **A FALLEN ONE IS NOT AN OBSTACLE** -- its box and its impact triangles go when it snaps
+// (`looseUnpin`'s own sweep), so you run over it and the bolts pass where it stood.
+const BEND = {
+  on: 1,
+  tree: { r: .45, bend: .38, fall: 1.32 },   // fall short of PI/2: a crown lands before its trunk would
+  sign: { r: .30, bend: .55, fall: 1.52, near: 1.0 },
+  k: 70, c: 7,        // the bend's spring -- stiffness and damping, so it wobbles and settles
+  g: 20, cool: .35,
+};
+const BENDS = [], BENDLIVE = [];
+const _bdM = new THREE.Matrix4(), _bdR = new THREE.Matrix4(), _bdT = new THREE.Matrix4(),
+      _bdA = new THREE.Vector3(), _bdV = new THREE.Vector3(), _bdS = new THREE.Vector3();
+function bendItem(kind, x, y, z, h, extra) {
+  const it = Object.assign({ kind, x, y, z, h, r: BEND[kind].r, hits: 0, ang: 0, w: 0, tgt: 0,
+                             ax: 1, az: 0, st: 0, cool: 0, bounced: 0 }, extra);
+  BENDS.push(it);
+  return it;
+}
+function bendClaimTree(o, im, slot) {
+  if (!BEND.on || !o || !o.isMesh || !/^prop_tree_/.test(o.name || '')) return 0;
+  if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+  const M = o.matrixWorld.clone(), bb = o.geometry.boundingBox;
+  _bdV.setFromMatrixPosition(M); _bdS.setFromMatrixScale(M);
+  const it = bendItem('tree', _bdV.x, _bdV.y + bb.min.y * _bdS.y, _bdV.z, (bb.max.y - bb.min.y) * _bdS.y,
+                      { im, slot, obj: im ? null : o, M });
+  if (!im && o.parent) { o.parent.updateMatrixWorld(true); it.PWi = o.parent.matrixWorld.clone().invert(); }
+  o.userData.bend = 1;
+  return 1;
+}
+// THE SIGNS, SPLIT. Called before the instancing and merge passes, so neither ever sees them.
+function bendSigns(root, into) {
+  if (!BEND.on) return 0;
+  let src = null;
+  root.traverse(o => { if (!src && /^prop_wk_signs/.test(o.name || '')) src = o; });
+  if (!src) return 0;
+  const meshes = [];
+  src.updateMatrixWorld(true);
+  src.traverse(o => { if (o.isMesh && o.geometry && o.geometry.attributes.position && !Array.isArray(o.material)) meshes.push(o); });
+  const comps = [], outs = [];
+  for (const m of meshes) {
+    const g = m.geometry.clone();
+    g.applyMatrix4(m.matrixWorld);
+    if (!g.attributes.normal) g.computeVertexNormals();
+    const pos = g.attributes.position, n = pos.count;
+    const par = new Int32Array(n); for (let i = 0; i < n; i++) par[i] = i;
+    const f = i => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
+    const u = (a, b) => { a = f(a); b = f(b); if (a !== b) par[a] = b; };
+    const weld = new Map();
+    for (let i = 0; i < n; i++) {
+      const k = Math.round(pos.getX(i) * 1000) + ',' + Math.round(pos.getY(i) * 1000) + ',' + Math.round(pos.getZ(i) * 1000);
+      const j = weld.get(k); if (j === undefined) weld.set(k, i); else u(i, j);
+    }
+    const idx = g.index, nt = idx ? idx.count : n;
+    for (let t = 0; t < nt; t += 3) {
+      const a = idx ? idx.getX(t) : t, b = idx ? idx.getX(t + 1) : t + 1, c = idx ? idx.getX(t + 2) : t + 2;
+      u(a, b); u(b, c);
+    }
+    const by = new Map();
+    for (let i = 0; i < n; i++) {
+      const r = f(i); let C = by.get(r);
+      if (!C) by.set(r, C = { g, verts: [], x: 0, z: 0, y0: 1e9, y1: -1e9 });
+      C.verts.push(i);
+    }
+    for (const C of by.values()) {
+      for (const i of C.verts) { C.x += pos.getX(i); C.z += pos.getZ(i); C.y0 = Math.min(C.y0, pos.getY(i)); C.y1 = Math.max(C.y1, pos.getY(i)); }
+      C.x /= C.verts.length; C.z /= C.verts.length;
+      comps.push(C);
+    }
+    g.userData.p0 = pos.array.slice(); g.userData.n0 = g.attributes.normal.array.slice();
+    const out = new THREE.Mesh(g, m.material);
+    out.name = (m.name || 'prop_wk_signs') + '_bend';
+    out.castShadow = m.castShadow; out.receiveShadow = true;
+    out.userData.bend = 1;
+    outs.push(out);
+  }
+  // POSTS FIRST, so a sign's centre is its post's and a plate joins the post under it
+  comps.sort((a, b) => a.y0 - b.y0);
+  const signs = [];
+  for (const C of comps) {
+    let S = null, bd = BEND.sign.near;
+    for (const T of signs) { const d = Math.hypot(T.x - C.x, T.z - C.z); if (d < bd) { bd = d; S = T; } }
+    if (!S) signs.push(S = { x: C.x, z: C.z, y0: C.y0, y1: C.y1, parts: [] });
+    S.y0 = Math.min(S.y0, C.y0); S.y1 = Math.max(S.y1, C.y1);
+    S.parts.push(C);
+  }
+  for (const S of signs) {
+    const by = new Map();
+    for (const C of S.parts) { let L = by.get(C.g); if (!L) by.set(C.g, L = []); for (const i of C.verts) L.push(i); }
+    const lists = [...by].map(([g, L]) => ({ g, idx: Uint32Array.from(L) }));
+    bendItem('sign', S.x, S.y0, S.z, S.y1 - S.y0, { lists });
+  }
+  src.parent && src.parent.remove(src);
+  for (const o of outs) into.add(o);
+  console.log('[melee] bend: ' + signs.length + ' signs split from ' + comps.length + ' pieces');
+  return signs.length;
+}
+// A BOLT'S SEGMENT AGAINST THE STANDING ONES: an upright cylinder each, the nearest along it
+const _bdH = { t: 1, x: 0, y: 0, z: 0, nx: 0, nz: 0 };
+function bendRay(ox, oy, oz, ex, ey, ez, out) {
+  if (!BEND.on || !BENDS.length) return 0;
+  const dx = ex - ox, dz = ez - oz, a = dx * dx + dz * dz;
+  if (a < 1e-9) return 0;
+  let bt = 2, best = null;
+  for (const it of BENDS) {
+    if (it.st >= 2) continue;
+    const R = it.kind === 'sign' ? .28 : it.r * .75;
+    const fx = ox - it.x, fz = oz - it.z;
+    const c = fx * fx + fz * fz - R * R;
+    if (c > (Math.sqrt(a) + R) * (Math.sqrt(a) + R) + 4) continue;     // nowhere near this segment
+    const b = 2 * (fx * dx + fz * dz), disc = b * b - 4 * a * c;
+    if (disc < 0) continue;
+    const t = c < 0 ? 0 : (-b - Math.sqrt(disc)) / (2 * a);
+    if (t < 0 || t > 1 || t >= bt) continue;
+    const y = oy + (ey - oy) * t;
+    if (y < it.y || y > it.y + it.h) continue;
+    bt = t; best = it;
+  }
+  if (!best) return 0;
+  out.t = bt; out.x = ox + dx * bt; out.y = oy + (ey - oy) * bt; out.z = oz + dz * bt;
+  const L = Math.hypot(out.x - best.x, out.z - best.z) || 1;
+  out.nx = (out.x - best.x) / L; out.nz = (out.z - best.z) / L;
+  return 1;
+}
+function bendApply(it) {
+  _bdA.set(it.ax, 0, it.az);
+  _bdR.makeRotationAxis(_bdA, it.ang);
+  _bdM.makeTranslation(it.x, it.y, it.z).multiply(_bdR);
+  _bdM.multiply(_bdT.makeTranslation(-it.x, -it.y, -it.z));
+  if (it.kind === 'tree') {
+    _bdM.multiply(it.M);
+    if (it.im) { it.im.setMatrixAt(it.slot, _bdM); it.im.instanceMatrix.needsUpdate = true; }
+    else if (it.obj) {
+      it.obj.matrixAutoUpdate = false;
+      it.obj.matrix.copy(it.PWi || _bdT.identity()).multiply(_bdM);
+      it.obj.matrixWorldNeedsUpdate = true;
+    }
+    return;
+  }
+  const e = _bdM.elements;
+  for (const L of it.lists) {
+    const P = L.g.attributes.position, N = L.g.attributes.normal, pa = P.array, na = N.array,
+          p0 = L.g.userData.p0, n0 = L.g.userData.n0;
+    for (const i of L.idx) {
+      const o = i * 3, x = p0[o], y = p0[o + 1], z = p0[o + 2], nx = n0[o], ny = n0[o + 1], nz = n0[o + 2];
+      pa[o] = e[0] * x + e[4] * y + e[8] * z + e[12];
+      pa[o + 1] = e[1] * x + e[5] * y + e[9] * z + e[13];
+      pa[o + 2] = e[2] * x + e[6] * y + e[10] * z + e[14];
+      na[o] = e[0] * nx + e[4] * ny + e[8] * nz;
+      na[o + 1] = e[1] * nx + e[5] * ny + e[9] * nz;
+      na[o + 2] = e[2] * nx + e[6] * ny + e[10] * nz;
+    }
+    P.needsUpdate = true; N.needsUpdate = true;
+  }
+}
+// ITS COLLIDER GOES WHEN IT SNAPS -- the box standing in it and every triangle over its base
+function bendUnpin(it) {
+  const q = it.r + .15;
+  looseUnpin({ box: new THREE.Box3(new THREE.Vector3(it.x - q, it.y + .1, it.z - q),
+                                   new THREE.Vector3(it.x + q, it.y + Math.max(it.h, 2.2), it.z + q)) });
+}
+// A HIT: a bolt, a blast or a swing. `hx, hz` is the way the blow was travelling (0, 0 means
+// "away from the middle of it"); `n` is how many hits it counts for -- a rocket is 2.
+function bendBlast(x, y, z, r, hx, hz, n) {
+  if (!BEND.on || !BENDS.length) return 0;
+  let got = 0;
+  for (const it of BENDS) {
+    if (it.st >= 2 || it.cool > 0) continue;
+    const ex = it.x - x, ez = it.z - z, d = Math.hypot(ex, ez);
+    if (d > r + it.r) continue;
+    if (y < it.y - .5 || y > it.y + it.h + .5) continue;
+    let dx = hx || 0, dz = hz || 0, L = Math.hypot(dx, dz);
+    if (!(L > 1e-3)) { dx = ex; dz = ez; L = d || 1; }
+    dx /= L; dz /= L;
+    it.cool = BEND.cool;
+    it.hits += n || 1;
+    const tree = it.kind === 'tree';
+    if (it.hits < 2) {
+      // tip AWAY from the blow: the axis is up x the blow, so a positive turn takes up toward it
+      it.ax = dz; it.az = -dx; it.st = 1; it.tgt = BEND[it.kind].bend; it.w += 5;
+      snd(tree ? 'thud' : 'clang', { g: tree ? .32 : .26, r: tree ? .75 : 1.15, dur: .35 });
+    } else {
+      if (it.st === 0) { it.ax = dz; it.az = -dx; }
+      it.st = 2; it.w = Math.max(it.w, 1.4);
+      bendUnpin(it);
+      snd('thud', { g: .5, r: tree ? .55 : .9 });
+      if (!tree) snd('clang', { g: .3, r: .7, dur: .5 });
+      smokeAt(it.x, it.y + .3, it.z, 2.2, 1.1, [.55, .5, .45]);
+    }
+    if (BENDLIVE.indexOf(it) < 0) BENDLIVE.push(it);
+    got++;
+  }
+  return got;
+}
+function bendStep(dt) {
+  for (let i = BENDLIVE.length - 1; i >= 0; i--) {
+    const it = BENDLIVE[i], S = BEND[it.kind];
+    if (it.cool > 0) it.cool -= dt;
+    if (it.st === 1) {
+      it.w += (BEND.k * (it.tgt - it.ang) - BEND.c * it.w) * dt;
+      it.ang += it.w * dt;
+      if (Math.abs(it.tgt - it.ang) < .002 && Math.abs(it.w) < .02 && it.cool <= 0) {
+        it.ang = it.tgt; it.w = 0; bendApply(it); BENDLIVE.splice(i, 1); continue;
+      }
+    } else if (it.st === 2) {
+      // a rod toppling about its foot: w' = (3g / 2L) sin(angle)
+      it.w += 1.5 * BEND.g / Math.max(1, it.h) * Math.sin(Math.max(.08, it.ang)) * dt;
+      it.ang += it.w * dt;
+      if (it.ang >= S.fall) {
+        it.ang = S.fall;
+        if (!it.bounced && it.w > 1) {
+          it.bounced = 1; it.w = -it.w * .22;
+          // the thump where the TOP lands: the lean runs along (-az, ax), the axis turned a quarter
+          const tip = it.h * .85;
+          smokeAt(it.x - it.az * tip, it.y + .2, it.z + it.ax * tip, it.kind === 'tree' ? 2.4 : 1.2, 1, [.5, .46, .42]);
+          snd('thud', { g: .42, r: it.kind === 'tree' ? .5 : .8 });
+        } else if (it.bounced && it.w >= 0) { it.st = 3; }
+      }
+    }
+    bendApply(it);
+    if (it.st === 3) { if (it.im) it.im.computeBoundingSphere(); BENDLIVE.splice(i, 1); }
+  }
+}
+
+// ============================================================================================
 // THE LOOSE STUFF (m184, `LOOSE`, `looseClaim`, `looseRay`, `looseBlast`, `stepLoose`)
 //
 // *"I want to be able to shoot small objects -- the trash bag, the rubble. I want it to go flying
@@ -9870,7 +10111,13 @@ function stepBolts(dt) {
                           (Math.hypot(b.pos.x - _px, b.pos.y - _py, b.pos.z - _pz) || 1) : 2;
         // AND THE LOOSE STUFF, which has no collider of its own worth the name (m184)
         const lHit = looseRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _lrH);
-        if (lHit && _lrH.t < sT && (!bHit || _lrH.t < _brH.t)) {
+        // AND A TREE OR A SIGN STANDING IN THE WAY (m206): a sign post has no impact surface, so
+        // without this a shot went straight through the thing it was aimed at
+        const dHit = bendRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _bdH);
+        if (dHit && _bdH.t < sT && (!bHit || _bdH.t < _brH.t) && (!lHit || _bdH.t < _lrH.t)) {
+          dead = true; b.hitN = null; b.hitBox = null; b.hitAt = [_bdH.x, _bdH.y, _bdH.z];
+          b.pos.set(_bdH.x + _bdH.nx * WEAP.boltR, _bdH.y, _bdH.z + _bdH.nz * WEAP.boltR);
+        } else if (lHit && _lrH.t < sT && (!bHit || _lrH.t < _brH.t)) {
           dead = true; b.onLoose = _lrH.L;
           b.hitN = null; b.hitBox = null; b.hitAt = [_lrH.x, _lrH.y, _lrH.z];
           b.pos.set(_lrH.x + _lrH.nx * WEAP.boltR, _lrH.y + _lrH.ny * WEAP.boltR, _lrH.z + _lrH.nz * WEAP.boltR);
@@ -17488,6 +17735,8 @@ function buildTCity(g) {
   // ---- 2. INSTANCE anything whose geometry is used more than once.
   //      **GROUPED BY GEOMETRY *AND* MATERIAL**, because two nodes sharing a mesh but not a
   //      material are not one draw call and an InstancedMesh has exactly one of each.
+  // THE SIGNS COME OUT FIRST (m206), split into signs that can bend, before either pass sees them
+  bendSigns(root, tcRoot);
   const drew0 = (() => { let n = 0; root.traverse(o => { if (o.isMesh) n += Array.isArray(o.material) ? o.material.length : 1; }); return n; })();
   let inst = 0, instN = 0;
   if (TCITY.inst) {
@@ -17514,7 +17763,7 @@ function buildTCity(g) {
       // Shredworld's c142 -- a hole in the world from an invariant every producer had to
       // remember. Here the InstancedMesh and the slot are both in hand, which is precisely
       // what breaking one needs and what nothing downstream could recover.
-      for (let i = 0; i < list.length; i++) { im.setMatrixAt(i, list[i].matrixWorld); brkClaim(list[i], im, i) || looseClaim(list[i], im, i); }
+      for (let i = 0; i < list.length; i++) { im.setMatrixAt(i, list[i].matrixWorld); brkClaim(list[i], im, i) || looseClaim(list[i], im, i) || bendClaimTree(list[i], im, i); }
       im.instanceMatrix.needsUpdate = true;
       // WORLD matrices, so it hangs off the world at identity -- under the gltf root that
       // root's own transform would be applied a second time.
@@ -17552,6 +17801,9 @@ function buildTCity(g) {
       if (o.userData && o.userData.breakable) { brkClaim(o, null, -1); return; }
       // nor is a loose piece (m184): it has to be able to leave
       if (LOOSE.on && LOOSE.re.test(o.name || '')) { looseClaim(o, null, -1); return; }
+      // a tree left un-instanced stays its own mesh, so it can still bend (m206)
+      if (o.userData && o.userData.bend) return;
+      if (bendClaimTree(o, null, -1)) return;
       {
         const m = o.material; if (!m) return;
         // **THE BUCKET IS KEYED ON THE ATTRIBUTE SET AS WELL AS THE MATERIAL, AND THAT IS NOT
@@ -21059,6 +21311,7 @@ function strikeSweep(dt, power, live, dmg, body) {
         kitBlast(_sw.x, _sw.y, _sw.z, rad, dmg || FOE.dmg.fist);
         // and it kicks the loose stuff about (m184)
         looseBlast(_sw.x, _sw.y, _sw.z, rad + .15, 1);
+        bendBlast(_sw.x, _sw.y, _sw.z, rad + .1, Math.sin(player.faceH), Math.cos(player.faceH), 1);
         for (const d of DUMMIES) {
           if (d.cool > 0) continue;
           if (!segBody(q, _sw, d.root.position.x, d.root.position.z, d.K.r + rad,
@@ -23444,7 +23697,7 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
-  decalStep(dt); brkStep(dt); stepLoose(dt); spoutStep(dt); virusStep(dt); stepFire(dt);
+  decalStep(dt); brkStep(dt); stepLoose(dt); bendStep(dt); spoutStep(dt); virusStep(dt); stepFire(dt);
   // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
   // frame's lens is a field that lags every time he turns.
   stepDust(dt);
@@ -24183,7 +24436,7 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { fireSheet, PROPFIT, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { fireSheet, BEND, BENDS, bendBlast, PROPFIT, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
