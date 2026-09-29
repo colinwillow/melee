@@ -7,6 +7,14 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE GEYSER CARDS ARE OFF; THE SPRAY IS HIS DROP SHEET (m223, `SPOUT.geyser.on` 0).** *"The geyser
+  looks insane. It's way too wide to be coming out of the spout... just use the drops, like the
+  particle geyser, with my newest water sprite sheet."* The card's width is its height x the cell's
+  .75 aspect, and his art fills the cell edge to edge, so the column was ~3.7 m across on a 44 cm
+  hydrant. A sheet only drops in as a billboard if the art's footprint matches the thing it comes out
+  of. The machinery stays behind `on` for a narrower re-draw; the spout is m160's particle jet again,
+  at full `jetN`, each drop one of his nine splashes.
+
 - **HIS DROP SHEET IS NINE SPLASHES, NOT A CLIP (m220, `SPOUT.sheet`).** `images/water_sprites_01.png`,
   1024 square RGB on black, 3 x 3 distinct splashes -- so `play` 0: each drop takes one cell at random
   and keeps it, at a random turn, `sizeK` 2.4 so the droplets drawn round each splash read. Keyed off
