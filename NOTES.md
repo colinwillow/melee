@@ -7,6 +7,28 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE STRIDE LEAPS: CONTACTS AT THE PLANTED-FOOT RATE, THE AIR AT `hang` OF IT, AND A LIFT
+  THROUGH EACH AIRBORNE PART (m193, `GAIT.runSets.stride.leap`, `leapContact`, `leapAir`).**
+  *"Are you not using the Y of the hips?"* -- we are, and it was checked rather than argued:
+  `normaliseClips` keeps `Hips.position`, `deDrift` only takes the X/Z ramp, and nothing writes
+  the hips or re-grounds the root at runtime. What flattens the leap is that an IN-PLACE clip's
+  airtime is its playback rate: a 0.5 s step played at 3.4x is 0.15 s of foot, foot, foot.
+  *"Slow the clip down, but he travels farther per leap."* So the stride runs at two rates:
+      contacts (clip phase .25-.50 left, .69-.96 right, read off the ankle/ball heights at 48 fps)
+                at `contactRef` 2.62 -- the planted foot's own measured speed, and a sweep through a
+                real mixer (1.8 .. 3.4) has its minimum slide exactly there
+      the air   at `hang` (.35) of that, and LIFTED on a sine arc of `lift` (.15 m) -- the clip keeps
+                the swinging and the trailing foot at floor height between contacts, and the lift is
+                what clears them
+  Measured, pure stride, through the real mixer:
+      7.2 m/s   a leap every 0.24 s covering 1.71 m, airborne 68%, contact foot slide 1.58 m/s
+                (22%), lowest foot in the air 6.9 cm      -- flat at 3.4x it was 0.15 s / 1.1 m and
+                the lowest foot slid 117% of his speed
+  The shared gait phase takes the stride's rate weighted by its share of the blend, so a run easing
+  into it eases into the rhythm; the footsteps take the leap's own cycle (`leapCycle`).
+  **STRIDE IS THE DEFAULT AGAIN** -- but `mel.run` is remembered per phone, so a phone that tapped
+  FAST in m191 stays on FAST until the RUN key is tapped. `GAIT.leapOn = 0` is the flat version.
+
 - **ROCKETS SET THINGS ON FIRE, AND HIS KIT ALREADY SAID WHERE (m192, `FIRE`, `fireIgnite`,
   `fireDouse`, `fireNear`, `KROOMS`, `KFIREPOS`).** *"Making things light on fire with the rocket
   launcher, because eventually when I put in the firefighter he would come and put out fires."*

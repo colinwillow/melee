@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m192</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m193</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m192</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m193</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm192';
+const BUILD = 'm193';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -1058,8 +1058,22 @@ const GAIT = {
   // foot. So whichever foot reads as "down" is gliding, at every playback rate: swept through a real
   // mixer, the lowest foot never slides less than his whole speed (117-240%), against 19-40% for
   // `run_fwd_fast`. No number here can fix that; lifting the swing foot in the export does.
-  runSet: 'fast',
-  runSets: { stride: { clip: 'Running_fast_stride', ref: 3.00, hi: 3.4 },
+  runSet: 'stride',     // m193: back to the stride, now that it leaps (see `leap`)
+  // **THE LEAP (m193, `leap`).** *"I want the stride slower and more airtime -- like a sprinter:
+  // legs fast, but in the air longer. Slow the clip down, but he travels farther per leap."* An
+  // in-place clip's airtime is tied to its playback rate, so the stride is played at TWO rates:
+  // the CONTACTS at whatever keeps the planted foot locked to the road (`contactRef`, measured off
+  // the planted foot inside `contact` -- 1.36 authored/s, x1.926 = 2.62), and everything between
+  // them at `hang` of that rate. A slide only shows while a foot is DOWN, so the hang can be as
+  // long as he likes. Read off the file at 48 fps, clip phase:
+  //     left foot planted and pushing back   .25 -> .50    right   .69 -> .96
+  //     between them the swinging foot comes forward at floor height and the trailing one stays
+  //     low behind him -- so through each airborne part he is LIFTED on an arc (`lift`, metres),
+  //     which clears both feet and is what makes the leap read as a leap.
+  // At 7.2 m/s with `hang` .35: contacts at 3.8x, air at 1.35x, a leap every ~0.25 s covering
+  // about 1.8 m -- against 0.15 s and 1.1 m played flat at 3.4x.
+  runSets: { stride: { clip: 'Running_fast_stride', ref: 3.00, hi: 3.4,
+                       leap: { contactRef: 2.62, contact: [[.25, .50], [.69, .96]], hang: .35, lift: .15, edge: .03 } },
              fast:   { clip: 'run_fwd_fast',        ref: 4.55, hi: 1.6 } },
   // **THE CROSSFADES ARE PHASE-SYNCED (m189, `gaitSync`).** *"There's a weird blending at lower
   // speeds between his really slow walk and his walk or run -- his feet start to stutter."* That
@@ -4914,6 +4928,9 @@ function strideOf(sp, dur, ref, lo, hi) {
   return sp * dur / Math.max(.05, ts) / STEP.perCycle;
 }
 function strideNow(sp) {
+  // THE LEAP'S OWN STRIDE (m193): a footfall per contact, at the cycle the leap actually runs at
+  const Lp = sp >= GAIT.sprintAt && typeof leapNow === 'function' ? leapNow() : null;
+  if (Lp && STEP.clip.sprint) { const L2 = sp * leapCycle(Lp, sp, STEP.clip.sprint.d) / STEP.perCycle; if (L2 > .05) return L2; }
   const C = sp < GAIT.runAt ? STEP.clip.walk : sp < GAIT.sprintAt ? STEP.clip.run : STEP.clip.sprint;
   const L = C ? strideOf(sp, C.d, C.r, GAIT.tsLo, C === STEP.clip.sprint ? GAIT.sprintHi : GAIT.tsHi) : 0;
   return L > .05 ? L : STEP.fallback;
@@ -13170,6 +13187,7 @@ function stepPlayer(dt) {
 // ============================================================================================
 function rigAnim(dt) {
   const p = player, sp = p.speed, t = {};
+  p.leapY = 0;          // only the ordinary gait's sprint sets it (m193), so every other state starts at 0
 
   // **WEARING SOMEBODY ELSE, EVERY NAME BELOW IS A CLIP THIS SKIN HAS NEVER HEARD OF (m112)** --
   // and a table that names none of them leaves every bone at zero total weight, which is the
@@ -13555,6 +13573,35 @@ function rigAnim(dt) {
   }
   setWeights(t, dt);
 }
+
+// THE LEAP'S TWO QUESTIONS (m193). `leapContact` is 1 inside a contact window and 0 in the air,
+// eased over `edge` so the rate change is a gear shift rather than a hitch. `leapAir` is how far
+// through the airborne part between two contacts this phase is (0..1), or -1 on the ground.
+function leapNow() { const R = GAIT.runSets[GAIT.runSet]; return R && R.leap && GAIT.leapOn !== 0 ? R.leap : null; }
+function leapContact(L, u) {
+  let c = 0;
+  for (const [a, b] of L.contact) {
+    const e = L.edge;
+    const x = smooth(a - e, a + e, u) * (1 - smooth(b - e, b + e, u));
+    if (x > c) c = x;
+  }
+  return c;
+}
+function leapAir(L, u) {
+  const W = L.contact, n = W.length;
+  for (let i = 0; i < n; i++) {
+    const a = W[i][1], b = W[(i + 1) % n][0] + (i + 1 === n ? 1 : 0);
+    const uu = u < a && i + 1 === n ? u + 1 : u;
+    if (uu >= a && uu <= b) return (uu - a) / (b - a);
+  }
+  return -1;
+}
+// seconds one whole stride cycle takes at this speed, the leap's way -- for the footsteps
+function leapCycle(L, sp, dur) {
+  const tc = Math.max(GAIT.tsLo, sp / (L.contactRef * (GAIT.refK || 1)));
+  let cf = 0; for (const [a, b] of L.contact) cf += b - a;
+  return dur * (cf / tc + (1 - cf) / (tc * L.hang));
+}
 // **ONE PHASE FOR EVERY MOVING CLIP (m189).** Each clip's own rate is what it would play at alone
 // (`sp / ref`, clamped); the SHARED phase advances at their weighted average cycle rate, and each
 // clip's time is written from it with its measured foot offset -- so a blend of two gaits is one
@@ -13568,7 +13615,23 @@ function gaitSync(dt, sp, L, rows, t) {
     fw += w * ts / Math.max(.05, clipLen(nm)); ww += w;
   }
   if (!(ww > 0)) return;
-  player.gph = ((player.gph || 0) + (fw / ww) * dt) % 1;
+  let f = fw / ww;
+  // THE LEAP (m193): the stride's own phase decides whether this instant is a contact or the air,
+  // and the shared phase runs at that clip's contact rate or at `hang` of it -- weighted by how
+  // much of the blend the stride is, so a run blending into it eases into the rhythm
+  const Lp = leapNow(), sr = rows[2];
+  player.leapY = 0;
+  if (Lp && sr && sr[1] > 0 && rig.actions[sr[0]]) {
+    const dS = Math.max(.05, clipLen(sr[0])), u = ((player.gph || 0) + (GAIT.phase[sr[0]] || 0)) % 1;
+    const c = leapContact(Lp, u);
+    const tc = Math.max(GAIT.tsLo, sp / (Lp.contactRef * (GAIT.refK || 1) * (rig.gaitK || 1)));
+    const fs = lerp(tc * Lp.hang, tc, c) / dS, ws = sr[1] / ww;
+    f = lerp(f, fs, ws);
+    // and the lift, on an arc through each airborne part
+    const a = leapAir(Lp, u);
+    if (a >= 0) player.leapY = Lp.lift * Math.sin(Math.PI * a) * ws * smooth(GAIT.runAt, GAIT.sprintAt, sp);
+  }
+  player.gph = ((player.gph || 0) + f * dt) % 1;
   for (const [nm, w] of rows) {
     if (!(w > 0) || !rig.actions[nm]) continue;
     const k = L(nm);
@@ -22696,6 +22759,9 @@ function frame() {
     // `aimComp` reads the barrel off world matrices that are a frame old, which is exactly why
     // it subtracts `rig.drawnYaw` -- the yaw THAT frame was drawn at -- rather than this one.
     rig.root.position.copy(player.pos);
+    // THE LEAP'S LIFT (m193), eased so a gait change cannot pop him down
+    player.leapYd = damp(player.leapYd || 0, player.leapY || 0, .03, dt);
+    rig.root.position.y += player.leapYd;
     // HE STANDS ON THE DECK, so he is lifted by its measured height -- his COLLIDER stays on
     // the ground, which is right: the board is a picture and the man is the body.
     if (player.board) rig.root.position.y += board.deck;
