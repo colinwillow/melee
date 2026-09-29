@@ -620,6 +620,9 @@ a map at all:
   `toon_city_kit_buildings.glb`, and `npm run twins` for the piece library.
   **Buildings, ladders and the cutaway are TURNED** (`KBLD` c/s, `KCLIMB` u/n, `KCUT.xf`) — the
   house and the row have yaw 0, where it is the old arithmetic. **No bodies**, like the kit world.
+  **m181: the X-RAY is the default in both kit worlds** (kit surfaces between the lens and him
+  dither to `KIT.xrayMin` in a screen circle, never erased; `cut` is still on the INSIDE chip), a
+  ladder only latches from its FRONT (the piece's local +Z), and on a roof the lens pulls out.
   **NOT BUILT:** interior culling for far buildings (his suggestion 3), and a swapped twin is 3–4
   draws of its own. `mel.kitBoom()` swaps and breaks where he stands; the chip says `SW<swaps>`.
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into

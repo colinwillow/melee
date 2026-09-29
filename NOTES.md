@@ -7,6 +7,40 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE X-RAY, LADDERS WITH A FRONT, AND THE ROOF PULL-OUT (m181, `KCUT.x*`, `kitXrayStep`,
+  `L.fx/fz`, `kit.high`).** *"When you get inside, at certain camera angles it just completely
+  disappears. I was picturing a radial gradient from completely open on the outside to semi-
+  transparent in the centre -- you can see through the wall but the wall still looks like it's
+  there. When you're on a ladder you should only ever be able to climb the front side. On rooftops
+  we want to be able to see who and what's going on down on the ground."*
+  **THE X-RAY IS NOW THE DEFAULT (`KIT.inCam = 'xray'`) AND IT NEVER ERASES ANYTHING.** m179's cut
+  discarded everything of the building above his storey, which from a lot of angles is most of the
+  picture -- the roof, the walls, where the building even ends. Now: any kit surface NEARER THE LENS
+  THAN HE IS, ABOVE HIS FEET, inside a screen circle round him, is a 4x4 ordered dither whose coverage
+  runs from `xrayMin` (.32) at the middle to solid at the rim. A dither and not blending, so the wall
+  still writes depth, nothing has to sort, and it is one branch in the fragment shader of every kit
+  material (`kitCutMat`, so the batch, the twins and -- through `instanceMatrix` -- the instanced
+  parts all get it). **"Above his feet" is load-bearing**: the floor in front of him is nearer the
+  lens than he is and must stay a floor. It runs OUTSIDE as well, so a building between the lens and
+  him thins the same way, and on a roof the parapet in front of him does.
+  The camera half of m179 is kept for now -- he said so (*"not positive we even need this smart
+  camera if we have x-ray walls, but leave it"*): inside, the lens still lifts and pulls to
+  `cutDist`, and may pass through the upper storeys (`KCUT.cam`, split from the discard). The FX
+  key's INSIDE chip cycles XRAY / CUT / CLOSE / OFF.
+  **A LADDER'S FRONT IS THE PIECE'S OWN LOCAL +Z, MEASURED RATHER THAN ASSUMED.** Every ladder
+  carries `exit`, and against the geometry: the exterior ladders have their wall on the `exit` side,
+  which is local -Z (57 of 57 the probe could decide); the interior hatch ladders have `exit` on
+  +Z and, on the 6 that stand against a wall, the wall on -Z. Two different `exit` conventions,
+  one front. It is copied onto the climb volume by slot and the latch refuses the other side:
+  120/120 city ladders latch from the front and top out, 0 from behind; the kit world 10/10, 0.
+  **ON A ROOF THE LENS PULLS OUT** -- above `highY` (3.4 m), not inside, grounded or in cover or on a
+  ledge: the boom x`highK` 1.45 and `highEl` .14 rad more tilt, eased both ways; in cover up there
+  x1.7 so he can peer over. A manual zoom key is his "eventually" and is not built.
+  **THE SHADER COULD NOT BE COMPILED HERE** (no GPU, no GLSL compiler); the shipped `kitCutMat` was
+  run on three's own standard shader and the spliced text read -- every anchor lands, and the Bayer
+  function yields the 16 distinct thresholds of the standard tile. It uses int `^`/`&`/`>>`, which
+  is GLSL ES 3.00 and what three r180 compiles for.
+
 - **THE KIT CITY: HIS SIXTY KIT BUILDINGS ON THE OLD LOTS, INTACT UNTIL HIT (m180, `KCITY`,
   `buildKCityCol`, `kitObb`, `kitTwinIndex`, `kitSwap`, `kitInst`, `kitPrune`, `npm run twins`).**
   *"All 60 old generated buildings are replaced, one per lot, facing the street... Intact walls

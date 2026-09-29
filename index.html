@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m180</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m181</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m180</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m181</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm180';
+const BUILD = 'm181';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -10860,7 +10860,7 @@ function fxSet(k, on) {
   else if (k === 'rim') LIGHTX.on = on;
   else if (k === 'doors') KIT.doorOpen = on;
   // the INSIDE chip CYCLES rather than toggles -- three looks, and the label says which
-  else if (k === 'inside') { const L = ['cut', 'close', 'off']; KIT.inCam = L[(L.indexOf(KIT.inCam) + 1) % L.length]; }
+  else if (k === 'inside') { const L = ['xray', 'cut', 'close', 'off']; KIT.inCam = L[(L.indexOf(KIT.inCam) + 1) % L.length]; }
   else { WP.tintMode = on ? 2 : 0; WPTINT.value = WP.tintMode; }
   return on;
 }
@@ -10873,7 +10873,7 @@ function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
           | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7)
           | (fxOn('toon') << 8) | (fxOn('paint') << 9) | (fxOn('rim') << 10) | (fxOn('doors') << 11)
-          | ((kitWorld() ? 1 : 0) << 12) | (['cut', 'close', 'off'].indexOf(KIT.inCam) << 13);
+          | ((kitWorld() ? 1 : 0) << 12) | (['xray', 'cut', 'close', 'off'].indexOf(KIT.inCam) << 13);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -12058,7 +12058,9 @@ function stepPlayer(dt) {
       const side = Math.sign((p.pos.x - L.cx) * L.nx + (p.pos.z - L.cz) * L.nz) || 1;
       const nx = L.nx * side, nz = L.nz * side;
       const into = -(s.x * nx + s.z * nz) * s.mag;
-      if (into > CLIMB.grab) { climbGo(L, side); stepClimb(dt); return; }
+      // only from its FRONT (m181), when the ladder knows which that is
+      const front = L.fx === undefined || nx * L.fx + nz * L.fz > 0;
+      if (front && into > CLIMB.grab) { climbGo(L, side); stepClimb(dt); return; }
     }
   }
   // THE PUSH. He is on the floor, extending, and the launch is at the end of it -- the clip is
@@ -14307,7 +14309,19 @@ const KIT = {
   // above `cutH` of his storey is discarded -- the floors over him, the roof, the top of the walls
   // -- and the lens lifts to `cutEl` to look down into the room. 'close': no cut, a short boom.
   // 'off': the ordinary camera. The INSIDE chip on the FX key cycles them.
-  inCam: 'cut', cutH: 1.45, cutEl: .86, cutDist: 5.4, closeDist: 2.3,
+  inCam: 'xray', cutH: 1.45, cutEl: .86, cutDist: 5.4, closeDist: 2.3,
+  // **THE X-RAY (m181), NOW THE DEFAULT.** *"I was picturing a radial gradient from completely open
+  // on the outside to semi-transparent in the centre -- you can see through the wall, but the wall
+  // still looks like it's there."* Any kit surface between the lens and him, inside a screen circle
+  // round him, is thinned to `xrayMin` at the middle and back to solid at the rim -- a dither, so
+  // it still writes depth and needs no sorting. Nothing below his feet is touched (the floor in
+  // front of him is nearer the lens than he is and must stay a floor). 'cut' is m179's discard.
+  xrayMin: .32, xrayR: .30, xrayIn: .45,
+  // **ON A ROOF THE LENS PULLS OUT (m181).** *"When we're on rooftops we want to be able to see who
+  // and what's going on down on the ground."* Above `highY` and not inside, the boom grows by
+  // `highK` and tips down by `highEl`; in cover up there it goes a little further so he can peer
+  // over the parapet. Eased both ways, so stepping off a roof is a camera move and not a cut.
+  highY: 3.4, highK: 1.45, highEl: .14, highCover: 1.7,
   // **THE BATCH (m178)** -- one merged mesh per material per file. 0 draws every piece as his
   // export has it, which is the A/B if something looks wrong after the merge.
   batch: 1,
@@ -14493,7 +14507,11 @@ function kitLedgeOK(p, L) {
 // **THE CUTAWAY (m179, `KCUT`, `kitCutMat`).** One discard in every kit material's fragment shader:
 // inside the box of the building he is in and above the cut height, nothing is drawn. The uniform
 // objects are SHARED, so moving the cut is three writes a frame and never a recompile.
-const KCUT = { on: { value: 0 }, y: { value: 1e9 }, box: { value: new THREE.Vector4() }, xf: { value: new THREE.Vector4(0, 0, 1, 0) }, B: null, lv: -1 };
+const KCUT = { on: { value: 0 }, y: { value: 1e9 }, box: { value: new THREE.Vector4() }, xf: { value: new THREE.Vector4(0, 0, 1, 0) }, B: null, lv: -1,
+               // the x-ray (m181): on, his chest in world, his screen circle (px, py, radius px),
+               // the thinnest it gets, and the height of his feet (nothing below is thinned)
+               cam: 0, xOn: { value: 0 }, xP: { value: new THREE.Vector3() }, xS: { value: new THREE.Vector3(0, 0, 1) },
+               xMin: { value: .32 }, xFeet: { value: -1e9 } };
 function kitCutMat(m) {
   if (!m || m.userData.kitCut) return;
   m.userData.kitCut = 1;
@@ -14501,13 +14519,25 @@ function kitCutMat(m) {
   m.onBeforeCompile = function (sh, r) {
     if (prev) prev.call(this, sh, r);
     sh.uniforms.uKCutOn = KCUT.on; sh.uniforms.uKCutY = KCUT.y; sh.uniforms.uKCutBox = KCUT.box; sh.uniforms.uKCutXf = KCUT.xf;
+    sh.uniforms.uKXOn = KCUT.xOn; sh.uniforms.uKXP = KCUT.xP; sh.uniforms.uKXS = KCUT.xS;
+    sh.uniforms.uKXMin = KCUT.xMin; sh.uniforms.uKXFeet = KCUT.xFeet;
     sh.vertexShader = 'varying vec3 vKCutW;\n' + sh.vertexShader.replace('#include <begin_vertex>',
       '#include <begin_vertex>\n  vec4 kcw = vec4(transformed, 1.0);\n' +
       // an INSTANCED part (m180) sits where its instance matrix puts it, not at the model origin
       '#ifdef USE_INSTANCING\n  kcw = instanceMatrix * kcw;\n#endif\n  vKCutW = (modelMatrix * kcw).xyz;');
     // the box is in the BUILDING's frame (m180): `uKCutXf` is its origin and the cos/sin of its yaw
+    // **AND THE X-RAY (m181)**: nearer the lens than he is, above his feet, inside his screen
+    // circle -> a 4x4 ordered dither whose coverage runs from `uKXMin` at the middle to solid at
+    // the rim. A dither rather than blending, so the wall keeps writing depth and nothing sorts.
     sh.fragmentShader = 'uniform float uKCutOn;\nuniform float uKCutY;\nuniform vec4 uKCutBox;\nuniform vec4 uKCutXf;\nvarying vec3 vKCutW;\n' +
-      sh.fragmentShader.replace('void main() {', 'void main() {\n  if (uKCutOn > .5 && vKCutW.y > uKCutY) {\n' +
+      'uniform float uKXOn;\nuniform vec3 uKXP;\nuniform vec3 uKXS;\nuniform float uKXMin;\nuniform float uKXFeet;\n' +
+      'float kxBayer(vec2 p) { ivec2 q = ivec2(mod(p, 4.0)); int a = q.x ^ q.y;\n' +
+      '  return (float(((a & 1) << 3) | ((q.y & 1) << 2) | (((a >> 1) & 1) << 1) | ((q.y >> 1) & 1)) + .5) / 16.0; }\n' +
+      sh.fragmentShader.replace('void main() {', 'void main() {\n' +
+        '  if (uKXOn > .5 && vKCutW.y > uKXFeet && distance(vKCutW, cameraPosition) < distance(uKXP, cameraPosition) - .35) {\n' +
+        '    float kxa = mix(uKXMin, 1.0, smoothstep(.45, 1.0, length(gl_FragCoord.xy - uKXS.xy) / uKXS.z));\n' +
+        '    if (kxa < .999 && kxa <= kxBayer(gl_FragCoord.xy)) discard;\n  }\n' +
+        '  if (uKCutOn > .5 && vKCutW.y > uKCutY) {\n' +
         '    vec2 kd = vKCutW.xz - uKCutXf.xy;\n' +
         '    vec2 kl = vec2(uKCutXf.z * kd.x - uKCutXf.w * kd.y, uKCutXf.w * kd.x + uKCutXf.z * kd.y);\n' +
         '    if (kl.x > uKCutBox.x && kl.x < uKCutBox.z && kl.y > uKCutBox.y && kl.y < uKCutBox.w) discard;\n  }');
@@ -14519,14 +14549,34 @@ function kitCutMat(m) {
 function kitCamStep() {
   const p = player;
   const c = (kitWorld() && KIT.inCam !== 'off' && KBLD.length) ? kitInside(p.pos.x, p.pos.y + .2, p.pos.z) : null;
-  kit.inside = c ? KIT.inCam : '';
-  if (c && KIT.inCam === 'cut') {
+  // the x-ray takes the cutaway's CAMERA (m181) -- lifted, looking down into the room -- but not
+  // its discard: the walls stay, thinned
+  kit.inside = c ? (KIT.inCam === 'xray' ? 'cut' : KIT.inCam) : '';
+  if (c && (KIT.inCam === 'cut' || KIT.inCam === 'xray')) {
     const B = c.B, lv = Math.max(0, Math.floor((p.pos.y + .3 - B.y0) / B.fl));
     KCUT.on.value = 1; KCUT.y.value = B.y0 + lv * B.fl + KIT.cutH;
     KCUT.box.value.set(B.lx0 - .4, B.lz0 - .4, B.lx1 + .4, B.lz1 + .4);
     KCUT.xf.value.set(B.x0, B.z0, B.c, B.s);
     KCUT.B = B; KCUT.lv = lv;
-  } else { KCUT.on.value = 0; KCUT.B = null; KCUT.lv = -1; }
+    // the camera may pass through this building's upper storeys either way; only 'cut' erases them
+    KCUT.cam = 1; KCUT.on.value = KIT.inCam === 'cut' ? 1 : 0;
+  } else { KCUT.on.value = 0; KCUT.cam = 0; KCUT.B = null; KCUT.lv = -1; }
+}
+// WHERE HE IS ON THE SCREEN, for the x-ray -- after `stepCam`, so it is this frame's lens (m181)
+const _kxv = new THREE.Vector3(), _kxs = new THREE.Vector2();
+function kitXrayStep() {
+  const on = kitWorld() && KIT.inCam === 'xray';
+  KCUT.xOn.value = on ? 1 : 0;
+  if (!on) return;
+  const p = player;
+  renderer.getDrawingBufferSize(_kxs);
+  KCUT.xP.value.set(p.pos.x, p.pos.y + CAM.look * bodyK(), p.pos.z);
+  _kxv.copy(KCUT.xP.value).project(camera);
+  // a slightly bigger circle indoors, where the room is what he is trying to see
+  const r = (kit.inside ? KIT.xrayIn : KIT.xrayR) * _kxs.y;
+  KCUT.xS.value.set((_kxv.x * .5 + .5) * _kxs.x, (_kxv.y * .5 + .5) * _kxs.y, Math.max(1, r));
+  KCUT.xMin.value = KIT.xrayMin;
+  KCUT.xFeet.value = p.pos.y + .12;
 }
 // **ONE LADDER PAIRING PER BUILDING (m178, `kitSlot`).** The house paired a `climb_` volume with its
 // `nav_ladder_top` marker by the `X#` in both names -- and with four generated buildings `X3` exists
@@ -14912,6 +14962,17 @@ function buildKit(g) {
       if (k) { o.updateWorldMatrix(true, false);
                const w = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
                for (const L of KCLIMB) if (L.slot === k) L.mark = { x: w.x, y: w.y, z: w.z }; }
+    }
+    // **A LADDER HAS A FRONT (m181).** *"You should only ever be able to climb the front side of
+    // the ladder -- if you hit it from behind he starts climbing from behind."* Measured over his
+    // city: on every ladder the side you climb from is the piece's own local +Z -- the exterior
+    // ones have their wall (and their `exit`) on -Z, 57 of 57 that the geometry decides, and the
+    // interior hatch ladders that stand against a wall have it on -Z too. So the front is read
+    // off the node and handed to the climb volume with the same slot.
+    if (e.climb) {
+      const k = kitSlot(o.name);
+      if (k) { const m = o.matrixWorld.elements, L0 = Math.hypot(m[8], m[10]) || 1;
+               for (const L of KCLIMB) if (L.slot === k) { L.fx = m[8] / L0; L.fz = m[10] / L0; } }
     }
     if (e.breakable === 'glass') nG++;
     if (e.door) nDoor++;
@@ -20757,7 +20818,7 @@ function stepDummies(dt) {
 // WHAT IS CUT AWAY IS NOT IN THE CAMERA'S WAY (m179): the boom passes through the part of the
 // building the cutaway is not drawing, or it would be dragged in against walls nobody can see
 function camBlock(x, y, z, pad) {
-  if (KCUT.on.value > .5) {
+  if (KCUT.cam) {
     // the cut box is in the BUILDING's frame (m180), exactly as the shader reads it
     const b = KCUT.box.value, f = KCUT.xf.value, dx = x - f.x, dz = z - f.y;
     const lx = f.z * dx - f.w * dz, lz = f.w * dx + f.z * dz;
@@ -20863,7 +20924,11 @@ function stepCam(dt) {
   }
   // **INSIDE, THE LENS LIFTS TO LOOK DOWN INTO THE ROOM (m179)** -- eased, so walking through a
   // door is a camera move and not a cut
-  cam.el = damp(cam.el || CAM.el, kit.inside === 'cut' ? KIT.cutEl : CAM.el, .12, dt);
+  // **ON A ROOF IT PULLS OUT (m181)** -- `kit.high` eases 0..1 (and past 1 in cover up there)
+  const hiW = kitWorld() && !kit.inside && p.pos.y > KIT.highY && (p.grounded || p.wall || p.ledge)
+            ? (p.wall ? (KIT.highCover - 1) / (KIT.highK - 1) : 1) : 0;
+  kit.high = damp(kit.high || 0, hiW, .3, dt);
+  cam.el = damp(cam.el || CAM.el, kit.inside === 'cut' ? KIT.cutEl : CAM.el + KIT.highEl * Math.min(1, kit.high), .12, dt);
   // **AND THE LOOK POINT IS CHEST HEIGHT ON THE BODY BEING DRAWN (m112).** `CAM.look` is his own
   // chest; worn as a 1.78 m drunk that is the man's waist, so the lens frames him low. It is the
   // one term the morph moves -- the collider and every speed stay his, deliberately.
@@ -20871,7 +20936,7 @@ function stepCam(dt) {
   const ce = Math.cos(cam.el);
   const bx = -Math.sin(cam.az) * ce, by = Math.sin(cam.el), bz = -Math.cos(cam.az) * ce;
   const want = kit.inside === 'cut' ? KIT.cutDist : kit.inside === 'close' ? KIT.closeDist
-             : CAM.dist + p.speed * CAM.distV;
+             : (CAM.dist + p.speed * CAM.distV) * (1 + (KIT.highK - 1) * (kit.high || 0));
   const free = camFree(cam.tgt.x, cam.tgt.y, cam.tgt.z, bx, by, bz, want);
   // SNAP IN, EASE OUT. Easing IN is time spent inside the wall; easing OUT is what stops every
   // doorway and lamp post making the shot lurch.
@@ -21441,6 +21506,7 @@ function frame() {
   }
   kitCamStep();
   stepCam(dt);
+  kitXrayStep();
   // AFTER the camera, because the rim is placed off the bearing the lens was actually drawn at
   // -- one taken from last frame trails every swing, and a colour sitting on an edge is exactly
   // where a frame of lag shows.
