@@ -7,6 +7,11 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS GROUND SHEET, RE-CUT ON BLACK (m214).** The haze is gone at the source: flames on pure black,
+  added onto the scene, and black adds nothing. `groundSheet.key` came down from [.16, .42] to
+  [.015, .10], so it now drops only near-black and leaves the dim flame edges and embers. The
+  smoke frames still barely show, because additive grey is a glow rather than smoke.
+
 - **GROUND FIRES BURN ON THE GROUND, ON HIS THIRD SHEET (m213, `FIRE.groundSheet`, `gflame`).**
   *"I shot a barrel and the fire starts from where the rocket hit and floats -- it needs to burn
   on the ground."* A ground fire (any fire that is not a room's) now draws `fire_sprites_03.png`:
