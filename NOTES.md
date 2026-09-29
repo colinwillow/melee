@@ -7,6 +7,28 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE LAUNCHER: RIFLE-RUN LEGS, A STEADY CHEST, A STAND-IN KICK AND A LOCK-IN SOUND (m203,
+  `rigSqSpine`, `ROCKETPOSE`, `ROCKET.arm`).**
+  *"We are mixing the rocket animation with the run instead of the rifle run -- the unarmed run
+  has a much more dramatic hip sway and it rocks the whole torso."* m189 chose the plain run
+  because its hips were square like the pose's. m194 then made square poses ride the GAIT's hips
+  (`__ups` over `__legh`), so every hip sway of the plain run went straight up through the chest.
+  Now both the committed and the carried launcher use the rifle idle and rifle run legs. The
+  rifle run's 35 deg hip twist and its smaller sway are taken OUT of the chest by `rigSqSpine`:
+  after the mixer, the spine is premultiplied by `inv(H_live) * H_pose`, which is
+  `rigAirSpine`'s closed-form correction applied on the ground. It is not a measured feedback
+  loop, so it is not the spine twist the note below forbids. `steady` 1 is a chest that ignores
+  the hips entirely.
+  **The fire pose "not playing" is the FILE.** `rocket_launcher_fire` is still byte-identical to
+  `rocket_launcher` (186 channels, one key, 0 differ, read off the raw GLB). So the switch
+  happens and shows the hold. Until the re-export, a procedural pitch-back about his right axis
+  over the shot beat (`ROCKETPOSE.kick`) stands in. It runs ONLY while `rocketSame()` says the two
+  clips match, so it stands itself down when the real kickback lands.
+  **Lock-in sound**: `metal_clang` dropped to a short clunk (r .52, .18 s) with a quiet
+  `metal_ping` over it, played on the frame the trigger arms. `ROCKET.arm` is the list, so his own
+  file replaces it with one line.
+  TUNE panel: ROCKET steady / kick.
+
 - **RES AUTO BLINKED BLACK ON EVERY STEP, BECAUSE IT RESIZED AFTER THE DRAW (m202).** Setting a
   canvas's size CLEARS it. `perfStep` ran after `renderer.render`, so every adjustment showed one
   cleared (black) frame. It runs before the render now, and the same frame draws into the new

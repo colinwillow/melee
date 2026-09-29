@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m202</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m203</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m202</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m203</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,7 +620,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm202';
+const BUILD = 'm203';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -8637,6 +8637,7 @@ const ROCKET = {
   shake: .55,
   smokeEvery: .028, smokeK: 3.2, smokeLife: .38,
   fire: [1, .62, .22], smokeCol: [.62, .60, .58],
+  arm: [{ k: 'clang', g: .34, r: .52, dur: .18 }, { k: 'lock', g: .2, r: .85 }],
 };
 function rocketBody() {
   const g = new THREE.Group();
@@ -12146,6 +12147,11 @@ function stepKit(dt) {
           // m26 made it shorter and no less redundant. The `zap` sample is still loaded and
           // `mel.snd('zap')` still plays it; nothing in the blaster asks for it.
           p.aim = 1; if (!s.rocket) chargeStart();
+          // **THE LAUNCHER LOCKS IN WITH A SOUND (m203).** *"We need sound for when you hold it up,
+          // to know it's locked into place and ready to fire."* A stand-in until his own: a clang
+          // dropped to a heavy short CLUNK, and a quiet ping over it for the "ready". `ROCKET.arm`
+          // is the two voices; a file of his replaces them with one line.
+          else for (const a of ROCKET.arm) snd(a.k, { g: a.g, r: a.r, dur: a.dur });
         }
     } else {
       // the edge. Everything that ends the hold -- letting go, rolling the thumb back down,
@@ -13719,7 +13725,6 @@ function rigAnim(dt) {
     // file: `rocket_launcher` holds the hips at 0 deg, `rifle_run` at -34.6. The top half carries the
     // hips' rotation (see `isUpper`), so rifle legs under a square pose would point 35 deg off the
     // way he is going; the plain run's hips are square like the pose's.
-    const rk = !p.block && !!rocketUp();
     const moving = sp > .25;
     // STANDING STILL IS THE WHOLE CLIP, NOT THE HYBRID. The split exists to put a weapon pose
     // on STRAFING legs; standing there are no strafing legs to put it on, and half a running
@@ -13735,7 +13740,11 @@ function rigAnim(dt) {
       const rel = wrapAngle(Math.atan2(p.vel.x, p.vel.z) - p.faceH);
       const c = Math.cos(rel), sn = Math.sin(rel);
       const fwd = Math.abs(c), lat = Math.abs(sn), tot = fwd + lat || 1;
-      if (c >= 0) add(L(bare || rk ? CLIPS.run : CLIPS.aimRun), rest * fwd / tot, bare || rk ? GAIT.runRef : GAIT.aimRunRef);
+      // **THE RIFLE RUN UNDER THE LAUNCHER TOO (m203).** m189 put the plain run there because its
+      // hips were square like the pose's -- and the plain run SWAYS, so with the pose's spine
+      // riding the gait's hips (m194) the whole torso rocked. The rifle run's hips stay level;
+      // its 35 deg of twist is now taken out of the chest by `rigSqSpine`, not by picking legs.
+      if (c >= 0) add(L(bare ? CLIPS.run : CLIPS.aimRun), rest * fwd / tot, bare ? GAIT.runRef : GAIT.aimRunRef);
       else add(L(CLIPS.back), rest * fwd / tot, GAIT.backRef);
       // +X IS HIS LEFT. Heading grows from +Z toward +X and his right is (-fz, fx), so a
       // POSITIVE sine is a strafe to the LEFT. Written down because that argument comes out
@@ -13769,7 +13778,8 @@ function rigAnim(dt) {
   const L = n => (sw && rig.actions[legKey(n, isSq(upNm))] ? legKey(n, isSq(upNm)) : n);
 
   // ---- carrying it, but not committed: the ordinary armed gait, whole body ----
-  if (gunOut() && !slotNow().rocket) {
+  // THE LAUNCHER CARRIED IS THE RIFLE CARRY'S LEGS NOW (m203), under its own square pose
+  if (gunOut()) {
     // CARRYING IT: the rifle idle standing, the rifle run moving. There is no rifle WALK in
     // the set, so the run takes the whole moving range and `tsLo` holds it down at the bottom.
     const wMove = smooth(0, GAIT.walkAt * 2.2, sp);
@@ -13889,6 +13899,78 @@ function gaitSync(dt, sp, L, rows, t) {
 // two clips, with nothing measured back -- and the spine is keyed by the `__up` half, so the mixer
 // rewrites it every frame and the edit cannot accumulate.
 const _asHc = new THREE.Quaternion(), _asD = new THREE.Quaternion(), _asI = new THREE.Quaternion();
+// ============================================================================================
+// THE LAUNCHER'S CHEST (m203, `ROCKETPOSE`, `rigSqSpine`)
+//
+// *"The unarmed run has a much more dramatic hip sway, and since we're not compensating with the
+// upper torso it rocks the whole torso back and forth with the rocket launcher out."* The square
+// poses ride the GAIT's hips (m194, `__ups` over `__legh`) so the hips can move -- and everything
+// above them moved with them. This takes it back out, in CLOSED FORM: the spine is premultiplied
+// by `inv(H_live) * H_pose`, which makes its world rotation exactly what it would be over the
+// POSE's hips. Nothing is measured and fed back, so it cannot wind up the way the three spine
+// twists in the note below did; it is `rigAirSpine`'s own correction, applied on the ground.
+// `steady` 1 is a chest that does not move with the hips at all; less lets some sway through.
+// **AND THE KICKBACK, UNTIL THE EXPORT HAS ONE.** `rocket_launcher_fire` is still byte-identical
+// to `rocket_launcher` (186 channels, one key, 0 differ -- read off the file at m203), so the fire
+// beat has always shown the hold. A pitch back about his own right axis over the shot beat stands
+// in -- ONLY while the two clips are identical, so the day the real kickback lands it switches
+// itself off rather than stacking on top of it.
+const ROCKETPOSE = { steady: 1, kick: .30, kickAlways: 0 };
+const _sqP = new THREE.Quaternion(), _sqE = new THREE.Quaternion(), _sqK = new THREE.Quaternion(), _sqX = new THREE.Quaternion(),
+      _sqR = new THREE.Vector3();
+function rigHipsSpine() {
+  if (!rig._hips || rig._hipsFor !== rig.bones) {
+    rig._hipsFor = rig.bones; rig._hips = null; rig._spine = null;
+    for (const n in rig.bones) { if (/Hips$/.test(n)) rig._hips = rig.bones[n]; if (/Spine$/.test(n)) rig._spine = rig.bones[n]; }
+    rig._hipsI = {};
+  }
+  return rig._hips && rig._spine;
+}
+// ARE THE HOLD AND THE FIRE POSES THE SAME DRAWING? Asked once per clip set.
+function rocketSame() {
+  if (rig._rkFor === rig.clips) return rig._rkSame;
+  rig._rkFor = rig.clips; rig._rkSame = true;
+  const a = rig.clips && rig.clips[CLIPS.rocket], b = rig.clips && rig.clips[CLIPS.rocketFire];
+  if (a && b) {
+    const m = new Map(a.tracks.map(t => [t.name, t.values]));
+    outer: for (const t of b.tracks) { const v = m.get(t.name); if (!v || v.length !== t.values.length) { rig._rkSame = false; break; }
+      for (let i = 0; i < v.length; i++) if (Math.abs(v[i] - t.values[i]) > 1e-4) { rig._rkSame = false; break outer; } }
+  }
+  return rig._rkSame;
+}
+function rigSqSpine() {
+  if (rig.airUp) return;                          // the air's own correction has it
+  const up = rocketUp(); if (!up) return;
+  const w = Math.min(1, (rig.cw[CLIPS.rocket + UPS] || 0) + (rig.cw[CLIPS.rocketFire + UPS] || 0));
+  if (!(w > .01) || !rigHipsSpine()) return;
+  const H = rig._hips, S = rig._spine;
+  let I = rig._hipsI[up];
+  if (I === undefined) {
+    const c = rig.clips[up], tr = c && c.tracks.find(t => t.name === H.name + '.quaternion');
+    I = rig._hipsI[up] = tr ? tr.createInterpolant(new Float32Array(4)) : null;
+  }
+  if (!I) return;
+  const v = I.evaluate(0);
+  _asHc.set(v[0], v[1], v[2], v[3]).normalize();
+  _asD.copy(H.quaternion).invert().multiply(_asHc);           // inv(H_live) * H_pose
+  const k = clamp(w * ROCKETPOSE.steady, 0, 1);
+  if (k < .999) _asD.slerp(_asI.identity(), 1 - k);
+  // the KICK, in the world, about his own right axis -- +angle tips the chest BACK (his right is
+  // (-fz, fx); right x up is -forward, so a positive turn about it takes up toward behind him)
+  const p = player, kick = (ROCKETPOSE.kickAlways || rocketSame()) ? ROCKETPOSE.kick : 0;
+  if (kick && p.fireT > 0 && H.parent) {
+    const u = 1 - p.fireT, env = smooth(0, .07, u) * (1 - smooth(.07, 1, u));
+    const fx = Math.sin(p.faceH), fz = Math.cos(p.faceH);
+    _sqR.set(-fz, 0, fx);
+    _sqK.setFromAxisAngle(_sqR, kick * env);
+    H.parent.getWorldQuaternion(_sqP);
+    _sqE.copy(_sqP).multiply(H.quaternion).multiply(_asD);     // the chest's parent frame, corrected
+    _sqX.copy(_sqE).invert().multiply(_sqK).multiply(_sqE);
+    S.quaternion.premultiply(_sqX);
+  }
+  S.quaternion.premultiply(_asD);
+}
+
 function rigAirSpine() {
   const up = rig.airUp;
   if (!up) return;
@@ -23146,14 +23228,18 @@ const TUNE = [
   ['twinkle',   DUST,  'twinkle',  0, 5, .05],
   ['sharpness', DUST,  'twinkPow', 1, 40, 1],
   ['sun catch', DUST,  'back',     0, 5, .05],
+  ['ROCKET'],
+  ['steady',    ROCKETPOSE, 'steady', 0, 1, .05],
+  ['kick',      ROCKETPOSE, 'kick',   0, .9, .01],
 ];
+{ let g = ''; for (const r of TUNE) { if (r.length === 1) g = r[0].toLowerCase(); else r.g = g; } }
 const tuneGet = (o, k) => { const [a, i] = k.split('.'); return i == null ? o[a] : o[a][+i]; };
 const tuneSet = (o, k, v) => { const [a, i] = k.split('.'); if (i == null) o[a] = v; else o[a][+i] = v; };
 // keep an array range the right way round when its TOP is dragged under its bottom
 const tuneFix = (o, k) => { const [a, i] = k.split('.'); if (i === '1' && o[a][0] > o[a][1]) o[a][0] = o[a][1]; };
 const TUNE_DEF = TUNE.map(r => r.length > 1 ? tuneGet(r[1], r[2]) : null);
 let tuneEl = null;
-const tuneKey = r => r[1] === SHAFT ? 'rays.' + r[0] : 'dust.' + r[0];
+const tuneKey = r => r.g + '.' + r[0];
 function tuneSave() {
   const o = {}; TUNE.forEach(r => { if (r.length > 1) o[tuneKey(r)] = tuneGet(r[1], r[2]); });
   try { localStorage.setItem('mel.tune', JSON.stringify(o)); } catch (e) {}
@@ -23257,6 +23343,7 @@ function frame() {
     rigAnim(dt);
     rig.mixer.update(dt);
     rigAirSpine();
+    rigSqSpine();
     // DRAWN AT `faceH`, not at `heading`, plus the rigid yaw that puts the barrel down his nose.
     // `aimComp` reads the barrel off world matrices that are a frame old, which is exactly why
     // it subtracts `rig.drawnYaw` -- the yaw THAT frame was drawn at -- rather than this one.
@@ -24043,7 +24130,7 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { fireSheet, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { fireSheet, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
