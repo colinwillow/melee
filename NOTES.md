@@ -7,6 +7,14 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A BROKEN PROP TAKES ITS MARKS WITH IT (m224, `brkDecalOff`).** *"When I shoot the hydrant or the
+  barrel it leaves this mark floating in the air."* `brkBlast` stamps a bullet hole on a breakable
+  that survives a hit, and the bolt stamps its own mark on the face it struck -- and when the prop
+  broke, nothing removed either, so the cards hung where its faces had been. m174 wrote `decalOff`
+  for exactly this on wall chunks; breakables never called it. `brkBreak` now clears every mark
+  inside the prop's box (padded .25, because `brkBlast` stamps at `rad` round the centre); a hydrant
+  keeps its body, so only the marks above `HYD.capY` go.
+
 - **THE GEYSER CARDS ARE OFF; THE SPRAY IS HIS DROP SHEET (m223, `SPOUT.geyser.on` 0).** *"The geyser
   looks insane. It's way too wide to be coming out of the spout... just use the drops, like the
   particle geyser, with my newest water sprite sheet."* The card's width is its height x the cell's
