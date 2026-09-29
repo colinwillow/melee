@@ -7,6 +7,24 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **POLES AND TRUNKS: A LIGHT POST'S BOX WAS ITS ARM, AND NARROW THINGS WERE COVER (m205,
+  `PROPFIT`, `thinBox`).** *"The collide on street signs and trees is still just box collide and
+  it doesn't fit ... he gets caught on them standing way away, covering on them."*
+  **Measured:** `col_brk_lightpost_intact_mesh` is the whole silhouette, z -0.20..1.90 at 4-6 m
+  up (the arm) over a 0.4 m base with a 0.14 m shaft. So its box was 0.64 x 2.1 m on the ground,
+  it stopped him up to 1.9 m from the pole, and it was tall and wide enough for `wallFind`.
+  - A breakable over `PROPFIT.pole` (2.5 m) keeps its full height and takes its FOOTPRINT from
+    its own collider vertices in the bottom `base` third, which on the light post is the 0.4 m
+    base.
+  - A tree trunk's OBB (his json, root flare included, half ~.3) is scaled by `tree` .7.
+  - Any box narrower than `wide` (1.1 m) on BOTH plan axes is never cover (`wallFind`) and never
+    a ledge (`ledgeFind`). You run into it and that is all. Kit walls, chunks and doors are exempt.
+  **Not found:** a stop-sign pole collider. The only tall things in `toon_city_obb.json` are four
+  2.6 m boards (`solid_posts_190..193`) and the posts are 0.2 m bases. If he still snags on a
+  sign, the COLLIDERS key will show which box it is.
+  **Not built:** bending or shooting down signs and trees. Light posts are already breakables
+  (hp 60).
+
 - **m203'S STEADY CHEST SPUN THE SPINE, BECAUSE THE MIXER DOES NOT REWRITE A BONE WHOSE VALUE
   DID NOT CHANGE (m204, `spinePre`, `spineUndo`).** *"His spine is just rotating over and over."*
   three's `PropertyMixer.apply` calls `setValue` ONLY when the blended result differs from the one

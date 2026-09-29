@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m204</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m205</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m204</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m205</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,7 +620,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm204';
+const BUILD = 'm205';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -794,6 +794,15 @@ const SWAP = {
 // that point to him. No per-face tests, right whichever side he comes at, and being INSIDE the
 // footprint returns nothing, which is what stops him latching onto the roof he is standing on.
 // That is Shredworld's `ledgeGrab` rule, and the ledge build wants the same function.
+// **NARROW THINGS ARE OBSTACLES, NOT WALLS (m205, `PROPFIT`, `thinBox`).** *"I don't want him to
+// cover on signs and trees, and the collide is so imprecise."* Three rules: a tall breakable is its
+// pole (see `brkIndex`), a tree's box comes in toward its trunk, and anything narrower than `wide`
+// on BOTH plan axes can be run into but is never cover and never a ledge.
+const PROPFIT = { pole: 2.5, base: .33, tree: .7, wide: 1.1 };
+function thinBox(b) {
+  if (b.wall || b.kit || b.part) return false;
+  return (b.maxx - b.minx) < PROPFIT.wide && (b.maxz - b.minz) < PROPFIT.wide;
+}
 const WALL = {
   // **THESE FOUR SCALE WITH HIM (m52's rule), BECAUSE THEY ARE FACTS ABOUT HIS BODY.** How tall
   // a thing has to be to hide you, where your chest is, how far your back sits off a wall and
@@ -6834,6 +6843,7 @@ function wallFind(px, py, pz, R) {
   const h = py + WALL.chest;
   for (const b of boxesNear(px - R, px + R, pz - R, pz + R, _bnW)) {
     if (b.maxy - b.miny < WALL.tall) continue;      // a kerb is cover for nobody
+    if (thinBox(b)) continue;                        // nor is a pole or a trunk (m205)
     if (b.maxy < h || b.miny > h) continue;         // measured at his CHEST, not his ankles
     if (px + R < b.minx || px - R > b.maxx) continue;
     if (pz + R < b.minz || pz - R > b.maxz) continue;
@@ -6863,6 +6873,7 @@ function ledgeFind(px, py, pz, R) {
   // ITS OWN BUFFER: `camHit` is called from inside this loop and would empty a shared one.
   for (const b of boxesNear(px - R, px + R, pz - R, pz + R, _bnL)) {
     if (b.maxy - b.miny < LEDGE.tall) continue;      // a kerb is not a ledge
+    if (thinBox(b)) continue;                         // nor is the top of a pole (m205)
     const dy = b.maxy - hands;
     if (dy < -LEDGE.band || dy > LEDGE.band) continue;
     if (px + R < b.minx || px - R > b.maxx) continue;
@@ -9096,6 +9107,23 @@ function brkIndex(g) {
     });
     if (bb.isEmpty()) continue;
     const c = bb.getCenter(new THREE.Vector3()), s = bb.getSize(new THREE.Vector3());
+    // **A TALL THING IS ITS POLE, NOT ITS ARM (m205).** *"He gets caught on them standing way
+    // away from them."* The light post's collider mesh is the whole silhouette -- base, shaft and
+    // the arm reaching 1.9 m out at 4-6 m up -- so its box was 0.64 x 2.1 m on the ground and
+    // stopped him nearly two metres from the pole (and was wide and tall enough to take COVER on).
+    // Anything over `PROPFIT.pole` m tall keeps its full height and takes its FOOTPRINT from the
+    // collider's own vertices in the bottom third, which on the light post is the 0.4 m base.
+    if (s.y > PROPFIT.pole) {
+      const lo = bb.min.y + s.y * PROPFIT.base, v = new THREE.Vector3(), f = new THREE.Box3();
+      t.col.traverse(o => {
+        if (!o.isMesh || !o.geometry) return;
+        rel.multiplyMatrices(inv, o.matrixWorld);
+        const P = o.geometry.attributes.position;
+        for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i).applyMatrix4(rel); if (v.y <= lo) f.expandByPoint(v); }
+      });
+      if (!f.isEmpty()) { const fs = f.getSize(new THREE.Vector3()), fc = f.getCenter(new THREE.Vector3());
+        if (fs.x * fs.z < s.x * s.z * .6) { c.x = fc.x; c.z = fc.z; s.x = Math.max(fs.x, .12); s.z = Math.max(fs.z, .12); } }
+    }
     // in the PROP'S OWN local frame: the node's world matrix turns it when one is claimed
     t.box = { cx: c.x, cy: c.y, cz: c.z, hx: s.x * .5, hy: s.y * .5, hz: s.z * .5 };
   }
@@ -15434,8 +15462,11 @@ function tcObbBoxes(skip) {
   for (const o of src.boxes) {
     // the kit city (m180) leaves out the sixty buildings its kit buildings REPLACE
     if (skip && skip.test(o.name || '')) continue;
-    const c = o.center, h = o.half, q = o.quat_xyzw;
+    const c = o.center, q = o.quat_xyzw;
+    let h = o.half;
     if (!c || !h || !q) continue;
+    // a TRUNK's box is the root flare, which is wider than the trunk he runs into (m205)
+    if (/tree/.test(o.name || '')) h = [Math.max(.1, h[0] * PROPFIT.tree), h[1], Math.max(.1, h[2] * PROPFIT.tree)];
     if (!(h[0] > .01) || !(h[1] > .01) || !(h[2] > .01)) continue;
     const t = 2 * Math.atan2(q[1], q[3]);        // the +Y rotation the file carries
     const yaw = -t, cs = Math.cos(yaw), sn = Math.sin(yaw);
@@ -24152,7 +24183,7 @@ async function init() {
 
 // the console handle. Every tuning object is live, so a number can be moved on the phone
 // without a rebuild and without a push.
-window.melee = window.mel = { fireSheet, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
+window.melee = window.mel = { fireSheet, PROPFIT, ROCKETPOSE, PERF, perfMode, TUNE, tuneToggle, RIG, MOVE, GAIT, CAM, FLICK, MELEE, SLAM, CVOX, WEAP, CLIPS, MARK, HCHG, rig, player, cam, stick, BOXES,
   // THE STEPS ARE EXPOSED SO A HARNESS CAN DRIVE THE SHIPPED ONES. A harness with its own copy
   // of a rule measures a game that does not exist -- which is the oldest mistake there is, and
   // the only way not to make it is for `npm run sim` to call exactly these.
