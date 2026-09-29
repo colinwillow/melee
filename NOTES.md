@@ -7,6 +7,15 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **WATER HAS TO READ AGAINST A BLUE SKY, SO IT GOES TOWARD WHITE (m225, `SPOUT.bright/white`, the
+  WATER rows).** *"The blue water is hard to see, especially on the sky."* Blue on blue is the one
+  contrast the spray lacks; foam is white and white is what neither the sky nor the street has. The
+  drop colour is mixed `white` .4 toward white and multiplied by `bright` 1.4 (tone mapping is off
+  on that pool, so the cores clip to pure white), opacity .7 -> .9, drop size x2.4 -> x3.0. All of
+  it plus density and spread are on the tune panel under WATER. **`tuneGet/Set` took an array index
+  after the dot and nothing else**, so `sheet.sizeK` read `o.sheet[NaN]` -- it takes a property name
+  now too.
+
 - **A BROKEN PROP TAKES ITS MARKS WITH IT (m224, `brkDecalOff`).** *"When I shoot the hydrant or the
   barrel it leaves this mark floating in the air."* `brkBlast` stamps a bullet hole on a breakable
   that survives a hit, and the bolt stamps its own mark on the face it struck -- and when the prop
