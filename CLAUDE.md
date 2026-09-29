@@ -619,7 +619,10 @@ a map at all:
   `npm run ktx models/toon_city_kit/toon_city_visual.glb etc1s`, the same for
   `toon_city_kit_buildings.glb`, and `npm run twins` for the piece library.
   **Buildings, ladders and the cutaway are TURNED** (`KBLD` c/s, `KCLIMB` u/n, `KCUT.xf`) — the
-  house and the row have yaw 0, where it is the old arithmetic. **No bodies**, like the kit world.
+  house and the row have yaw 0, where it is the old arithmetic. **The only body is the
+  construction worker (m187, both kit worlds)**, who walks to a broken wall's `nav_repair` marker and
+  puts a chunk back per swing (`workerAI`, `kitRestore`); his `walkRef` is unmeasured and there is
+  no vehicle or crew yet. `mel.worker()` brings him over; the chip says `REP<state><fixed>`.
   **m181: the X-RAY is the default in both kit worlds** (kit surfaces between the lens and him
   dither to `KIT.xrayMin` in a screen circle, never erased; `cut` is still on the INSIDE chip), a
   ladder only latches from its FRONT (the piece's local +Z), and on a roof the lens pulls out.

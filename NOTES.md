@@ -7,6 +7,39 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE CONSTRUCTION WORKER PUTS WALLS BACK (m187, `WORKER`, `workerAI`, `kitRestore`, `KREP`).**
+  *"The construction worker is gonna go and rebuild buildings that are broken... for now just have
+  one guy in there -- when you break it, maybe he walks up to the building and starts repairing it."*
+  **HE IS A TABLE AND A BRAIN**, the hobo's shape: the bolt, the swing, the flight and the get-up
+  reach him with no new code, and the brain is idle -> nearest wall with a dead chunk inside
+  `KREP.range` -> walk to its marker -> face it and swing, **one chunk back per swing, lowest
+  first**, on the swing's contact frame (`WORKER.hitAt`, a look-at-it number per clip).
+  **HIS MARKERS WERE ALREADY IN THE FILES** -- `nav_repair__<wall>` with `extras.wall_piece`
+  naming the wall by `piece_id`: 1,344 in the kit city, 138 on the generated row, 20 on the house,
+  and **every one names a real wall** (checked against the piece ids). They are ground-floor walls
+  only; an upper-floor wall falls back to a step out from the wall on the side `kitInside` says is
+  outside, and he fixes it FROM THE STREET -- a stated shortcut until there is scaffolding or a lift.
+  **THE HAMMER IS THE MACE'S RULE**: `weapon_root -> weapon_tip` (27.8, 0, 0) in both files, so it
+  parents onto his joint with identity and nothing about where it sits is typed.
+  **A REPAIR IS A KILL RUN BACKWARDS, AND IT NEEDED THE ORIGINALS KEPT.** A batched wall's range is
+  saved on its FIRST collapse (`B.orig` in `kitCollapse`); a cloned wall keeps the shared source it
+  was cloned from (`userData.kOrig`, in `kitClone` and in `kitSwap` for a twin). Restoring puts the
+  vertices back, the chunk box back in `BOXES`, `hp` back to `hp0`, and regrids once.
+  **What it dropped stays dropped** -- ivy, an AC unit, an awning are gone for good, which is honest
+  and is the next thing to do if he wants a repaired wall to look new.
+  Probed offline over the real kit world (`buildKit` on his files, a fabricated body because no
+  harness here builds a skin): five chunks knocked out of `BKG1/L0_W2_0_s`, the worker walks from
+  the street to its marker in about 4 s, the wall is 13/13 again, the boxes are back (2375 -> 2380)
+  and **0 vertices differ from the original**.
+  **NOT MEASURED: his walk.** `walkRef` 1.2 is a guess -- `npm run gait` on his file would measure
+  it, and his feet may slide until it does. `KREP.stuck` (5 s) steps him to the marker if he walks
+  into something, because there is no pathfinding here: better a little magic than a man walking
+  into a wall for ever. **Only the kit worlds load him** (at `WORKER.atKit` / `atTK`, beside each
+  spawn), and in the kit city he only goes for holes within 90 m -- `mel.worker()` brings him to
+  you. The chip says `REP<state><chunks fixed>`.
+  **NOT BUILT:** the construction vehicle and a crew. His clip set already carries `driving`,
+  `enter_vehicle` and `exit_vehicle` for it.
+
 - **THE SLAM SPLITS THE GROUND AND THE BOLT SCORCHES WHAT IT SKIMS (m186, `DECAL.slam`,
   `slamMark`, `DECAL.trail`, `boltTrail`).** *"When you slam down I'd like it to leave a decal
   like you split the ground -- I'll probably make a custom one. And the blaster skims along the
