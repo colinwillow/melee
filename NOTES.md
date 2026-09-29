@@ -7,6 +7,22 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS CRACK SHEET IS A SECOND DECAL STORE, KEYED AT LOAD (m217, `DECAL.crack`, `crackLoad`,
+  `crackKey`, `decalStore`).** *"Four crack sprites for damage on the ground, probably walls too --
+  2 x 2 on a grey background, hope that works."* `images/crack_sprite_01.png`, 1024 square. The
+  grey is FLAT -- (123, 122, 122) in all four corners with zero spread, measured -- so it keys out by
+  colour distance from the corners (`key` [3, 40]), and each partly-keyed pixel is un-premultiplied
+  off that grey so crack edges are crack-coloured, not haloed. Checked by compositing the keyed
+  result onto a light ground offline before wiring anything.
+  **THE DECAL SYSTEM WAS ONE POOL ON ONE TEXTURE, SO A SECOND SHEET NEEDED STORES.** `decalStore`
+  is the old build body per texture; every mark carries `d.st`, `decalPut` writes into that, and
+  `decalStep`/`decalOff` walk `decal.stores`. The cracks are store two (40 marks, one more draw
+  call, `renderOrder` 3 so they sit over the atlas's scorches).
+  **Kinds:** all four are `crack`; the pits (left column) are also `crackpit`, the lines (right)
+  `crackline`. **The ground slam has asked for `crack` since m186 and now gets it** with no code
+  change. The rocket stamps a crack (`ROCKET.crack` .9) over its scorch on the ground, on a wall,
+  and under a body it hit (m216's branch). The blaster is unchanged.
+
 - **A ROCKET ON A MAN LEFT NO MARK, BECAUSE A BODY IS NOT A SURFACE (m216, `ROCKET.markH`).**
   *"When I hit a character and the fire goes on the ground, there's supposed to be a mark on the
   ground too -- a crack -- and there's not."* `boltHit` stamps its decal only under `if (b.hitN)`,

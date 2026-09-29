@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m216</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m217</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m216</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m217</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,9 +620,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm216';
+const BUILD = 'm217';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -8866,6 +8866,7 @@ const ROCKET = {
   fx: 1.5,           // the flash and the burst are sized as a ball this big
   decal: 1.0,        // the crater, x the atlas's own size (the bolt's is `DECAL.bolt`)
   markH: 2.6,        // and how far above the ground a blast on a BODY still scorches it (m216)
+  crack: .9,         // his crack sheet over the scorch, x its own size (m217)
   cool: .85,         // seconds between rockets
   kick: 3.4,         // and how hard the release shoves him back
   shake: .55,
@@ -9021,6 +9022,9 @@ function boltHit(b) {
     decalHit(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2],
              c > DECAL.bigAt ? 'blast' : 'alien', c, b.rocket ? ROCKET.decal : K * (.7 + c * .6) * DECAL.bolt,
              hitFit(hx0, hy0, hz0));
+    // AND A ROCKET BREAKS WHAT IT HITS (m217): his crack over the scorch, on the ground or a wall
+    if (b.rocket) decalPut(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2], 'crack', ROCKET.crack,
+                           hitFit(hx0, hy0, hz0));
     // AND A BREAKABLE TAKES THE HIT. The blast radius is what reaches it, so a charged shot
     // takes out the crate beside the one it hit and a fumble takes out neither.
     brkBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast,
@@ -9039,7 +9043,8 @@ function boltHit(b) {
     // also reaches the crates and wall chunks beside him, which a direct hit used to skip entirely.
     const gy = groundAt(b.pos.x, b.pos.z, b.pos.y + .3, .6);
     if (b.pos.y - gy < ROCKET.markH && gy > -50)
-      decalHit(b.pos.x, gy + .002, b.pos.z, 0, 1, 0, 'blast', 1, ROCKET.decal, 0);
+    { decalHit(b.pos.x, gy + .002, b.pos.z, 0, 1, 0, 'blast', 1, ROCKET.decal, 0);
+      decalPut(b.pos.x, gy + .002, b.pos.z, 0, 1, 0, 'crack', ROCKET.crack, 0); }
     brkBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast, FOE.dmg.bolt * dk * WEAP.pow1);
     kitBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast, FOE.dmg.bolt * dk * WEAP.pow1);
   }
@@ -9936,21 +9941,28 @@ const DECAL = {
   // is within `h` of the floor, sized by the charge, gone in `life` seconds so a trail cannot eat
   // the pool the impact marks live in.
   trail: { on: 1, kind: 'scorch', every: .85, h: 1.35, s: .2, sChg: .22, life: 6 },
+  // HIS CRACK SHEET (m217) -- its own store and pool, keyed off its flat grey at load. `key` is
+  // the colour distance (0-255) where a pixel starts to show and where it is fully opaque.
+  crack: { on: 1, file: 'images/crack_sprite_01.png', grid: [2, 2], n: 40, key: [3, 40], inset: .004,
+           cells: [{ name: 'crackpit', size_m: 1.8 }, { name: 'crackline', size_m: 2.2 },
+                   { name: 'crackpit', size_m: 1.8 }, { name: 'crackline', size_m: 2.2 }] },
 };
-const decal = { mesh: null, pos: null, uv: null, col: null, i: 0, live: 0,
-                by: {}, ready: 0, age: [], life: [], at: null };
+const decal = { mesh: null, stores: [], by: {}, ready: 0 };
 
-function decalBuild(tex, man) {
-  const n = DECAL.n;
+// **ONE STORE PER SHEET (m217).** A store is a pool, one mesh, one draw call, one texture -- so a
+// second sheet (his cracks) is a second store, and `decalPut` writes into whichever one the chosen
+// mark belongs to (`d.st`). Nothing else has to know how many there are.
+function decalStore(tex, n, order) {
+  const S = { mesh: null, pos: null, uv: null, col: null, i: 0, live: 0, age: [], life: [], at: null, n };
   const geo = new THREE.BufferGeometry();
-  decal.pos = new Float32Array(n * 6 * 3);
-  decal.uv  = new Float32Array(n * 6 * 2);
-  decal.col = new Float32Array(n * 6 * 4);
-  geo.setAttribute('position', new THREE.BufferAttribute(decal.pos, 3));
-  geo.setAttribute('uv', new THREE.BufferAttribute(decal.uv, 2));
+  S.pos = new Float32Array(n * 6 * 3);
+  S.uv  = new Float32Array(n * 6 * 2);
+  S.col = new Float32Array(n * 6 * 4);
+  geo.setAttribute('position', new THREE.BufferAttribute(S.pos, 3));
+  geo.setAttribute('uv', new THREE.BufferAttribute(S.uv, 2));
   // ITEM SIZE 4, which is what puts three's `USE_COLOR_ALPHA` on and gives every vertex an
   // alpha -- the fade needs somewhere to live and a per-mark material is 40 draw calls.
-  geo.setAttribute('color', new THREE.BufferAttribute(decal.col, 4));
+  geo.setAttribute('color', new THREE.BufferAttribute(S.col, 4));
   geo.setDrawRange(0, 0);
   const mat = new THREE.MeshBasicMaterial({
     map: tex, transparent: true, alphaTest: DECAL.alphaTest, depthWrite: false,
@@ -9962,15 +9974,21 @@ function decalBuild(tex, man) {
   });
   const m = new THREE.Mesh(geo, mat);
   m.frustumCulled = false;      // the buffer holds WORLD positions; its own bounds mean nothing
-  m.renderOrder = 2;
+  m.renderOrder = order;
   m.userData.noHole = 1; m.userData.noPaint = 1;
   scene.add(m);
-  decal.mesh = m;
-  for (let i = 0; i < n; i++) { decal.age.push(0); decal.life.push(0); }
-  decal.at = new Float32Array(n * 3);      // each mark's centre, so a surface that dies can take its marks (m174)
+  S.mesh = m;
+  for (let i = 0; i < n; i++) { S.age.push(0); S.life.push(0); }
+  S.at = new Float32Array(n * 3);      // each mark's centre, so a surface that dies can take its marks (m174)
+  decal.stores.push(S);
+  return S;
+}
+function decalBuild(tex, man) {
+  const S = decalStore(tex, DECAL.n, 2);
+  decal.mesh = S.mesh;
   // BY KIND, so a caller asks for "blast" and never for an index into his file.
   decal.by = {};
-  for (const d of man.decals) (decal.by[d.kind] || (decal.by[d.kind] = [])).push(d);
+  for (const d of man.decals) { d.st = S; (decal.by[d.kind] || (decal.by[d.kind] = [])).push(d); }
   // AND BY NAME (m186): `scorch_1..3` is `scorch`, `crater_1..3` is `crater` -- so a caller can ask
   // for the crater itself rather than for "a blast", which is a scorch two times in three
   for (const d of man.decals) { const nm = (d.name || '').replace(/_\d+$/, '');
@@ -9978,7 +9996,65 @@ function decalBuild(tex, man) {
   decal.ready = 1;
   console.log('[melee] decals: ' + man.decals.length + ' marks in ' +
               Object.keys(decal.by).map(k => k + ' x' + decal.by[k].length).join(', ') +
-              ', pool ' + n);
+              ', pool ' + DECAL.n);
+  crackLoad();
+}
+
+// ---- HIS CRACK SHEET (m217, `DECAL.crack`, `crackLoad`, `crackKey`)
+// *"I added a new sprite sheet -- four crack sprites for damage on the ground, and probably walls
+// too. It's a 2 x 2 on a grey background, hope that works."* It does: the grey is FLAT (123, 122,
+// 122 in every corner, zero spread), so it is keyed out at load by colour distance from the grey
+// the corners actually are, and each keyed pixel is un-premultiplied off that grey so the edge of a
+// crack is the crack's colour and not a grey halo. One pass over a canvas, once.
+// **THE FOUR CELLS ARE TWO SHAPES**: top-left and bottom-left are pits (broken asphalt and dirt),
+// top-right and bottom-right are line cracks. All four are kind `crack`, which is the kind the
+// ground slam has been asking for since m186 -- so the slam takes them with no code change -- and
+// `crackpit` / `crackline` pick one family. It is its own store, drawn over the atlas's marks.
+function crackKey(p, w, h, k0, k1) {
+  let r = 0, g = 0, b = 0, n = 0;
+  for (const [x0, y0] of [[0, 0], [w - 4, 0], [0, h - 4], [w - 4, h - 4]])
+    for (let y = y0; y < y0 + 4; y++) for (let x = x0; x < x0 + 4; x++) {
+      const i = (y * w + x) * 4; r += p[i]; g += p[i + 1]; b += p[i + 2]; n++;
+    }
+  r /= n; g /= n; b /= n;
+  for (let i = 0; i < w * h * 4; i += 4) {
+    const dr = p[i] - r, dg = p[i + 1] - g, db = p[i + 2] - b;
+    const a = Math.min(1, Math.max(0, (Math.sqrt(dr * dr + dg * dg + db * db) - k0) / (k1 - k0)));
+    if (a > 0) {
+      p[i] = Math.min(255, Math.max(0, r + dr / a));
+      p[i + 1] = Math.min(255, Math.max(0, g + dg / a));
+      p[i + 2] = Math.min(255, Math.max(0, b + db / a));
+    }
+    p[i + 3] = a * 255;
+  }
+}
+function crackLoad() {
+  const C = DECAL.crack;
+  if (!C || !C.on || decal.crack) return;
+  decal.crack = 1;
+  new THREE.ImageLoader().load(A(C.file), img => {
+    try {
+      const w = img.width, h = img.height;
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const cx = cv.getContext('2d');
+      cx.drawImage(img, 0, 0);
+      const id = cx.getImageData(0, 0, w, h);
+      crackKey(id.data, w, h, C.key[0], C.key[1]);
+      cx.putImageData(id, 0, 0);
+      const t = new THREE.CanvasTexture(cv);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+      const S = decalStore(t, C.n, 3);
+      const [gx, gy] = C.grid, e = C.inset;
+      C.cells.forEach((c, k) => {
+        const col = k % gx, row = (k / gx) | 0;
+        const d = { name: c.name, kind: 'crack', aspect: 1, size_m: c.size_m, st: S,
+                    uv: [col / gx + e, 1 - (row + 1) / gy + e, (col + 1) / gx - e, 1 - row / gy - e] };
+        for (const kk of ['crack', c.name]) (decal.by[kk] || (decal.by[kk] = [])).push(d);
+      });
+      console.log('[melee] cracks: ' + C.cells.length + ' marks, pool ' + C.n);
+    } catch (err) { console.warn('[melee] cracks', err); note('CRACK FAILED'); }
+  }, undefined, () => note('NO CRACK PNG'));
 }
 
 // **THE ATLAS AND THE MANIFEST, FETCHED TOGETHER AND NEITHER AWAITED BY THE BOOT.** Both have
@@ -10033,10 +10109,11 @@ function decalPut(x, y, z, nx, ny, nz, k, s, fit, life) {
   // squashed to fit a square quad.
   const hw = w * .5, hh = hw / (d.aspect || 1);
   const ox = x + _dcN.x * DECAL.lift, oy = y + _dcN.y * DECAL.lift, oz = z + _dcN.z * DECAL.lift;
-  const i = decal.i; decal.i = (decal.i + 1) % DECAL.n;
-  if (decal.live < DECAL.n) decal.live = Math.min(DECAL.n, decal.live + 1);
-  decal.age[i] = 0; decal.life[i] = (life || DECAL.life) + DECAL.fade;
-  decal.at[i * 3] = x; decal.at[i * 3 + 1] = y; decal.at[i * 3 + 2] = z;
+  const D = d.st;
+  const i = D.i; D.i = (D.i + 1) % D.n;
+  if (D.live < D.n) D.live = Math.min(D.n, D.live + 1);
+  D.age[i] = 0; D.life[i] = (life || DECAL.life) + DECAL.fade;
+  D.at[i * 3] = x; D.at[i * 3 + 1] = y; D.at[i * 3 + 2] = z;
   const u0 = d.uv[0], v0 = d.uv[1], u1 = d.uv[2], v1 = d.uv[3];
   // two triangles, anticlockwise, and `DoubleSide` means the winding cannot be the bug
   const C = [[-1, -1, u0, v0], [1, -1, u1, v0], [1, 1, u1, v1],
@@ -10044,16 +10121,16 @@ function decalPut(x, y, z, nx, ny, nz, k, s, fit, life) {
   for (let q = 0; q < 6; q++) {
     const p = (i * 6 + q) * 3, t = (i * 6 + q) * 2, c = (i * 6 + q) * 4;
     const su = C[q][0] * hw, sv = C[q][1] * hh;
-    decal.pos[p]     = ox + tx * su + bx * sv;
-    decal.pos[p + 1] = oy + ty * su + by * sv;
-    decal.pos[p + 2] = oz + tz * su + bz * sv;
-    decal.uv[t] = C[q][2]; decal.uv[t + 1] = C[q][3];
-    decal.col[c] = 1; decal.col[c + 1] = 1; decal.col[c + 2] = 1; decal.col[c + 3] = 1;
+    D.pos[p]     = ox + tx * su + bx * sv;
+    D.pos[p + 1] = oy + ty * su + by * sv;
+    D.pos[p + 2] = oz + tz * su + bz * sv;
+    D.uv[t] = C[q][2]; D.uv[t + 1] = C[q][3];
+    D.col[c] = 1; D.col[c + 1] = 1; D.col[c + 2] = 1; D.col[c + 3] = 1;
   }
-  decal.mesh.geometry.setDrawRange(0, decal.live * 6);
-  decal.mesh.geometry.attributes.position.needsUpdate = true;
-  decal.mesh.geometry.attributes.uv.needsUpdate = true;
-  decal.mesh.geometry.attributes.color.needsUpdate = true;
+  D.mesh.geometry.setDrawRange(0, D.live * 6);
+  D.mesh.geometry.attributes.position.needsUpdate = true;
+  D.mesh.geometry.attributes.uv.needsUpdate = true;
+  D.mesh.geometry.attributes.color.needsUpdate = true;
 }
 
 // **A MARK DIES WITH THE SURFACE IT WAS ON (m174, `decalOff`).** A scorch stamped on a wall chunk
@@ -10063,7 +10140,12 @@ function decalPut(x, y, z, nx, ny, nz, k, s, fit, life) {
 // same `boxLocal` the resolver uses, so the kill and the collider agree about where the chunk was.
 const _dcL = { x: 0, z: 0 };
 function decalOff(b, pad) {
-  if (!decal.ready || !decal.live) return 0;
+  let n = 0;
+  if (decal.ready) for (const D of decal.stores) n += decalOff1(D, b, pad);
+  return n;
+}
+function decalOff1(decal, b, pad) {
+  if (!decal.live) return 0;
   const q = pad === undefined ? .06 : pad;
   let n = 0;
   for (let i = 0; i < decal.live; i++) {
@@ -10082,7 +10164,11 @@ function decalOff(b, pad) {
   return n;
 }
 function decalStep(dt) {
-  if (!decal.ready || !decal.live) { if (decal.mesh) decal.mesh.visible = false; return; }
+  for (const D of decal.stores) decalStep1(D, dt);
+}
+// (the parameter shadows the module's `decal` on purpose: this is the pre-m217 body, per store)
+function decalStep1(decal, dt) {
+  if (!decal.live) { if (decal.mesh) decal.mesh.visible = false; return; }
   decal.mesh.visible = !!DECAL.on;
   if (!DECAL.on) return;
   let touched = 0;
