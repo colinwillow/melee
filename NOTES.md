@@ -7,6 +7,23 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE KIT BUILDINGS WOBBLE, BY WORLD POSITION ONLY (m226, `KWOB`, `kitWobMat`, the KIT row).**
+  His spec: offset each vertex by a smooth 3D noise of its WORLD position, ~0.03 m at ~3 m, never by
+  normal or object, so a vertex two pieces share moves the same and no seam opens. So the offset is
+  computed at the world point and carried back into the mesh's frame through `inverse(mat3(model *
+  instance))` -- exact for the batch at identity, the instanced parts and a twin under its group.
+  Chained like `kitCutMat` onto every material `buildKit` sees in the city (walls, trim, glass,
+  `_dressing`, `_murals`, `_clutter`), and the twins wear those same materials by name, so a swapped
+  wall wobbles identically. **It goes in RIGHT AFTER `#include <begin_vertex>` and keeps that line**,
+  so the cutaway's world point, the detile's `vDtWorld` and `project_vertex` all see the moved
+  surface, and a hook chained later still finds its anchor. Replacing `project_vertex` outright would
+  have looked equivalent and silently disarmed the detile, which anchors on it. Colliders untouched.
+  `wobble` on the tune panel, .03 by default, 0 skips the maths.
+- **HIS m226 EXPORT (72f9fc8):** the stations are `kit_029` (fire) and `kit_005` (police), which
+  `KCITY.kitRe` takes as they are; `solid_kit_NNN_clutter__dumpN_0 / __palletN_0` (72 of them) parse
+  as pid `kit_NNN/palletN` and go through `kitObb` into `KWCOL` like any kit solid -- no wall swap ever
+  names that pid, so they are never taken away. Twins 60 -> 96 (6 kinds x 16 styles).
+
 - **WATER HAS TO READ AGAINST A BLUE SKY, SO IT GOES TOWARD WHITE (m225, `SPOUT.bright/white`, the
   WATER rows).** *"The blue water is hard to see, especially on the sky."* Blue on blue is the one
   contrast the spray lacks; foam is white and white is what neither the sky nor the street has. The
