@@ -7,6 +7,26 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **EACH LADDER MEASURES ITS OWN FRONT, AND A HEAD IN A SLAB GOES DOWN (m207, `ladderFront`,
+  `rbY`).**
+  **Ladders:** *"I had to hold down to get on it, I couldn't tell which side."* m181 took the front
+  from the piece's local +Z, and m195 flipped it for EVERY ladder because he said all were
+  backwards. On this exterior one it is backwards again, so one sign cannot be right for all of
+  them: the pieces are not all authored the same way round. `ladderFront` probes out of the volume
+  on both sides (hn+.25 / hn+.6, at knee and mid height) against the real turned boxes. The side
+  with the wall is the back. Measured offline over the kit city with real OBBs: **72 of 120 have a
+  wall on exactly one side**. The rest (both sides or neither) are climbable from EITHER side, not
+  guessed. `CLIMB.frontSign` and the extras `fx` are no longer read.
+  **And he climbed beside it:** the latch kept wherever along the ladder he grabbed it, up to
+  `ha` off-centre. That now eases to the middle.
+  **Squeezing through joints:** `resolveBoxes` only ever pushed HORIZONTALLY, to the box's nearest
+  side. For a floor slab he jumped up into, that side can be metres away, so a head clipping the
+  underside at a room's edge was shoved sideways through the wall beside it. With `vert` (the
+  player only), a box he is less far into vertically than horizontally is resolved on Y: head
+  under it goes down and stops the rise, feet in its top go up onto it (tops under .6 m of
+  penetration). Horizontal contact still wins at a wall, because first contact is always shallow
+  sideways.
+
 - **TREES AND SIGNS BEND ON THE FIRST HIT AND SNAP ON THE SECOND (m206, `BEND`, `bendBlast`,
   `bendRay`, `bendStep`, `bendSigns`).** *"A bend on first shot, and then a snap -- two hits."*
   - **Trees** are instances (101 nodes on six shared meshes, which the instancing pass already
