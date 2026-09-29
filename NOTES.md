@@ -7,6 +7,37 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **LOOSE PROPS FLY, AND A CHARGE HELD THROUGH A JUMP KEEPS THE GUN UP (m184, `LOOSE`,
+  `looseRay`, `looseBlast`, `stepLoose`, `rigAirSpine`).** *"I want to be able to shoot small
+  objects -- the trash bag, the rubble. It could go flying off or pop into small trash. See how one
+  of the hit marks is floating in the air?"* and *"when you're holding a charge and jump, a hybrid:
+  the legs and hips of the in-air animation, still holding the charge -- rotate the spine so the
+  upper torso aligns."*
+  **THE FLOATING MARK WAS A BOLT FLYING THROUGH A BAG WITH NO COLLISION.** Measured against his
+  collision file: collision under 2 of 42 trash bags, 1 of 183 soda cans, 0 of 76 cups -- so the
+  bolt passed through and marked whatever was behind. The piles (20/20), rubble (15/15) and boxes
+  (24/24) do have collision, at their art's height. None of the six is tagged `breakable`.
+  **SO THEY ARE CLAIMED BY NAME (`LOOSE.re`) IN `buildTCity`'s ONE LOOP**, beside `brkClaim`: a bolt
+  tests them as spheres along its segment (nearest of surface, box, loose wins) and a blast or a
+  swing within reach knocks them flying -- the instance slot zeroes and a real Mesh of the same
+  geometry takes off, tumbles, bounces off the real ground and LIES THERE to be kicked again. Mass
+  per kind: a can goes a long way, rubble shuffles. **The first time one moves its collider goes**
+  (`looseUnpin`): the OBB boxes centred in it, and every walkable and impact triangle whose middle
+  is in it above its base, collapsed to a point far below the world -- or you walk into a bag that
+  is not there. A bolt that stops ON a bag leaves no mark. `LOOSE.max` 60 detached; older resting
+  ones shrink out. **POPPING INTO SMALL TRASH IS AN ASSET**: tag the node `breakable` and give the
+  breakables library a broken version, and `brkBreak` does it with no code.
+  **THE AIR CHARGE IS THE COMMITTED OVERRIDE ONE STATE UP**: `in_air` joined `SPLIT.legs`, so a
+  committed jump plays the weapon pose's `__up` over `in_air__legs`. **Measured off the clips, the
+  hips disagree**: in the armature frame the in-air hips sit at -15 deg, the shot (which `rifle_aim`
+  is taken from) at -62 and the hammer wind-up at -74.5 -- so the same spine over the jump's hips
+  points the gun 47-60 degrees off. `rigAirSpine` turns the first spine bone by `inv(Hjump) *
+  Hpose` after the mixer, with Hpose read off the pose clip's own Hips track at its current time,
+  faded by the pose's weight and kept alive while the jump's legs still have any, so the landing
+  does not snap. **It is not the deleted aim spine-twist**: that was a feedback loop chasing a
+  moving bearing; this is an offset between two clips with nothing measured back, on a bone the
+  `__up` half keys every frame so it cannot accumulate. Nothing here could build a skin to look.
+
 - **WITH THE X-RAY ON, A KIT BUILDING NEVER PULLS THE CAMERA IN (m183, `camHit(..., skipKit)`).**
   *"When you rotate so a rim of the roof ledge is between you and the camera, the camera goes way
   in -- I don't know that there's any point of it doing that since now we have other things to

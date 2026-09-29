@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m183</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m184</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m183</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m184</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm183';
+const BUILD = 'm184';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -4181,7 +4181,8 @@ const SPLIT = {
   // one. Without it the only upper pose available is `aimPose` -- the SIGHTED hold -- and he
   // would ride the whole city down the barrel.
   up: ['aimPose', 'aimIdle', 'shoot', 'chargeUp', 'chargeGo', 'swap', 'block'],
-  legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimIdle', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR'],
+  // `air` (m184): a charge held through a jump is the gun pose over the in-air LEGS
+  legs: ['idle', 'walk', 'run', 'sprint', 'back', 'aimIdle', 'aimRun', 'aimRunShoot', 'strafeL', 'strafeR', 'air'],
   // **AND THE BOARD'S OWN CLIPS, BY RAW NAME (m167).** *"I want to make it so that I can still
   // use my blaster when I'm riding the skateboard."* Riding and shooting is an OVERRIDE and not
   // a blend, which is the distinction Shredworld paid a build for at c115: laying a gun pose ON
@@ -8149,6 +8150,12 @@ function boltHit(b) {
     kitBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast,
              FOE.dmg.bolt * (WEAP.pow0 + c * (WEAP.pow1 - WEAP.pow0)));
   }
+  // **THE LOOSE STUFF GOES WHETHER OR NOT THERE WAS A SURFACE (m184)** -- a bolt that stopped ON a
+  // bag has no `hitN` (it leaves no mark on something about to leave), and still has to move it
+  {
+    looseBlast(b.pos.x, b.pos.y, b.pos.z, b.size * .5 + b.blast + (b.onLoose ? .2 : 0),
+               WEAP.pow0 + c * (WEAP.pow1 - WEAP.pow0));
+  }
   // and everybody the blast reached wears it
   const R = b.size * .5 + b.blast;
   for (const d of DUMMIES) {
@@ -8899,6 +8906,190 @@ function stepFlashes(dt) {
   }
 }
 
+// ============================================================================================
+// THE LOOSE STUFF (m184, `LOOSE`, `looseClaim`, `looseRay`, `looseBlast`, `stepLoose`)
+//
+// *"I want to be able to shoot small objects -- the trash bag, the rubble. I want it to go flying
+// off, or pop into small trash. See how one of the hit marks is floating in the air, and the other
+// just hit it -- that trash bag should go flying or explode."* Read off his two files first:
+//     debris_trash_bag  42   collision on 2 of them    debris_soda_can  183   collision on 1
+//     debris_bag_pile   20   on all 20 (0.67 m, art)   debris_cup        76   on none
+//     debris_rubble     15   on all 15 (matches art)   prop_cardboard_box 24  on all 24
+// **SO THE BAGS AND CANS HAD NO COLLISION AT ALL**, and a bolt flew straight through them and marked
+// whatever was behind -- that is the mark "floating in the air" beside the bag. None of the six is
+// tagged `breakable`, so none of them was ever anything but scenery.
+// **THEY ARE CLAIMED BY NAME AND KNOCKED FLYING WHOLE.** Every one is an instance of a shared mesh,
+// so the hit zeroes its instance slot and a real Mesh of the same geometry takes off from the same
+// transform -- ballistic, tumbling, bouncing off the real ground, and then it LIES THERE, where the
+// next shot or swing can kick it again. The collider it had (his boxes, his triangles) goes the
+// first time it moves, or it leaves an invisible bag behind. The bolt tests them itself
+// (`looseRay`), so it stops ON a bag rather than behind it, and leaves no mark on something that is
+// about to leave.
+// **POPPING INTO SMALL TRASH IS AN ASSET, NOT CODE**: tag the node `breakable: "<type>"` in the city
+// export and give the breakables library a broken version, exactly like the crate and the bin, and
+// `brkBreak` does the rest with nothing added here.
+// ============================================================================================
+const LOOSE = {
+  on: 1,
+  re: /^(debris_(trash_bag|bag_pile|rubble|soda_can|cup)|prop_cardboard_box)/,
+  // how heavy each reads: the launch speed is divided by it, so a can goes a long way and a pile
+  // of rubble shuffles
+  mass: { debris_soda_can: .25, debris_cup: .25, debris_trash_bag: .8, prop_cardboard_box: .7,
+          debris_rubble: 1.8, debris_bag_pile: 2.0 },
+  kick: 7.5,        // m/s for a mass of 1 at full power
+  up: 4.5,          // and the lift that goes with it
+  spin: 9,          // rad/s of tumble at mass 1
+  g: 16, bounce: .32, rest: 1.1,
+  max: 60,          // loose pieces in the world at once; the oldest one resting shrinks out
+  burst: [.30, .26, .22],
+};
+const LOOSES = [], LFREE = [];
+const _loM = new THREE.Matrix4(), _loB = new THREE.Box3(), _loV = new THREE.Vector3();
+function looseClaim(o, im, slot) {
+  if (!LOOSE.on || !o || !o.isMesh || !LOOSE.re.test(o.name || '')) return 0;
+  const fam = (LOOSE.re.exec(o.name) || [])[1];
+  o.geometry.computeBoundingBox();
+  _loB.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld);
+  const c = _loB.getCenter(new THREE.Vector3()), sz = _loB.getSize(new THREE.Vector3());
+  LOOSES.push({ fam, im, slot, obj: im ? null : o, geo: o.geometry, mat: o.material,
+                M: o.matrixWorld.clone(), box: _loB.clone(), x: c.x, y: c.y, z: c.z,
+                r: Math.max(.08, Math.max(sz.x, sz.y, sz.z) * .5), m: LOOSE.mass[fam] || 1,
+                free: null });
+  return 1;
+}
+// his collider for it goes the first time it moves: the OBB boxes centred inside it, and every
+// triangle (walkable and impact) whose middle is inside it and above the ground it sits on
+function looseUnpin(L) {
+  const b = L.box, q = .15;
+  let n = 0;
+  for (let i = BOXES.length - 1; i >= 0; i--) {
+    const B = BOXES[i];
+    if (B.kit || B.chunk || B.part || B.wall) continue;
+    const cx = B.cx !== undefined ? B.cx : (B.minx + B.maxx) / 2, cz = B.cz !== undefined ? B.cz : (B.minz + B.maxz) / 2;
+    const cy = (B.miny + B.maxy) / 2;
+    if (cx < b.min.x - q || cx > b.max.x + q || cz < b.min.z - q || cz > b.max.z + q || cy > b.max.y + q) continue;
+    if (B.maxy - B.miny > (b.max.y - b.min.y) * 2 + .5) continue;      // a wall is not a bag
+    BOXES.splice(i, 1); n++;
+  }
+  if (n) brkDirty = 1;
+  const kill = (G) => {
+    if (!G.on || !G.grid) return;
+    const c = G.cell, v = G.v;
+    const i0 = Math.max(0, Math.floor((b.min.x - q - G.x0) / c)), i1 = Math.min(G.nx - 1, Math.floor((b.max.x + q - G.x0) / c));
+    const k0 = Math.max(0, Math.floor((b.min.z - q - G.z0) / c)), k1 = Math.min(G.nz - 1, Math.floor((b.max.z + q - G.z0) / c));
+    for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
+      const L2 = G.grid[i * G.nz + k]; if (!L2) continue;
+      for (const o of L2) {
+        const x = (v[o] + v[o + 3] + v[o + 6]) / 3, y = (v[o + 1] + v[o + 4] + v[o + 7]) / 3, z = (v[o + 2] + v[o + 5] + v[o + 8]) / 3;
+        if (x < b.min.x - q || x > b.max.x + q || z < b.min.z - q || z > b.max.z + q) continue;
+        if (y < b.min.y + .04 || y > b.max.y + q) continue;
+        // a triangle collapsed to a point far below the world is one nothing can ever hit or stand on
+        for (let j = 0; j < 9; j += 3) { v[o + j] = x; v[o + j + 1] = -1e4; v[o + j + 2] = z; }
+      }
+    }
+  };
+  kill(TRI); kill(SURF);
+  decalOff({ minx: b.min.x, maxx: b.max.x, miny: b.min.y, maxy: b.max.y, minz: b.min.z, maxz: b.max.z }, .12);
+}
+// A BOLT'S SEGMENT AGAINST THEM -- a sphere each, the nearest one along it
+const _lrH = { t: 1, L: null, x: 0, y: 0, z: 0, nx: 0, ny: 1, nz: 0 };
+function looseRay(ox, oy, oz, ex, ey, ez, out) {
+  if (!LOOSES.length) return 0;
+  const dx = ex - ox, dy = ey - oy, dz = ez - oz, dd = dx * dx + dy * dy + dz * dz;
+  if (dd < 1e-9) return 0;
+  let best = null, bt = 2;
+  for (const L of LOOSES) {
+    const r = L.r * .8 + WEAP.boltR * .5;
+    const fx = ox - L.x, fy = oy - L.y, fz = oz - L.z;
+    const bq = fx * dx + fy * dy + fz * dz, cq = fx * fx + fy * fy + fz * fz - r * r;
+    if (cq > 0 && bq > 0) continue;
+    const disc = bq * bq - dd * cq;
+    if (disc < 0) continue;
+    const t = Math.max(0, (-bq - Math.sqrt(disc)) / dd);
+    if (t > 1 || t >= bt) continue;
+    bt = t; best = L;
+  }
+  if (!best) return 0;
+  out.t = bt; out.L = best;
+  out.x = ox + dx * bt; out.y = oy + dy * bt; out.z = oz + dz * bt;
+  const L = Math.hypot(out.x - best.x, out.y - best.y, out.z - best.z) || 1;
+  out.nx = (out.x - best.x) / L; out.ny = (out.y - best.y) / L; out.nz = (out.z - best.z) / L;
+  return 1;
+}
+// A BLAST OR A SWING: everything loose inside it goes, away from the middle of it
+function looseBlast(x, y, z, r, pow) {
+  if (!LOOSE.on || !LOOSES.length || !(pow > 0)) return 0;
+  let n = 0;
+  for (const L of LOOSES) {
+    const dx = L.x - x, dy = L.y - y, dz = L.z - z, R = r + L.r;
+    if (dx * dx + dy * dy + dz * dz > R * R) continue;
+    looseLaunch(L, x, y, z, pow); n++;
+  }
+  return n;
+}
+function looseLaunch(L, bx, by, bz, pow) {
+  if (!L.free) {
+    // off the shelf: its instance goes to nothing and a real mesh takes its place
+    if (L.im) { _loM.makeScale(0, 0, 0); L.im.setMatrixAt(L.slot, _loM); L.im.instanceMatrix.needsUpdate = true; }
+    else if (L.obj) L.obj.visible = false;
+    looseUnpin(L);
+    const m = new THREE.Mesh(L.geo, L.mat);
+    L.M.decompose(m.position, m.quaternion, m.scale);
+    // the mesh's origin is the object's pivot; its middle is where it spins about
+    const off = new THREE.Vector3(L.x, L.y, L.z).sub(m.position);
+    m.castShadow = true; m.receiveShadow = true;
+    const g = new THREE.Group(); g.position.set(L.x, L.y, L.z);
+    // the child sits at (pivot - middle) in world axes, turned and scaled as it was
+    g.add(m); m.position.copy(off).negate();
+    world.add(g);
+    L.free = { g, vx: 0, vy: 0, vz: 0, ax: 1, ay: 0, az: 0, w: 0, rest: 0, t: 0 };
+    LFREE.push(L);
+    while (LFREE.length > LOOSE.max) {
+      const o = LFREE.find(q => q.free && q.free.rest && !q.free.gone);
+      if (!o) break;
+      o.free.gone = 1; LFREE.splice(LFREE.indexOf(o), 1);
+    }
+  }
+  const F = L.free;
+  const k = clamp(pow, .2, 2.5) / L.m;
+  let dx = L.x - bx, dz = L.z - bz; const d = Math.hypot(dx, dz);
+  if (d < .05) { const a = Math.random() * Math.PI * 2; dx = Math.cos(a); dz = Math.sin(a); } else { dx /= d; dz /= d; }
+  F.vx = dx * LOOSE.kick * k * (.8 + Math.random() * .4); F.vz = dz * LOOSE.kick * k * (.8 + Math.random() * .4);
+  F.vy = LOOSE.up * Math.min(1.6, k) * (.7 + Math.random() * .5);
+  const ax = Math.random() - .5, ay = Math.random() - .5, az = Math.random() - .5, aL = Math.hypot(ax, ay, az) || 1;
+  F.ax = ax / aL; F.ay = ay / aL; F.az = az / aL; F.w = LOOSE.spin * Math.min(2, k) * (.6 + Math.random() * .6);
+  F.rest = 0; F.t = 0;
+  // a bag or a pile bursts a little as it goes -- the "pop" without new art
+  if (/bag|pile|box/.test(L.fam)) spkBurst(L.x, L.y, L.z, 10, { col: LOOSE.burst, spread: 2.2, up: 1.4, r: L.r, size: .07 + Math.random() * .05, life: .6 });
+}
+const _loQ = new THREE.Quaternion(), _loA = new THREE.Vector3();
+function stepLoose(dt) {
+  for (let i = LFREE.length - 1; i >= 0; i--) {
+    const L = LFREE[i], F = L.free, g = F.g;
+    if (F.gone) {
+      F.sc = (F.sc === undefined ? 1 : F.sc) - dt * 2;
+      g.scale.setScalar(Math.max(.001, F.sc));
+      if (F.sc <= 0) { world.remove(g); LFREE.splice(i, 1); const j = LOOSES.indexOf(L); if (j >= 0) LOOSES.splice(j, 1); }
+      continue;
+    }
+    if (F.rest) continue;
+    F.t += dt;
+    F.vy -= LOOSE.g * dt;
+    g.position.x += F.vx * dt; g.position.y += F.vy * dt; g.position.z += F.vz * dt;
+    _loA.set(F.ax, F.ay, F.az);
+    _loQ.setFromAxisAngle(_loA, F.w * dt);
+    g.quaternion.premultiply(_loQ);
+    const fy = groundAt(g.position.x, g.position.z, g.position.y + .4, .6) + Math.max(.04, L.r * .55);
+    if (g.position.y < fy) {
+      g.position.y = fy;
+      if (F.vy < -LOOSE.rest) { F.vy = -F.vy * LOOSE.bounce; F.vx *= .6; F.vz *= .6; F.w *= .6; }
+      else { F.vy = 0; F.vx *= Math.exp(-6 * dt); F.vz *= Math.exp(-6 * dt); F.w *= Math.exp(-5 * dt);
+             if (Math.hypot(F.vx, F.vz) < .15) F.rest = 1; }
+    }
+    L.x = g.position.x; L.y = g.position.y; L.z = g.position.z;
+  }
+}
+
 function stepBolts(dt) {
   for (let i = BOLTS.length - 1; i >= 0; i--) {
     const b = BOLTS[i];
@@ -8963,7 +9154,13 @@ function stepBolts(dt) {
         const bHit = boxRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _brH);
         const sT = sHit ? Math.hypot(_srH.x - _px, _srH.y - _py, _srH.z - _pz) /
                           (Math.hypot(b.pos.x - _px, b.pos.y - _py, b.pos.z - _pz) || 1) : 2;
-        if (bHit && _brH.t < sT) {
+        // AND THE LOOSE STUFF, which has no collider of its own worth the name (m184)
+        const lHit = looseRay(_px, _py, _pz, b.pos.x, b.pos.y, b.pos.z, _lrH);
+        if (lHit && _lrH.t < sT && (!bHit || _lrH.t < _brH.t)) {
+          dead = true; b.onLoose = _lrH.L;
+          b.hitN = null; b.hitBox = null; b.hitAt = [_lrH.x, _lrH.y, _lrH.z];
+          b.pos.set(_lrH.x + _lrH.nx * WEAP.boltR, _lrH.y + _lrH.ny * WEAP.boltR, _lrH.z + _lrH.nz * WEAP.boltR);
+        } else if (bHit && _brH.t < sT) {
           dead = true;
           b.hitN = [_brH.nx, _brH.ny, _brH.nz]; b.hitBox = _brH.box;
           b.hitAt = [_brH.x, _brH.y, _brH.z];
@@ -12613,6 +12810,20 @@ function rigAnim(dt) {
   // spent in the ordinary pose aiming the landing rather than still coming round.
   if (p.flip && rig.actions[p.flip]) { t[p.flip] = 1; setWeights(t, dt); return; }
   if (!p.grounded) {
+    // **A CHARGE HELD THROUGH A JUMP KEEPS THE GUN UP (m184).** *"When you're holding a charge and
+    // you jump, we need a hybrid -- the legs and hips of the in-air animation, but he should still
+    // be holding the blaster charge."* The committed branch's own override, one state up: the
+    // weapon pose's `__up` half over `in_air`'s `__legs` half, every bone claimed exactly once.
+    // **AND THE SPINE IS TURNED TO MATCH (`rigAirSpine`)**, because the charge pose stands side-on
+    // -- its hips are turned and its spine turns back to face the barrel forward -- while the air
+    // pose's hips face ahead, so the same spine over them points the gun off to the side.
+    if (committed()) {
+      const up = p.fireT > 0 ? CLIPS.shoot : p.charge ? CLIPS.chargeUp : CLIPS.aimPose;
+      if (rig.actions[up + UP] && rig.actions[CLIPS.air + LEGS]) {
+        t[up + UP] = 1; t[CLIPS.air + LEGS] = 1; rig.airUp = up;
+        setWeights(t, dt); return;
+      }
+    }
     // `in_air` is 2.83 s of a subtle float and loops, so it reads at any airtime; a jump here
     // is about 0.84 s, so what is seen is its opening third.
     t[CLIPS.air] = 1; setWeights(t, dt); return;
@@ -12759,6 +12970,48 @@ function rigAnim(dt) {
   add(L(CLIPS.run), wRun * rest, GAIT.runRef);
   add(L(CLIPS.sprint), wSpr * rest, GAIT.sprintRef);
   setWeights(t, dt);
+}
+
+// **THE AIR-CHARGE SPINE (m184, `rigAirSpine`).** After the mixer, so it edits the pose that is
+// about to be drawn. The upper-body pose was authored over ITS OWN hips; in the air the hips are
+// the jump's. So the first spine bone is given the difference: with Hj the jump's hips and Hc the
+// pose's (sampled off the pose clip's own Hips track at the time its half is playing), the chest
+// lands where the pose put it relative to the root when the spine becomes `inv(Hj) * Hc * spine`.
+// Faded by the half's own damped weight, so blending in and out cannot pop.
+// **THIS IS NOT THE AIM SPINE-TWIST THAT WAS DELETED** (see below): that was a feedback loop chasing
+// a moving target and it wound up against its own clamp. This is one constant-ish offset read off
+// two clips, with nothing measured back -- and the spine is keyed by the `__up` half, so the mixer
+// rewrites it every frame and the edit cannot accumulate.
+const _asHc = new THREE.Quaternion(), _asD = new THREE.Quaternion(), _asI = new THREE.Quaternion();
+function rigAirSpine() {
+  const up = rig.airUp;
+  if (!up) return;
+  // it lives while the JUMP's hips still have any say -- through the landing blend as well, or the
+  // chest would snap round on the frame he touches down and ease back
+  if (!((rig.cw[CLIPS.air + LEGS] || 0) > .01)) { rig.airUp = ''; return; }
+  const aU = rig.actions[up + UP], aW = rig.actions[up];
+  const w = Math.min(1, (rig.cw[up + UP] || 0) + (rig.cw[up] || 0));
+  const a = (rig.cw[up + UP] || 0) >= (rig.cw[up] || 0) ? aU : aW;
+  if (!a || !(w > .01)) return;
+  if (!rig._hips || rig._hipsFor !== rig.bones) {
+    rig._hipsFor = rig.bones; rig._hips = null; rig._spine = null;
+    for (const n in rig.bones) { if (/Hips$/.test(n)) rig._hips = rig.bones[n]; if (/Spine$/.test(n)) rig._spine = rig.bones[n]; }
+    rig._hipsI = {};
+  }
+  const H = rig._hips, S = rig._spine;
+  if (!H || !S) return;
+  // the pose clip's own Hips track, evaluated where its half is in time -- one interpolant per clip
+  let I = rig._hipsI[up];
+  if (I === undefined) {
+    const c = rig.clips[up], tr = c && c.tracks.find(t => t.name === H.name + '.quaternion');
+    I = rig._hipsI[up] = tr ? tr.createInterpolant(new Float32Array(4)) : null;
+  }
+  if (!I) return;
+  const v = I.evaluate(a.time);
+  _asHc.set(v[0], v[1], v[2], v[3]).normalize();
+  _asD.copy(H.quaternion).invert().multiply(_asHc);
+  if (w < .999) _asD.slerp(_asI.identity(), 1 - w);
+  S.quaternion.premultiply(_asD);
 }
 
 // ============================================================================================
@@ -16113,7 +16366,7 @@ function buildTCity(g) {
       // Shredworld's c142 -- a hole in the world from an invariant every producer had to
       // remember. Here the InstancedMesh and the slot are both in hand, which is precisely
       // what breaking one needs and what nothing downstream could recover.
-      for (let i = 0; i < list.length; i++) { im.setMatrixAt(i, list[i].matrixWorld); brkClaim(list[i], im, i); }
+      for (let i = 0; i < list.length; i++) { im.setMatrixAt(i, list[i].matrixWorld); brkClaim(list[i], im, i) || looseClaim(list[i], im, i); }
       im.instanceMatrix.needsUpdate = true;
       // WORLD matrices, so it hangs off the world at identity -- under the gltf root that
       // root's own transform would be applied a second time.
@@ -16149,6 +16402,8 @@ function buildTCity(g) {
       // 179 nodes so the pass above claims every one of them -- this is the guard for the day
       // an export has exactly ONE of something, which would fall straight through to here.
       if (o.userData && o.userData.breakable) { brkClaim(o, null, -1); return; }
+      // nor is a loose piece (m184): it has to be able to leave
+      if (LOOSE.on && LOOSE.re.test(o.name || '')) { looseClaim(o, null, -1); return; }
       {
         const m = o.material; if (!m) return;
         // **THE BUCKET IS KEYED ON THE ATTRIBUTE SET AS WELL AS THE MATERIAL, AND THAT IS NOT
@@ -19369,6 +19624,8 @@ function strikeSweep(dt, power, live, dmg, body) {
         // AND THE SAME SWING REACHES A WALL CHUNK (m170). A hammer through a brick wall is
         // the whole reason his chunks carry an hp rather than a flag.
         kitBlast(_sw.x, _sw.y, _sw.z, rad, dmg || FOE.dmg.fist);
+        // and it kicks the loose stuff about (m184)
+        looseBlast(_sw.x, _sw.y, _sw.z, rad + .15, 1);
         for (const d of DUMMIES) {
           if (d.cool > 0) continue;
           if (!segBody(q, _sw, d.root.position.x, d.root.position.z, d.K.r + rad,
@@ -21498,6 +21755,7 @@ function frame() {
     stepMorph(dt);
     rigAnim(dt);
     rig.mixer.update(dt);
+    rigAirSpine();
     // DRAWN AT `faceH`, not at `heading`, plus the rigid yaw that puts the barrel down his nose.
     // `aimComp` reads the barrel off world matrices that are a frame old, which is exactly why
     // it subtracts `rig.drawnYaw` -- the yaw THAT frame was drawn at -- rather than this one.
@@ -21542,7 +21800,7 @@ function frame() {
   mphRingStep(dt);   // outlives the transform, so it is not stepped from `stepMorph`
   stepSmoke(dt);
   stepFlashes(dt);
-  decalStep(dt); brkStep(dt); spoutStep(dt); virusStep(dt);
+  decalStep(dt); brkStep(dt); stepLoose(dt); spoutStep(dt); virusStep(dt);
   // THE AIR. Both read the CAMERA, so both come after `stepCam` -- a mote field centred on last
   // frame's lens is a field that lags every time he turns.
   stepDust(dt);
