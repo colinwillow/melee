@@ -7,6 +7,19 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **GROUND FIRES BURN ON THE GROUND, ON HIS THIRD SHEET (m213, `FIRE.groundSheet`, `gflame`).**
+  *"I shot a barrel and the fire starts from where the rocket hit and floats -- it needs to burn
+  on the ground."* A ground fire (any fire that is not a room's) now draws `fire_sprites_03.png`:
+  4 x 4 frames, 1024 square, RGBA, flames on a bed of embers with the base at the bottom of each
+  cell. Its cards are PLANTED: the base on the ground (a point sprite is centred, so it is lifted
+  by half its size), no rise and no drift, one play through the sixteen frames. It is its own
+  pool and its own draw call, and it keeps the embers and the glow. Bodies, windows and rooms
+  keep the air sheet (`pick`).
+  **The sheet carries a brown haze round every flame.** Decoded: 33% of its pixels are alpha 200+
+  at a mean brightness of only 114/255. Added onto the scene that is a glowing brown cloud, so
+  the shader keys it: `key` [.16, .42] of linear brightness ramps from nothing to full.
+  The chip's fire token gains a `G` once the ground sheet has loaded.
+
 - **THE WATER TUBE IS GONE; THE SPRAY IS BACK, DENSE AND VISIBLE (m212, `SPOUT.column`).**
   *"It looks like a tube of light, it doesn't read as water -- what it was was better, it just
   needs more particles."* m211's streaked cylinder read as a light beam, and a shader cannot make a
