@@ -7,6 +7,12 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS DROP SHEET IS NINE SPLASHES, NOT A CLIP (m220, `SPOUT.sheet`).** `images/water_sprites_01.png`,
+  1024 square RGB on black, 3 x 3 distinct splashes -- so `play` 0: each drop takes one cell at random
+  and keeps it, at a random turn, `sizeK` 2.4 so the droplets drawn round each splash read. Keyed off
+  black in the water pool's own shader (alpha `smoothstep` of brightness, colour un-premultiplied),
+  detected off an opaque corner. With the geyser cards up the drops run at `geyser.drops` .35.
+
 - **HIS GEYSER SHEET IS THE WHOLE COLUMN, NOT A DROP (m219, `SPOUT.geyser`, `geyserCards`,
   `geyserFrame`).** `images/geyser_sprites_01.png`, 1536 x 1024 RGB on black, 8 x 4 = 32 cells of
   192 x 256 with the base at the bottom: row one rises, rows two and three gush, row four dies down.
