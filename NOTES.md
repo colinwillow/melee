@@ -7,6 +7,26 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS OWN BOARD POSES REPLACE THE BORROWED ONES, ROLE BY ROLE (m190, `SK8.own`, `SK8.dip`).**
+  *"The borrowed ones look kinda whack on his proportions, so I exported them on his skeleton. Up,
+  down, middle and turbulent -- same animation, knees at different heights. Down is before he
+  ollies, up is full extension afterwards, middle is most skating, turbulent is turning. I forgot the
+  pushing one, I'll add it now."* Head height in each, off the file: down 0.41, turbulent 0.58,
+  middle 0.59, up 0.66 -- which is his description exactly.
+      rolling    middle, giving way to turbulent on the DECK's own turn rate (`p.bTurn`, damped;
+                 `own.turnAt`..`turnFull` rad/s). `p.turnRate` is the foot gait's and never ran here
+      the tap    `SK8.dip` (.09 s) in down, THEN the pop. It is a real delay on the ollie and it is
+                 the wind-up he drew; `mel.SK8.dip = 0` pops on the tap. Rolling off something
+                 mid-dip cancels it rather than popping on the far side
+      air        up (a body flip still owns the whole body, as before)
+      landing    down for `own.land`, the absorb (the borrowed landing one-shot is not started)
+      rail       down
+      push       his, the moment a clip named in `own.push` exists; the borrowed pair until then
+  **Each role falls back to the borrowed clip on its own**, so an export that drops one is a
+  borrowed pose, never a missing body. All of them are in `SPLIT.legsRaw`, so the blaster's `__up`
+  still composes over them on the board. **The push name is a guess** (`Skateboarding_push` /
+  `_pushing`) -- if his arrives under another name it is one string in `own.push`.
+
 - **THE LONG STRIDE IS THE SPRINT, THE GAIT IS PHASE-SYNCED, THE LADDER HAS ITS CLIP, AND THE
   LAUNCHER IS A SLOT (m189, `GAIT.sprintHi`, `gaitSync`, `CLIMB.ref`, `ROCKET`, `rocketUp`).**
   *"I added a run fast with a longer stride -- make sure he's actually using that instead of just
