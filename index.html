@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m185</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m186</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m185</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m186</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm185';
+const BUILD = 'm186';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -8689,7 +8689,7 @@ const DECAL = {
   on: 1,
   file: 'models/toon_city/impact_marks_atlas.png',
   json: 'models/toon_city/impact_marks.json',
-  n: 40,             // the pool. Past this the oldest is recycled.
+  n: 96,             // the pool. Past this the oldest is recycled. (m186: 40 -> 96, the trails)
   lift: .01,         // metres off the surface along its normal
   life: 20,          // seconds before it starts to go
   fade: 4,           // and how long it takes
@@ -8702,6 +8702,17 @@ const DECAL = {
   // `fitMin` is the floor -- a mark scaled all the way down to a bollard's width is a mark you
   // cannot see, which is the opposite failure and just as useless.
   fit: 1, fitK: 2.2, fitMin: .3,
+  // **THE GROUND SLAM SPLITS THE GROUND (m186).** *"When you slam down, leave a decal on the ground
+  // like you split the ground."* A crater at his feet sized off `SLAM.r` -- the radius the blow
+  // actually catches, so the mark says how far it reached -- and rubble thrown round it. `kind`
+  // is tried first: **add a mark of kind `crack` to `impact_marks.json` and it is used with no code
+  // change**; until then it is the craters.
+  slam: { kind: 'crack', fall: 'crater', k: .72, rubble: 4, ring: .55, life: 30 },
+  // **AND THE BOLT SCORCHES WHAT IT SKIMS (m186).** *"When you shoot the blaster it skims along the
+  // ground -- it'd be cool if it left a trail."* A small scorch every `every` metres while the ball
+  // is within `h` of the floor, sized by the charge, gone in `life` seconds so a trail cannot eat
+  // the pool the impact marks live in.
+  trail: { on: 1, kind: 'scorch', every: .85, h: 1.35, s: .2, sChg: .22, life: 6 },
 };
 const decal = { mesh: null, pos: null, uv: null, col: null, i: 0, live: 0,
                 by: {}, ready: 0, age: [], life: [], at: null };
@@ -8737,6 +8748,10 @@ function decalBuild(tex, man) {
   // BY KIND, so a caller asks for "blast" and never for an index into his file.
   decal.by = {};
   for (const d of man.decals) (decal.by[d.kind] || (decal.by[d.kind] = [])).push(d);
+  // AND BY NAME (m186): `scorch_1..3` is `scorch`, `crater_1..3` is `crater` -- so a caller can ask
+  // for the crater itself rather than for "a blast", which is a scorch two times in three
+  for (const d of man.decals) { const nm = (d.name || '').replace(/_\d+$/, '');
+    if (nm && nm !== d.kind) (decal.by[nm] || (decal.by[nm] = [])).push(d); }
   decal.ready = 1;
   console.log('[melee] decals: ' + man.decals.length + ' marks in ' +
               Object.keys(decal.by).map(k => k + ' x' + decal.by[k].length).join(', ') +
@@ -8768,7 +8783,7 @@ function decalLoad() {
 // suggested world size.
 const _dcT = new THREE.Vector3(), _dcB = new THREE.Vector3(), _dcN = new THREE.Vector3(),
       _dcU = new THREE.Vector3();
-function decalPut(x, y, z, nx, ny, nz, k, s, fit) {
+function decalPut(x, y, z, nx, ny, nz, k, s, fit, life) {
   if (!DECAL.on || !decal.ready) return;
   const pool = decal.by[k]; if (!pool || !pool.length) return;
   const d = pool[(Math.random() * pool.length) | 0];
@@ -8797,7 +8812,7 @@ function decalPut(x, y, z, nx, ny, nz, k, s, fit) {
   const ox = x + _dcN.x * DECAL.lift, oy = y + _dcN.y * DECAL.lift, oz = z + _dcN.z * DECAL.lift;
   const i = decal.i; decal.i = (decal.i + 1) % DECAL.n;
   if (decal.live < DECAL.n) decal.live = Math.min(DECAL.n, decal.live + 1);
-  decal.age[i] = 0; decal.life[i] = DECAL.life + DECAL.fade;
+  decal.age[i] = 0; decal.life[i] = (life || DECAL.life) + DECAL.fade;
   decal.at[i * 3] = x; decal.at[i * 3 + 1] = y; decal.at[i * 3 + 2] = z;
   const u0 = d.uv[0], v0 = d.uv[1], u1 = d.uv[2], v1 = d.uv[3];
   // two triangles, anticlockwise, and `DoubleSide` means the winding cannot be the bug
@@ -9090,6 +9105,21 @@ function stepLoose(dt) {
   }
 }
 
+// THE SCORCH TRAIL (m186, `DECAL.trail`): a mark on the floor every so often while the ball is low
+// enough over it to be scorching it. Distance, not time, so a slow bolt and a fast one leave the
+// same spacing.
+function boltTrail(b) {
+  if (!decal.ready) return;
+  const T = DECAL.trail;
+  if (b.tx === undefined) { b.tx = b.pos.x; b.tz = b.pos.z; return; }
+  // the rapid fire spaces them three times wider, or a burst would recycle the whole pool
+  if (Math.hypot(b.pos.x - b.tx, b.pos.z - b.tz) < T.every * (b.auto ? 3 : 1)) return;
+  b.tx = b.pos.x; b.tz = b.pos.z;
+  const gy = groundAt(b.pos.x, b.pos.z, b.pos.y, .05);
+  if (!(b.pos.y - gy < T.h) || gy < -50) return;
+  decalPut(b.pos.x, gy + .002, b.pos.z, 0, 1, 0, decal.by[T.kind] ? T.kind : 'blast',
+           T.s + T.sChg * (b.chg || 0), 0, T.life);
+}
 function stepBolts(dt) {
   for (let i = BOLTS.length - 1; i >= 0; i--) {
     const b = BOLTS[i];
@@ -9182,6 +9212,7 @@ function stepBolts(dt) {
         } else if (b.pos.y < 0) { dead = true; b.hitN = [0, 1, 0]; b.hitBox = null; b.hitAt = null; }
       }
     }
+    if (!dead && DECAL.trail.on && !b.virus && !b.dna) boltTrail(b);
     b.g.position.copy(b.pos);
     // it flickers, which at sixty frames a second is what plasma looks like for the cost of
     // writing a scale
@@ -10510,6 +10541,24 @@ function slamFx(x, y, z) {
   }
   camShake(CAM.shake.max);
 }
+// THE CRACK HE LEAVES (m186, `DECAL.slam`). On the floor under him -- read off the collider, not
+// assumed to be his feet, because `SLAM.max` can end the state a little above it -- and only if
+// there IS a floor within a metre, or the mark would hang in the air over a drop.
+function slamMark(x, y, z) {
+  if (!DECAL.on || !decal.ready) return;
+  const S = DECAL.slam, gy = groundAt(x, z, y + .3, .6);
+  if (!(y - gy < 1.2)) return;
+  const k = decal.by[S.kind] ? S.kind : S.fall, d0 = (decal.by[k] || [])[0];
+  if (!d0) return;
+  // sized so the crater spans `k` of the slam's catch radius on each side
+  decalPut(x, gy + .002, z, 0, 1, 0, k, SLAM.r * 2 * S.k / (d0.size_m || 1.4), 0, S.life);
+  for (let i = 0; i < S.rubble; i++) {
+    const a = (i + Math.random() * .7) / S.rubble * Math.PI * 2, r = SLAM.r * S.ring * (.7 + Math.random() * .5);
+    const rx = x + Math.sin(a) * r, rz = z + Math.cos(a) * r, ry = groundAt(rx, rz, gy + .6, .8);
+    if (Math.abs(ry - gy) > .6) continue;          // not over a kerb drop or up a wall
+    decalPut(rx, ry + .002, rz, 0, 1, 0, 'rubble', .7 + Math.random() * .4, 0, S.life);
+  }
+}
 function slamLand() {
   const p = player;
   p.slam = 0;
@@ -10528,6 +10577,7 @@ function slamLand() {
   }
   snd('hit', { g: 1.0, r: .78, x: p.pos.x, z: p.pos.z });
   slamFx(p.pos.x, p.pos.y, p.pos.z);
+  slamMark(p.pos.x, p.pos.y, p.pos.z);
   // **AND IT HANDS TO THE HARD LANDING, BECAUSE THE CLIP IS CUT AT THE IMPACT.** `rateMax`
   // means a slam from a low jump plays only part of the swing, and ending there would snap him
   // from mid-arc into the idle -- a jump cut, which nothing in this file is allowed to be.

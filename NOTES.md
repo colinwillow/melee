@@ -7,6 +7,21 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE SLAM SPLITS THE GROUND AND THE BOLT SCORCHES WHAT IT SKIMS (m186, `DECAL.slam`,
+  `slamMark`, `DECAL.trail`, `boltTrail`).** *"When you slam down I'd like it to leave a decal
+  like you split the ground -- I'll probably make a custom one. And the blaster skims along the
+  ground; it'd be cool if it left a trail."* Both on the impact-mark atlas that already exists.
+  **The slam** puts a crater at his feet sized off `SLAM.r` (so the mark says how far the blow
+  caught) with rubble round it, on the floor read off the collider, and not at all if there is
+  no floor within a metre. **`DECAL.slam.kind` is `crack` and it is tried first**: a mark of kind
+  `crack` added to `impact_marks.json` is used with no code change; until then, the craters.
+  **The trail** is a small scorch every 0.85 m (2.55 m for the rapid fire) while the ball is within
+  1.35 m of the floor, sized by the charge, gone in 6 s. **The pool went 40 -> 96** and marks took a
+  per-mark life, so a trail cannot recycle the impact marks out from under the walls. The atlas
+  is indexed by NAME as well as kind now (`scorch`, `crater`, `goo` ...) because `blast` is a
+  scorch two times in three. **The atlas only loads in the toon city, the kit city and the kit
+  world**, so the test site and Weirdport leave no marks, as before.
+
 - **HE SANK INTO THE GRASS BECAUSE THE COLLISION GRASS HAD HOLES WHERE THE OLD BUILDINGS STOOD (m185,
   `kcGroundCapture`, `KCITY.fill`).** *"He just sinks through the grass, so the collider is not
   doing a great job."* Measured, not guessed: the collision grass (`ground_lots`) is flat at 0.23
