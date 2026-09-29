@@ -7,6 +7,16 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A ROCKET ON A MAN LEFT NO MARK, BECAUSE A BODY IS NOT A SURFACE (m216, `ROCKET.markH`).**
+  *"When I hit a character and the fire goes on the ground, there's supposed to be a mark on the
+  ground too -- a crack -- and there's not."* `boltHit` stamps its decal only under `if (b.hitN)`,
+  and `hitN` is the face a surface test reported -- a bolt caught by `dummyHit` never has one. The
+  little fire got to the ground anyway because `fireIgnite` snaps itself down with `groundAt`; the
+  mark had no such step. Now a rocket with no `hitN` looks straight down and stamps a flat `blast`
+  scorch (with its rubble) if the ground is within `markH` 2.6 m. **And the same branch carried
+  `brkBlast`/`kitBlast`**, so a direct hit on a man used to leave the crate beside him untouched --
+  it reaches them now. The plasma bolt is unchanged: a hit on a body is still no mark.
+
 - **HIS HYDRANT REPLACES THE OLD ONE BY STANDING ON ITS CLAIM (m215, `HYD`, `buildHydrant`,
   `hydBreak`).** *"I added a props folder with the fire hydrant and the fire hydrant collider...
   let me know how that fares, cause if I need to break it up more I can."*
