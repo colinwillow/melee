@@ -7,6 +7,25 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **RES AUTO BLINKED BLACK ON EVERY STEP, BECAUSE IT RESIZED AFTER THE DRAW (m202).** Setting a
+  canvas's size CLEARS it. `perfStep` ran after `renderer.render`, so every adjustment showed one
+  cleared (black) frame. It runs before the render now, and the same frame draws into the new
+  size. Stepping UP is also rate-limited (`upAt` 15 fps over target, at most every `upEvery` s),
+  and a step down that bought nothing holds for 60 s, so the sharpness stops hunting.
+  **His read:** toggling it "did not seem to save any frame rate". That is consistent with the
+  frame not being fill bound, which is exactly the case AUTO backs off from. The 40-50 fps he saw
+  after m200 is the body culling. The slide back to 25 "after some time" is unexplained. Heat
+  throttling on a phone does exactly that and nothing here can measure it; the chip's `B` count
+  and `pr` separate "more bodies on screen" and "resolution dropped" from it.
+- **THE TUNE PANEL (m202, `TUNE`, the TUNE key on the FX bar).** *"I need those in a debug panel,
+  I'm doing this on the phone."* Sliders for the rays and the dust. A row is one line in `TUNE`:
+  label, object, key (`'w.1'` for an array index), range, step, and the pool to rebuild if the
+  value is baked in at construction. The values are remembered in `mel.tune` by label, and RESET
+  restores what the file ships.
+  **The sliders are divs that read pointer x, not `<input type=range>`**, because the page is
+  `touch-action: none` from the root down. The panel stops its own pointer events, so a drag on it
+  never steers.
+
 - **THE RAYS AND THE DUST KEYS DID NOTHING YOU COULD SEE, SO THEY ARE REBUILT (m201).** *"They
   still don't really seem like they do anything."*
   - **Rays.** m130's cards hung 46 m out along the sun axis and drew only while the lens faced
