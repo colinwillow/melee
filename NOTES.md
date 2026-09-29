@@ -7,6 +7,19 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS TWO FIRE SHEETS, ON A SWITCH (m198, `FIRE.sheets`, `fireSheet`, `?fire=N`).** *"I want to
+  try the second one, but it's five by two rather than four by four."* The shape is not a problem.
+  The lookup is in UV, so any `grid` works, and so do cells that are not a whole number of pixels.
+  - `fire_sprites_01.png`: 1254 square, RGBA, 4 x 4, so each cell is 313.5 px. It is ONE tongue's
+    whole life (kindle, swell, curl, gutter into smoke), which is exactly what a card playing the
+    book once over its life wants.
+  - `fire_sprites_02.png`: 900 x 360, RGB on black, 5 x 2 at 180 px. It is ten separate bursts
+    rather than a sequence, so a card cross-fades between unrelated drawings, which reads as
+    boiling rather than as a tongue.
+  0 is the drawn flipbook. `pick` 2 is the default because he asked for it first. `?fire=0/1/2`
+  and `mel.fireSheet(n)` swap live, because which fire looks right is his call. The chip's fire
+  token reads `S1`/`S2` when a sheet of his is playing, and `NO FIRE SHEET n` if one failed to load.
+
 - **EVERYBODY IN THE KIT WORLDS, AND THAT IS WHAT THE VIRUS GUN WAS MISSING (m197, `KCROWD.crowd`,
   `crowdDeal`).** *"I meant everybody, like the warrior aliens, and I'm unable to change anybody
   into a warrior with the virus gun."* One fault, not two. `alienKinds()` only offers a kind
