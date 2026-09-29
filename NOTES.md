@@ -7,6 +7,16 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE FRAME IS TIMED BY PART, IN THE CHIP (m230, `PROF`, `pT`).** *"Neither of them really do
+  anything -- 20-21 both on and off."* Anti-tile off, wobble off and (m20x) resolution down all left
+  the frame rate where it was, which is what a CPU-bound frame looks like: the GPU's pixel and vertex
+  work is not the wall. So `frame()` is cut into parts -- plyr (aim/kit/player), kit (moto/kitStep),
+  traf, body (dummies/she/morph), rig (anim, mixer, doll), cam (camera, x-ray, lights, sun), fx
+  (bolts .. fire), misc (dust, shafts, hud), rend (`renderer.render`, i.e. the CPU cost of issuing
+  the draw calls) -- and the chip prints `cpu<total> <top four> /<frame ms>`. Total near the frame
+  time = CPU-bound and the parts say where; total far under it = the wait is the GPU. **Read the
+  numbers before touching anything else**: two builds of shader switches were spent on a guess.
+
 - **THE TUNE PANEL FOLDS AND SCROLLS BY HAND (m229, `tuneOpen`).** *"I can't scroll the tune panel and
   it's too long."* It was `overflow: hidden` inside a page that is `touch-action: none` with every
   touch cancelled for the sticks -- native scrolling could never reach it. Headings are now fold
