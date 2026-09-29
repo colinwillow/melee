@@ -7,6 +7,20 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE KIT WORLDS HAVE A CROWD, AS A FRAME-RATE EXPERIMENT (m196, `KCROWD`, `kitPopulate`).**
+  *"I'm thinking we try adding the civilians in and see how much it crashes the frame rate, also
+  maybe Clancy."* Both kit worlds loaded only the construction worker. Now they load all nine
+  `CIVILS` (`KCROWD.per` each) plus Clancy beside the spawn. The biker is loaded as the CLIP DONOR
+  ONLY (`BIKER.at = []`), because every civil borrows his clips.
+  **EVERY `at` TABLE IS TEST-SITE COORDINATES**, and `wpPool` walks the full `TRI` grid bounds, so
+  placement is the kit's own. `kitPopulate` throws darts within 70 m (tkit) or 34 m (kit) of the
+  spawn. It keeps a spot only on level street-level ground (`KCROWD.top`), outside a kit building
+  (`kitInside`), and clear of the collider at a body's radius. Then `wpSpread` spreads them
+  farthest-point. It is seeded, so the same crowd appears every load.
+  **THE A/B IS A URL**: `?crowd=0` (or `KCROWD.on = 0`) gives back the empty world. Read the fps in
+  the chip both ways. The chip's `C<n>` is how many civilians were placed, and `KIT CROWD n/9`
+  appears if the ground ran out.
+
 - **THE LADDER FRONT WAS BACKWARDS ON EVERY LADDER, AND MY GEOMETRY TEST SAID IT WAS RIGHT (m195,
   `CLIMB.frontSign`).** *"They're all the wrong side -- you can walk up the inside and not the
   outside."* m181 made the front the piece's local +Z and backed it with a measurement: which side
