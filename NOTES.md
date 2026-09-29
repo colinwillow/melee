@@ -7,6 +7,21 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE X-RAY LEAVES THE CAMERA ALONE, AND ITS CIRCLE IS HIS SIZE (m182, `KIT.xrayW`, `KCUT.camY`).**
+  *"When you go inside a building the camera angle changes, and since we have the x-ray I don't
+  think it should. On the roof it x-rays through the side rim of the wall -- there's no need."*
+  Two faults, both mine from m181:
+  **1. 'xray' borrowed the cutaway's lens** (lifted to `cutEl`, pulled to `cutDist`). Now only 'cut'
+  and 'close' move the camera. What xray keeps is `KCUT.cam` -- the boom may pass through the
+  building he is in from his own floor up (`camY`), because a lens stopped by the wall behind him
+  is a close-up of his shoulder, and that wall is exactly the one the x-ray thins.
+  **2. The circle was .30 of the SCREEN**, which at his usual distance is a cone metres wider than
+  his body, so a parapet standing BESIDE him on a roof -- nearer the lens, covering nothing -- fell
+  inside it and dithered. It is a radius in METRES at his depth now (`xrayW` 1.15 outside,
+  `xrayWIn` 2.4 indoors), converted with the live fov, so only what is actually in front of him
+  thins. A tighter test (is this fragment really occluding HIS pixels) needs his depth per pixel,
+  which is a render pass this game does not have; the body-sized cone is the cheap version of it.
+
 - **THE X-RAY, LADDERS WITH A FRONT, AND THE ROOF PULL-OUT (m181, `KCUT.x*`, `kitXrayStep`,
   `L.fx/fz`, `kit.high`).** *"When you get inside, at certain camera angles it just completely
   disappears. I was picturing a radial gradient from completely open on the outside to semi-
