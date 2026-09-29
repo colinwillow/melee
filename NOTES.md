@@ -7,6 +7,42 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE COLLISION GRID HELD INDICES, AND AUTO-FIRE INTO A KIT CITY BROKE IT FOR EVER (m188, `boxDel`,
+  `BGRID`).** A screen of `undefined is not an object (evaluating 'b.minx')` @ `groundAt` and
+  `'b.tri'` @ `boxRay`, repeating every frame. `boxGrid` filed each box as its INDEX in `BOXES`, and
+  every splice between a removal and the next rebuild shifted each index after it -- so a bucket
+  handed back the wrong box, or `undefined` off the end. m184's loose props made it reachable: a bolt
+  unpins a bag (`looseUnpin` splices, `brkDirty` defers the rebuild to `brkStep`) and the NEXT bolt,
+  same frame, ray-casts the stale grid. The throw left the frame loop BEFORE `brkStep`, so the
+  rebuild that would have healed it never ran, and it threw every frame after. **The grid holds the
+  boxes themselves now**, and every removal goes through `boxDel`, which marks the box `_off` so it
+  is not handed back in the window before the rebuild (`boxGrid` clears the mark on everything still
+  in `BOXES`, which is what makes a repaired chunk live again). **A deferred rebuild is only safe if
+  the stale structure is still CORRECT, merely conservative** -- indices were neither.
+- **THE WORKER PLANS A PATH, SWINGS FASTER, AND THE BOLT'S MARK IS HALF THE SIZE (m188, `navPath`,
+  `NAV`, `WORKER.cut`, `DECAL.bolt`).** *"He gets stuck on walls a lot and just infinitely walks
+  towards them... kind of slow with the repairs... trim the swings so it's just the swing... the hit
+  impact mark on the asphalt is kind of huge."*
+  **THE PATH IS A LAZY A\*** over the real collider on a 0.6 m grid: a cell is only asked about (one
+  `boxesNear`) when the search reaches it, blocked means a box he cannot step onto or walk under
+  within his radius, and the corners are string-pulled so he walks straight lines. Replans from
+  where he is after `NAV.replan` s pressed against something; after `NAV.tries` failed plans he
+  steps to the marker (the chip counts both: `p<plans>` and `!<gave up>`). Probed offline on the
+  generated row: from the street to walls on the far side of BKG0 -- 7 of 7 reached on ONE plan,
+  0 give-ups, 12-38 ms for the whole trip's planning.
+  **THE SWING TRIMS ARE MEASURED**: the hammer tip's world path through a real mixer, 24 fps --
+  `1-handed_swing_01` raises f9-f20 and strikes f20-f23 (so [8, 26]), `1-handed_swing_02` is
+  fastest at f8 ([2, 14]), `2-handed-swing` dips to f8 (his "move his arm" lead-in), raises f9-f15,
+  strikes f16-f19 ([9, 22]). `AnimationUtils.subclip` at build, the contact fraction recomputed
+  per cut, and `KREP.rate` 1.35 on top: a swing is 0.4-0.55 s against 1.0-2.3. He never plays the
+  same cut twice running (the end and the start of a cut are different poses; restarting on itself
+  pops, and a DIFFERENT clip blends).
+  **HE HAS NO RUN CLIP** -- `WORKER.runClips` is the hook (`run_fwd` / `running` / `run`, first
+  found wins, used past `runFar` metres), and his walk went 1.3 -> 1.6 m/s meanwhile. `runRef` 3.5
+  is a guess until `npm run gait` measures the clip.
+  **THE BOLT'S DECAL** is `DECAL.bolt` .5 on the atlas `size_m`; the trail, the slam and the hammer
+  are untouched.
+
 - **THE CONSTRUCTION WORKER PUTS WALLS BACK (m187, `WORKER`, `workerAI`, `kitRestore`, `KREP`).**
   *"The construction worker is gonna go and rebuild buildings that are broken... for now just have
   one guy in there -- when you break it, maybe he walks up to the building and starts repairing it."*

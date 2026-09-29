@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m187</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m188</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m187</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m188</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,7 +602,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm187';
+const BUILD = 'm188';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -2886,11 +2886,24 @@ const WORKER = {
     // the swings, and where in each the hammer lands -- a look-at-it number, one per clip
     swing: ['1-handed_swing_02', '2-handed-swing', '1-handed_swing_01'],
   },
+  // **THE SWINGS ARE CUT DOWN TO THE SWING (m188).** *"A lot of them have like move his arm left or
+  // right, then cock back, then swing -- trim them so it's just the swing, so he could swing over
+  // and over a lot quicker."* MEASURED, not eyeballed: the hammer tip's world path through a real
+  // mixer, frame by frame (24 fps), and the cut is the wind-up into the strike and a few frames of
+  // follow-through. [first frame, last frame, where in what is LEFT the head lands]:
+  //   1-handed_swing_01   2.33 s  raise f9-f20 (tip 0.41 -> 0.89), strike f20-f23 (-> 0.18)
+  //   1-handed_swing_02   1.04 s  lift f3-f7, fastest f8, down to 0.39 at f10
+  //   2-handed-swing      1.33 s  a dip to f8 (the "move his arm"), raise f9-f15, strike f16-f19
+  // `cut: null` plays them whole.
+  cut: { '1-handed_swing_01': [8, 26, .8], '1-handed_swing_02': [2, 14, .62], '2-handed-swing': [9, 22, .72] },
   hitAt: { '1-handed_swing_01': .42, '1-handed_swing_02': .5, '2-handed-swing': .55 },
   // NOT MEASURED: `npm run gait` has not been run on him, so `walkRef` is a guess and his feet may
   // slide a little. Run it on his file and put the number here.
-  walkRef: 1.2, runRef: 1.2, fleeRef: 1.2, tsHi: 1.6, tsLo: .6,
-  walk: 1.3, run: 1.3, flee: 1.3,
+  walkRef: 1.2, runRef: 3.5, fleeRef: 1.2, tsHi: 1.8, tsLo: .6,
+  walk: 1.6, run: 1.6, flee: 1.6,
+  // **A RUN, WHEN THERE IS ONE.** His file has no run clip; name one here (the first that exists
+  // is taken) and he runs to a job more than `runFar` metres off. `runRef` is its reference speed.
+  runClips: ['run_fwd', 'running', 'run'], runSp: 4.2, runFar: 6,
   turn: 3.2,
   vary: { pace: [.95, 1.05], nerve: [1, 1], react: [.3, .8], guard: [0, 0] },
   slide: { at: .25, hold: .60, turn: 2.2 },
@@ -2906,7 +2919,19 @@ const WORKER = {
 // THE REPAIR JOB. `range` is how far he will go for a hole; `arrive` how close to his marker counts;
 // `stuck` how long walking into something before he simply steps to the marker (a man who cannot
 // reach the job is worse than one who arrives a little by magic); `per` chunks per swing.
-const KREP = { on: 1, range: 90, arrive: .55, stuck: 5, per: 1, scan: .6, rate: 1.0, dust: [.62, .58, .52] };
+// `rate` 1.35 on top of the trims (m188): a swing is now 0.4-0.55 s, against 1.0-2.3 before.
+const KREP = { on: 1, range: 90, arrive: .6, stuck: 3, per: 1, scan: .6, rate: 1.35, dust: [.62, .58, .52] };
+// **THE PATH (m188, `navPath`).** *"He does get stuck on walls a lot and just infinitely walks
+// towards them -- a much more intelligent seeking system would be ideal."* An A* over the REAL
+// collider on a grid of `cell` metres, but LAZY: a cell is only asked about (one `boxesNear`) when
+// the search reaches it, so a clear street costs a few hundred lookups and not the whole window.
+// Blocked means a box he cannot step onto (`stepH`) and cannot walk under (`head`), within his own
+// radius -- the same boxes `foeMove` pushes him out of, so the plan and the walk cannot disagree.
+// The corners are then pulled tight (`navLine`), so he walks straight lines and not a staircase.
+// `pad` is how far round the start-to-goal box the search may wander; `max` caps the cells;
+// `replan` is how long pressed against something before he plans again from where he is.
+const NAV = { cell: .6, pad: 12, max: 70000, expand: 25000, stepH: .45, head: 1.7, near: 3.5,
+              next: .5, replan: 1.0, tries: 3 };
 const KREPAIR = new Map();      // wall piece_id -> where his `nav_repair` marker stands
 
 // ============================================================================================
@@ -6488,9 +6513,26 @@ function surfRay(ox, oy, oz, ex, ey, ez, out) {
 // half way through and the ledge search would silently stop after its first candidate. A pool
 // sized by counting the nesting is a thing to get wrong later; five named arrays cannot alias.
 // BGRID:START
-const BGRID = { on: 0, cell: 8, min: 400, pad: 2, x0: 0, z0: 0, nx: 0, nz: 0, grid: null, mark: null, tick: 0 };
+// **THE GRID HOLDS THE BOXES THEMSELVES, NOT THEIR INDICES (m188).** It held indices into `BOXES`,
+// and every splice between a removal and the rebuild shifted each index after it -- so a bucket
+// handed back the WRONG box, or `undefined` off the end. With auto-fire into a kit city that is a
+// loose bag unpinned and a bolt ray-cast in the same frame: `b.minx` of undefined, thrown out of
+// the frame loop BEFORE `brkStep` could rebuild -- so it never healed and threw every frame for
+// ever. By reference a splice can only leave a box in its bucket until the rebuild, and `boxDel`
+// marks it `_off` so it is not returned in that window either.
+const BGRID = { on: 0, cell: 8, min: 400, pad: 2, x0: 0, z0: 0, nx: 0, nz: 0, grid: null, tick: 0 };
+// THE ONE WAY A BOX LEAVES THE COLLIDER. The caller still owns the rebuild (`boxGrid`, `kitRegrid`,
+// `brkDirty`) -- this only makes the window before it safe.
+function boxDel(b) {
+  if (!b) return 0;
+  const i = BOXES.indexOf(b);
+  if (i < 0) return 0;
+  BOXES.splice(i, 1); b._off = 1;
+  return 1;
+}
 function boxGrid() {
-  BGRID.on = 0; BGRID.grid = null; BGRID.mark = null;
+  BGRID.on = 0; BGRID.grid = null;
+  for (const b of BOXES) b._off = 0;       // a box put back (a repair) is live again
   if (BOXES.length < BGRID.min) return 0;
   let x0 = 1e30, x1 = -1e30, z0 = 1e30, z1 = -1e30;
   for (const b of BOXES) {
@@ -6510,23 +6552,22 @@ function boxGrid() {
     const i0 = Math.max(0, Math.floor((b.minx - gp - x0) / c)), i1 = Math.min(BGRID.nx - 1, Math.floor((b.maxx + gp - x0) / c));
     const k0 = Math.max(0, Math.floor((b.minz - gp - z0) / c)), k1 = Math.min(BGRID.nz - 1, Math.floor((b.maxz + gp - z0) / c));
     for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
-      const q = i * BGRID.nz + k; (g[q] || (g[q] = [])).push(n);
+      const q = i * BGRID.nz + k; (g[q] || (g[q] = [])).push(b);
     }
   }
-  BGRID.mark = new Int32Array(BOXES.length);
-  BGRID.tick = 0; BGRID.on = 1;
+  BGRID.on = 1;
   return BGRID.nx * BGRID.nz;
 }
 function boxesNear(qx0, qx1, qz0, qz1, out) {
   if (!BGRID.on) return BOXES;
-  const c = BGRID.cell, mark = BGRID.mark, t = ++BGRID.tick;
+  const c = BGRID.cell, t = ++BGRID.tick;
   out.length = 0;
   const i0 = Math.max(0, Math.floor((qx0 - BGRID.x0) / c)), i1 = Math.min(BGRID.nx - 1, Math.floor((qx1 - BGRID.x0) / c));
   const k0 = Math.max(0, Math.floor((qz0 - BGRID.z0) / c)), k1 = Math.min(BGRID.nz - 1, Math.floor((qz1 - BGRID.z0) / c));
   for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
     const L = BGRID.grid[i * BGRID.nz + k];
     if (!L) continue;
-    for (let n = 0; n < L.length; n++) { const b = L[n]; if (mark[b] === t) continue; mark[b] = t; out.push(BOXES[b]); }
+    for (let n = 0; n < L.length; n++) { const b = L[n]; if (b._gt === t || b._off) continue; b._gt = t; out.push(b); }
   }
   return out;
 }
@@ -8198,7 +8239,7 @@ function boltHit(b) {
     const hx0 = b.hitAt ? b.hitAt[0] : b.pos.x, hy0 = b.hitAt ? b.hitAt[1] : b.pos.y,
           hz0 = b.hitAt ? b.hitAt[2] : b.pos.z;
     decalHit(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2],
-             c > DECAL.bigAt ? 'blast' : 'alien', c, K * (.7 + c * .6),
+             c > DECAL.bigAt ? 'blast' : 'alien', c, K * (.7 + c * .6) * DECAL.bolt,
              hitFit(hx0, hy0, hz0));
     // AND A BREAKABLE TAKES THE HIT. The blast radius is what reaches it, so a charged shot
     // takes out the crate beside the one it hit and a fumble takes out neither.
@@ -8607,11 +8648,10 @@ function brkBreak(b, hx, hy, hz) {
   } else if (b.obj) b.obj.visible = false;
   // and the box goes with it, or you walk into a crate that is not there
   if (b.box) {
-    const i = BOXES.indexOf(b.box);
     // **THE GRID IS REBUILT ONCE A FRAME, NOT ONCE A BOX.** `boxGrid` walks all 670 of them,
     // and a charged shot takes out several crates on the SAME frame -- so rebuilding inside
     // the loop does the whole walk once per crate to reach the same answer.
-    if (i >= 0) { BOXES.splice(i, 1); brkDirty = 1; }
+    if (boxDel(b.box)) brkDirty = 1;
     b.box = null;
   }
   const T = brkLib.types[b.type];
@@ -8762,6 +8802,10 @@ const DECAL = {
   // `fitMin` is the floor -- a mark scaled all the way down to a bollard's width is a mark you
   // cannot see, which is the opposite failure and just as useless.
   fit: 1, fitK: 2.2, fitMin: .3,
+  // **THE BOLT'S OWN MARK, SCALED (m188).** *"The hit impact mark on the asphalt is kind of huge --
+  // shrink it to at least half."* The atlas's `size_m` is 1.2-1.6 m and a charged bolt took that
+  // to x1.3 on top; this is the one dial for the blaster's mark alone.
+  bolt: .5,
   // **THE GROUND SLAM SPLITS THE GROUND (m186).** *"When you slam down, leave a decal on the ground
   // like you split the ground."* A crater at his feet sized off `SLAM.r` -- the radius the blow
   // actually catches, so the mark says how far it reached -- and rubble thrown round it. `kind`
@@ -9044,7 +9088,7 @@ function looseUnpin(L) {
     const cy = (B.miny + B.maxy) / 2;
     if (cx < b.min.x - q || cx > b.max.x + q || cz < b.min.z - q || cz > b.max.z + q || cy > b.max.y + q) continue;
     if (B.maxy - B.miny > (b.max.y - b.min.y) * 2 + .5) continue;      // a wall is not a bag
-    BOXES.splice(i, 1); n++;
+    BOXES.splice(i, 1); B._off = 1; n++;
   }
   if (n) brkDirty = 1;
   const kill = (G) => {
@@ -15311,7 +15355,7 @@ function kitSwap(W) {
   G.updateMatrixWorld(true);
   W.meshes = meshes; W.batched = 0; W.cloned = 1; W.parts = null; W.twinG = G;
   const L = KWCOL.get(W.pid);
-  if (L) for (const b of L) { decalOff(b); const i = BOXES.indexOf(b); if (i >= 0) BOXES.splice(i, 1); }
+  if (L) for (const b of L) { decalOff(b); boxDel(b); }
   for (const c of W.chunks) BOXES.push(c.box);
   kit.live.push(W);
   kitRegrid();
@@ -15677,8 +15721,7 @@ function kitKill(W, c, loud, bx, by, bz) {
   // and any scorch that was on its face, or it hangs in the hole where the brick was
   decalOff(c.box);
   // and its collider goes with it, or the hole is one you can see through and still walk into
-  const i = BOXES.indexOf(c.box);
-  if (i >= 0) BOXES.splice(i, 1);
+  boxDel(c.box);
   kitRegrid();
   if (loud) {
     spkBurst(c.x, c.y, c.z, 14, { col: KIT.dust, spread: 3.2, up: 2.4, r: c.r,
@@ -15973,8 +16016,7 @@ function kitPartBox(P) {
 }
 function kitPartOff(P) {
   if (!P.box) return;
-  const i = BOXES.indexOf(P.box);
-  if (i >= 0) { BOXES.splice(i, 1); kitRegrid(); }
+  if (boxDel(P.box)) kitRegrid();
   P.box = null;
 }
 // WHICH SIDE OF A PART HE IS ON, in the part's PARENT frame -- its closed pose IS the parent's
@@ -17437,7 +17479,7 @@ function bldCols(b) {
   // for one missing letter.
   const K = b.K || BLD;
   // take out whatever it contributes now, whichever of the two that is
-  const drop = c => { const i = BOXES.indexOf(c); if (i >= 0) BOXES.splice(i, 1); };
+  const drop = c => boxDel(c);
   if (b.cols) b.cols.forEach(drop); else drop(b.bx);
   b.cols = null;
   let got = [];
@@ -19225,6 +19267,16 @@ function buildWorkerHammer(g) {
 function buildWorkers(g) {
   WORKER.loops = bodyLoops(WORKER);
   const P = bodyProto(g, WORKER);
+  // THE SWINGS, CUT (m188) -- before any body is spawned, so every action is built on the cut clip
+  if (WORKER.cut) P.clips = P.clips.map(c => {
+    const q = WORKER.cut[c.name];
+    if (!q) return c;
+    const sc = THREE.AnimationUtils.subclip(c, c.name, q[0], q[1], 24);
+    WORKER.hitAt[c.name] = q[2];
+    return sc;
+  });
+  WORKER.runClip = (WORKER.runClips || []).find(n => P.clips.some(c => c.name === n)) || '';
+  if (WORKER.runClip) WORKER.loops.add(WORKER.runClip);
   WORKER.up = 0;
   for (const [x, z, y] of WORKER.at) {
     const d = bodySpawn(P, WORKER, x, z, y);
@@ -19259,6 +19311,103 @@ function workerSpot(W) {
   }
   return { x, z };
 }
+// ---- THE PATH (m188, `NAV`) -----------------------------------------------------------------
+const _bnN = [], _bnpN = { d: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+// can a body of radius `r` whose feet are at `y` stand at (x, z)?
+function navBlocked(x, z, y, r) {
+  for (const b of boxesNear(x - r, x + r, z - r, z + r, _bnN)) {
+    if (b.maxy <= y + NAV.stepH || b.miny >= y + NAV.head) continue;
+    const q = boxNear(b, x, z, _bnpN);
+    if (q < r) return 1;              // -1 is INSIDE the footprint, which is also < r
+  }
+  return 0;
+}
+// A* on a lazy grid; returns [{x, z}, ...] ending at (or as near as it can stand to) the goal, or
+// null. The start cell is always walkable -- a man pressed against a wall is standing SOMEWHERE.
+function navPath(x0, z0, x1, z1, y, r) {
+  const c = NAV.cell, pad = NAV.pad;
+  const ox = Math.min(x0, x1) - pad, oz = Math.min(z0, z1) - pad;
+  const nx = Math.ceil((Math.max(x0, x1) + pad - ox) / c) + 1, nz = Math.ceil((Math.max(z0, z1) + pad - oz) / c) + 1;
+  const N = nx * nz;
+  if (N > NAV.max) return null;
+  const st = new Uint8Array(N);                     // 0 unasked, 1 free, 2 blocked
+  const ok = i => {
+    if (!st[i]) st[i] = navBlocked(ox + ((i / nz) | 0) * c, oz + (i % nz) * c, y, r) ? 2 : 1;
+    return st[i] === 1;
+  };
+  const cell = (x, z) => {
+    const ix = Math.round((x - ox) / c), iz = Math.round((z - oz) / c);
+    return ix < 0 || iz < 0 || ix >= nx || iz >= nz ? -1 : ix * nz + iz;
+  };
+  const s0 = cell(x0, z0); if (s0 < 0) return null;
+  st[s0] = 1;
+  // the goal: its own cell, or the nearest free one within `near` (a marker hard against a wall
+  // can fall in a cell his radius does not fit)
+  let gi = cell(x1, z1); if (gi < 0) return null;
+  if (!ok(gi)) {
+    const gx = (gi / nz) | 0, gz = gi % nz, R = Math.ceil(NAV.near / c);
+    let best = -1, bd = 1e9;
+    for (let a = -R; a <= R; a++) for (let b = -R; b <= R; b++) {
+      const ix = gx + a, iz = gz + b; if (ix < 0 || iz < 0 || ix >= nx || iz >= nz) continue;
+      const dd = a * a + b * b; if (dd >= bd || dd > R * R) continue;
+      if (ok(ix * nz + iz)) { bd = dd; best = ix * nz + iz; }
+    }
+    if (best < 0) return null;
+    gi = best;
+  }
+  const gx = (gi / nz) | 0, gz = gi % nz;
+  const g = new Float32Array(N).fill(1e30), from = new Int32Array(N).fill(-1), shut = new Uint8Array(N);
+  const H = [], F = [];                              // a binary heap of (f, index)
+  const push = (f, i) => { let k = H.length; H.push(i); F.push(f);
+    while (k > 0) { const pk = (k - 1) >> 1; if (F[pk] <= F[k]) break;
+      [H[pk], H[k]] = [H[k], H[pk]]; [F[pk], F[k]] = [F[k], F[pk]]; k = pk; } };
+  const pop = () => { const top = H[0], li = H.pop(), lf = F.pop();
+    if (H.length) { H[0] = li; F[0] = lf; let k = 0;
+      for (;;) { const a = 2 * k + 1, b = a + 1; let m = k;
+        if (a < H.length && F[a] < F[m]) m = a; if (b < H.length && F[b] < F[m]) m = b;
+        if (m === k) break; [H[m], H[k]] = [H[k], H[m]]; [F[m], F[k]] = [F[k], F[m]]; k = m; } }
+    return top; };
+  const hx = i => { const dx = Math.abs(((i / nz) | 0) - gx), dz = Math.abs(i % nz - gz);
+    return (Math.max(dx, dz) + .4142 * Math.min(dx, dz)); };
+  g[s0] = 0; push(hx(s0), s0);
+  let n = 0, found = 0;
+  while (H.length && n++ < NAV.expand) {
+    const i = pop(); if (shut[i]) continue; shut[i] = 1;
+    if (i === gi) { found = 1; break; }
+    const ix = (i / nz) | 0, iz = i % nz;
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) {
+      if (!a && !b) continue;
+      const jx = ix + a, jz = iz + b; if (jx < 0 || jz < 0 || jx >= nx || jz >= nz) continue;
+      const j = jx * nz + jz; if (shut[j] || !ok(j)) continue;
+      // no cutting a corner: a diagonal needs both of its sides open
+      if (a && b && (!ok(ix * nz + jz) || !ok(jx * nz + iz))) continue;
+      const w = g[i] + (a && b ? 1.4142 : 1);
+      if (w < g[j]) { g[j] = w; from[j] = i; push(w + hx(j), j); }
+    }
+  }
+  if (!found) return null;
+  const raw = [];
+  for (let i = gi; i >= 0; i = from[i]) raw.push(i);
+  raw.reverse();
+  // PULL THE STRING: from each kept point, the farthest one it can see in a straight line
+  const P = i => ({ x: ox + ((i / nz) | 0) * c, z: oz + (i % nz) * c });
+  const sees = (a, b) => {
+    const A = P(a), B = P(b), L = Math.hypot(B.x - A.x, B.z - A.z), k = Math.ceil(L / (c * .5));
+    for (let t = 1; t < k; t++) { const j = cell(A.x + (B.x - A.x) * t / k, A.z + (B.z - A.z) * t / k); if (j < 0 || !ok(j)) return 0; }
+    return 1;
+  };
+  const out = [];
+  let a = 0;
+  while (a < raw.length - 1) {
+    let b = raw.length - 1;
+    while (b > a + 1 && !sees(raw[a], raw[b])) b--;
+    out.push(P(raw[b])); a = b;
+  }
+  // the last point is the marker itself when he can stand on it -- the cell centre is up to
+  // 30 cm off it, and the swing faces the wall from where he actually ends up
+  if (gi === cell(x1, z1) && out.length) { out[out.length - 1].x = x1; out[out.length - 1].z = z1; }
+  return out;
+}
 function workerJob(d) {
   let best = null, bd = KREP.range;
   for (const W of kit.live) {
@@ -19280,25 +19429,42 @@ function workerAI(d, dt, t) {
     if (d.rT > KREP.scan) {
       d.rT = 0;
       const W = workerJob(d);
-      if (W) { d.job = W; d.spot = workerSpot(W); d.rst = 'go'; d.stuckT = 0; }
+      if (W) { d.job = W; d.spot = workerSpot(W); d.rst = 'go'; d.stuckT = 0; d.path = null; d.tries = 0; }
     }
     return;
   }
   const W = d.job;
   if (!W || W.alive >= W.chunks.length) { d.rst = 'idle'; d.job = null; d.rT = 0; return; }
   if (d.rst === 'go') {
+    // **THE PLAN, AND A NEW ONE WHEN IT STOPS WORKING (m188).** One A* on the way out and again
+    // each time he has been pressed against something for `NAV.replan` -- from where he IS, which
+    // is what gets him off a corner the first plan could not see (a door that has swung, a car).
+    // Only after `NAV.tries` plans have all left him stuck does he step to the marker.
+    if (!d.path || d.stuckT > NAV.replan) {
+      if (d.path && ++d.tries > NAV.tries) {
+        p.x = d.spot.x; p.z = d.spot.z; p.y = groundAt(p.x, p.z, p.y + 1, 1.5);
+        d.rst = 'work'; d.rT = 0; d.swing = ''; d.stuckT = 0; d.path = null; kit.navGive = (kit.navGive || 0) + 1;
+        return;
+      }
+      d.path = navPath(p.x, p.z, d.spot.x, d.spot.z, p.y, K.r) || [{ x: d.spot.x, z: d.spot.z }];
+      d.pi = 0; d.stuckT = 0; kit.navPlans = (kit.navPlans || 0) + 1;
+    }
+    let w = d.path[d.pi];
+    while (d.pi < d.path.length - 1 && Math.hypot(w.x - p.x, w.z - p.z) < NAV.next) w = d.path[++d.pi];
     const gx = d.spot.x - p.x, gz = d.spot.z - p.z, gd = Math.hypot(gx, gz);
-    if (gd < KREP.arrive || d.stuckT > KREP.stuck) {
-      // a man who cannot reach the job steps to it -- rare, and better than walking into a wall for ever
-      if (gd >= KREP.arrive) { p.x = d.spot.x; p.z = d.spot.z; p.y = groundAt(p.x, p.z, p.y + 1, 1.5); }
-      d.rst = 'work'; d.rT = 0; d.swing = ''; d.stuckT = 0;
+    const last = d.pi >= d.path.length - 1, wd = Math.hypot(w.x - p.x, w.z - p.z);
+    if (gd < KREP.arrive || (last && wd < KREP.arrive)) {
+      d.rst = 'work'; d.rT = 0; d.swing = ''; d.stuckT = 0; d.path = null;
       return;
     }
-    faceTo(d, Math.atan2(gx, gz), dt);
-    const sp = K.walk * d.v.pace;
+    faceTo(d, Math.atan2(w.x - p.x, w.z - p.z), dt);
+    // run to a job that is far, if there is a run to run with
+    let left = wd; for (let k = d.pi; k < d.path.length - 1; k++) left += Math.hypot(d.path[k + 1].x - d.path[k].x, d.path[k + 1].z - d.path[k].z);
+    const run = K.runClip && left > K.runFar;
+    const sp = (run ? K.runSp : K.walk) * d.v.pace;
     foeMove(d, d.h, sp, dt);
-    t[K.clips.walk] = 1;
-    setSkinScale(d, K.clips.walk, clamp(sp / K.walkRef, K.tsLo, K.tsHi));
+    if (run) { t[K.runClip] = 1; setSkinScale(d, K.runClip, clamp(sp / K.runRef, K.tsLo, K.tsHi)); }
+    else { t[K.clips.walk] = 1; setSkinScale(d, K.clips.walk, clamp(sp / K.walkRef, K.tsLo, K.tsHi)); }
     return;
   }
   // WORK: face the wall, swing, and on the swing's contact frame a chunk comes back
@@ -19306,7 +19472,8 @@ function workerAI(d, dt, t) {
   if (!d.swing || d.rT >= skinLen(d, d.swing) / KREP.rate) {
     const L = K.clips.swing.filter(n => d.actions[n]);
     if (!L.length) { t[K.clips.idle] = 1; kitRestore(W, kitNextDead(W)); return; }
-    d.swing = L[(Math.random() * L.length) | 0];
+    const L2 = L.length > 1 ? L.filter(n => n !== d.swing) : L;
+    d.swing = L2[(Math.random() * L2.length) | 0];
     skinPlay(d, d.swing, KREP.rate);
     d.rT = 0; d.hit = 0;
   }
@@ -22312,7 +22479,9 @@ function frame() {
       // REP: the construction worker's state and the chunks he has put back (m187) -- `REPidle0`
       // with a hole in a wall beside him is "he cannot see the job", `REPgo` for ever is "he
       // cannot reach it", and no token at all is "he never loaded" (NO CLIP / WORKER in the chip)
-      (WORKER.up ? ' REP' + ((DUMMIES.find(d => d.K === WORKER) || {}).rst || '?') + (kit.fixed || 0) : '') +
+      (WORKER.up ? ' REP' + ((DUMMIES.find(d => d.K === WORKER) || {}).rst || '?') + (kit.fixed || 0) +
+        // p: paths planned, !: times he gave up and stepped to the marker (m188)
+        ' p' + (kit.navPlans || 0) + (kit.navGive ? '!' + kit.navGive : '') : '') +
       (KPARTS.length ? ' P' + KPARTS.filter(q => !q.dead).length + '/' + KPARTS.length : '') +
       (KDEB.length ? ' D' + KDEB.length : '') +
       // IVY: how many leaf vertices found their chunk -- 0 with ivy on screen is "the tags never
