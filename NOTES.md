@@ -7,6 +7,19 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **m203'S STEADY CHEST SPUN THE SPINE, BECAUSE THE MIXER DOES NOT REWRITE A BONE WHOSE VALUE
+  DID NOT CHANGE (m204, `spinePre`, `spineUndo`).** *"His spine is just rotating over and over."*
+  three's `PropertyMixer.apply` calls `setValue` ONLY when the blended result differs from the one
+  it wrote the frame before. The launcher pose is ONE KEY, so at full weight the spine's mixed
+  value is constant, the mixer skips the write, and a correction premultiplied onto the bone after
+  it stacks up once per frame. That is Shredworld's c128 "the spine unravelled", one repo over, and
+  its answer holds: every edit on top of the mixer goes through `spinePre`, which remembers it, and
+  `spineUndo` takes it back off right before `rig.mixer.update`. If the mixer writes, nothing is
+  lost; if it does not, the bone is back where the edit started. `rigAirSpine` goes through it
+  too. It had the same latent fault, which only a charge held through a long jump would show.
+  **A bone edited after the mixer is only safe if something is guaranteed to rewrite it, and a
+  constant clip is not.**
+
 - **THE LAUNCHER: RIFLE-RUN LEGS, A STEADY CHEST, A STAND-IN KICK AND A LOCK-IN SOUND (m203,
   `rigSqSpine`, `ROCKETPOSE`, `ROCKET.arm`).**
   *"We are mixing the rocket animation with the run instead of the rifle run -- the unarmed run
