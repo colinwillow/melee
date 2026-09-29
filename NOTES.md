@@ -7,6 +7,60 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE KIT CITY: HIS SIXTY KIT BUILDINGS ON THE OLD LOTS, INTACT UNTIL HIT (m180, `KCITY`,
+  `buildKCityCol`, `kitObb`, `kitTwinIndex`, `kitSwap`, `kitInst`, `kitPrune`, `npm run twins`).**
+  *"All 60 old generated buildings are replaced, one per lot, facing the street... Intact walls
+  use the plain, cheap wall pieces. Each wall knows its chunked twin. On the first hit, the game
+  swaps that one wall for its chunked version... Draw calls: this is the big risk."*
+  **A FIFTH WORLD (`tkit`), NOT A REPLACEMENT**, because he asked to compare: `toon` still loads the
+  old set. Both run the same code; `kitWorld()` / `inTK()` say which parts apply.
+  **READ OFF THE FILES FIRST, and two things were not what the note implied:**
+      collision   7,679 objects and **NO EXTRAS AT ALL** -- the `piece_id` his note says each kit
+                  collider carries is only in the NAME: `bld_kit_000_wallB_window__L0_W0_0_w_3` is
+                  wall `kit_000/L0_W0_0_w`, box 3 (`KCITY.kitRe`). Every kit collider is an
+                  8-corner box baked to world space and turned with its building.
+      buildings   roots at ANY yaw (-173 to +178 degrees), which the m179 cell test, the ladder
+                  and the cutaway all assumed was zero.
+  **THE COLLIDERS ARE FITTED, NOT GUESSED (`kitObb`)**: the bottom four corners are a rectangle and
+  two edges off one corner are its axes. 6,276 fitted, worst corner outside its own box 0.13 mm.
+  **A KIT BOX IS NOT IN `SURF`**: the swap takes a wall's boxes away, and a triangle in the static
+  surface grid cannot be taken away -- so the box is the surface a bolt stops on, which is exact.
+  **THE TWIN'S CHUNK TABLE IS READ AT LOAD, NOT AT THE SWAP.** Chunk ids are the same on the wall and
+  its twin, so the ivy (24,976 verts), dressing (10,992) and all 126 AC units are wired to chunks
+  that do not exist in the geometry yet, and nothing is re-linked when it swaps. Measured: all
+  17,612 twin chunk centres sit on their own wall's static collider, worst 0.000 m.
+  **THE SWAP IS HIS FIVE STEPS**: the intact range of the batch collapses, the twin is spawned at the
+  wall's world transform in the BUILDINGS' materials (by name -- the library's textures are never
+  drawn), its static boxes go, its chunk boxes come in, and `kitKill`/`kitFlood` take it from there.
+  It fires from `kitBlast` (and from `kitKill`, so nothing can kill an intact chunk directly).
+  **DRAW CALLS 12,233 -> 88.** The static pieces, the walls (with ranges), the glass (with ranges)
+  AND NOW THE IVY AND DRESSING merge by material; the 322 moving parts (doors, leaves, lids, ACs)
+  become 64 InstancedMeshes (`kitInst`) with each node kept, drawing nothing, and `kitInstSync`
+  copying its matrix when it moves. The double-door cut is cached per source geometry, or twenty
+  wide doors would be forty unique leaves that cannot share an instance. Then `kitPrune` drops
+  19,814 nodes the game never reads (2,930 of them markers) -- 1,188 left under the world.
+  **THE PIECE LIBRARY IS 5.7 MB AND THE GAME NEEDS 0.94 OF IT (`npm run twins`).** Its textures are
+  never drawn (twins wear the buildings' materials), so the tool copies the 42 `wallB_*` twins out,
+  every bufferView byte-identical (747/747), no images. **Re-run after every library export.**
+  **A GRID REBUILD IS NOW A MILLISECOND** (7,449 boxes), so it had to stop happening per event:
+  a door is filed in the grid under its whole swing (`gpad`) and never rebuilds it, and a blast or a
+  fall rebuilds ONCE however many chunks it kills (`kitHold`/`kitRegrid`). A kill used to rebuild
+  per chunk. And `kitStep` walks only the walls that can break (`kit.live`), `kitBlast` asks each
+  wall a sphere question first, and `kitFlood` runs per wall hit -- m170 flooded every wall after
+  the first one hit, harmless on twenty and 1,344 flood fills a bolt here.
+  **TURNED, EVERYWHERE THE KIT READS POSITION**: `kitCell` works in the root's own frame, `KCLIMB`
+  entries carry their own along/out axes, and the cutaway box is in the building's frame (the shader
+  AND `camBlock`, and the shader applies `instanceMatrix` now that parts are instanced).
+  **AND A LADDER WHOSE FOOT IS ABOVE HIM IS STEPPED ONTO** -- a city ladder stands on the pavement
+  25 cm over the road, and `stepClimb`'s "off the bottom" test let go on the first frame. `kitSlot`
+  also had to learn `kit_000` (it only knew `BKG0`, so every building paired as `:X0`).
+  Driven through the shipped code on loader-shaped scenes (`tkprobe.mjs`): 1,344 walls, 0 without a
+  twin; walking at 12 intact walls stops him 0.37 m out on every one; breaking a solid wall out lets
+  him through; the swap takes 4.7 ms; **all 120 ladders latch and top out on their markers**; the
+  cut box is right in a building turned 91 degrees; a door swings its instance. The old kit world
+  re-measured unchanged except 84 -> 76 draws. **The visual file is draco and was not driven here**
+  -- it is the old city's pipeline on the old city's structure.
+
 
 
 

@@ -533,10 +533,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m179</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m180</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m179</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m180</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -602,9 +602,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm179';
+const BUILD = 'm180';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"4142044d","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -1863,7 +1863,7 @@ const WEAP = {
 const WORLD = {
   now: 'test',
   store: 'mel.world',
-  list: { test: 'TEST SITE', weirdport: 'WEIRDPORT', toon: 'TOON CITY', kit: 'BUILDING KIT' },
+  list: { test: 'TEST SITE', weirdport: 'WEIRDPORT', toon: 'TOON CITY', kit: 'BUILDING KIT', tkit: 'KIT CITY' },
 };
 {
   // **THE STORE IS READ INSIDE A TRY, AT MODULE SCOPE.** A throw up here is `init()` never
@@ -1885,6 +1885,12 @@ const inTC = () => WORLD.now === 'toon';
 // **A FOURTH WORLD IS A FOURTH PREDICATE (m170), for the reason the third one was.** His test
 // house: a building you can go inside, climb and knock down, with nothing else in it.
 const inKit = () => WORLD.now === 'kit';
+// **A FIFTH (m180): HIS CITY WITH THE KIT BUILDINGS IN IT.** The toon city's streets and props,
+// his sixty kit buildings on the old lots, and the old set still one tap away for comparison. It
+// is BOTH a toon city and a kit world, so every system that means "the kit's buildings are here"
+// asks `kitWorld()`, and every one that means "the toon city's streets are here" asks `tcWorld()`.
+const inTK = () => WORLD.now === 'tkit';
+const kitWorld = () => inKit() || inTK();
 const inTest = () => WORLD.now === 'test';
 
 // WEIRDPORT -- his Blender slice, measured off the two files before a line of this was written.
@@ -6437,8 +6443,11 @@ function boxGrid() {
   const g = BGRID.grid = new Array(BGRID.nx * BGRID.nz);
   for (let n = 0; n < BOXES.length; n++) {
     const b = BOXES[n];
-    const i0 = Math.max(0, Math.floor((b.minx - x0) / c)), i1 = Math.min(BGRID.nx - 1, Math.floor((b.maxx - x0) / c));
-    const k0 = Math.max(0, Math.floor((b.minz - z0) / c)), k1 = Math.min(BGRID.nz - 1, Math.floor((b.maxz - z0) / c));
+    // `gpad` (m180): a box that MOVES -- a door, a lid -- is filed under everywhere it can swing to,
+    // so the grid never has to be rebuilt because it moved (7,400 boxes in the kit city)
+    const gp = b.gpad || 0;
+    const i0 = Math.max(0, Math.floor((b.minx - gp - x0) / c)), i1 = Math.min(BGRID.nx - 1, Math.floor((b.maxx + gp - x0) / c));
+    const k0 = Math.max(0, Math.floor((b.minz - gp - z0) / c)), k1 = Math.min(BGRID.nz - 1, Math.floor((b.maxz + gp - z0) / c));
     for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
       const q = i * BGRID.nz + k; (g[q] || (g[q] = [])).push(n);
     }
@@ -10864,7 +10873,7 @@ function fxKeys() {
   const m = fxOn('shafts') | (fxOn('ibl') << 1) | (fxOn('dust') << 2) | (fxOn('tint') << 3)
           | (fxOn('sky') << 4) | (SUNC.i << 5) | (fxOn('flat') << 7)
           | (fxOn('toon') << 8) | (fxOn('paint') << 9) | (fxOn('rim') << 10) | (fxOn('doors') << 11)
-          | ((inKit() ? 1 : 0) << 12) | (['cut', 'close', 'off'].indexOf(KIT.inCam) << 13);
+          | ((kitWorld() ? 1 : 0) << 12) | (['cut', 'close', 'off'].indexOf(KIT.inCam) << 13);
   const w = inWP() ? 1 : 0;
   if (m === fxLit >> 1 && w === (fxLit & 1)) return;
   fxLit = (m << 1) | w;
@@ -10872,9 +10881,9 @@ function fxKeys() {
     if (el.dataset.fx === 'sun') { el.textContent = 'SUN ' + Math.round(sunElev()); continue; }
     // THE LABEL IS THE STATE, the sun key's rule -- and it only exists in the house (m177)
     if (el.dataset.fx === 'doors') { el.textContent = 'DOORS ' + (KIT.doorOpen ? 'SWING' : 'SHUT');
-                                     el.classList.toggle('hide', !inKit()); }
+                                     el.classList.toggle('hide', !kitWorld()); }
     if (el.dataset.fx === 'inside') { el.textContent = 'INSIDE ' + KIT.inCam.toUpperCase();
-                                      el.classList.toggle('hide', !inKit()); }
+                                      el.classList.toggle('hide', !kitWorld()); }
     el.classList.toggle('on', !!fxOn(el.dataset.fx));
     // THE TINT SWITCH ONLY EXISTS WHERE IT MEANS SOMETHING, which is `paintKit`'s rule: the
     // vertex tint is Weirdport's, so on the test site that segment would be a control that
@@ -12044,11 +12053,10 @@ function stepPlayer(dt) {
       !p.roll && !p.chargeGo && !p.board && !p.wall && !p.ledge) {
     const L = climbFind(p.pos.x, p.pos.y, p.pos.z);
     if (L) {
-      const wide = (L.maxx - L.minx) >= (L.maxz - L.minz);
-      const cx = (L.minx + L.maxx) / 2, cz = (L.minz + L.maxz) / 2;
-      // which side of the ladder he is on, which is the one thing a latch has to measure
-      const side = wide ? Math.sign(p.pos.z - cz) || 1 : Math.sign(p.pos.x - cx) || 1;
-      const nx = wide ? 0 : side, nz = wide ? side : 0;
+      // which side of the ladder he is on, which is the one thing a latch has to measure -- along
+      // the ladder's own short axis, so a turned one reads the same (m180)
+      const side = Math.sign((p.pos.x - L.cx) * L.nx + (p.pos.z - L.cz) * L.nz) || 1;
+      const nx = L.nx * side, nz = L.nz * side;
       const into = -(s.x * nx + s.z * nz) * s.mag;
       if (into > CLIMB.grab) { climbGo(L, side); stepClimb(dt); return; }
     }
@@ -14153,11 +14161,13 @@ function buildTCityCol(g) {
 // **AND THE AABB IS STILL BUILT, because it is the BROAD PHASE** -- every one of those callers
 // rejects on `minx/maxx/minz/maxz` before it ever looks at `cs`, so a turned box with no
 // world-aligned bounds is a box nothing ever tests.
-function tcObbBoxes() {
+function tcObbBoxes(skip) {
   const src = TCITY.obb;
   if (!src || !src.boxes || !src.boxes.length) { note('TC NO OBB JSON'); return 0; }
   let n = 0;
   for (const o of src.boxes) {
+    // the kit city (m180) leaves out the sixty buildings its kit buildings REPLACE
+    if (skip && skip.test(o.name || '')) continue;
     const c = o.center, h = o.half, q = o.quat_xyzw;
     if (!c || !h || !q) continue;
     if (!(h[0] > .01) || !(h[1] > .01) || !(h[2] > .01)) continue;
@@ -14306,7 +14316,10 @@ const KIT = {
 };
 // THE STATE. `WALLS` is per wall INSTANCE -- see the geometry sharing above.
 const WALLS = [], KCLIMB = [];
-const kit = { root: null, chunks: 0, dead: 0, cloned: 0, ivyN: 0, dressN: 0, hangs: 0, plane: 0, draws0: 0, draws1: 0, acs: 0 };
+const kit = { root: null, chunks: 0, dead: 0, cloned: 0, ivyN: 0, dressN: 0, hangs: 0, plane: 0, draws0: 0, draws1: 0, acs: 0,
+              // m180: materials by name (the twins wear them), the walls that can break NOW (swapped or
+              // born chunked -- the only ones `kitStep` walks), swaps so far, twins with no match
+              matBy: new Map(), live: [], swapped: 0, noTwin: 0, cast: true, twinLib: null, twinMiss: 0 };
 
 // **THE CHUNK ATTRIBUTE, BY EITHER SPELLING (m172, `kitCh`).** *"My bullets don't even touch the
 // outside of the wall -- and I can walk through walls too."* One bug, and it was the loader, not
@@ -14349,17 +14362,20 @@ function kitWallMap() {
   for (const W of WALLS) M.set(W.node.userData && W.node.userData.piece_id, W);
   return M;
 }
-function kitHang(o, kind) {
+function kitHang(o, kind, byIdIn, hangAt) {
   let hosts;
   try { hosts = JSON.parse(o.userData.hosts); } catch (e) { note('KIT BAD HOSTS'); return 0; }
   const meshes = [];
   o.traverse(m => { if (m.isMesh && m.geometry && kitAttr(m.geometry, '_HOST')) meshes.push(m); });
   if (!meshes.length) { note('KIT ' + kind.toUpperCase() + ' NO TAGS'); return 0; }
-  const byId = kitWallMap();
+  const byId = byIdIn || kitWallMap();
   let n = 0;
   for (const m of meshes) {
     const H = kitAttr(m.geometry, '_HOST'), C = kitAttr(m.geometry, '_CHUNK');
     if (!C) continue;
+    // BATCHED (m180): the tags are read off the source and the collapse lands on the merged
+    // buffer, at the source's offset into it
+    const R = hangAt && hangAt.get(m);
     const per = new Map();
     for (let i = 0; i < H.count; i++) {
       const h = Math.round(H.getX(i)), c = Math.round(C.getX(i));
@@ -14367,9 +14383,10 @@ function kitHang(o, kind) {
       const W = byId.get(hosts[h]); if (!W) continue;
       const ch = W.byId.get(c); if (!ch) continue;
       let L = per.get(ch); if (!L) per.set(ch, L = []);
-      L.push(i); n++;
+      L.push(R ? i + R.v0 : i); n++;
     }
-    for (const [ch, idx] of per) (ch.hang || (ch.hang = [])).push({ m, idx, kind });
+    for (const [ch, idx] of per) (ch.hang || (ch.hang = [])).push(
+      { m: R ? R.mesh : m, idx, kind, i0: R ? R.i0 : 0, in: R ? R.in : 0 });
   }
   if (kind === 'ivy') kit.ivyN += n; else kit.dressN += n;
   kit.hangs++;
@@ -14382,11 +14399,13 @@ function kitHangDrop(c, loud, bx, by, bz) {
   c.hang = null;
   for (const H of L) {
     const m = H.m, pos = m.geometry.attributes.position;
-    if (loud && H.kind !== 'ivy') kitDebrisVerts(m, H.idx, bx, by, bz);
-    let x = 0, y = 0, z = 0;
-    for (const i of H.idx) { x += pos.getX(i); y += pos.getY(i); z += pos.getZ(i); }
+    if (loud && H.kind !== 'ivy') kitDebrisVerts(m, H.idx, bx, by, bz, H.i0, H.in);
+    let x = 0, y = 0, z = 0, lo = 1e9, hi = -1;
+    for (const i of H.idx) { x += pos.getX(i); y += pos.getY(i); z += pos.getZ(i); if (i < lo) lo = i; if (i > hi) hi = i; }
     x /= H.idx.length; y /= H.idx.length; z /= H.idx.length;
     for (const i of H.idx) pos.setXYZ(i, x, y, z);
+    // the RANGE, because a merged ivy buffer spans the whole city (m180)
+    pos.addUpdateRange(lo * 3, (hi - lo + 1) * 3);
     pos.needsUpdate = true;
     if (loud && H.kind === 'ivy') {
       _kiv.set(x, y, z).applyMatrix4(m.matrixWorld);
@@ -14401,23 +14420,37 @@ function kitHangDrop(c, loud, bx, by, bz) {
 // collision file, where BKG0's first floor tile sits at exactly x 0..3, z -17..-14 under a root at
 // z -14. **INSIDE is in a cell AND below its roof**, so standing ON a roof is outside.
 const KBLD = [];
+// **AND A CITY BUILDING IS TURNED (m180).** His sixty sit on their lots at any angle (-173 to +178
+// degrees, read off the roots), so the cell test is done in the ROOT's own frame: three turns local
+// (x, z) to world by `x' = x cos t + z sin t, z' = -x sin t + z cos t`, and the inverse is what
+// `kitCell` applies. `c`/`s` are cos/sin of that yaw; the row and the house have t = 0, where this
+// is exactly m179's arithmetic. The world AABB of the turned footprint is the broad phase only.
+const _kbq = new THREE.Quaternion(), _kbe = new THREE.Euler();
 function kitBldAdd(o) {
   const e = o.userData || {};
   if (!e.bay_m && !e.footprint_bays) return 0;
   o.updateWorldMatrix(true, false);
   const T = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
+  o.matrixWorld.decompose(_kv, _kbq, _ks);
+  const t = _kbe.setFromQuaternion(_kbq, 'YXZ').y, c = Math.cos(t), sn = Math.sin(t);
   const bay = e.bay_m || 3, fl = e.floor_m || 3;
   let list = null, H = null;
   try { list = e.cells ? JSON.parse(e.cells) : null; H = e.heights ? JSON.parse(e.heights) : null; } catch (err) { list = null; }
   if (!list) { list = []; const fb = e.footprint_bays || [0, 0]; for (let x = 0; x < fb[0]; x++) for (let y = 0; y < fb[1]; y++) list.push([x, y]); }
-  const B = { name: o.name, x0: T.x, z0: T.z, bay, fl, cells: new Map(),
+  const B = { name: o.name, x0: T.x, y0: T.y, z0: T.z, c, s: sn, bay, fl, cells: new Map(),
+              lx0: 1e9, lx1: -1e9, lz0: 1e9, lz1: -1e9,
               minx: 1e9, maxx: -1e9, minz: 1e9, maxz: -1e9, top: 0 };
   for (const [x, y] of list) {
     const f = (H && H[x + ',' + y]) || e.levels || 1;
     B.cells.set(x + ',' + y, f);
-    B.minx = Math.min(B.minx, T.x + x * bay); B.maxx = Math.max(B.maxx, T.x + (x + 1) * bay);
-    B.minz = Math.min(B.minz, T.z - (y + 1) * bay); B.maxz = Math.max(B.maxz, T.z - y * bay);
+    B.lx0 = Math.min(B.lx0, x * bay); B.lx1 = Math.max(B.lx1, (x + 1) * bay);
+    B.lz0 = Math.min(B.lz0, -(y + 1) * bay); B.lz1 = Math.max(B.lz1, -y * bay);
     B.top = Math.max(B.top, f * fl);
+  }
+  for (const lx of [B.lx0, B.lx1]) for (const lz of [B.lz0, B.lz1]) {
+    const wx = T.x + lx * c + lz * sn, wz = T.z - lx * sn + lz * c;
+    B.minx = Math.min(B.minx, wx); B.maxx = Math.max(B.maxx, wx);
+    B.minz = Math.min(B.minz, wz); B.maxz = Math.max(B.maxz, wz);
   }
   KBLD.push(B);
   return 1;
@@ -14425,9 +14458,11 @@ function kitBldAdd(o) {
 function kitCell(x, z) {
   for (const B of KBLD) {
     if (x < B.minx || x > B.maxx || z < B.minz || z > B.maxz) continue;
-    const cx = Math.floor((x - B.x0) / B.bay), cy = Math.floor((B.z0 - z) / B.bay);
+    const dx = x - B.x0, dz = z - B.z0;
+    const lx = B.c * dx - B.s * dz, lz = B.s * dx + B.c * dz;
+    const cx = Math.floor(lx / B.bay), cy = Math.floor(-lz / B.bay);
     const f = B.cells.get(cx + ',' + cy);
-    if (f) return { B, f, roof: f * B.fl };
+    if (f) return { B, f, roof: B.y0 + f * B.fl };
   }
   return null;
 }
@@ -14437,7 +14472,7 @@ function kitInside(x, y, z) {
 }
 // COVER: anywhere he is not INSIDE -- outside in the street, or up on a roof against a parapet
 function kitCoverOK(p) {
-  if (!KIT.gate || !inKit() || !KBLD.length) return true;
+  if (!KIT.gate || !kitWorld() || !KBLD.length) return true;
   return !kitInside(p.pos.x, p.pos.y, p.pos.z);
 }
 // A LEDGE: a ROOF EDGE, taken from OUTSIDE. The lip has to be at the roof of the cell it belongs to
@@ -14445,8 +14480,11 @@ function kitCoverOK(p) {
 // LOWER roof reaching up to a taller one's edge, which is the setback case. A window sill, a floor
 // band, a chunk top half way up a wall, a stair or a railing indoors: none of those is a roof edge.
 function kitLedgeOK(p, L) {
-  if (!KIT.gate || !inKit() || !KBLD.length) return true;
+  if (!KIT.gate || !kitWorld() || !KBLD.length) return true;
   const lip = kitCell(L.cx - L.nx * .35, L.cz - L.nz * .35);
+  // IN THE CITY a lip that belongs to NO kit building is a hero building or a prop, which m179
+  // never gated -- only the kit's own boxes (walls, chunks, parts) are held to the roof-edge rule
+  if (!lip && inTK() && L.b && !L.b.kit && !L.b.chunk && !L.b.part) return !kitInside(p.pos.x, p.pos.y, p.pos.z);
   if (!lip || L.y < lip.roof - .45) return false;
   const me = kitCell(p.pos.x, p.pos.z);
   if (!me) return true;
@@ -14455,19 +14493,24 @@ function kitLedgeOK(p, L) {
 // **THE CUTAWAY (m179, `KCUT`, `kitCutMat`).** One discard in every kit material's fragment shader:
 // inside the box of the building he is in and above the cut height, nothing is drawn. The uniform
 // objects are SHARED, so moving the cut is three writes a frame and never a recompile.
-const KCUT = { on: { value: 0 }, y: { value: 1e9 }, box: { value: new THREE.Vector4() }, B: null, lv: -1 };
+const KCUT = { on: { value: 0 }, y: { value: 1e9 }, box: { value: new THREE.Vector4() }, xf: { value: new THREE.Vector4(0, 0, 1, 0) }, B: null, lv: -1 };
 function kitCutMat(m) {
   if (!m || m.userData.kitCut) return;
   m.userData.kitCut = 1;
   const prev = m.onBeforeCompile, prevKey = m.customProgramCacheKey;
   m.onBeforeCompile = function (sh, r) {
     if (prev) prev.call(this, sh, r);
-    sh.uniforms.uKCutOn = KCUT.on; sh.uniforms.uKCutY = KCUT.y; sh.uniforms.uKCutBox = KCUT.box;
+    sh.uniforms.uKCutOn = KCUT.on; sh.uniforms.uKCutY = KCUT.y; sh.uniforms.uKCutBox = KCUT.box; sh.uniforms.uKCutXf = KCUT.xf;
     sh.vertexShader = 'varying vec3 vKCutW;\n' + sh.vertexShader.replace('#include <begin_vertex>',
-      '#include <begin_vertex>\n  vKCutW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'uniform float uKCutOn;\nuniform float uKCutY;\nuniform vec4 uKCutBox;\nvarying vec3 vKCutW;\n' +
-      sh.fragmentShader.replace('void main() {', 'void main() {\n  if (uKCutOn > .5 && vKCutW.y > uKCutY && ' +
-        'vKCutW.x > uKCutBox.x && vKCutW.x < uKCutBox.z && vKCutW.z > uKCutBox.y && vKCutW.z < uKCutBox.w) discard;');
+      '#include <begin_vertex>\n  vec4 kcw = vec4(transformed, 1.0);\n' +
+      // an INSTANCED part (m180) sits where its instance matrix puts it, not at the model origin
+      '#ifdef USE_INSTANCING\n  kcw = instanceMatrix * kcw;\n#endif\n  vKCutW = (modelMatrix * kcw).xyz;');
+    // the box is in the BUILDING's frame (m180): `uKCutXf` is its origin and the cos/sin of its yaw
+    sh.fragmentShader = 'uniform float uKCutOn;\nuniform float uKCutY;\nuniform vec4 uKCutBox;\nuniform vec4 uKCutXf;\nvarying vec3 vKCutW;\n' +
+      sh.fragmentShader.replace('void main() {', 'void main() {\n  if (uKCutOn > .5 && vKCutW.y > uKCutY) {\n' +
+        '    vec2 kd = vKCutW.xz - uKCutXf.xy;\n' +
+        '    vec2 kl = vec2(uKCutXf.z * kd.x - uKCutXf.w * kd.y, uKCutXf.w * kd.x + uKCutXf.z * kd.y);\n' +
+        '    if (kl.x > uKCutBox.x && kl.x < uKCutBox.z && kl.y > uKCutBox.y && kl.y < uKCutBox.w) discard;\n  }');
   };
   m.customProgramCacheKey = function () { return (prevKey ? prevKey.call(this) : '') + '|kcut'; };
   m.needsUpdate = true;
@@ -14475,12 +14518,13 @@ function kitCutMat(m) {
 // WHICH BUILDING HE IS IN, AND WHAT THE CAMERA DOES ABOUT IT -- once a frame, before `stepCam`
 function kitCamStep() {
   const p = player;
-  const c = (inKit() && KIT.inCam !== 'off' && KBLD.length) ? kitInside(p.pos.x, p.pos.y + .2, p.pos.z) : null;
+  const c = (kitWorld() && KIT.inCam !== 'off' && KBLD.length) ? kitInside(p.pos.x, p.pos.y + .2, p.pos.z) : null;
   kit.inside = c ? KIT.inCam : '';
   if (c && KIT.inCam === 'cut') {
-    const B = c.B, lv = Math.max(0, Math.floor((p.pos.y + .3) / B.fl));
-    KCUT.on.value = 1; KCUT.y.value = lv * B.fl + KIT.cutH;
-    KCUT.box.value.set(B.minx - .4, B.minz - .4, B.maxx + .4, B.maxz + .4);
+    const B = c.B, lv = Math.max(0, Math.floor((p.pos.y + .3 - B.y0) / B.fl));
+    KCUT.on.value = 1; KCUT.y.value = B.y0 + lv * B.fl + KIT.cutH;
+    KCUT.box.value.set(B.lx0 - .4, B.lz0 - .4, B.lx1 + .4, B.lz1 + .4);
+    KCUT.xf.value.set(B.x0, B.z0, B.c, B.s);
     KCUT.B = B; KCUT.lv = lv;
   } else { KCUT.on.value = 0; KCUT.B = null; KCUT.lv = -1; }
 }
@@ -14491,7 +14535,8 @@ function kitCamStep() {
 // `BKG0_nav_ladder_top__X3` both read `BKG0:X3`; the test house has no prefix and reads `:X1`.
 // Blender's `.001` suffixes (`__X2.001`) fall away because only the digits after X are taken.
 function kitSlot(nm) {
-  const b = (/^(?:climb_)?([A-Za-z]+\d+)_/.exec(nm || '') || [])[1] || '';
+  // `kit_000` as well as `BKG0` (m180): the city's buildings put an underscore before the number
+  const b = (/^(?:climb_)?([A-Za-z]+_?\d+)_/.exec(nm || '') || [])[1] || '';
   const x = (/__(X\d+)/.exec(nm || '') || [])[1] || '';
   return x ? b + ':' + x : '';
 }
@@ -14509,6 +14554,60 @@ function kitBox(b, o) {
 }
 const _kb = {}, _kv = new THREE.Vector3(), _kq = new THREE.Quaternion(), _ks = new THREE.Vector3();
 
+// **A COLLIDER IS AN 8-CORNER BOX BAKED TO WORLD SPACE, AND IN THE CITY IT IS TURNED (m180,
+// `kitObb`).** His note: *"its colliders are real rotated boxes."* Read back from the corners: the
+// four at the bottom are a rectangle, two of its edges from one corner are the box's own axes, and
+// that is the whole fit -- exact for a box, and a box is all his export writes (7,661 of 7,661 kit
+// colliders are 8 vertices and 12 triangles). Anything that is not a yaw-only box (a tilt, more or
+// fewer corners) keeps its AABB, which is what every collider in this file was before m146, and an
+// axis-aligned box stays plain because the oriented test buys nothing there.
+const _kobV = [];
+function kitObb(o) {
+  const pos = o.geometry.attributes.position, M = o.matrixWorld;
+  const b = { minx: 1e9, maxx: -1e9, miny: 1e9, maxy: -1e9, minz: 1e9, maxz: -1e9 };
+  _kobV.length = 0;
+  for (let i = 0; i < pos.count; i++) {
+    const v = new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(M);
+    _kobV.push(v);
+    b.minx = Math.min(b.minx, v.x); b.maxx = Math.max(b.maxx, v.x);
+    b.miny = Math.min(b.miny, v.y); b.maxy = Math.max(b.maxy, v.y);
+    b.minz = Math.min(b.minz, v.z); b.maxz = Math.max(b.maxz, v.z);
+  }
+  if (pos.count !== 8) return b;
+  const bot = _kobV.filter(v => v.y < b.miny + 1e-3);
+  if (bot.length !== 4) return b;
+  const a = bot[0], rest = bot.slice(1).sort((p, q) => a.distanceToSquared(p) - a.distanceToSquared(q));
+  const e1x = rest[0].x - a.x, e1z = rest[0].z - a.z, e2x = rest[1].x - a.x, e2z = rest[1].z - a.z;
+  const L1 = Math.hypot(e1x, e1z), L2 = Math.hypot(e2x, e2z);
+  if (L1 < 1e-4 || L2 < 1e-4 || Math.abs(e1x * e2x + e1z * e2z) > .02 * L1 * L2) return b;
+  const cs = e1x / L1, sn = e1z / L1;
+  if (Math.abs(sn) < 1e-3 || Math.abs(cs) < 1e-3) return b;     // axis-aligned: the AABB is exact
+  b.cx = (a.x + rest[0].x + rest[1].x + rest[2].x) / 4; b.cz = (a.z + rest[0].z + rest[1].z + rest[2].z) / 4;
+  b.hx = L1 / 2; b.hz = L2 / 2; b.cs = cs; b.sn = sn; b.yaw = Math.atan2(sn, cs);
+  return b;
+}
+// **A LADDER VOLUME CARRIES ITS OWN TWO AXES (m180).** The house's ladders ran along X or Z and the
+// climb read "which world axis is the wide one"; a city ladder is on a wall at any angle. `u` is its
+// long horizontal axis (along the wall), `n` the short one (out of it), both unit, both in world.
+function kitClimbAdd(b, nm, top) {
+  let ux, uz, nx, nz, ha, hn, cx, cz;
+  if (b.cs !== undefined) {
+    cx = b.cx; cz = b.cz;
+    if (b.hx >= b.hz) { ux = b.cs; uz = b.sn; nx = -b.sn; nz = b.cs; ha = b.hx; hn = b.hz; }
+    else { ux = -b.sn; uz = b.cs; nx = b.cs; nz = b.sn; ha = b.hz; hn = b.hx; }
+  } else {
+    cx = (b.minx + b.maxx) / 2; cz = (b.minz + b.maxz) / 2;
+    const wide = (b.maxx - b.minx) >= (b.maxz - b.minz);
+    ux = wide ? 1 : 0; uz = wide ? 0 : 1; nx = wide ? 0 : 1; nz = wide ? 1 : 0;
+    ha = (wide ? b.maxx - b.minx : b.maxz - b.minz) / 2; hn = (wide ? b.maxz - b.minz : b.maxx - b.minx) / 2;
+  }
+  const L = { minx: b.minx, maxx: b.maxx, miny: b.miny, maxy: b.maxy, minz: b.minz, maxz: b.maxz,
+              cx, cz, ux, uz, nx, nz, ha, hn, top: top === null ? b.maxy : top, name: nm,
+              slot: kitSlot(nm), mark: null };
+  KCLIMB.push(L);
+  return L;
+}
+
 // ---- 1. HIS STATIC COLLISION FILE ----------------------------------------------------------
 // Every line of this is `buildTCityCol`'s shape with his naming in it, which is the whole return
 // on him having kept the city's conventions.
@@ -14524,17 +14623,11 @@ function buildKitCol(g) {
     // It is a thing you latch to, and putting it in either family would be a box you stop dead
     // against in a doorway-sized hole -- which is exactly what a ladder must not be.
     if (KIT.climbRe.test(nm)) {
-      o.geometry.computeBoundingBox();
-      const wb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+      // **`climb_top` IS ALREADY IN glTF Y**, which he says and which the numbers agree with:
+      // 6.0 and 6.9 against a house 7.9 tall. Falling back to the box's own top rather than to
+      // zero, because a zero here is a ladder that ends the instant you touch it.
       const e = o.userData || {};
-      KCLIMB.push({ minx: wb.min.x, maxx: wb.max.x, miny: wb.min.y, maxy: wb.max.y,
-                    minz: wb.min.z, maxz: wb.max.z,
-                    // **`climb_top` IS ALREADY IN glTF Y**, which he says and which the numbers
-                    // agree with: 6.0 and 6.9 against a house 7.9 tall. Falling back to the
-                    // box's own top rather than to zero, because a zero here is a ladder that
-                    // ends the instant you touch it.
-                    top: typeof e.climb_top === 'number' ? e.climb_top : wb.max.y, name: nm,
-                    slot: kitSlot(nm), mark: null });
+      kitClimbAdd(kitObb(o), nm, typeof e.climb_top === 'number' ? e.climb_top : null);
       nC++;
       return;
     }
@@ -14577,6 +14670,192 @@ function buildKitCol(g) {
   if (!nC) note('KIT NO CLIMB');
 }
 
+// ============================================================================================
+// THE KIT CITY (m180, `KCITY`, `buildKCityCol`, `kitTwinIndex`, `kitSwap`) -- a fifth world.
+//
+// *"The city now has kit buildings: all 60 old generated buildings are replaced, one per lot,
+// facing the street."* Four files, read before a line of this was written:
+//     visual       1,306 nodes / 1,358 prims, draco -- the streets, props, the 11 hero buildings
+//                  and every kit building's pipes. `buildTCity` takes it UNCHANGED: 179 breakables,
+//                  instancing, merge, tint -- the old city's own pipeline.
+//     buildings    60 roots, 9,650 nodes, **13,227 draw primitives**, 260,866 tris, no draco.
+//                  1,344 walls, every one INTACT: a cheap piece with `breakable_as` + `style`
+//                  naming its chunked twin. 838 panes, 96 hinged doors, 20 wide, 60 hatches,
+//                  126 AC units, 120 ivy/dressing nodes, 2,930 marker empties.
+//     pieces       173 library pieces; the 42 `wallB_*` (6 kinds x 7 styles) are the twins, each
+//                  with `chunks` and `_CHUNK` exactly as the house had them.
+//     collision    7,679 objects, **every kit one an 8-corner box baked to world space** and turned
+//                  with its building. No extras at all -- the `piece_id` is in the NAME:
+//                  `bld_kit_000_wallB_window__L0_W0_0_w_3` is wall `kit_000/L0_W0_0_w`, box 3.
+//                  The 18 non-kit objects are the old city's own, untouched.
+// **THE OLD CITY IS STILL THERE (`toon`)**, which is what he asked for: the two load different
+// files and share every line of code between them.
+const KCITY = {
+  // THE BAKES SHIP, HIS EXPORTS ARE THE A/B (`npm run ktx <glb> etc1s` after every re-export)
+  vis: 'models/toon_city_kit/toon_city_visual_ktx2.glb', visRaw: 'models/toon_city_kit/toon_city_visual.glb',
+  bld: 'models/toon_city_kit/toon_city_kit_buildings_ktx2.glb', bldRaw: 'models/toon_city_kit/toon_city_kit_buildings.glb',
+  // **ONLY THE TWINS, NOT HIS LIBRARY (`npm run twins`).** A twin wears the buildings' materials,
+  // so the library's textures are pictures nobody draws: 5.7 MB of file for 0.94 of geometry. The
+  // tool copies the 42 `wallB_*` walls out byte for byte; RE-RUN IT after every library export.
+  pieces: 'models/toon_city_kit/toon_city_kit_twins.glb', piecesRaw: 'models/toon_city_kit/toon_city_kit_pieces.glb',
+  col: 'models/toon_city_kit/toon_city_collision.glb',
+  // family, building, (piece), slot, box index -- `.*?` so a piece name with underscores in it
+  // cannot swallow the slot, and `(.+)_(\d+)$` so a slot with underscores in it keeps them
+  kitRe: /^(bld|solid|deck|ramp|climb)_(kit_\d+)_.*?__(.+)_(\d+)$/,
+  // the old OBB manifest's sixty `bld_wk_*` boxes are the buildings the kit REPLACED
+  oldBld: /^bld_wk_/,
+  // the city RECEIVES shadows and does not cast them -- `TCITY.cast`'s argument, one file along:
+  // a merged bucket spanning the whole map never culls out of the shadow pass
+  cast: 0,
+  // a street, measured off the collision file: open ground between kit_004 and the hero at 23,14
+  spawn: [0, 0],
+  prune: 1,         // drop every node the running game never reads (2,930 markers among them)
+};
+const KWCOL = new Map();      // piece_id -> its static collider boxes, taken away by the swap
+const KTWIN = new Map();      // `style|wallB_kind` -> the chunked twin
+const _kcM = new THREE.Matrix4();
+
+function buildKCityCol(g) {
+  let nG = 0, nS = 0, nK = 0, nD = 0, nC = 0, nTri = 0, skip = 0;
+  const t0 = performance.now();
+  g.scene.updateMatrixWorld(true);
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+  const tris = (o, walk) => {
+    const pos = o.geometry.attributes.position, idx = o.geometry.index;
+    const n = idx ? idx.count : pos.count;
+    for (let i = 0; i < n; i += 3) {
+      const ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
+      A.fromBufferAttribute(pos, ia).applyMatrix4(o.matrixWorld);
+      B.fromBufferAttribute(pos, ib).applyMatrix4(o.matrixWorld);
+      C.fromBufferAttribute(pos, ic).applyMatrix4(o.matrixWorld);
+      nTri++;
+      if (walk) triAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+      surfAdd(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+    }
+  };
+  g.scene.traverse(o => {
+    if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
+    const nm = o.name || '';
+    const k = KCITY.kitRe.exec(nm);
+    if (k) {
+      const fam = k[1], pid = k[2] + '/' + k[3];
+      if (fam === 'climb') { kitClimbAdd(kitObb(o), nm, null); nC++; return; }
+      if (fam === 'deck' || fam === 'ramp') { tris(o, 1); nD++; return; }
+      // **A KIT SOLID IS ITS OWN TURNED BOX AND IS *NOT* IN `SURF`.** A wall is taken away when it
+      // is swapped for its twin, and a triangle in the static surface grid cannot be -- so the
+      // box IS the surface a bolt stops on, which is exact because the box is all his export has.
+      const b = kitObb(o);
+      b.kit = pid; b.name = nm;
+      BOXES.push(b);
+      let L = KWCOL.get(pid); if (!L) KWCOL.set(pid, L = []);
+      L.push(b); nK++;
+      return;
+    }
+    // everything else is the old city's, and goes exactly where `buildTCityCol` sends it
+    const ground = TCITY.ground.test(nm), solid = TCITY.solid.test(nm);
+    if (!ground && !solid) { skip++; return; }
+    tris(o, 1);
+    if (ground) nG++; else nS++;
+  });
+  const n = triBuild(), nSurf = surfBuild();
+  const nObb = tcObbBoxes(KCITY.oldBld);
+  const cells = boxGrid();
+  TCITY.tris = n; TCITY.boxes = BOXES.length; TCITY.surf = nSurf;
+  console.log('[melee] kit city collider: ' + n + ' walkable tris of ' + nTri + ' (' + nSurf +
+    ' surface), ' + nG + ' ground / ' + nS + ' solid city meshes, ' + nD + ' kit decks, ' + nK +
+    ' kit boxes on ' + KWCOL.size + ' pieces, ' + nC + ' ladders, ' + nObb + ' old OBBs, ' + skip +
+    ' skipped, grid ' + cells + ' cells, ' + Math.round(performance.now() - t0) + ' ms');
+  if (!n) note('KC NO GROUND');
+  if (!nK) note('KC NO KIT BOXES');
+}
+
+// THE TWINS. Only the geometry is kept -- a twin is dressed in the BUILDINGS' materials by name
+// (`kitTwinTidy`), so the library's own textures are never drawn and its shader programs never built.
+function kitTwinIndex(g) {
+  g.scene.updateMatrixWorld(true);
+  let n = 0;
+  g.scene.traverse(o => {
+    const e = o.userData || {};
+    if (!e.chunks || !/^wallB_/.test(e.piece || '')) return;
+    let recs = null;
+    try { recs = JSON.parse(e.chunks); } catch (err) { note('KC BAD TWIN'); return; }
+    if (!recs || !recs.length) return;
+    _kcM.copy(o.matrixWorld).invert();
+    const meshes = [];
+    // only what carries `_CHUNK` -- the twin's own glass, door and colliders are NOT spawned:
+    // the building already has its own, and they outlive the wall they sit in
+    o.traverse(c => {
+      if (!c.isMesh || !c.geometry || !kitCh(c.geometry) || Array.isArray(c.material)) return;
+      meshes.push({ geo: c.geometry, name: c.material && c.material.name, mat: c.material,
+                    local: new THREE.Matrix4().multiplyMatrices(_kcM, c.matrixWorld) });
+    });
+    if (!meshes.length) return;
+    KTWIN.set((e.style || 'brick') + '|' + e.piece, { recs, meshes, name: o.name });
+    n++;
+  });
+  kit.twinLib = g.scene;
+  console.log('[melee] kit city: ' + n + ' chunked twins (' + [...KTWIN.keys()].slice(0, 3).join(' ') + ' ...)');
+  if (!n) note('KC NO TWINS');
+}
+// after the buildings, whose materials the twins wear: resolve each by name, then let the
+// library's own textures go -- all but any a twin could not find a building material for
+function kitTwinTidy() {
+  const keep = new Set();
+  for (const T of KTWIN.values()) for (const t of T.meshes) {
+    t.use = (kit.matBy && kit.matBy.get(t.name)) || null;
+    if (!t.use) { t.use = t.mat; keep.add(t.mat); kit.twinMiss = (kit.twinMiss || 0) + 1; }
+  }
+  if (!kit.twinLib) return;
+  const seen = new Set();
+  kit.twinLib.traverse(o => {
+    if (!o.isMesh) return;
+    for (const m of [].concat(o.material)) {
+      if (!m || seen.has(m) || keep.has(m)) continue;
+      seen.add(m);
+      for (const k of ['map', 'normalMap', 'emissiveMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'alphaMap']) {
+        const t = m[k]; if (!t) continue;
+        if (t.image && t.image.close) { try { t.image.close(); } catch (e) {} }
+        t.dispose(); m[k] = null;
+      }
+    }
+  });
+  kit.twinLib = null;
+  if (kit.twinMiss) note('KC TWIN ' + kit.twinMiss + ' NOMAT');
+}
+// **THE SWAP, ON THE FIRST HIT (m180).** His five steps, in his order:
+//   1. hide it          -- its range of the batch collapses to the wall's middle
+//   2. spawn the twin   -- at the SAME world transform, in the buildings' own materials
+//   3. its static colliders go (KWCOL, by piece_id)
+//   4. its chunk colliders arrive -- built at load from the twin's table and held back until now
+//   5. from here it is an ordinary chunked wall, and `kitKill` / `kitFlood` take it from there
+// The hangs (ivy, awnings, signs) and the AC units were wired to its chunks AT LOAD, off the same
+// table -- chunk ids are identical between a wall and its twin, so nothing is re-linked.
+function kitSwap(W) {
+  if (!W.intact) return 0;
+  W.intact = 0; kit.swapped = (kit.swapped || 0) + 1;
+  if (W.batched) { for (const B of W.parts) kitCollapse(B, -1, W.cx, W.cy, W.cz); }
+  else for (const m of W.meshes) m.visible = false;
+  const G = new THREE.Group();
+  G.name = 'twin_' + W.pid;
+  W.M.decompose(G.position, G.quaternion, G.scale);
+  const meshes = [];
+  for (const t of W.twin.meshes) {
+    const m = new THREE.Mesh(t.geo.clone(), t.use || t.mat);
+    t.local.decompose(m.position, m.quaternion, m.scale);
+    m.castShadow = kit.cast; m.receiveShadow = true;
+    G.add(m); meshes.push(m);
+  }
+  world.add(G);
+  G.updateMatrixWorld(true);
+  W.meshes = meshes; W.batched = 0; W.cloned = 1; W.parts = null; W.twinG = G;
+  const L = KWCOL.get(W.pid);
+  if (L) for (const b of L) { decalOff(b); const i = BOXES.indexOf(b); if (i >= 0) BOXES.splice(i, 1); }
+  for (const c of W.chunks) BOXES.push(c.box);
+  kit.live.push(W);
+  kitRegrid();
+  return 1;
+}
+
 // ---- 2. THE HOUSE ITSELF --------------------------------------------------------------------
 function buildKit(g) {
   // **CALLED ONCE PER FILE (m178)** -- the test house and the generated row are two GLBs, and
@@ -14584,18 +14863,24 @@ function buildKit(g) {
   const root = kit.root = g.scene;
   root.updateMatrixWorld(true);
   const seen = new Set();
-  let nW = 0, nG = 0, nDoor = 0, nMark = 0, nAC = 0;
-  const hangs = [], acs = [];
+  // **IN THE CITY (m180)** the buildings take the city's tint and do not cast shadows
+  const city = inTK(), cast = kit.cast = city ? !!KCITY.cast : true;
+  let nW = 0, nG = 0, nDoor = 0, nMark = 0, nAC = 0, nIntact = 0;
+  const hangs = [], acs = [], parts0 = KPARTS.length;
   root.traverse(o => {
     if (o.isMesh) {
-      o.castShadow = true; o.receiveShadow = true;
+      o.castShadow = cast; o.receiveShadow = true;
       for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
         if (!m || seen.has(m.uuid)) continue;
         seen.add(m.uuid);
+        if (m.name && !kit.matBy.has(m.name)) kit.matBy.set(m.name, m);
         // the Blender default on a closed shell is wasted fill; a CARD needs both faces, and
         // the alpha mode is the structural difference between the two (m158's own test)
         if (m.side === THREE.DoubleSide && !m.transparent && !m.alphaTest) { m.side = THREE.FrontSide; m.needsUpdate = true; }
         if (m.map) m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        // his `wk_tint` materials (m180): the city's own paint, BEFORE the cut chains onto it --
+        // `tcTint` REPLACES the hook and `kitCutMat` keeps whatever it finds
+        if (city) tcTint(m);
         kitCutMat(m);
       }
     }
@@ -14634,16 +14919,29 @@ function buildKit(g) {
     // may not have been visited yet. Marked as owned so the batcher leaves them their own mesh --
     // their vertices are collapsed per chunk, which a shared buffer would have to track as well.
     if (e.hosts) { hangs.push(o); o.userData.kitOwn = 'hang'; return; }
-    if (!e.chunks) return;
     // ---- a breakable wall -------------------------------------------------------------------
-    let recs = null;
-    try { recs = JSON.parse(e.chunks); } catch (err) { note('KIT BAD CHUNKS'); return; }
+    // **OR AN INTACT ONE (m180)**: a cheap piece whose `breakable_as` + `style` name its chunked
+    // twin in the library. Its chunk table is the TWIN's, read now, so the ivy, the dressing and
+    // the AC units can be wired to chunks that do not exist in its geometry yet -- and it keeps
+    // its static colliders until the first hit (`kitSwap`).
+    let recs = null, twin = null;
+    if (e.chunks) {
+      try { recs = JSON.parse(e.chunks); } catch (err) { note('KIT BAD CHUNKS'); return; }
+    } else if (e.breakable_as) {
+      twin = KTWIN.get((e.style || 'brick') + '|' + e.breakable_as);
+      if (!twin) { kit.noTwin++; return; }
+      recs = twin.recs;
+    } else return;
     if (!recs || !recs.length) return;
     // **THE MESHES UNDER IT, because a wall is FOUR primitives** and GLTFLoader gives a
     // multi-primitive mesh a Group of children. A pass that took the node itself would find no
-    // geometry at all and silently index a wall with nothing in it.
+    // geometry at all and silently index a wall with nothing in it. An intact wall has no
+    // `_CHUNK`, so its meshes are its own primitives -- never the pane or the door hung on it.
     const meshes = [];
-    o.traverse(c => { if (c.isMesh && c.geometry && kitCh(c.geometry)) meshes.push(c); });
+    if (twin) {
+      if (o.isMesh) meshes.push(o);
+      for (const c of o.children) if (c.isMesh && c.geometry && !(c.userData && (c.userData.breakable || c.userData.door || c.userData.collider))) meshes.push(c);
+    } else o.traverse(c => { if (c.isMesh && c.geometry && kitCh(c.geometry)) meshes.push(c); });
     if (!meshes.length) { note('KIT NO _CHUNK'); return; }
     o.matrixWorld.decompose(_kv, _kq, _ks);
     const eu = new THREE.Euler().setFromQuaternion(_kq, 'YXZ');
@@ -14653,7 +14951,9 @@ function buildKit(g) {
     // time when it argues, so it is taken off the matrix rather than off a field.
     const yaw = -eu.y, cs = Math.cos(yaw), sn = Math.sin(yaw);
     const W = { node: o, meshes, yaw, cs, sn, px: _kv.x, py: _kv.y, pz: _kv.z, q: _kq.clone(),
-                cloned: 0, chunks: [], alive: 0, byId: new Map(), batched: 0, parts: null };
+                cloned: 0, chunks: [], alive: 0, byId: new Map(), batched: 0, parts: null,
+                intact: twin ? 1 : 0, twin, pid: e.piece_id, M: twin ? o.matrixWorld.clone() : null,
+                cx: 0, cy: 0, cz: 0, R: 0 };
     o.userData.kitOwn = W;
     for (const r of recs) {
       const b = kitBox(r.box, {});
@@ -14674,16 +14974,22 @@ function buildKit(g) {
                   nb: r.nb || [], box, dead: 0, fall: 0,
                   x: wx, y: W.py + ly, z: wz, lx, ly, lz, r: Math.max(hx, hy, hz) };
       box.chunk = c; box.wall = W;
-      BOXES.push(box);
+      if (!twin) BOXES.push(box);          // an intact wall's chunk boxes wait for the swap
       W.chunks.push(c); W.byId.set(c.id, c); W.alive++; kit.chunks++;
+      W.cx += c.x; W.cy += c.y; W.cz += c.z;
     }
+    // A SPHERE ROUND IT, so a blast asks 1,344 walls one question each rather than 16,000 chunks
+    const k = W.chunks.length;
+    W.cx /= k; W.cy /= k; W.cz /= k;
+    for (const c of W.chunks) W.R = Math.max(W.R, Math.hypot(c.x - W.cx, c.y - W.cy, c.z - W.cz) + c.r);
     WALLS.push(W); nW++;
+    if (twin) nIntact++; else kit.live.push(W);
   });
   // **THE GROUND IS A BACKSTOP, NOT A COLLIDER.** With `TRI` holding only his decks, every
   // query outside the house already answers "flat, at zero" -- which is exactly right, because
   // his house sits ON zero. So this is what you SEE out there and nothing more, and it sits a
   // hair under y=0 so his own slab wins the depth test.
-  if (KIT.plane && !kit.plane) {
+  if (KIT.plane && !kit.plane && !city) {
     kit.plane = 1;
     const gp = new THREE.Mesh(new THREE.PlaneGeometry(KIT.plane, KIT.plane),
                               new THREE.MeshStandardMaterial({ color: KIT.planeCol, roughness: .95, metalness: 0 }));
@@ -14692,11 +14998,15 @@ function buildKit(g) {
     gp.userData.noHole = 1;
     world.add(gp);
   }
+  // **THE BATCH FIRST NOW (m180)**, because it merges the ivy and the dressing too and hands back
+  // where each source mesh landed -- the hangs are then wired straight onto the merged buffers
+  const hangAt = new Map();
+  const drew = kitBatch(root, cast, hangAt);
+  const byId = kitWallMap();
   let nHang = 0;
-  for (const o of hangs) nHang += kitHang(o, /_ivy$/.test(o.name || '') ? 'ivy' : 'dress');
+  for (const o of hangs) nHang += kitHang(o, /_ivy$/.test(o.name || '') ? 'ivy' : 'dress', byId, hangAt);
   // **AN AC UNIT FALLS WITH THE BRICK IT IS BOLTED TO.** `host` is a wall `piece_id` and
   // `host_chunk` the chunk on it -- the dressing's rule, carried as extras on a separate object.
-  const byId = kitWallMap();
   let acLinked = 0;
   for (const P of acs) {
     const W = byId.get(P.host), c = W && W.byId.get(P.hostChunk);
@@ -14704,15 +15014,24 @@ function buildKit(g) {
   }
   kit.acs += acs.length;
   if (acs.length && acLinked < acs.length) note('KIT AC ' + (acs.length - acLinked) + ' UNHOSTED');
-  const drew = kitBatch(root);
+  // THE MOVING PARTS ARE INSTANCED (m180): 322 doors, lids and AC units across the city are 398
+  // draw calls as separate meshes, and a few dozen shared geometries as InstancedMeshes
+  const inst = KIT.batch ? kitInst(KPARTS.slice(parts0), cast) : 0;
   world.add(root);
+  drew[1] += kitDraws(root) + inst;
+  kit.draws1 += drew[1];
+  if (city && KCITY.prune) kit.pruned = (kit.pruned || 0) + kitPrune(root, KPARTS.slice(parts0));
+  if (city) kitTwinTidy();
   // the broad phase has to be rebuilt with the walls in it: `buildKitCol` built it with only his
   // solids, and a grid that predates 261 boxes would hand every query the old list
   boxGrid();
-  console.log('[melee] kit ' + (root.children.map(c => c.name).join(',') || 'root') + ': ' + nW +
+  console.log('[melee] kit ' + (root.children.length > 4 ? root.children.length + ' roots' : root.children.map(c => c.name).join(',') || 'root') + ': ' + nW +
               ' breakable walls, ' + kit.chunks + ' chunks so far, ' + nG + ' panes, ' + nDoor + ' doors, ' +
               nAC + ' AC (' + acLinked + ' hosted), ' + nMark + ' markers, ' + nHang +
-              ' hung verts on chunks, draws ' + drew[0] + ' -> ' + drew[1]);
+              ' hung verts on chunks, draws ' + drew[0] + ' -> ' + drew[1] + ' (' + inst + ' of them instanced parts)' +
+              (nIntact ? ', ' + nIntact + ' INTACT walls waiting on a twin swap' : '') +
+              (kit.noTwin ? ', ' + kit.noTwin + ' with NO TWIN' : '') + (kit.pruned ? ', ' + kit.pruned + ' nodes pruned' : ''));
+  if (kit.noTwin) note('KC ' + kit.noTwin + ' NOTWIN');
   if (!nW) note('KIT NO WALLS');
 }
 
@@ -14758,6 +15077,9 @@ function climbFind(px, py, pz) {
     if (px < L.minx - q || px > L.maxx + q) continue;
     if (pz < L.minz - q || pz > L.maxz + q) continue;
     if (py < L.miny - 1.2 || py > L.top + 1.0) continue;
+    // and in its OWN frame (m180), so a turned ladder is not caught by the corners of its AABB
+    const dx = px - L.cx, dz = pz - L.cz;
+    if (Math.abs(dx * L.ux + dz * L.uz) > L.ha + q || Math.abs(dx * L.nx + dz * L.nz) > L.hn + q) continue;
     return L;
   }
   return null;
@@ -14765,6 +15087,10 @@ function climbFind(px, py, pz) {
 function climbGo(L, into) {
   const p = player;
   p.climb = L; p.climbT = 0; p.climbSide = into;
+  // **A LADDER WHOSE FOOT IS ABOVE HIM IS STEPPED ONTO (m180).** A city ladder stands on the
+  // pavement, 25 cm over the road he walks up from, and `stepClimb`'s "off the bottom" test read
+  // that as having climbed down past it and let go on the very first frame.
+  if (p.pos.y < L.miny) p.pos.y = L.miny;
   p.vel.set(0, 0, 0); p.speed = 0; p.grounded = false; p.airT = 0; p.jumps = 1;
   triggerStop(); swapStop();
   snd('foot', { g: .16, r: 1.15 });
@@ -14776,10 +15102,9 @@ function climbOff(cool) {
 function stepClimb(dt) {
   const p = player, L = p.climb, s = stickWorld();
   p.climbT += dt;
-  // the ladder's SHORT horizontal axis is out of the wall; `climbSide` is which way that is,
-  // measured where he grabbed it
-  const wide = (L.maxx - L.minx) >= (L.maxz - L.minz);
-  const nx = wide ? 0 : p.climbSide, nz = wide ? p.climbSide : 0;
+  // the ladder's SHORT horizontal axis is out of the wall; `climbSide` is which way along it that
+  // is, measured where he grabbed it
+  const nx = L.nx * p.climbSide, nz = L.nz * p.climbSide;
   // HE FACES THE WALL, which is the opposite of the way he came at it
   const face = Math.atan2(-nx, -nz);
   p.faceH += wrapAngle(face - p.faceH) * Math.min(1, 9 * dt);
@@ -14791,10 +15116,11 @@ function stepClimb(dt) {
   if (p.jump) { p.jump = 0; climbOff(); p.vel.y = MOVE.jump * .55; return; }   // or hopped off
   p.speed = Math.abs(into) * CLIMB.speed;
   p.pos.y += into * CLIMB.speed * dt;
-  // held ON the rungs: centred in the volume across the wall, and `out` off its face
-  const cx = (L.minx + L.maxx) / 2, cz = (L.minz + L.maxz) / 2;
-  if (wide) { p.pos.z = cz + nz * CLIMB.out; p.pos.x = clamp(p.pos.x, L.minx, L.maxx); }
-  else { p.pos.x = cx + nx * CLIMB.out; p.pos.z = clamp(p.pos.z, L.minz, L.maxz); }
+  // held ON the rungs: centred in the volume across the wall, and `out` off its face -- in the
+  // ladder's own frame, so it is the same line on a turned wall (m180)
+  const cx = L.cx, cz = L.cz;
+  const al = clamp((p.pos.x - cx) * L.ux + (p.pos.z - cz) * L.uz, -L.ha, L.ha);
+  p.pos.x = cx + L.ux * al + nx * CLIMB.out; p.pos.z = cz + L.uz * al + nz * CLIMB.out;
   p.vel.set(0, 0, 0); p.grounded = false; p.airT = 0; p.jumps = 1;
   // **TOPPING OUT GOES TO HIS OWN MARKER WHEN THERE IS ONE.** `nav_ladder_top__X#` is a real
   // standing point on the roof; without it the fallback is the volume's own top pushed INTO the
@@ -14820,6 +15146,17 @@ function stepClimb(dt) {
 // wall nodes and mesh 15 by seven, so a hole punched in the shared buffer is the same hole in
 // every copy of that piece -- his note says so and the file agrees. Cloning all twenty up front
 // would be twenty buffers for a house most of which is never touched.
+// **ONE GRID REBUILD PER EVENT, NOT PER CHUNK (m180).** A rebuild walks every box in the world --
+// 7,400 in the kit city, about a millisecond here and several on a phone -- and a blast that kills
+// five chunks used to rebuild five times. Inside `kitHold` the removals only mark the grid dirty,
+// and it is rebuilt once when the event is over. Nothing between the splice and that rebuild asks
+// the grid: every step in between (debris, hangs, decals, parts) works off its own records.
+function kitRegrid() { if (kit.hold) kit.dirty = 1; else boxGrid(); }
+function kitHold(fn) {
+  kit.hold = (kit.hold || 0) + 1;
+  try { return fn(); }
+  finally { if (!--kit.hold && kit.dirty) { kit.dirty = 0; boxGrid(); } }
+}
 function kitClone(W) {
   if (W.cloned || W.batched) return;
   W.cloned = 1; kit.cloned++;
@@ -14833,6 +15170,7 @@ function kitClone(W) {
 // middle of the world and turns its frustum culling off.
 function kitKill(W, c, loud, bx, by, bz) {
   if (c.dead) return 0;
+  if (W.intact) kitSwap(W);           // an intact city wall becomes its twin first (m180)
   c.dead = 1; W.alive--; kit.dead++;
   kitClone(W);
   // **THE DEBRIS IS LIFTED OUT BEFORE THE COLLAPSE**, because the collapse is what destroys the
@@ -14861,7 +15199,7 @@ function kitKill(W, c, loud, bx, by, bz) {
   // and its collider goes with it, or the hole is one you can see through and still walk into
   const i = BOXES.indexOf(c.box);
   if (i >= 0) BOXES.splice(i, 1);
-  boxGrid();
+  kitRegrid();
   if (loud) {
     spkBurst(c.x, c.y, c.z, 14, { col: KIT.dust, spread: 3.2, up: 2.4, r: c.r,
                                   size: .10 + Math.random() * .08, life: .55 + Math.random() * .4 });
@@ -14902,17 +15240,28 @@ function kitBlast(x, y, z, r, dmg) {
   if (!KIT.on || (!WALLS.length && !KPARTS.length)) return 0;
   const D = (dmg || 0) * KIT.dmg;
   if (D <= 0) return 0;
+  return kitHold(() => kitBlast1(x, y, z, r, D));
+}
+function kitBlast1(x, y, z, r, D) {
   let hit = 0;
   for (const W of WALLS) {
+    // ONE QUESTION PER WALL FIRST (m180): the city has 1,344 of them and about 16,000 chunks
+    const wx = W.cx - x, wy = W.cy - y, wz = W.cz - z, WR = r + W.R;
+    if (wx * wx + wy * wy + wz * wz > WR * WR) continue;
+    let wh = 0;
     for (const c of W.chunks) {
       if (c.dead || c.cool > 0) continue;
       const dx = c.x - x, dy = c.y - y, dz = c.z - z;
       const R = r + c.r;
       if (dx * dx + dy * dy + dz * dz > R * R) continue;
-      c.hp -= D; c.cool = KIT.cool; hit++;
+      // THE FIRST HIT ON AN INTACT WALL SWAPS IT FOR ITS TWIN (m180), and then it is hit as one
+      if (W.intact) kitSwap(W);
+      c.hp -= D; c.cool = KIT.cool; wh++;
       if (c.hp <= 0) kitKill(W, c, 1, x, y, z);
     }
-    if (hit) kitFlood(W);
+    // **PER WALL.** m170 flooded every wall after the first one hit -- harmless on a house of
+    // twenty, and 1,344 flood fills per bolt in the city
+    if (wh) { hit += wh; kitFlood(W); }
   }
   // AND THE MOVING PARTS, through the same door -- a shot through a window takes the pane
   for (const P of KPARTS) {
@@ -14924,12 +15273,16 @@ function kitBlast(x, y, z, r, dmg) {
   }
   return hit;
 }
-// the orphans, and the cooldown that stops one blast taking the same chunk twice
+// the orphans, and the cooldown that stops one blast taking the same chunk twice -- over the walls
+// that CAN break (`kit.live`), never the 1,344 intact ones that cannot yet (m180)
 function kitStep(dt) {
   if (KPARTS.length) kitPartStep(dt);
   if (KDEB.length) kitDebrisStep(dt);
-  if (!WALLS.length) return;
-  for (const W of WALLS) {
+  if (!kit.live.length) return;
+  kitHold(kitFallStep.bind(null, dt));
+}
+function kitFallStep(dt) {
+  for (const W of kit.live) {
     let fell = 0;
     for (const c of W.chunks) {
       if (c.cool > 0) c.cool -= dt;
@@ -14983,6 +15336,8 @@ function kitPartAdd(o, e) {
     P.lb = col.geometry.boundingBox.clone();
     P.box = { minx: 0, maxx: 0, miny: 0, maxy: 0, minz: 0, maxz: 0, part: P };
     kitPartBox(P);
+    // a door, a shutter or a lid is filed in the grid under everywhere it can swing (m180)
+    if (kind === 'door' || kind === 'rollup' || kind === 'hatch') P.box.gpad = 2 * P.r + .2;
     BOXES.push(P.box);
   }
   KPARTS.push(P);
@@ -15021,6 +15376,7 @@ function kitCutX(src, lo, hi, shift) {
   g.computeBoundingBox(); g.computeBoundingSphere();
   return g;
 }
+const _kcut = new Map();
 function kitDoubleDoors(o, e) {
   if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return false;
   o.geometry.computeBoundingBox();
@@ -15029,7 +15385,11 @@ function kitDoubleDoors(o, e) {
   const pa = o.parent; if (!pa) return false;
   const hp = Math.max(10, (e.hp || 80) / 2);
   for (const [lo, hi, hinge, flip] of [[x0, mid, x0, 1], [mid, x1, x1, -1]]) {
-    const leaf = new THREE.Mesh(kitCutX(o.geometry, lo, hi, hinge), o.material);
+    // ONE CUT PER SOURCE GEOMETRY (m180): twenty wide doors across the city share a handful of
+    // panels, and leaves that share a geometry are leaves that can be instanced
+    const ck = o.geometry.uuid + '|' + flip;
+    let cg = _kcut.get(ck); if (!cg) _kcut.set(ck, cg = kitCutX(o.geometry, lo, hi, hinge));
+    const leaf = new THREE.Mesh(cg, o.material);
     leaf.castShadow = true; leaf.receiveShadow = true;
     leaf.name = o.name + (flip > 0 ? '_L' : '_R');
     leaf.position.set(hinge, 0, 0).applyQuaternion(o.quaternion).add(o.position);
@@ -15048,6 +15408,7 @@ function kitDoubleDoors(o, e) {
     P.lb = col.geometry.boundingBox.clone();
     P.box = { minx: 0, maxx: 0, miny: 0, maxy: 0, minz: 0, maxz: 0, part: P };
     kitPartBox(P);
+    P.box.gpad = 2 * P.r + .2;
     BOXES.push(P.box);
     KPARTS.push(P);
   }
@@ -15095,7 +15456,7 @@ function kitPartBox(P) {
 function kitPartOff(P) {
   if (!P.box) return;
   const i = BOXES.indexOf(P.box);
-  if (i >= 0) { BOXES.splice(i, 1); boxGrid(); }
+  if (i >= 0) { BOXES.splice(i, 1); kitRegrid(); }
   P.box = null;
 }
 // WHICH SIDE OF A PART HE IS ON, in the part's PARENT frame -- its closed pose IS the parent's
@@ -15112,7 +15473,7 @@ function kitSide(P) {
 function kitPartStep(dt) {
   const p = player;
   for (const P of KPARTS) {
-    if (P.dead) continue;
+    if (P.dead || P.kind === 'glass' || P.kind === 'ac') continue;
     const dx = p.pos.x - P.x, dz = p.pos.z - P.z, dh = Math.hypot(dx, dz);
     const dy = p.pos.y + .9 - P.y;
     let moved = 0;
@@ -15150,7 +15511,10 @@ function kitPartStep(dt) {
       P.a += (P.aT - P.a) * Math.min(1, 4 * dt);
       if (Math.abs(P.a - a0) > 1e-3) { P.o.rotation.x = -KIT.hatchSign * P.a * Math.PI / 180; moved = 1; }
     }
-    if (moved && P.box) { kitPartBox(P); if (BGRID.on) boxGrid(); }
+    if (moved && P.inst) kitInstSync(P);
+    // NO GRID REBUILD (m180): the box was filed under its whole swing (`gpad`), so moving it inside
+    // that costs nothing -- a rebuild is over every box in the city, every frame a door swings
+    if (moved && P.box) kitPartBox(P);
   }
 }
 // **A PART BREAKS THE WAY A CHUNK DOES, THROUGH THE SAME DOOR.** `kitBlast` asks every part as
@@ -15161,6 +15525,7 @@ function kitPartKill(P, bx, by, bz) {
   if (P.box) decalOff(P.box);         // a scorch on the pane goes with the pane (m174)
   kitPartOff(P);
   P.o.visible = false;
+  if (P.inst) kitInstSync(P, 1);         // its instance slots go to nothing (m180)
   // a BATCHED pane is a range of a shared buffer, not an object to hide (m178)
   if (P.vis) for (const B of P.vis) kitCollapse(B, -1, P.x, P.y, P.z);
   if (P.kind === 'glass') {
@@ -15294,15 +15659,16 @@ function kitDebrisChunk(W, c, bx, by, bz) {
 // chunk. Only triangles whose three corners are all in the set, taken to WORLD space and centred
 // on their own middle, so the piece tumbles about itself.
 const _kdn = new THREE.Matrix3(), _kdv = new THREE.Vector3();
-function kitDebrisVerts(m, list, bx, by, bz) {
+function kitDebrisVerts(m, list, bx, by, bz, i0, iN) {
   const geo = m.geometry, pos = geo.attributes.position, idx = geo.index;
   const nrm = geo.attributes.normal, uv = geo.attributes.uv, col = geo.attributes.color;
-  const S = new Set(list), n = idx ? idx.count : pos.count;
+  const S = new Set(list), n = iN ? (i0 || 0) + iN : (idx ? idx.count : pos.count);
   m.updateWorldMatrix(true, false);
   _kdn.getNormalMatrix(m.matrixWorld);
   const cN = col ? col.itemSize : 0, P = [], N = [], U = [], C = [];
   let x = 0, y = 0, z = 0, k3 = 0;
-  for (let t = 0; t < n; t += 3) {
+  // only the source's own INDEX RANGE when it is batched (m180) -- the rest of the city is not it
+  for (let t = iN ? (i0 || 0) : 0; t < n; t += 3) {
     const a = idx ? idx.getX(t) : t, b = idx ? idx.getX(t + 1) : t + 1, c = idx ? idx.getX(t + 2) : t + 2;
     if (!S.has(a) || !S.has(b) || !S.has(c)) continue;
     for (const v of [a, b, c]) {
@@ -15413,18 +15779,21 @@ function kitOwner(o, root) {
   for (let a = o; a && a !== root; a = a.parent) if (a.userData && a.userData.kitOwn) return a.userData.kitOwn;
   return null;
 }
-function kitBatch(root) {
+function kitBatch(root, cast, hangAt) {
   let before = 0;
   root.traverse(o => { if (o.isMesh && o.visible && !(o.userData && o.userData.collider)) before++; });
-  if (!KIT.batch) return [before, before];
+  kit.draws0 += before;
+  if (!KIT.batch) return [before, 0];
+  if (cast === undefined) cast = true;
   root.updateMatrixWorld(true);
-  const stat = new Map(), glass = new Map(), wall = new Map();
+  const stat = new Map(), glass = new Map(), wall = new Map(), hang = new Map();
   const add = (M, m, tag) => { let L = M.get(m.material.uuid); if (!L) M.set(m.material.uuid, L = { mat: m.material, list: [], tags: [] }); L.list.push(m); L.tags.push(tag); };
   root.traverse(o => {
     if (!o.isMesh || !o.visible || Array.isArray(o.material) || !o.geometry || !o.geometry.attributes.position) return;
     if (o.userData && o.userData.collider) return;
     const own = kitOwner(o, root);
-    if (own === 'hang') return;
+    // the ivy and the dressing merge too now (m180), each source remembered so `kitHang` can find it
+    if (own === 'hang') { if (hangAt) add(hang, o, o); return; }
     if (own && own.chunks) { if (own.meshes.indexOf(o) >= 0) add(wall, o, own); else add(stat, o, null); return; }
     if (own && own.kind) { if (own.kind === 'glass') add(glass, o, own); return; }
     add(stat, o, null);
@@ -15433,7 +15802,7 @@ function kitBatch(root) {
   const emit = (L, withChunk) => {
     const { geo, ranges } = kitMerge(L.list, withChunk);
     const mesh = new THREE.Mesh(geo, L.mat);
-    mesh.castShadow = true; mesh.receiveShadow = true;
+    mesh.castShadow = cast; mesh.receiveShadow = true;
     out.add(mesh);
     for (const m of L.list) m.material = [];
     return { mesh, geo, ranges };
@@ -15448,12 +15817,78 @@ function kitBatch(root) {
     const R = emit(L, false);
     L.tags.forEach((P, k) => { (P.vis || (P.vis = [])).push({ geo: R.geo, ...R.ranges[k] }); });
   }
+  for (const L of hang.values()) {
+    const R = emit(L, false);
+    // a leaf is a card and is not worth a shadow pass
+    R.mesh.castShadow = false;
+    L.tags.forEach((m, k) => hangAt.set(m, { mesh: R.mesh, ...R.ranges[k] }));
+  }
   world.add(out);
-  let after = 0;
-  root.traverse(o => { if (o.isMesh && o.visible && !Array.isArray(o.material) && !(o.userData && o.userData.collider)) after++; });
-  after += out.children.length;
-  kit.draws0 += before; kit.draws1 += after;
-  return [before, after];
+  return [before, out.children.length];
+}
+// what the root still draws on its own -- counted AFTER the instancing has emptied the parts
+function kitDraws(root) {
+  let n = 0;
+  root.traverse(o => { if (o.isMesh && o.visible && !Array.isArray(o.material) && !(o.userData && o.userData.collider)) n++; });
+  return n;
+}
+// **THE MOVING PARTS, INSTANCED (m180, `kitInst`).** A door, a lid and an AC unit each keep their
+// own Object3D -- that is what swings, and what `kitPartBox` and `kitSide` read -- but they draw
+// nothing: every primitive under them joins an InstancedMesh keyed on its geometry and material,
+// and `kitInstSync` copies the node's world matrix into its slot whenever it moves. Across the city
+// that is 398 draw calls becoming one per shared geometry.
+const _kim0 = new THREE.Matrix4().makeScale(0, 0, 0);
+function kitInst(parts, cast) {
+  const by = new Map();
+  for (const P of parts) {
+    if (P.kind === 'glass' || P.dead) continue;
+    P.o.updateMatrixWorld(true);
+    P.o.traverse(c => {
+      if (!c.isMesh || !c.visible || Array.isArray(c.material) || !c.geometry || (c.userData && c.userData.collider)) return;
+      const k = c.geometry.uuid + '|' + c.material.uuid;
+      let L = by.get(k); if (!L) by.set(k, L = []);
+      L.push({ c, P });
+    });
+  }
+  const out = new THREE.Group(); out.name = 'kitInst';
+  for (const L of by.values()) {
+    const im = new THREE.InstancedMesh(L[0].c.geometry, L[0].c.material, L.length);
+    im.castShadow = cast; im.receiveShadow = true;
+    // a door swings out of whatever sphere it was measured in, and a city-wide set never culls
+    // out of the frustum anyway
+    im.frustumCulled = false;
+    L.forEach((e, i) => {
+      im.setMatrixAt(i, e.c.matrixWorld);
+      (e.P.inst || (e.P.inst = [])).push({ im, i, m: e.c });
+      e.c.userData.kitMat = e.c.material; e.c.material = [];
+    });
+    im.instanceMatrix.needsUpdate = true;
+    out.add(im);
+  }
+  if (out.children.length) world.add(out);
+  return out.children.length;
+}
+function kitInstSync(P, gone) {
+  if (!gone) P.o.updateMatrixWorld(true);
+  for (const e of P.inst) { e.im.setMatrixAt(e.i, gone ? _kim0 : e.m.matrixWorld); e.im.instanceMatrix.needsUpdate = true; }
+}
+// **AND THE GRAPH IS PRUNED (m180, `kitPrune`).** 9,650 nodes, 2,930 of them marker empties his
+// note says to read into a table rather than keep -- and three walks every node in the scene every
+// frame. What the running game reads is the moving parts (and their colliders), the chain above
+// them for `matrixWorld`, and nothing else: the batch has the pictures, `KCLIMB`/`KBLD` have the
+// markers that matter, and `W.M` keeps each wall's transform for the swap.
+function kitPrune(root, parts) {
+  const keep = new Set();
+  for (const P of parts) {
+    if (P.kind === 'glass') continue;        // a pane is a range of the batch and never moves
+    P.o.traverse(c => keep.add(c));
+    for (let a = P.o.parent; a; a = a.parent) keep.add(a);
+  }
+  let n = 0;
+  const cut = [];
+  root.traverse(o => { if (o !== root && !keep.has(o)) cut.push(o); });
+  for (const o of cut) { if (o.parent && keep.has(o.parent)) { o.parent.remove(o); } n++; }
+  return n;
 }
 // a door, a shutter, a lid: the node itself is cloned into the world at its world transform
 function kitDebrisMesh(o, bx, by, bz) {
@@ -15468,7 +15903,7 @@ function kitDebrisMesh(o, bx, by, bz) {
   const mid = bb.getCenter(new THREE.Vector3());
   o.traverse(c => {
     if (!c.isMesh || (c.userData && c.userData.collider)) return;
-    const m = new THREE.Mesh(c.geometry, c.material);
+    const m = new THREE.Mesh(c.geometry, c.userData.kitMat || c.material);
     m.position.copy(mid).negate(); m.castShadow = true; m.frustumCulled = false;
     g.add(m);
   });
@@ -20323,8 +20758,10 @@ function stepDummies(dt) {
 // building the cutaway is not drawing, or it would be dragged in against walls nobody can see
 function camBlock(x, y, z, pad) {
   if (KCUT.on.value > .5) {
-    const b = KCUT.box.value;
-    if (y > KCUT.y.value - .05 && x > b.x && x < b.z && z > b.y && z < b.w) return false;
+    // the cut box is in the BUILDING's frame (m180), exactly as the shader reads it
+    const b = KCUT.box.value, f = KCUT.xf.value, dx = x - f.x, dz = z - f.y;
+    const lx = f.z * dx - f.w * dz, lz = f.w * dx + f.z * dz;
+    if (y > KCUT.y.value - .05 && lx > b.x && lx < b.z && lz > b.y && lz < b.w) return false;
   }
   return camHit(x, y, z, pad);
 }
@@ -21180,7 +21617,7 @@ function frame() {
     // **AND THE TOON CITY CARRIES ITS DRAW COUNT (m157).** "It never loaded", "it loaded and
     // the optimisation did nothing" and "it loaded and it is slow anyway" are three bugs and
     // one picture from a phone, and the only thing that separates the first two is a number.
-    const tc = inTC() ? ' · TC' + (TCITY.draws === undefined ? '?' : TCITY.draws) + 'd/' +
+    const tc = (inTC() || inTK()) ? ' · TC' + (TCITY.draws === undefined ? '?' : TCITY.draws) + 'd/' +
       TRI.n + 't/' + BOXES.length + 'b' : '';
     const wp = inWP() ? ' · WP' + TRI.n + 't/' + BOXES.length + 'b/' + (WP.turned || 0) + 'y' + (WP.painted ? ' · WPPAINT' + WP.painted : '') +
       (WP.tinted ? ' · WPTINT' + WP.tinted : '') + (WP.bodies ? ' · WPCROWD' + WP.bodies : '') +
@@ -21226,6 +21663,9 @@ function frame() {
     // cannot see it" are one glance apart, which is this file's oldest rule.
     const kitC = kit.chunks ? ' \u00b7 KIT' + (kit.chunks - kit.dead) + '/' + kit.chunks +
       (KCLIMB.length ? ' L' + KCLIMB.length : '') +
+      // SW: intact city walls swapped for their chunked twins so far (m180) -- 0 after a hit
+      // means the swap never ran, which is a different bug from the twin not breaking
+      (inTK() ? ' SW' + kit.swapped : '') +
       (KPARTS.length ? ' P' + KPARTS.filter(q => !q.dead).length + '/' + KPARTS.length : '') +
       (KDEB.length ? ' D' + KDEB.length : '') +
       // IVY: how many leaf vertices found their chunk -- 0 with ivy on screen is "the tags never
@@ -21324,7 +21764,9 @@ async function init() {
   // home, so the cost of being wrong is a bar that is a little off rather than a broken boot.
   // +2 at m150: the deck and its clips. The toon city is one file where the test site is three
   // (a building, a tower and a motorcycle), so it is 24.
-  PROG.total = inWP() ? 25 : inTC() ? 26 : 26;   // +1 at m158 (the collision), +1 at m160 (the breakables)
+  // +1 at m158 (the collision), +1 at m160 (the breakables), and the kit city's library and
+  // buildings on top of the toon city's three (m180)
+  PROG.total = inWP() ? 25 : inTC() ? 26 : inTK() ? 28 : 26;
   // ---- the character. There is no game without him, so a failure here is reported on the
   //      card rather than warned to a console that does not exist on a phone.
   let g;
@@ -21568,6 +22010,26 @@ async function init() {
     await side(KIT.gen, 'loading the generated buildings', { name: 'KITGEN', build: buildKit });
     player.pos.x = KIT.spawn[0]; player.pos.z = KIT.spawn[1];
     if (KIT.spawnAz != null) { cam.az = KIT.spawnAz; player.faceH = player.heading = KIT.spawnAz; }
+  } else if (inTK()) {
+    // **THE KIT CITY (m180).** The old city's streets through the old city's pipeline, his kit
+    // buildings through the house's, and the collision that knows about both. ORDER IS THE WHOLE
+    // DEPENDENCY: the OBB manifest before the collider (it skips the replaced sixty), the collider
+    // before the buildings (the swap takes wall boxes BY piece_id), the twin library before the
+    // buildings (an intact wall reads its twin's chunk table at load), and the breakables before
+    // the city visual (`buildTCity` claims against them).
+    if (TCITY.fog) { scene.fog.near = TCITY.fog.near; scene.fog.far = TCITY.fog.far; }
+    decalLoad();
+    try {
+      const r = await fetch(A(TCITY.obbFile));
+      TCITY.obb = r.ok ? await r.json() : null;
+      if (!TCITY.obb) note('TC NO OBB JSON');
+    } catch (e) { TCITY.obb = null; note('TC NO OBB JSON'); console.warn('[melee] obb', e); }
+    await side(BRK.file, 'loading the kit city', { name: 'TOONBRK', build: brkIndex });
+    await side(KCITY.col, 'loading the kit city', { name: 'KCITYCOL', build: buildKCityCol });
+    await side(KCITY.pieces, 'loading the wall pieces', { name: 'KCITYLIB', build: kitTwinIndex });
+    await side(KCITY.bld, 'loading the kit buildings', { name: 'KCITYBLD', build: buildKit });
+    await side(KCITY.vis, 'loading the kit city', { name: 'KCITYVIS', build: buildTCity });
+    player.pos.x = KCITY.spawn[0]; player.pos.z = KCITY.spawn[1];
   } else if (inTC()) {
     // **HIS LEVEL, AND NOTHING ELSE AT ALL.** No collider builder, no street grid, no boxes --
     // which is not an omission, it IS the "flat plane for ground and walkability" he asked
@@ -21626,7 +22088,7 @@ async function init() {
   // counted rather than guessed: SHE, MACE, WARRIOR, HICK, HOBO, SKATER, BIKER, DUMMY,
   // CLANCY and the civil roster. A drifting count leaves the bar monotone and clamped
   // (m140) rather than broken, but a wrong number is a bar that jumps at the end.
-  if (inKit()) { PROG.done += 9 + CIVILS.length; }
+  if (kitWorld()) { PROG.done += 9 + CIVILS.length; }
   else {
   if (!inWP() || WP.she) await side(SHE.file, 'loading the alien girl', { name: 'SHE', build: buildShe });
   else PROG.done++;

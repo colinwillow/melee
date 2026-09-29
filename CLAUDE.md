@@ -79,6 +79,9 @@ npm run morph      # transfer each character's SHAPE onto zap's topology and mea
                    # game reads them yet. See NOTES.md for what the numbers mean.
 npm run ktx        # UASTC/ETC1S -> KTX2 for a GLB's textures. RUN AFTER EVERY toon_city
                    # RE-EXPORT, or the phone plays old textures on new geometry.
+npm run twins      # the 42 chunked wallB_* twins out of toon_city_kit_pieces.glb, no textures.
+                   # RUN AFTER EVERY RE-EXPORT OF THE PIECE LIBRARY (the kit city reads the
+                   # `_twins` file, not his)
 npm run lanes      # re-bake Weirdport's street centrelines -- RUN IT AFTER A RE-EXPORT OF THE
                    # VISUAL GLB, because it WRITES `WPLANES` into index.html
 ```
@@ -607,6 +610,18 @@ a map at all:
   **STILL NOT BUILT:** the `nav_*`/`room_*` markers are loaded and nothing reads them (fire,
   firemen, repair, police don't exist yet), and the world loads **no bodies at all**,
   deliberately — every `at` table here is test-site coordinates.
+- **THE KIT CITY IS A FIFTH WORLD** (`KCITY`, world key `tkit`, `?w=tkit`, m180) — the toon city
+  with his sixty kit buildings; `toon` is still the old set for comparison. The visual goes through
+  `buildTCity` unchanged, the buildings through `buildKit`, the collision through `buildKCityCol`
+  (every kit collider is an 8-corner turned box, fitted by `kitObb`; the piece_id is in the NAME).
+  **Every wall is INTACT until its first hit** and then `kitSwap` puts its chunked twin in (his
+  five steps). Buildings 12,233 draws -> 88; 19,814 nodes pruned. **Re-run after his exports:**
+  `npm run ktx models/toon_city_kit/toon_city_visual.glb etc1s`, the same for
+  `toon_city_kit_buildings.glb`, and `npm run twins` for the piece library.
+  **Buildings, ladders and the cutaway are TURNED** (`KBLD` c/s, `KCLIMB` u/n, `KCUT.xf`) — the
+  house and the row have yaw 0, where it is the old arithmetic. **No bodies**, like the kit world.
+  **NOT BUILT:** interior culling for far buildings (his suggestion 3), and a swapped twin is 3–4
+  draws of its own. `mel.kitBoom()` swaps and breaks where he stands; the chip says `SW<swaps>`.
 - **The ragdoll has no self-collision (m156).** `doll.hulls` is empty, so a limb can pass into
   his own torso — her hair has head/chest/hips spheres for exactly that reason. The arms are
   pinned at the shoulder under a .85 cone and cannot reach far, so it is left out rather than
