@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m219</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m220</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m219</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m220</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,9 +620,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm219';
+const BUILD = 'm220';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"2bfe0481","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"cc3cc20a","models/toon_city_kit/toon_city_kit_twins.glb":"db1072bb","models/toon_city_kit/toon_city_visual.glb":"2b04e6b3","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"2bfe0481","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"cc3cc20a","models/toon_city_kit/toon_city_kit_twins.glb":"db1072bb","models/toon_city_kit/toon_city_visual.glb":"2b04e6b3","models/toon_city_kit/toon_city_visual_ktx2.glb":"a5e6a331","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/geyser_sprites_01.png":"b6325470","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -9152,10 +9152,85 @@ const SPOUT = {
   snd: '',
   // HIS WATER SHEET, when he makes it (m218): cells played left to right, top to bottom, once per
   // drop over its life. Transparent PNG or on black -- either is detected. Absent = the soft dots.
-  sheet: { file: 'images/water_sprites_01.png', grid: [4, 4] },
+  sheet: { file: '', grid: [4, 4] },   // m219: his sheet turned out to be a whole GEYSER -- see `geyser`
+  // **HIS GEYSER SHEET (m219, `geyserLoad`, `geyserCards`).** `images/geyser_sprites_01.png`: 8 x 4
+  // = 32 frames of the WHOLE COLUMN on black, base at the bottom of every 192 x 256 cell -- rising
+  // (the first row), gushing (rows two and three), dying down (the last). So it is not a texture for
+  // a drop: it IS the geyser. Two cards stand on the spout, turned to the lens about the vertical
+  // only (a column billboarded on all axes tips over when you look down on it); the rise plays once,
+  // the gush ping-pongs for as long as the main runs, the fall plays as it stops. Keyed off its black
+  // the way fire 3 is -- alpha from brightness, colour un-premultiplied -- so it reads as water over
+  // a bright street rather than as light added to it. The drops stay, thinned to `drops`, for the
+  // splash round its foot.
+  geyser: { on: 1, file: 'images/geyser_sprites_01.png', grid: [8, 4], fps: 16, intro: 8, outro: 8,
+            hK: 1.15, aspect: .75, cards: 2, drops: .35, key: [.01, .22], alpha: .95, tint: [.92, .97, 1] },
 };
 const SPOUTS = [];
 let puddleTex = null;
+const geyser = { tex: null, tried: 0, geo: null };
+function geyserLoad() {
+  const G = SPOUT.geyser;
+  if (!G || !G.on || geyser.tried) return;
+  geyser.tried = 1;
+  new THREE.TextureLoader().load(A(G.file), t => {
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false;   // an atlas mipped bleeds cells
+    geyser.tex = t;
+    geyser.geo = new THREE.PlaneGeometry(1, 1); geyser.geo.translate(0, .5, 0);   // base on the spout
+    console.log('[melee] geyser sheet ' + G.grid.join('x'));
+  }, undefined, () => note('NO GEYSER PNG'));
+}
+function geyserCards(S) {
+  const G = SPOUT.geyser;
+  if (!geyser.tex || S.dy < .7) return null;
+  const cards = [];
+  for (let c = 0; c < G.cards; c++) {
+    const mat = new THREE.ShaderMaterial({
+      uniforms: { uMap: { value: geyser.tex }, uGrid: { value: new THREE.Vector2(G.grid[0], G.grid[1]) },
+                  uFrame: { value: 0 }, uA: { value: 0 }, uKey: { value: new THREE.Vector2(G.key[0], G.key[1]) },
+                  uTint: { value: new THREE.Vector3(...G.tint) } },
+      vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+      fragmentShader: `
+        uniform sampler2D uMap; uniform vec2 uGrid; uniform float uFrame; uniform float uA;
+        uniform vec2 uKey; uniform vec3 uTint; varying vec2 vUv;
+        void main() {
+          float f = floor(uFrame + .5);
+          vec2 cell = vec2(mod(f, uGrid.x), uGrid.y - 1.0 - floor(f / uGrid.x));
+          vec4 t = texture2D(uMap, (cell + vUv) / uGrid);
+          float mx = max(max(t.r, t.g), t.b);
+          float a = smoothstep(uKey.x, uKey.y, mx) * uA;
+          if (a < .004) discard;
+          gl_FragColor = vec4(t.rgb / max(mx, .001) * uTint * a, a);
+        }`,
+      transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      blending: THREE.NormalBlending, premultipliedAlpha: true, toneMapped: false,
+    });
+    const m = new THREE.Mesh(geyser.geo, mat);
+    const k = c ? .82 : 1, hh = S.h * G.hK * k;
+    m.scale.set(hh * G.aspect * (c % 2 ? -1 : 1), hh, 1);   // the second one mirrored and a little smaller
+    m.position.set(S.x + (c ? (Math.random() - .5) * .25 : 0), S.y - .05, S.z + (c ? (Math.random() - .5) * .25 : 0));
+    m.renderOrder = 4; m.frustumCulled = false;
+    m.userData.noHole = 1; m.userData.noPaint = 1;
+    m.userData.ph = c * 5;
+    scene.add(m);
+    cards.push(m);
+  }
+  return cards;
+}
+// which of the 32 drawings, at this moment of this main's life
+// **THE FALL WAITS FOR THE LOOP TO REACH ITS LAST DRAWING**, so the gush hands over to the dying-down
+// row on the frame that leads into it rather than jumping there from the middle of a ping-pong.
+function geyserFrame(S, m) {
+  const G = SPOUT.geyser, N = G.grid[0] * G.grid[1], lo = G.intro, hi = N - G.outro - 1;
+  const U = m.userData;
+  if (U.out !== undefined) { const o = hi + 1 + Math.floor((S.t - U.out) * G.fps); return o < N ? o : -1; }
+  const f = S.t * G.fps;
+  if (f < lo) return Math.floor(f);
+  const L = hi - lo + 1, P = 2 * L - 2, g = Math.floor(f - lo + U.ph) % P;
+  const fr = lo + (g < L ? g : P - g);
+  if (S.t >= S.dur * .9 && fr === hi) U.out = S.t + 1 / G.fps;
+  return fr;
+}
 // THE DROPS: their own alpha-blended pool, because the sparks are additive
 const WATN = 700;
 const wat = { P: null, vx: [], vy: [], vz: [], life: [], age: [], s0: [], s1: [], a0: [], gy: [] };
@@ -9329,6 +9404,7 @@ function fxSpawn(fx, b) {
 
 function spoutGo(x, y, z, dir, h, dur) {
   if (!SPOUT.on) return;
+  geyserLoad();
   // the puddle: a disc lying on the ground under the jet, growing
   const gy = groundAt(x, z, y, 2.5);
   const mesh = new THREE.Mesh(
@@ -9367,7 +9443,18 @@ function spoutStep(dt) {
     S.t += dt;
     const u = S.t / S.dur;
     const k = u >= 1 ? 0 : u > .85 ? (1 - u) / .15 : Math.min(1, S.t / .35);
+    // his geyser: made as soon as the sheet is in (it may land after the main has burst)
+    if (!S.cards && geyser.tex) S.cards = geyserCards(S) || [];
+    if (S.cards) for (const m of S.cards) {
+      const fr = geyserFrame(S, m);
+      m.visible = fr >= 0;
+      if (fr < 0) continue;
+      m.material.uniforms.uFrame.value = fr;
+      m.material.uniforms.uA.value = SPOUT.geyser.alpha * Math.min(1, S.t / .12);
+      m.rotation.y = Math.atan2(camera.position.x - m.position.x, camera.position.z - m.position.z);
+    }
     if (u >= 1.35) {
+      if (S.cards) for (const m of S.cards) { scene.remove(m); m.material.dispose(); }
       scene.remove(S.mesh); S.mesh.geometry.dispose(); S.mesh.material.dispose();
       if (S.jet) { scene.remove(S.jet); S.jet.geometry.dispose(); S.jet.material.dispose(); }
       SPOUTS.splice(i, 1); continue;
@@ -9387,7 +9474,7 @@ function spoutStep(dt) {
     if (!S.jet) {
       // THE SPRAY (m160's jet): straight out of the spout on a cone, fast enough to reach
       // `height_m`, arcing over and landing -- as big soft alpha drops, and plenty of them
-      S.emit += dt * SPOUT.jetN * k;
+      S.emit += dt * SPOUT.jetN * k * (S.cards && S.cards.length ? SPOUT.geyser.drops : 1);
       const v = S.v * (.8 + .2 * k);
       const ux = Math.abs(S.dy) > .9 ? 1 : 0, uy = Math.abs(S.dy) > .9 ? 0 : 1;
       let tx = uy * S.dz, ty = -ux * S.dz, tz = ux * S.dy - uy * S.dx;
@@ -9890,6 +9977,7 @@ function buildHydrant(g) {
   });
   for (const im of HYD.body.concat(HYD.cap)) im.instanceMatrix.needsUpdate = true;
   HYD.n = N; HYD.bot = B.min.y;
+  geyserLoad();                            // so the sheet is in before the first one bursts
   brkDirty = 1;
   console.log('[melee] hydrant: ' + N + ' placed, ' + (HYD.body.length + HYD.cap.length) +
     ' draw calls, cap at y>' + HYD.capY + (HYD.box ? '' : ' (no collider file, used his cols)'));

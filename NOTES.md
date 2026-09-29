@@ -7,6 +7,17 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS GEYSER SHEET IS THE WHOLE COLUMN, NOT A DROP (m219, `SPOUT.geyser`, `geyserCards`,
+  `geyserFrame`).** `images/geyser_sprites_01.png`, 1536 x 1024 RGB on black, 8 x 4 = 32 cells of
+  192 x 256 with the base at the bottom: row one rises, rows two and three gush, row four dies down.
+  m218's per-drop hook was the wrong shape for it (and stays off, `sheet.file` empty). Two cards per
+  main, base on the spout, turned to the lens about VERTICAL only -- a column billboarded on all axes
+  tips over when looked down on. Rise once, ping-pong the gush for the main's life, and **the fall
+  waits for the loop to reach frame 23** so it never jumps from mid-gush. Keyed off black like fire 3
+  (alpha from brightness, colour un-premultiplied, premultiplied blend), so it is water over a bright
+  street and not light added to it. The drops stay at `drops` .35 for the splash at its foot.
+  Sized off the spout's own height (`hK` 1.15, the hydrant's 4.5 m -> a ~5 m card).
+
 - **HIS ANTI-TILING SHADER IS HIS OWN MODULE, IMPORTED AS IS (m219, `DETILE`, `cityDetile`,
   `models/toon_city_kit/weirdkit_detile.js`).** Pushed on `assets/city-detile` (2afa55e) with the
   three kit-city exports; fast-forwarded into main. What the files carry, read out of them:
