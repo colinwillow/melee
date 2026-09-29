@@ -7,6 +7,21 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **A FIRE ON A PROP BURNS FROM THE GROUND, AND THE WATER WAS DARK BECAUSE OF ITS BLEND (m218,
+  `fireFloor`, `FIRE.propA`, `watPool`, `SPOUT.sheet`).** *"When I shoot the fire hydrant the fire
+  starts at the very top of it... it needs to burn around the ground"* and *"the water looks
+  horrendous, just black soot balls."*
+  **Fire:** `fireIgnite` found its floor with `groundAt`, which counts every box top as ground --
+  right for walking (you stand on a bench), wrong for a fire: a hit on the hydrant put the fire on
+  the hydrant's own box top. `fireFloor` is `groundAt` without breakables and without any box whose
+  footprint is under `propA` 2.5 m^2, searched only DOWN from the hit (`triGround` step 0). A roof, a
+  car roof or a floor slab still holds a fire.
+  **Water:** `puffPool` outputs PREMULTIPLIED colour and the pool was on plain `NormalBlending`, which
+  multiplies by alpha again -- a 30%-opaque pale-blue drop drew at 9% brightness. The smoke shares
+  that pool and is meant to be dark, which is how it hid. Water has its own premultiplied material.
+  **And it takes his sheet when he makes one**: `images/water_sprites_01.png`, 4x4, transparent or on
+  black (detected off the corner at load), played once per drop. Until it exists, the soft dots.
+
 - **HIS CRACK SHEET IS A SECOND DECAL STORE, KEYED AT LOAD (m217, `DECAL.crack`, `crackLoad`,
   `crackKey`, `decalStore`).** *"Four crack sprites for damage on the ground, probably walls too --
   2 x 2 on a grey background, hope that works."* `images/crack_sprite_01.png`, 1024 square. The

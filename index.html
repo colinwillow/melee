@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m217</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m218</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m217</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m218</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,7 +620,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm217';
+const BUILD = 'm218';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
 /* ASSETS:END */
@@ -8389,6 +8389,7 @@ const FIRE = {
                  size: [1.5, 2.3], rate: 2.8, life: [1.3, 1.9], jit: .55 },
   smokeEvery: .12, smokeK: 4.2, smokeLife: 2.8, smokeCol: [.16, .14, .13],
   igniteR: 6,               // how far from the blast a room may be and still catch
+  propA: 2.5,               // a box with a smaller footprint than this is a PROP, and fire burns under it (m218)
   room: { r: 1.3, grow: .07, spreadT: 9, spreadR: 7, perBld: 8 },
   ground: { r: .75, life: 12 },
   steam: [.86, .88, .9],
@@ -8648,6 +8649,26 @@ function fireStart(x, y, z, o) {
 }
 // A BLAST AT (x, y, z) SETS FIRE TO WHAT IS THERE: the nearest unburnt room of a building within
 // `igniteR`, or failing that the ground it landed on.
+// **A FIRE ON A PROP BURNS FROM THE GROUND ROUND IT, NOT FROM ITS TOP (m218).** *"When I shoot the
+// fire hydrant the fire starts at the very top of it -- if I shoot a bag, a bench, things that are on
+// the ground, the fire needs to burn around the ground."* `groundAt` counts every box top as a
+// floor, which is right for WALKING (you can stand on a bench) and wrong here: the hydrant's own box
+// top was the "ground" under a hit on it. This is `groundAt` minus the small boxes -- a breakable,
+// or anything whose footprint is under `FIRE.propA` square metres -- so a roof, a car roof or a
+// floor slab still takes a fire and a hydrant, a bench or a bin does not. Searched down from the hit.
+function fireFloor(x, z, y) {
+  let best = 0;
+  if (TRI.on) { const t = triGround(x, z, y, 0); if (t > best) best = t; }
+  for (const b of boxesNear(x, x, z, z, _bnG)) {
+    if (x < b.minx || x > b.maxx || z < b.minz || z > b.maxz) continue;
+    if (b.cs !== undefined && boxNear(b, x, z, _bnpG) >= 0) continue;
+    if (b.brk) continue;
+    const A = b.cs !== undefined ? 4 * b.hx * b.hz : (b.maxx - b.minx) * (b.maxz - b.minz);
+    if (A < FIRE.propA) continue;
+    if (b.maxy > best && b.maxy <= y) best = b.maxy;
+  }
+  return best;
+}
 function fireIgnite(x, y, z, k, small) {
   let best = null, bd = FIRE.igniteR;
   for (const R of KROOMS) {
@@ -8657,7 +8678,8 @@ function fireIgnite(x, y, z, k, small) {
   }
   if (best) return fireStart(best.x, best.y + .15, best.z, { room: best, r: FIRE.room.r, k: .35 + (k || 0) * .3 });
   // on the ground under the blast when there is ground close under it; on the wall where it hit if not
-  const gy = groundAt(x, z, y + .3, .6);
+  // -- and THE GROUND, not the top of the thing that was hit (m218, `fireFloor`)
+  const gy = fireFloor(x, z, y + .3);
   // a rocket that went into somebody leaves only a LITTLE fire on its mark, which burns out -- the
   // fire that matters went with him (m210, `BURN`)
   return fireStart(x, y - gy < 1.5 ? gy + .05 : y, z,
@@ -9128,17 +9150,91 @@ const SPOUT = {
   puddleCol: 0x2b4a63,
   minDur: 28,        // seconds of gush, whatever the file asks for
   snd: '',
+  // HIS WATER SHEET, when he makes it (m218): cells played left to right, top to bottom, once per
+  // drop over its life. Transparent PNG or on black -- either is detected. Absent = the soft dots.
+  sheet: { file: 'images/water_sprites_01.png', grid: [4, 4] },
 };
 const SPOUTS = [];
 let puddleTex = null;
 // THE DROPS: their own alpha-blended pool, because the sparks are additive
 const WATN = 700;
 const wat = { P: null, vx: [], vy: [], vz: [], life: [], age: [], s0: [], s1: [], a0: [], gy: [] };
+// **THE "BLACK SOOT BALLS" WERE A BLEND MODE, NOT THE ART (m218).** `puffPool` writes PREMULTIPLIED
+// colour (`vCol * a, a`) and ordinary `NormalBlending` multiplies by alpha AGAIN -- so a drop at
+// 30% opacity came out at 9% brightness, and pale blue water drew as grey-black blobs. The
+// cigarette smoke shares the pool and is meant to be dark, which is why it never showed there.
+// The water's own material is premultiplied now, so its colour is its colour.
+// **AND IT TAKES HIS SPRITE SHEET THE MOMENT ONE EXISTS (`SPOUT.sheet`).** Until the file is there
+// every drop is the soft dot it always was; when it lands each drop plays the sheet once over its
+// life, turned at random. **Transparent PNG or on black, either works** -- read at load off the
+// corner: a clear corner is an alpha sheet, an opaque one is keyed by brightness like fire 3.
 function watPool() {
   if (wat.P) return wat.P;
-  wat.P = puffPool(WATN, THREE.NormalBlending);
+  const P = wat.P = puffPool(WATN, THREE.NormalBlending);
+  P.frm = new Float32Array(WATN); P.rot = new Float32Array(WATN);
+  P.geo.setAttribute('aFrame', new THREE.BufferAttribute(P.frm, 1));
+  P.geo.setAttribute('aRot', new THREE.BufferAttribute(P.rot, 1));
+  P.mat.dispose();
+  P.mat = P.pts.material = new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: DOT }, uPx: { value: 300 }, uGrid: { value: new THREE.Vector2(1, 1) },
+                uKey: { value: 0 } },
+    vertexShader: `
+      attribute vec3 aCol; attribute float aSize; attribute float aAlpha; attribute float aFrame; attribute float aRot;
+      varying vec3 vCol; varying float vA; varying float vF; varying float vR;
+      uniform float uPx;
+      void main() {
+        vCol = aCol; vA = aAlpha; vF = aFrame; vR = aRot;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = aSize * uPx / max(0.05, -mv.z);
+      }`,
+    fragmentShader: `
+      uniform sampler2D uMap; uniform vec2 uGrid; uniform float uKey;
+      varying vec3 vCol; varying float vA; varying float vF; varying float vR;
+      void main() {
+        vec2 pc = gl_PointCoord - 0.5;
+        float c = cos(vR), s = sin(vR);
+        pc = vec2(c * pc.x - s * pc.y, s * pc.x + c * pc.y) + 0.5;
+        if (pc.x < 0.0 || pc.x > 1.0 || pc.y < 0.0 || pc.y > 1.0) discard;
+        float f = floor(vF + 0.5);
+        vec2 cell = vec2(mod(f, uGrid.x), uGrid.y - 1.0 - floor(f / uGrid.x));
+        vec4 t = texture2D(uMap, (cell + vec2(pc.x, 1.0 - pc.y)) / uGrid);
+        float a = t.a;
+        vec3 col = vCol;
+        if (uKey > 0.5) { a = max(max(t.r, t.g), t.b); col *= t.rgb / max(a, 0.001); }
+        else if (uGrid.x > 1.5) col *= t.rgb;
+        a *= vA;
+        gl_FragColor = vec4(col * a, a);
+      }`,
+    transparent: true, depthWrite: false, blending: THREE.NormalBlending, premultipliedAlpha: true,
+    toneMapped: false,
+  });
   for (let i = 0; i < WATN; i++) for (const k of ['vx', 'vy', 'vz', 'life', 'age', 's0', 's1', 'a0', 'gy']) wat[k].push(0);
-  return wat.P;
+  watSheet();
+  return P;
+}
+function watSheet() {
+  const S = SPOUT.sheet;
+  if (!S || !S.file || wat.sheetTried) return;
+  wat.sheetTried = 1;
+  new THREE.ImageLoader().load(A(S.file), img => {
+    let key = 0;
+    try {   // an opaque corner means the art sits on black: key it by brightness
+      const cv = document.createElement('canvas'); cv.width = cv.height = 4;
+      const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, 4, 4, 0, 0, 4, 4);
+      key = cx.getImageData(0, 0, 1, 1).data[3] > 200 ? 1 : 0;
+    } catch (e) {}
+    const t = new THREE.Texture(img);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false;   // an atlas mipped bleeds cells
+    t.needsUpdate = true;
+    const P = watPool();
+    P.mat.uniforms.uMap.value = t;
+    P.mat.uniforms.uGrid.value.set(S.grid[0], S.grid[1]);
+    P.mat.uniforms.uKey.value = key;
+    wat.frames = S.grid[0] * S.grid[1];
+    console.log('[melee] water sheet ' + S.grid.join('x') + (key ? ' on black' : ' with alpha'));
+  }, undefined, () => {});   // no sheet yet is not a fault -- the dots stand in
 }
 function watAt(x, y, z, vx, vy, vz, s0, s1, life, a0, gy) {
   const P = watPool(), i = P.i; P.i = (P.i + 1) % WATN;
@@ -9147,7 +9243,7 @@ function watAt(x, y, z, vx, vy, vz, s0, s1, life, a0, gy) {
   P.col[i * 3] = c[0] * j; P.col[i * 3 + 1] = c[1] * j; P.col[i * 3 + 2] = c[2];
   wat.vx[i] = vx; wat.vy[i] = vy; wat.vz[i] = vz; wat.life[i] = life; wat.age[i] = 0;
   wat.s0[i] = s0; wat.s1[i] = s1; wat.a0[i] = a0; wat.gy[i] = gy;
-  P.siz[i] = s0; P.alp[i] = a0;
+  P.siz[i] = s0; P.alp[i] = a0; P.frm[i] = 0; P.rot[i] = Math.random() * Math.PI * 2;
 }
 function watStep(dt) {
   if (!wat.P) return;
@@ -9171,8 +9267,10 @@ function watStep(dt) {
     live++;
     P.siz[i] = wat.s0[i] + (wat.s1[i] - wat.s0[i]) * u;
     P.alp[i] = wat.a0[i] * Math.min(1, u / .08) * (1 - u * u);
+    if (wat.frames) P.frm[i] = Math.min(wat.frames - 1, u * wat.frames);
   }
   puffFlush(P, live);
+  if (live) { P.geo.attributes.aFrame.needsUpdate = true; P.geo.attributes.aRot.needsUpdate = true; }
 }
 // THE JET'S LOOK: streaks scrolling up a tapering tube, brightest at the silhouette
 function jetMat() {
