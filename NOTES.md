@@ -7,6 +7,19 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE WATER TUBE IS GONE; THE SPRAY IS BACK, DENSE AND VISIBLE (m212, `SPOUT.column`).**
+  *"It looks like a tube of light, it doesn't read as water -- what it was was better, it just
+  needs more particles."* m211's streaked cylinder read as a light beam, and a shader cannot make a
+  solid tube read as water. m160's jet is back: the same cone off the spout's axis, solved to
+  reach `height_m`, arcing over and landing. But it is now 170 big ALPHA drops a second (.13 ->
+  .30 m, life 1.8-2.4 s so they actually land) instead of 90 additive 13 cm sparks, with
+  `watStep`'s splashes and the 4.6 m puddle. `column: 1` brings m211 back for comparison.
+  **The hydrant that looks like a floating flag is the ASSET.** `debris_hydrant` /
+  `brk_hydrant_intact_mesh` is a 577-triangle Tripo mesh, 0.42 x 0.61 x 0.22 m, identical in
+  both city visuals and the breakables file. The game draws it as authored, so a reduction pass
+  that flattened it has to be undone in the file. A replacement keeps the node names, the
+  `breakable: "hydrant"` tag and the `fx_hydrant_water_spout` marker, and needs nothing here.
+
 - **THE HYDRANT GUSHES, AND IT KEEPS ITS BODY (m211, `SPOUT`, `watAt`, `jetMat`,
   `BRK.capOff`).** *"You can barely tell it's supposed to be water, and the hydrant went away
   completely -- the cap should blow off and the water come out."*
