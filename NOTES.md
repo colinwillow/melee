@@ -7,6 +7,25 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE HYDRANT GUSHES, AND IT KEEPS ITS BODY (m211, `SPOUT`, `watAt`, `jetMat`,
+  `BRK.capOff`).** *"You can barely tell it's supposed to be water, and the hydrant went away
+  completely -- the cap should blow off and the water come out."*
+  - **The water was 90 additive 13 cm sparks.** Additive light over a pale street is close to
+    nothing. Now it is three layers:
+    - a JET: an open tapering cylinder along the spout, with a shader of streaks scrolling up it
+      and a bright silhouette;
+    - a CROWN of big ALPHA-blended drops (their own pool, `wat`, since the sparks are additive)
+      that leave the top of the column, spread and fall around it, growing .22 -> .5 m;
+    - drops shed off the column's sides, a splash kicked up where drops land, and a 4.6 m puddle.
+    It gushes for at least `minDur` 28 s whatever the file's `duration_s` says, surges in over
+    .35 s and tapers over the last 15%.
+  - **The hydrant** was swapped wholesale for its broken set and every chunk flew away. For
+    `capOff` types, only the TOP chunk flies (`capUp` 11 m/s, spinning). The rest stand where it
+    was, for good, and its collider stays.
+  - **A sprite sheet** would help the CROWN and the splash most (drawn water has a shape the
+    blobs cannot fake). The jet is better as the shader it is. A sheet of foam/splash bursts,
+    white on transparent, would drop into the drop pool the way `FIRE.sheets` does.
+
 - **A ROCKET SETS THE PEOPLE IT HITS ON FIRE, AND THE FIRE GOES WITH THEM (m210, `BURN`,
   `burnStart`, `burnStep`).** *"The fire burns where it hit them and stays there while they go
   flying off -- it should be on them, little bits and big bits, and follow them."*

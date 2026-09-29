@@ -551,10 +551,10 @@ body.desk.free #deskHint { display: block; }
   <h1>MELEE</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m210</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m211</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m210</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m211</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -620,7 +620,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm210';
+const BUILD = 'm211';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"680b3cb4","models/toon_city_kit/toon_city_kit_buildings.glb":"a2185328","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e2062661","models/toon_city_kit/toon_city_kit_pieces.glb":"c6a5b796","models/toon_city_kit/toon_city_kit_twins.glb":"27856246","models/toon_city_kit/toon_city_visual.glb":"15485fe1","models/toon_city_kit/toon_city_visual_ktx2.glb":"9777b268","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/hdri_game.png":"dac55f41","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f"};
 /* ASSETS:END */
@@ -8981,27 +8981,97 @@ function boltHit(b) {
 // itself while a hydrant runs.
 const SPOUT = {
   on: 1,
-  rate: 90,          // particles a second, which at ~1.1 s of flight is about 100 alive
-  size: .13,
-  jet: .16,          // how tight the cone is, in radians of scatter
-  col: [.72, .92, 1.0],
-  splash: 6,         // a burst of this many where the jet lands, per splash tick
-  splashEvery: .09,
-  puddle: 3.2,       // how wide the puddle grows, in metres ...
-  puddleT: 9,        // ... and how long it takes to get there
+  // **m211: A COLUMN, A CROWN AND A PUDDLE, NOT A SPRINKLE.** *"You can barely tell it's supposed to
+  // be water -- it needs to be big and luscious and obvious."* m160's jet was 90 additive sparks of
+  // 13 cm, and additive light over a pale street is nearly nothing. Water is three things at once:
+  // - a JET: a tapering open cylinder along the spout, a shader of streaks scrolling up it, bright
+  //   at the silhouette -- solid enough to read as a column from across the street;
+  // - a CROWN: where it runs out of push it spreads and falls in big soft ALPHA-blended drops (not
+  //   additive: water is a thing you see, not a light), growing as they fall into spray;
+  // - a SPLASH where they land, and the puddle spreading under it.
+  // And it GUSHES: a burst main does not stop after eight seconds (`minDur`).
+  rate: 80,          // crown drops a second
+  side: 26,          // and drops shed off the column's sides
+  size: [.22, .5],   // a crown drop's size as it leaves, and as it has spread by the time it lands
+  jetR: [.16, .11],  // the column's radius at the nozzle and at the top
+  col: [.80, .93, 1.0],
+  alpha: .62,
+  puddle: 4.6,       // how wide the puddle grows, in metres ...
+  puddleT: 8,        // ... and how long it takes to get there
   puddleCol: 0x2b4a63,
-  // **THERE IS NO SPRAY SOUND AND NONE IS FAKED.** He asked for a looping one and this repo has
-  // clang / drop / foot / hit / lock / plasma / shot / swoosh / thud / zap -- not one of them is
-  // water, and a plasma loop under a fire hydrant is worse than silence. `SPOUT.snd` is the hook:
-  // name a key the day there is a recording and it loops with no other change.
+  minDur: 28,        // seconds of gush, whatever the file asks for
   snd: '',
 };
 const SPOUTS = [];
 let puddleTex = null;
-
-// A WET DISC. Generated rather than an atlas cell, because `impact_marks.json` has scorch,
-// crater, bullet holes, goo and rubble and NO puddle -- and a goo mark under a hydrant would be
-// the alien weapon's colour on a water effect. One 128 px canvas, made once.
+// THE DROPS: their own alpha-blended pool, because the sparks are additive
+const WATN = 700;
+const wat = { P: null, vx: [], vy: [], vz: [], life: [], age: [], s0: [], s1: [], a0: [], gy: [] };
+function watPool() {
+  if (wat.P) return wat.P;
+  wat.P = puffPool(WATN, THREE.NormalBlending);
+  for (let i = 0; i < WATN; i++) for (const k of ['vx', 'vy', 'vz', 'life', 'age', 's0', 's1', 'a0', 'gy']) wat[k].push(0);
+  return wat.P;
+}
+function watAt(x, y, z, vx, vy, vz, s0, s1, life, a0, gy) {
+  const P = watPool(), i = P.i; P.i = (P.i + 1) % WATN;
+  P.pos[i * 3] = x; P.pos[i * 3 + 1] = y; P.pos[i * 3 + 2] = z;
+  const c = SPOUT.col, j = .9 + Math.random() * .1;
+  P.col[i * 3] = c[0] * j; P.col[i * 3 + 1] = c[1] * j; P.col[i * 3 + 2] = c[2];
+  wat.vx[i] = vx; wat.vy[i] = vy; wat.vz[i] = vz; wat.life[i] = life; wat.age[i] = 0;
+  wat.s0[i] = s0; wat.s1[i] = s1; wat.a0[i] = a0; wat.gy[i] = gy;
+  P.siz[i] = s0; P.alp[i] = a0;
+}
+function watStep(dt) {
+  if (!wat.P) return;
+  const P = wat.P; let live = 0;
+  for (let i = 0; i < WATN; i++) {
+    if (wat.life[i] <= 0) { P.alp[i] = 0; continue; }
+    wat.age[i] += dt;
+    const u = wat.age[i] / wat.life[i];
+    if (u >= 1) { wat.life[i] = 0; P.alp[i] = 0; continue; }
+    wat.vy[i] -= SPK.g * dt;
+    P.pos[i * 3] += wat.vx[i] * dt; P.pos[i * 3 + 1] += wat.vy[i] * dt; P.pos[i * 3 + 2] += wat.vz[i] * dt;
+    if (P.pos[i * 3 + 1] < wat.gy[i]) {
+      // it LANDS: sometimes a splash kicks back up, and the drop is gone
+      const lx = P.pos[i * 3], lz = P.pos[i * 3 + 2], g = wat.gy[i], big = wat.s0[i] > .15;
+      wat.life[i] = 0; P.alp[i] = 0;
+      if (big && Math.random() < .3)
+        watAt(lx, g + .03, lz, (Math.random() - .5) * 1.4, 1 + Math.random() * 1.4,
+              (Math.random() - .5) * 1.4, .12, .2, .35 + Math.random() * .2, .5, g - .01);
+      continue;
+    }
+    live++;
+    P.siz[i] = wat.s0[i] + (wat.s1[i] - wat.s0[i]) * u;
+    P.alp[i] = wat.a0[i] * Math.min(1, u / .08) * (1 - u * u);
+  }
+  puffFlush(P, live);
+}
+// THE JET'S LOOK: streaks scrolling up a tapering tube, brightest at the silhouette
+function jetMat() {
+  return new THREE.ShaderMaterial({
+    uniforms: { uT: { value: 0 }, uA: { value: 0 } },
+    vertexShader: `
+      varying vec2 vUv; varying float vE;
+      void main() {
+        vUv = uv;
+        vec3 n = normalize(normalMatrix * normal);
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vE = 1.0 - abs(dot(n, normalize(-mv.xyz)));
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `
+      uniform float uT; uniform float uA; varying vec2 vUv; varying float vE;
+      void main() {
+        float st = .5 + .5 * sin(vUv.x * 37.7 + vUv.y * 5.0 - uT * 13.0 + sin(vUv.y * 11.0 - uT * 7.0) * 1.6);
+        float st2 = .5 + .5 * sin(vUv.x * 21.0 - vUv.y * 3.0 - uT * 9.0);
+        vec3 c = mix(vec3(.50, .78, 1.0), vec3(1.0), clamp(st * .55 + st2 * .2 + vE * .6, 0.0, 1.0));
+        float a = (.42 + .30 * st + .35 * vE) * uA * smoothstep(1.0, .78, vUv.y) * smoothstep(0.0, .05, vUv.y);
+        gl_FragColor = vec4(c, a);
+      }`,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+  });
+}
 function puddleMake() {
   if (puddleTex) return puddleTex;
   const c = document.createElement('canvas'); c.width = c.height = 128;
@@ -9046,59 +9116,62 @@ function spoutGo(x, y, z, dir, h, dur) {
   mesh.renderOrder = 1;
   mesh.userData.noHole = 1; mesh.userData.noPaint = 1;
   scene.add(mesh);
-  SPOUTS.push({ x, y, z, dx: dir.x, dy: dir.y, dz: dir.z,
+  const geo = new THREE.CylinderGeometry(SPOUT.jetR[1], SPOUT.jetR[0], 1, 16, 1, true);
+  geo.translate(0, .5, 0);
+  const jet = new THREE.Mesh(geo, jetMat());
+  jet.position.set(x, y, z);
+  jet.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  jet.scale.set(1, .01, 1);
+  jet.renderOrder = 3; jet.frustumCulled = false;
+  jet.userData.noHole = 1; jet.userData.noPaint = 1;
+  scene.add(jet);
+  SPOUTS.push({ x, y, z, dx: dir.x, dy: dir.y, dz: dir.z, h: Math.max(.6, h),
                 // SOLVED, not typed: the speed that reaches his height under the pool's gravity
                 v: Math.sqrt(2 * SPK.g * Math.max(.2, h)),
-                dur, t: 0, emit: 0, sp: 0, mesh, gy, snd: null });
+                dur: Math.max(dur || 0, SPOUT.minDur), t: 0, emit: 0, es: 0, sp: 0, mesh, jet, gy, snd: null });
   if (SPOUT.snd) snd(SPOUT.snd, { g: .5, loop: 1 });
 }
 
 function spoutStep(dt) {
+  watStep(dt);
   for (let i = SPOUTS.length - 1; i >= 0; i--) {
     const S = SPOUTS[i];
     S.t += dt;
-    // IT DIES DOWN RATHER THAN STOPPING. A jet that is full pressure and then nothing reads as
-    // a switch; a hydrant runs out.
     const u = S.t / S.dur;
-    const k = u >= 1 ? 0 : u > .75 ? (1 - u) / .25 : 1;
+    const k = u >= 1 ? 0 : u > .85 ? (1 - u) / .15 : Math.min(1, S.t / .35);
     if (u >= 1.35) {
       scene.remove(S.mesh); S.mesh.geometry.dispose(); S.mesh.material.dispose();
+      scene.remove(S.jet); S.jet.geometry.dispose(); S.jet.material.dispose();
       SPOUTS.splice(i, 1); continue;
     }
-    // the puddle spreads and then holds, and fades out with the jet
     const pw = Math.min(1, S.t / SPOUT.puddleT);
     S.mesh.scale.setScalar(Math.max(.01, (SPOUT.puddle * pw) / .5));
-    S.mesh.material.opacity = Math.min(.72, S.t * 1.6) * (u > 1 ? Math.max(0, 1 - (u - 1) / .35) : 1);
+    S.mesh.material.opacity = Math.min(.78, S.t * 1.6) * (u > 1 ? Math.max(0, 1 - (u - 1) / .35) : 1);
+    // the column: it surges, and it breathes a little while it gushes
+    const H = S.h * k * (.94 + .06 * Math.sin(S.t * 9) + .03 * Math.sin(S.t * 23));
+    S.jet.scale.set(.6 + .4 * k, Math.max(.01, H), .6 + .4 * k);
+    S.jet.material.uniforms.uT.value = S.t;
+    S.jet.material.uniforms.uA.value = SPOUT.alpha * k;
+    S.jet.visible = k > .01;
     if (k <= 0) continue;
-    // the jet
+    // the CROWN: from the top of the column, spreading out and falling round it
+    const tx = S.x + S.dx * H, ty = S.y + S.dy * H, tz = S.z + S.dz * H;
     S.emit += dt * SPOUT.rate * k;
-    const v = S.v * (.72 + .28 * k);
     while (S.emit >= 1) {
       S.emit -= 1;
-      const a = Math.random() * Math.PI * 2, r = Math.random() * SPOUT.jet;
-      // scatter ABOUT the jet axis rather than about +Y, or a sideways nozzle sprays a fan
-      const ux = Math.abs(S.dy) > .9 ? 1 : 0, uy = Math.abs(S.dy) > .9 ? 0 : 1;
-      let tx = uy * S.dz - 0 * S.dy, ty = 0 * S.dx - ux * S.dz, tz = ux * S.dy - uy * S.dx;
-      const tl = Math.hypot(tx, ty, tz) || 1; tx /= tl; ty /= tl; tz /= tl;
-      const bx = S.dy * tz - S.dz * ty, by = S.dz * tx - S.dx * tz, bz = S.dx * ty - S.dy * tx;
-      const jx = S.dx + (tx * Math.cos(a) + bx * Math.sin(a)) * r;
-      const jy = S.dy + (ty * Math.cos(a) + by * Math.sin(a)) * r;
-      const jz = S.dz + (tz * Math.cos(a) + bz * Math.sin(a)) * r;
-      const sv = v * (.82 + Math.random() * .36);
-      spk(S.x, S.y, S.z, jx * sv, jy * sv, jz * sv,
-          SPOUT.size * (.6 + Math.random() * .8), 1.1 + Math.random() * .5, SPOUT.col);
+      const a = Math.random() * Math.PI * 2, sp = (.5 + Math.random() * 1.9) * (.6 + .4 * k);
+      watAt(tx + (Math.random() - .5) * .15, ty, tz + (Math.random() - .5) * .15,
+            Math.cos(a) * sp + S.dx * 1.5, .4 + Math.random() * 1.6, Math.sin(a) * sp + S.dz * 1.5,
+            SPOUT.size[0] * (.7 + Math.random() * .6), SPOUT.size[1] * (.7 + Math.random() * .6),
+            1.0 + Math.random() * .7, SPOUT.alpha * (.7 + Math.random() * .3), S.gy);
     }
-    // AND IT LANDS. Where a ballistic jet comes back to the ground is arithmetic, so the splash
-    // goes there rather than at the nozzle: the flight time to fall back to `gy` and the
-    // horizontal reach over it.
-    S.sp += dt;
-    if (S.sp >= SPOUT.splashEvery) {
-      S.sp = 0;
-      const vy = S.dy * v, dy0 = S.y - S.gy;
-      const tf = (vy + Math.sqrt(Math.max(0, vy * vy + 2 * SPK.g * dy0))) / SPK.g;
-      const lx = S.x + S.dx * v * tf, lz = S.z + S.dz * v * tf;
-      spkBurst(lx, S.gy + .05, lz, SPOUT.splash,
-               { col: SPOUT.col, spread: 1.8, up: 1.6, r: .18, size: SPOUT.size * .8, life: .45 });
+    // and drops shed off its sides all the way up
+    S.es += dt * SPOUT.side * k;
+    while (S.es >= 1) {
+      S.es -= 1;
+      const f = Math.random(), a = Math.random() * Math.PI * 2, sp = .3 + Math.random() * .8;
+      watAt(S.x + S.dx * H * f + Math.cos(a) * .12, S.y + S.dy * H * f, S.z + S.dz * H * f + Math.sin(a) * .12,
+            Math.cos(a) * sp, Math.random() * 1.2, Math.sin(a) * sp, .12, .22, .6 + Math.random() * .4, .5, S.gy);
     }
   }
 }
@@ -9135,6 +9208,8 @@ function spoutStep(dt) {
 // to make them breakable would have been 179 draw calls to gain what one matrix write gives.
 const BRK = {
   on: 1,
+  capOff: { hydrant: 1 },   // types that lose only their top when they break (m211)
+  capUp: 11,                // and how hard that top goes up, m/s
   file: 'models/toon_city/toon_city_breakables.glb',
   maxWrecks: 6,      // how many broken piles may be on screen. Each is 3-5 draw calls, so the
                      // worst case is about 30 against the city's ~72 -- and the oldest goes.
@@ -9344,8 +9419,13 @@ function brkBreak(b, hx, hy, hz) {
     b.im.setMatrixAt(b.slot, _bkM);
     b.im.instanceMatrix.needsUpdate = true;
   } else if (b.obj) b.obj.visible = false;
+  // **A HYDRANT LOSES ITS CAP, NOT ITS BODY (m211, `BRK.capOff`).** *"The fire hydrant shouldn't
+  // completely leave -- the cap should blow off and the water comes out."* Its broken set is still
+  // swapped in, but only the TOP chunk flies, hard and high; the rest stay standing where the
+  // hydrant was, for good, and so does its collider -- the water comes out of something.
+  const capOff = BRK.capOff && BRK.capOff[b.type];
   // and the box goes with it, or you walk into a crate that is not there
-  if (b.box) {
+  if (b.box && !capOff) {
     // **THE GRID IS REBUILT ONCE A FRAME, NOT ONCE A BOX.** `boxGrid` walks all 670 of them,
     // and a charged shot takes out several crates on the SAME frame -- so rebuilding inside
     // the loop does the whole walk once per crate to reach the same answer.
@@ -9400,6 +9480,14 @@ function brkBreak(b, hx, hy, hz) {
         vz: (oz + bz * .8) * sp,
         sx: (Math.random() * 2 - 1) * BRK.spin, sy: (Math.random() * 2 - 1) * BRK.spin,
         sz: (Math.random() * 2 - 1) * BRK.spin, rest: 0 });
+    }
+    if (capOff && chunks.length) {
+      let top = chunks[0];
+      for (const c of chunks) if (c.o.position.y > top.o.position.y) top = c;
+      for (const c of chunks) if (c !== top) c.o.updateMatrixWorld(true);   // they stay, as they are
+      top.vx *= .35; top.vz *= .35; top.vy = BRK.capUp * (.85 + Math.random() * .3);
+      top.sx *= 2; top.sz *= 2;
+      chunks.length = 0; chunks.push(top);
     }
     if (chunks.length) {
       WRECKS.push({ chunks, t: 0 });
