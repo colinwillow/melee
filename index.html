@@ -555,10 +555,10 @@ body.desk.free #deskHint { display: block; }
   <h1>WEIRDPORT</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m238</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m239</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m238</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m239</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -624,9 +624,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm238';
+const BUILD = 'm239';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/dump_truck.glb":"d870dc18","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"5540a364","models/toon_city_kit/toon_city_kit_buildings.glb":"590e53f0","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e6dff3a3","models/toon_city_kit/toon_city_kit_pieces.glb":"8232bd6f","models/toon_city_kit/toon_city_kit_twins.glb":"3b1cba2b","models/toon_city_kit/toon_city_visual.glb":"45cf2957","models/toon_city_kit/toon_city_visual_ktx2.glb":"f26a6984","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/geyser_sprites_01.png":"b6325470","images/hdri_game.png":"dac55f41","images/water_sprites_01.png":"31e12659","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"8bd3d7ce","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/dump_truck.glb":"d870dc18","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"5540a364","models/toon_city_kit/toon_city_kit_buildings.glb":"590e53f0","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e6dff3a3","models/toon_city_kit/toon_city_kit_pieces.glb":"8232bd6f","models/toon_city_kit/toon_city_kit_twins.glb":"3b1cba2b","models/toon_city_kit/toon_city_visual.glb":"45cf2957","models/toon_city_kit/toon_city_visual_ktx2.glb":"f26a6984","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/geyser_sprites_01.png":"b6325470","images/hdri_game.png":"dac55f41","images/water_sprites_01.png":"31e12659","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -6702,10 +6702,21 @@ function boxGrid() {
   BGRID.on = 1;
   return BGRID.nx * BGRID.nz;
 }
+// **BOXES THAT MOVE (m239, `BDYN`).** The grid is built once and a truck drives across it, so a moving
+// box cannot live in it -- re-gridding 7,400 boxes a frame is the one thing not to do. So every query
+// also tests the (few) dynamic boxes directly. One hook, and the player, the bodies, the bolts, the
+// camera and `groundAt` (a truck bed is somewhere to stand) all see it.
+const BDYN = [];
 function boxesNear(qx0, qx1, qz0, qz1, out) {
-  if (!BGRID.on) return BOXES;
+  if (!BGRID.on) {
+    if (!BDYN.length) return BOXES;
+    out.length = 0; for (const b of BOXES) out.push(b);
+    for (const b of BDYN) if (!b._off) out.push(b);
+    return out;
+  }
   const c = BGRID.cell, t = ++BGRID.tick;
   out.length = 0;
+  for (const b of BDYN) if (!b._off && b.maxx >= qx0 && b.minx <= qx1 && b.maxz >= qz0 && b.minz <= qz1) { b._gt = t; out.push(b); }
   const i0 = Math.max(0, Math.floor((qx0 - BGRID.x0) / c)), i1 = Math.min(BGRID.nx - 1, Math.floor((qx1 - BGRID.x0) / c));
   const k0 = Math.max(0, Math.floor((qz0 - BGRID.z0) / c)), k1 = Math.min(BGRID.nz - 1, Math.floor((qz1 - BGRID.z0) / c));
   for (let i = i0; i <= i1; i++) for (let k = k0; k <= k1; k++) {
@@ -9057,11 +9068,11 @@ function boltHit(b) {
     // it by exactly that much -- the bug this build is about, reintroduced by its own fix.
     const hx0 = b.hitAt ? b.hitAt[0] : b.pos.x, hy0 = b.hitAt ? b.hitAt[1] : b.pos.y,
           hz0 = b.hitAt ? b.hitAt[2] : b.pos.z;
-    decalHit(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2],
+    if (!(b.hitBox && b.hitBox.dyn)) decalHit(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2],
              c > DECAL.bigAt ? 'blast' : 'alien', c, b.rocket ? ROCKET.decal : K * (.7 + c * .6) * DECAL.bolt,
              hitFit(hx0, hy0, hz0));
     // AND A ROCKET BREAKS WHAT IT HITS (m217): his crack over the scorch, on the ground or a wall
-    if (b.rocket) decalPut(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2], 'crack', ROCKET.crack,
+    if (b.rocket && !(b.hitBox && b.hitBox.dyn)) decalPut(hx0, hy0, hz0, b.hitN[0], b.hitN[1], b.hitN[2], 'crack', ROCKET.crack,
                            hitFit(hx0, hy0, hz0));
     // AND A BREAKABLE TAKES THE HIT. The blast radius is what reaches it, so a charged shot
     // takes out the crate beside the one it hit and a fumble takes out neither.
@@ -21672,6 +21683,22 @@ function buildTruck(g) {
   truck.h = sp.h; G.rotation.y = truck.h;
   scene.add(G);
   truck.g = G; TRUCK.up = 1; TRUCK.st = 'park';
+  // **ITS COLLIDER IS ITS OWN SHAPE (m239)**: the body's bounds in the truck's frame, at rest, as a
+  // turned box that follows it every frame through `BDYN`. The bed tipping is not in it -- a box
+  // does not tip -- so a raised bed is a little taller than its collider for the three seconds of
+  // a dump.
+  {
+    G.rotation.y = 0; G.updateMatrixWorld(true);
+    const inv = new THREE.Matrix4().copy(G.matrixWorld).invert(), bb = new THREE.Box3(), t = new THREE.Box3();
+    g.scene.traverse(o => { if (!o.isMesh) return; o.geometry.computeBoundingBox();
+      t.copy(o.geometry.boundingBox).applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld)); bb.union(t); });
+    G.rotation.y = truck.h; G.updateMatrixWorld(true);
+    const c = bb.getCenter(new THREE.Vector3()), z = bb.getSize(new THREE.Vector3());
+    truck.box = { lx: c.x, lz: c.z, hx: z.x * .5, hz: z.z * .5, y0: bb.min.y, y1: bb.max.y, dyn: 1, truck: 1,
+                  minx: 0, maxx: 0, minz: 0, maxz: 0, miny: 0, maxy: 0, cx: 0, cz: 0, cs: 1, sn: 0, yaw: 0 };
+    BDYN.push(truck.box);
+    truckBox();
+  }
   const miss = ['wheels_front', 'wheels_back', 'bed_swivel_20_degrees', 'support_lift_swivel_30_degree', 'stand_point'].filter(n => !J[n]);
   if (miss.length) note('TRUCK NO ' + miss.join(' '));
   console.log('[melee] truck: x' + s.toFixed(3) + ', wheels r ' + truck.rb.toFixed(2) + '/' + truck.rf.toFixed(2) +
@@ -21703,9 +21730,22 @@ function truckStand(out) {
 function truckDrive(x, z) {
   const G = truck.g; if (!G) return;
   truck.goal = { x, z };
+  if (truck.box) truck.box._off = 1;       // it is not an obstacle to itself
   truck.path = navPath(G.position.x, G.position.z, x, z, G.position.y, TRUCK.r) || [];
+  if (truck.box) truck.box._off = 0;
   if (!truck.path.length) truck.path = [{ x, z }];
   truck.pi = 0; truck.stuckT = 0; truck.lastD = 1e9; TRUCK.st = 'drive';
+}
+function truckBox() {
+  const B = truck.box, G = truck.g; if (!B || !G) return;
+  const h = truck.h, ch = Math.cos(h), sh = Math.sin(h);
+  // the local centre carried out: local +X is (cos h, -sin h), local +Z is (sin h, cos h)
+  B.cx = G.position.x + B.lx * ch + B.lz * sh;
+  B.cz = G.position.z - B.lx * sh + B.lz * ch;
+  B.cs = ch; B.sn = -sh; B.yaw = -h;
+  const ex = B.hx * Math.abs(ch) + B.hz * Math.abs(sh), ez = B.hx * Math.abs(sh) + B.hz * Math.abs(ch);
+  B.minx = B.cx - ex; B.maxx = B.cx + ex; B.minz = B.cz - ez; B.maxz = B.cz + ez;
+  B.miny = G.position.y + B.y0; B.maxy = G.position.y + B.y1;
 }
 function truckStep(dt) {
   const G = truck.g; if (!G) return;
@@ -21743,7 +21783,10 @@ function truckStep(dt) {
     if (truck.t > u + h + d) { truck.bed = 0; TRUCK.st = 'park'; }
   } else truck.v = Math.max(0, truck.v - TRUCK.brake * dt);
   G.rotation.y = truck.h;
+  // its own box is OFF while it finds its own ground, or it stands on its own roof
+  if (truck.box) truck.box._off = 1;
   G.position.y = damp(G.position.y, groundAt(G.position.x, G.position.z, G.position.y + 1.2, 1.4), .08, dt);
+  if (truck.box) { truck.box._off = 0; truckBox(); }
   // the wheels roll by distance over their own radius; the bed and its ram tip together
   truck.wb += truck.v * dt / truck.rb; truck.wf += truck.v * dt / truck.rf;
   if (J.wheels_back) J.wheels_back.rotation.x = truck.wb;
@@ -21913,7 +21956,10 @@ function workerAI(d, dt, t) {
         // A FAR JOB AND A FREE TRUCK: walk to its running board first (m238)
         if (TRUCK.up && !truck.rider && TRUCK.st !== 'drive' &&
             Math.hypot(d.spot.x - p.x, d.spot.z - p.z) > TRUCK.useAt) {
-          truckStand(_tkV); d.goal = { x: _tkV.x, z: _tkV.z, truck: 1 };
+          truckStand(_tkV);
+          // a step out from the running board, clear of the truck's collider (m239)
+          const lx = Math.cos(truck.h), lz = -Math.sin(truck.h);
+          d.goal = { x: _tkV.x + lx * TRUCK.hop, z: _tkV.z + lz * TRUCK.hop, truck: 1 };
         }
       }
     }
@@ -21957,7 +22003,7 @@ function workerAI(d, dt, t) {
     while (d.pi < d.path.length - 1 && Math.hypot(w.x - p.x, w.z - p.z) < NAV.next) w = d.path[++d.pi];
     const gx = G.x - p.x, gz = G.z - p.z, gd = Math.hypot(gx, gz);
     const last = d.pi >= d.path.length - 1, wd = Math.hypot(w.x - p.x, w.z - p.z);
-    if (gd < (d.goal ? 1.2 : KREP.arrive) || (last && wd < KREP.arrive)) {
+    if (gd < (d.goal ? 1.4 : KREP.arrive) || (last && wd < KREP.arrive)) {
       d.stuckT = 0; d.path = null;
       if (d.goal) { d.goal = null; if (TRUCK.up && !truck.rider) { truckBoard(d); return; } d.rst = 'go'; return; }
       d.rst = 'work'; d.rT = 0; d.swing = '';

@@ -7,6 +7,19 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE TRUCK IS SOLID, THROUGH A DYNAMIC LIST EVERY QUERY SEES (m239, `BDYN`, `truckBox`).** The box
+  grid is built once; a truck crosses it, and re-gridding 7,400 boxes a frame is not an option -- so
+  `boxesNear` also tests `BDYN` directly. The player's resolver, `foeMove`, the bolts (`boxRay`,
+  `boltBox`), `camHit` and `groundAt` all go through it, so one list makes the truck a wall, a bullet
+  stop and a roof you can stand on. Its box is the body's bounds IN THE TRUCK'S FRAME at rest (bed
+  down), refreshed every frame as a turned box (`cs = cos h`, `sn = -sin h`, `boxLocal`'s own
+  convention). It is `_off` while the truck finds its own ground and while it plans its own path,
+  or it stands on its own roof and plans around itself. No decal lands on it (a scorch would stay
+  in the street when it drove off). The worker walks to a point `hop` out from the running board,
+  clear of the box, then boards.
+- **HIS WORKER EXPORT WITH CLIPS LANDED (ead3690): 18 clips, `idle_on_truck` among them** -- `rideRe`
+  takes it by name, so the chip's `(noride)` goes.
+
 - **HIS WORKER RE-EXPORT HAD NO ANIMATIONS, AND A CHARACTER WITH NO CLIPS IS A T-POSE (m238).**
   *"I only added one animation, yet he is now stuck in T-pose."* Read out of the file: eb91f5f is 70
   nodes / 68 joints / 1 mesh -- the rig byte-for-byte the shape of the old one -- and **0 animations**
