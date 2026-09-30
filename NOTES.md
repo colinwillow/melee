@@ -7,6 +7,26 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **HIS WORKER RE-EXPORT HAD NO ANIMATIONS, AND A CHARACTER WITH NO CLIPS IS A T-POSE (m238).**
+  *"I only added one animation, yet he is now stuck in T-pose."* Read out of the file: eb91f5f is 70
+  nodes / 68 joints / 1 mesh -- the rig byte-for-byte the shape of the old one -- and **0 animations**
+  (was 17), 1.7 MB -> 385 KB. The export dropped every clip, including the new one. The previous file
+  is restored (eb8b538's) so he works, and `bodyProto` now puts `<file> NO CLIPS` in the chip for ANY
+  character that loads with none -- a file that loads fine and stands in its bind pose is otherwise
+  indistinguishable from the game ignoring its clips.
+- **THE DUMP TRUCK (m238, `TRUCK`, `truck`, `buildTruck`, `truckStep`).** `models/vehicles/dump_truck.glb`:
+  rigid parts parented to joints (NOT skinned), so a joint's `rotation.x` turns its part. Nose +Z,
+  axles on X, back wheel r .329 / front .275 in the file -- each spun at its own rate. Scaled by the
+  WORKER's measured scale (same Blender scene), so `stand_point` lands at his feet with nothing typed.
+  Bed and ram both `-Rx` (solved: bed pivot is rear-bottom, so front-up is negative; the ram's top
+  moves back as the bed tips, so it leans back, also negative) -- `bedSign`/`liftSign` if wrong.
+  The worker: a job further than `useAt` 22 m with the truck free -> he walks to its running board
+  (`d.goal`), boards (`rst 'ride'`, glued to `stand_point`, facing its heading), the truck plans an A*
+  path at `r` 1.3 to the job and drives it (turning on a speed-dependent radius, braking for the end),
+  parks `stopAt` 5 m short, he hops off to its left and walks the rest, and the bed dumps. Knocked
+  off mid-ride, he walks. Chip: `TRK<state>[+]` (+ = rider aboard), `(noride)` until his export has
+  a clip matching `rideRe` (truck / ride / standing_on). NOT YET: no collider, no road-following.
+
 - **"Script error. @ ?:?:?" IS A MUTED ERROR, AND THE FRAME NOW CATCHES WHAT THE WINDOW CANNOT READ
   (m235, `frame` -> `frameBody`, `FRAMEERR`).** He got it "going to game". Nothing on the page is
   another origin, but Safari also mutes errors from a module brought in with `import()` -- which is

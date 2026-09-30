@@ -555,10 +555,10 @@ body.desk.free #deskHint { display: block; }
   <h1>WEIRDPORT</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m237</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m238</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m237</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m238</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -624,9 +624,9 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm237';
+const BUILD = 'm238';
 /* ASSETS:START */
-const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"5540a364","models/toon_city_kit/toon_city_kit_buildings.glb":"590e53f0","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e6dff3a3","models/toon_city_kit/toon_city_kit_pieces.glb":"8232bd6f","models/toon_city_kit/toon_city_kit_twins.glb":"3b1cba2b","models/toon_city_kit/toon_city_visual.glb":"45cf2957","models/toon_city_kit/toon_city_visual_ktx2.glb":"f26a6984","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/geyser_sprites_01.png":"b6325470","images/hdri_game.png":"dac55f41","images/water_sprites_01.png":"31e12659","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
+const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"77c215a1","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/dump_truck.glb":"d870dc18","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"5540a364","models/toon_city_kit/toon_city_kit_buildings.glb":"590e53f0","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e6dff3a3","models/toon_city_kit/toon_city_kit_pieces.glb":"8232bd6f","models/toon_city_kit/toon_city_kit_twins.glb":"3b1cba2b","models/toon_city_kit/toon_city_visual.glb":"45cf2957","models/toon_city_kit/toon_city_visual_ktx2.glb":"f26a6984","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/geyser_sprites_01.png":"b6325470","images/hdri_game.png":"dac55f41","images/water_sprites_01.png":"31e12659","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
 /* ASSETS:END */
 // Every runtime asset URL goes through A(). `npm run bump` writes the sha1 of each file's
 // CONTENTS into ASSETS above, so a file replaced IN PLACE -- same folder, same name, new bytes
@@ -19940,6 +19940,10 @@ function bodyProto(g, K) {
   // **AND IT IS STASHED ON THE KIND (m112).** The DNA gun wears a clone of this, and a proto
   // that only exists as a local inside a builder is a proto nothing else can reach -- which is
   // the one line between "a table and a load line" and a second loader.
+  // **A CHARACTER WITH NO CLIPS IS A T-POSE, AND THE CHIP SAYS SO (m238).** His worker re-export
+  // arrived with zero animations -- a file that loads perfectly and stands in its bind pose, which
+  // from a phone is indistinguishable from the game ignoring the clips.
+  if (!clips.length) note(String(K.file || '?').split('/').pop().replace(/\.glb$/, '') + ' NO CLIPS');
   const P = { proto, scale, faceOff, clips, authored, bind, hipY: hipY * scale };
   K.P = P;
   return P;
@@ -21573,6 +21577,9 @@ function buildWorkers(g) {
     return sc;
   });
   WORKER.runClip = (WORKER.runClips || []).find(n => P.clips.some(c => c.name === n)) || '';
+  // HIS RIDING CLIP, BY NAME (m238): whatever his export calls it, if it says truck / ride / stand on
+  WORKER.rideClip = (P.clips.find(c => TRUCK.rideRe.test(c.name)) || {}).name || '';
+  if (WORKER.rideClip) WORKER.loops.add(WORKER.rideClip);
   if (WORKER.runClip) WORKER.loops.add(WORKER.runClip);
   WORKER.up = 0;
   for (const [x, z, y] of WORKER.at) {
@@ -21597,6 +21604,181 @@ function buildWorkers(g) {
 // WHERE HE STANDS TO FIX A WALL: his marker if the wall has one, otherwise a step out from the wall
 // on whichever side is not inside a building -- and always on the ground, whatever storey the wall
 // is on (he fixes the upper floors from the street, which is a stated shortcut)
+// ============================================================================================
+// THE DUMP TRUCK (m238, `TRUCK`, `buildTruck`, `truckStep`, `truckDrive`)
+//
+// *"I pushed a dump truck. It has a spot the construction worker's root can align with and play his
+// animation for standing on the truck, so he can ride it around on the side -- to the scene or the
+// fix-it spots. Wheel joints to spin the wheels, and the back bed can rotate to dump loads; the joint
+// names say their degree of rotation, one 30 and one 20, working in tandem."*
+// READ OFF THE FILE FIRST (`models/vehicles/dump_truck.glb`):
+//     14 nodes, 5 meshes, 1 material, draco + webp + specular, 0 clips
+//     Armature (x.01, +90 X) > root (-90 X) > the joints: wheels_front / wheels_back,
+//         bed_swivel_20_degrees, support_lift_swivel_30_degree, pipe_smoke_l / _r, stand_point
+//     **THE MESHES ARE NOT SKINNED** -- each part is a CHILD of its joint, so turning the joint IS
+//     turning the part. Nothing to bind; `rotation.x` on the node.
+//     2.75 m long in the file, nose +Z (the front wheels are at +Z), wheels on X axles:
+//         back radius 0.329, front 0.275 -- two different wheels, each spun at its own rate
+//     stand_point (0.755, 0.284, 0.404): the LEFT side (+X is his left), running-board height
+// **IT IS SCALED WITH THE WORKER, NOT TO A TYPED SIZE.** Both files were authored in one scene, so
+// the truck takes the worker's own measured scale (`WORKER.P.scale`) and his feet land on the
+// stand point with nothing typed. At his x2-ish that is a 5.5 m truck.
+// **THE BED TIPS FRONT-UP, AND BOTH JOINTS TURN NEGATIVE ABOUT X.** Solved rather than guessed: the
+// bed's pivot is at its rear-bottom (z -1.03), so the front coming up is `-Rx`; the ram's top meets
+// the bed's underside near z 0, which moves back and up as the bed tips, so the ram leans back --
+// also `-Rx`. Both signs are dials (`bedSign`, `liftSign`) because a sign argued is a sign that
+// comes out backwards half the time in this file.
+// **NOT YET:** no collider (it drives through you and you through it), no road-following (it takes
+// the worker's own A* path at its own width), and he rides in his idle until an export carries his
+// riding clip -- `rideRe` picks it up by name the moment one does.
+const TRUCK = {
+  on: 1,
+  file: 'models/vehicles/dump_truck.glb',
+  useAt: 22,              // a job further than this and he takes the truck
+  sp: 6.5, acc: 3.2, brake: 6, turn: 1.1, minR: 5,  // m/s, m/s^2, rad/s cap, tightest turn radius (m)
+  r: 1.3,                 // the half-width its path is planned at (m, at game scale)
+  stopAt: 5,              // it parks this far short of the job
+  bedDeg: 20, liftDeg: 30, bedSign: -1, liftSign: -1,
+  dump: [1.2, .9, 1.4],   // up, hold, down (s) -- every arrival
+  smoke: .09,             // a puff from each pipe this often while it drives
+  rideRe: /truck|ride|riding|stand(ing)?_on/i, faceOff: 0,
+  hop: 1.1,               // how far out from the stand point he lands when he gets off
+  up: 0, st: 'park',
+};
+const truck = { g: null, j: {}, h: 0, v: 0, path: null, pi: 0, rider: null, t: 0, bed: 0, wb: 0, wf: 0,
+                rb: .33, rf: .28, sT: 0, stuckT: 0, lastD: 1e9, goal: null };
+const _tkV = new THREE.Vector3(), _tkQ = new THREE.Quaternion();
+function buildTruck(g) {
+  if (!TRUCK.on) return;
+  const s = (WORKER.P && WORKER.P.scale) || 2;
+  const G = new THREE.Group(); G.name = 'dumpTruck';
+  g.scene.scale.setScalar(s);
+  G.add(g.scene);
+  const J = truck.j;
+  g.scene.traverse(o => {
+    if (o.name) J[o.name] = J[o.name] || o;
+    if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;
+      if (o.material) o.material.side = THREE.FrontSide; }
+  });
+  // each wheel's own radius, off its own mesh (scaled by the armature's .01 and the truck's `s`)
+  const rad = (jn, def) => { const w = J[jn]; let r = 0;
+    if (w) w.traverse(o => { if (o.isMesh) { o.geometry.computeBoundingBox(); r = Math.max(r, o.geometry.boundingBox.max.y); } });
+    return r > 0 ? r * .01 * s : def; };
+  truck.rb = rad('wheels_back', .33 * s); truck.rf = rad('wheels_front', .28 * s);
+  // parked beside where the worker lives, on a spot with room for it
+  const home = (WORKER.at && WORKER.at[0]) || [0, 0];
+  const sp = truckSpot(home[0], home[1]);
+  G.position.set(sp.x, groundAt(sp.x, sp.z, 1, .6), sp.z);   // the street, never a roof
+  truck.h = sp.h; G.rotation.y = truck.h;
+  scene.add(G);
+  truck.g = G; TRUCK.up = 1; TRUCK.st = 'park';
+  const miss = ['wheels_front', 'wheels_back', 'bed_swivel_20_degrees', 'support_lift_swivel_30_degree', 'stand_point'].filter(n => !J[n]);
+  if (miss.length) note('TRUCK NO ' + miss.join(' '));
+  console.log('[melee] truck: x' + s.toFixed(3) + ', wheels r ' + truck.rb.toFixed(2) + '/' + truck.rf.toFixed(2) +
+              ' m, at ' + sp.x.toFixed(1) + ',' + sp.z.toFixed(1) + (miss.length ? ', MISSING ' + miss.join(' ') : ''));
+}
+// a patch of ground with no box in a truck-sized footprint, searched outward from (x, z)
+function truckSpot(x, z) {
+  const L = 3.2, W = 1.6;
+  for (let r = 4; r < 40; r += 2) for (let k = 0; k < 16; k++) {
+    const a = k / 16 * Math.PI * 2, cx = x + Math.cos(a) * r, cz = z + Math.sin(a) * r;
+    let clear = true;
+    const gy = groundAt(cx, cz, 1, .6);
+    for (const b of boxesNear(cx - L, cx + L, cz - L, cz + L, [])) {
+      if (b.maxy < gy + .4 || b.miny > gy + 3) continue;
+      if (b.maxx > cx - L && b.minx < cx + L && b.maxz > cz - L && b.minz < cz + L) { clear = false; break; }
+    }
+    if (clear) return { x: cx, z: cz, h: Math.atan2(x - cx, z - cz) + Math.PI / 2 };
+  }
+  return { x: x + 6, z, h: 0 };
+}
+// where the stand point is in the world, right now
+function truckStand(out) {
+  const S = truck.j.stand_point;
+  if (!S || !truck.g) return out.set(truck.g ? truck.g.position.x : 0, 0, truck.g ? truck.g.position.z : 0);
+  truck.g.updateMatrixWorld(true);
+  return S.getWorldPosition(out);
+}
+// SEND IT: plan a path at its own width to the job, and go
+function truckDrive(x, z) {
+  const G = truck.g; if (!G) return;
+  truck.goal = { x, z };
+  truck.path = navPath(G.position.x, G.position.z, x, z, G.position.y, TRUCK.r) || [];
+  if (!truck.path.length) truck.path = [{ x, z }];
+  truck.pi = 0; truck.stuckT = 0; truck.lastD = 1e9; TRUCK.st = 'drive';
+}
+function truckStep(dt) {
+  const G = truck.g; if (!G) return;
+  const J = truck.j;
+  // a rider who has been knocked off has left the truck
+  const R = truck.rider;
+  if (R && (R.st !== 'idle' || R.gone || R.rst !== 'ride')) {
+    truck.rider = null;
+    if (R.rst === 'ride') { R.rst = 'go'; R.path = null; R.goal = null; }
+  }
+  if (TRUCK.st === 'drive' && truck.path) {
+    const P = truck.path;
+    let w = P[truck.pi];
+    while (truck.pi < P.length - 1 && Math.hypot(w.x - G.position.x, w.z - G.position.z) < 2.2) w = P[++truck.pi];
+    let left = Math.hypot(w.x - G.position.x, w.z - G.position.z);
+    for (let k = truck.pi; k < P.length - 1; k++) left += Math.hypot(P[k + 1].x - P[k].x, P[k + 1].z - P[k].z);
+    const want = Math.atan2(w.x - G.position.x, w.z - G.position.z);
+    const off = wrapAngle(want - truck.h);
+    // a truck turns on a radius, not on the spot: the faster, the wider
+    const tr = Math.min(TRUCK.turn, Math.max(.25, Math.abs(truck.v)) / TRUCK.minR);
+    truck.h += clamp(off, -tr * dt, tr * dt);
+    // slow for the end and for a hard corner
+    const vMax = Math.min(TRUCK.sp, Math.sqrt(2 * TRUCK.brake * Math.max(0, left - TRUCK.stopAt)) + .4,
+                          TRUCK.sp * (1 - .7 * Math.min(1, Math.abs(off) / 1.2)));
+    truck.v += clamp(vMax - truck.v, -TRUCK.brake * dt, TRUCK.acc * dt);
+    G.position.x += Math.sin(truck.h) * truck.v * dt;
+    G.position.z += Math.cos(truck.h) * truck.v * dt;
+    // stuck: no progress on the remaining distance for a while -- it parks where it is
+    if (left < truck.lastD - .05) { truck.lastD = left; truck.stuckT = 0; } else truck.stuckT += dt;
+    if (left <= TRUCK.stopAt || truck.stuckT > 3) { TRUCK.st = 'dump'; truck.t = 0; truck.v = 0; }
+  } else if (TRUCK.st === 'dump') {
+    truck.v = 0; truck.t += dt;
+    const [u, h, d] = TRUCK.dump;
+    truck.bed = truck.t < u ? ss01(0, u, truck.t) : truck.t < u + h ? 1 : Math.max(0, 1 - ss01(0, d, truck.t - u - h));
+    if (truck.t > u + h + d) { truck.bed = 0; TRUCK.st = 'park'; }
+  } else truck.v = Math.max(0, truck.v - TRUCK.brake * dt);
+  G.rotation.y = truck.h;
+  G.position.y = damp(G.position.y, groundAt(G.position.x, G.position.z, G.position.y + 1.2, 1.4), .08, dt);
+  // the wheels roll by distance over their own radius; the bed and its ram tip together
+  truck.wb += truck.v * dt / truck.rb; truck.wf += truck.v * dt / truck.rf;
+  if (J.wheels_back) J.wheels_back.rotation.x = truck.wb;
+  if (J.wheels_front) J.wheels_front.rotation.x = truck.wf;
+  const D2R = Math.PI / 180;
+  if (J.bed_swivel_20_degrees) J.bed_swivel_20_degrees.rotation.x = TRUCK.bedSign * TRUCK.bedDeg * D2R * truck.bed;
+  if (J.support_lift_swivel_30_degree) J.support_lift_swivel_30_degree.rotation.x = TRUCK.liftSign * TRUCK.liftDeg * D2R * truck.bed;
+  // exhaust while it drives
+  if (TRUCK.st === 'drive' && truck.v > .5) {
+    truck.sT += dt;
+    if (truck.sT > TRUCK.smoke) {
+      truck.sT = 0;
+      for (const n of ['pipe_smoke_l', 'pipe_smoke_r']) if (J[n]) {
+        J[n].getWorldPosition(_tkV);
+        smokeAt(_tkV.x, _tkV.y, _tkV.z, .6, .8, [.35, .34, .33]);
+      }
+    }
+  }
+}
+function truckBoard(d) {
+  truck.rider = d; d.rst = 'ride'; d.st = 'idle';
+  const W = d.job;
+  const s = W ? workerSpot(W) : d.spot;
+  truckDrive(s.x, s.z);
+}
+function truckHop(d) {
+  truck.rider = null;
+  truckStand(_tkV);
+  // out to the side of the truck he rode on (+X of the truck is its left)
+  const lx = Math.cos(truck.h), lz = -Math.sin(truck.h);
+  const x = _tkV.x + lx * TRUCK.hop, z = _tkV.z + lz * TRUCK.hop;
+  const p = d.root.position;
+  p.set(x, groundAt(x, z, _tkV.y + 1, 2), z);
+  d.rst = 'go'; d.path = null; d.goal = null; d.stuckT = 0; d.tries = 0;
+}
 function workerSpot(W) {
   const M = KREPAIR.get(W.pid || (W.node && W.node.userData && W.node.userData.piece_id));
   let x, z;
@@ -21726,37 +21908,59 @@ function workerAI(d, dt, t) {
     if (d.rT > KREP.scan) {
       d.rT = 0;
       const W = workerJob(d);
-      if (W) { d.job = W; d.spot = workerSpot(W); d.rst = 'go'; d.stuckT = 0; d.path = null; d.tries = 0; }
+      if (W) {
+        d.job = W; d.spot = workerSpot(W); d.rst = 'go'; d.stuckT = 0; d.path = null; d.tries = 0; d.goal = null;
+        // A FAR JOB AND A FREE TRUCK: walk to its running board first (m238)
+        if (TRUCK.up && !truck.rider && TRUCK.st !== 'drive' &&
+            Math.hypot(d.spot.x - p.x, d.spot.z - p.z) > TRUCK.useAt) {
+          truckStand(_tkV); d.goal = { x: _tkV.x, z: _tkV.z, truck: 1 };
+        }
+      }
     }
     return;
   }
   const W = d.job;
-  if (!W || W.alive >= W.chunks.length) { d.rst = 'idle'; d.job = null; d.rT = 0; return; }
+  // ON THE TRUCK (m238): stood on its running board, facing the way it goes, until it stops
+  if (d.rst === 'ride') {
+    const clip = K.rideClip || K.clips.idle;
+    t[clip] = 1;
+    truckStand(_tkV);
+    p.copy(_tkV);
+    d.h = truck.h + TRUCK.faceOff;
+    if (TRUCK.st !== 'drive') truckHop(d);
+    return;
+  }
+  if (!W || W.alive >= W.chunks.length) { d.rst = 'idle'; d.job = null; d.rT = 0; d.goal = null; return; }
   if (d.rst === 'go') {
+    // where he is walking: the truck's running board if he is going to ride, else the job
+    const G = d.goal || d.spot;
     // **THE PLAN, AND A NEW ONE WHEN IT STOPS WORKING (m188).** One A* on the way out and again
     // each time he has been pressed against something for `NAV.replan` -- from where he IS, which
     // is what gets him off a corner the first plan could not see (a door that has swung, a car).
     // Only after `NAV.tries` plans have all left him stuck does he step to the marker.
     if (!d.path || d.stuckT > NAV.replan) {
       if (d.path && ++d.tries > NAV.tries) {
-        p.x = d.spot.x; p.z = d.spot.z; p.y = groundAt(p.x, p.z, p.y + 1, 1.5);
+        p.x = G.x; p.z = G.z; p.y = groundAt(p.x, p.z, p.y + 1, 1.5);
+        if (d.goal) { d.goal = null; d.path = null; d.stuckT = 0; if (TRUCK.up && !truck.rider) truckBoard(d); return; }
         d.rst = 'work'; d.rT = 0; d.swing = ''; d.stuckT = 0; d.path = null; kit.navGive = (kit.navGive || 0) + 1;
         return;
       }
-      d.path = navPath(p.x, p.z, d.spot.x, d.spot.z, p.y, K.r);
+      d.path = navPath(p.x, p.z, G.x, G.z, p.y, K.r);
       // **AN EMPTY PLAN IS NOT A PLAN (m208).** `navPath` can hand back `[]`, which is truthy, so
       // the fallback never ran and the next line read `d.path[0].x` off nothing -- every frame, for
       // as long as he had a job: the red wall of `w.x` on his screen.
-      if (!d.path || !d.path.length) d.path = [{ x: d.spot.x, z: d.spot.z }];
+      if (!d.path || !d.path.length) d.path = [{ x: G.x, z: G.z }];
       d.pi = 0; d.stuckT = 0; kit.navPlans = (kit.navPlans || 0) + 1;
     }
     if (!(d.pi < d.path.length)) d.pi = d.path.length - 1;
     let w = d.path[d.pi];
     while (d.pi < d.path.length - 1 && Math.hypot(w.x - p.x, w.z - p.z) < NAV.next) w = d.path[++d.pi];
-    const gx = d.spot.x - p.x, gz = d.spot.z - p.z, gd = Math.hypot(gx, gz);
+    const gx = G.x - p.x, gz = G.z - p.z, gd = Math.hypot(gx, gz);
     const last = d.pi >= d.path.length - 1, wd = Math.hypot(w.x - p.x, w.z - p.z);
-    if (gd < KREP.arrive || (last && wd < KREP.arrive)) {
-      d.rst = 'work'; d.rT = 0; d.swing = ''; d.stuckT = 0; d.path = null;
+    if (gd < (d.goal ? 1.2 : KREP.arrive) || (last && wd < KREP.arrive)) {
+      d.stuckT = 0; d.path = null;
+      if (d.goal) { d.goal = null; if (TRUCK.up && !truck.rider) { truckBoard(d); return; } d.rst = 'go'; return; }
+      d.rst = 'work'; d.rT = 0; d.swing = '';
       return;
     }
     faceTo(d, Math.atan2(w.x - p.x, w.z - p.z), dt);
@@ -24814,6 +25018,7 @@ function frameBody() {
     // pushed out of one frame late -- which at 9.5 m/s is sixteen centimetres of being shoved
     // by a car that is no longer there.
     stepTraffic(dt);
+    truckStep(dt);
     _pt = pT('traf', _pt);
     stepDummies(dt);
     stepShe(dt);
@@ -25104,6 +25309,7 @@ function frameBody() {
       // means the swap never ran, which is a different bug from the twin not breaking
       (inTK() ? ' SW' + kit.swapped : '') +
       ' WH' + KHIT.calls + '/' + KHIT.hits +
+      (TRUCK.up ? ' TRK' + TRUCK.st + (truck.rider ? '+' : '') + (WORKER.rideClip ? '' : '(noride)') : '') +
       // DT: materials his anti-tiling shader patched (m219) -- about 15 is right, 0 means the extras were lost
       (DETILE.n >= 0 ? ' DT' + DETILE.n : '') +
       // F: fires burning now / started this session (m192) -- 0 after a rocket into a building is
@@ -25216,7 +25422,7 @@ async function init() {
   // +1 at m158 (the collision), +1 at m160 (the breakables), and the kit city's library and
   // buildings on top of the toon city's three (m180)
   // +2 in the kit worlds for the construction worker and his hammer (m187)
-  PROG.total = inWP() ? 25 : inTC() ? 28 : inTK() ? 32 : inKit() ? 28 : 26;
+  PROG.total = inWP() ? 25 : inTC() ? 28 : inTK() ? 33 : inKit() ? 28 : 26;
   // ---- the character. There is no game without him, so a failure here is reported on the
   //      card rather than warned to a console that does not exist on a phone.
   let g;
@@ -25590,6 +25796,8 @@ async function init() {
     WORKER.at = inTK() ? WORKER.atTK : WORKER.atKit;
     await side(WORKER.hammer, 'loading the worker', { name: 'HAMMER', build: buildWorkerHammer });
     await side(WORKER.file, 'loading the worker', { name: 'WORKER', build: buildWorkers });
+    // AFTER HIM: it takes his measured scale and parks beside his home (m238)
+    if (inTK()) await side(TRUCK.file, 'loading the truck', { name: 'TRUCK', build: buildTruck });
   }
   // **THE DECK LOADS IN EVERY WORLD**, because it is HIS kit rather than a body -- and a house
   // with a skateboard in it is a house with a skateboard in it.
