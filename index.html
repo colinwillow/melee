@@ -555,10 +555,10 @@ body.desk.free #deskHint { display: block; }
   <h1>WEIRDPORT</h1>
   <div class="msg" id="bootMsg">loading</div>
   <div class="bar"><i id="bootBar"></i></div>
-  <div class="bld">BUILD <span id="bootBuild">m240</span></div>
+  <div class="bld">BUILD <span id="bootBuild">m241</span></div>
 </div>
 
-<div class="chip" id="build"><b id="buildN">m240</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
+<div class="chip" id="build"><b id="buildN">m241</b><u id="chipMin">&minus;</u><i id="buildI"></i></div>
 <div class="chip" id="wep"><span id="wepName">UNARMED</span><small id="wepHint">tap left pad</small></div>
 <div id="worldKey"><b id="worldName">TEST SITE</b> &middot; tap to swap</div>
 <div id="dbgKey"><b>COLLIDERS</b> <span id="dbgState">off</span></div>
@@ -624,7 +624,7 @@ import { KTX2Loader } from './vendor/KTX2Loader.js';
 import { clone as skeletonClone } from './vendor/SkeletonUtils.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 
-const BUILD = 'm240';
+const BUILD = 'm241';
 /* ASSETS:START */
 const ASSETS = {"models/skate.glb":"0c612d5e","models/skateboard.glb":"5ba93796","models/characters/alien_antenna_game.glb":"f3ccf328","models/characters/alien_female_purple.glb":"1c73eef1","models/characters/alien_rollerskate_blue.glb":"c2fbdbf7","models/characters/alien_warrior.glb":"f5cc9c49","models/characters/beautiful_asian.glb":"910f6565","models/characters/beautiful_blonde.glb":"edddc421","models/characters/clancy.glb":"b1ef602b","models/characters/contruction_worker.glb":"8bd3d7ce","models/characters/dummy_officer.glb":"724965ac","models/characters/fat_activist_01.glb":"3c566fee","models/characters/fat_biker_01.glb":"576b7cf5","models/characters/fat_biker_02.glb":"ab5d7ec7","models/characters/fat_hippie.glb":"f09a260d","models/characters/fat_hipster.glb":"3a8abc31","models/characters/fat_secret_service.glb":"6d546fb0","models/characters/fat_trump.glb":"5de6bc56","models/characters/firefighter.glb":"ebde005d","models/characters/hick_skinny.glb":"1ebe78e8","models/characters/hobo_01.glb":"34e80b1d","models/characters/zap.glb":"5e5cca54","models/vehicles/dump_truck.glb":"d870dc18","models/vehicles/motorcycle_fatboy.glb":"9ed9be28","models/weapons/alien_antenna_blaster_game.glb":"54083b44","models/weapons/alien_antenna_hammer_game.glb":"707b8a27","models/weapons/alien_launcher.glb":"ba8ab96a","models/weapons/hammer.glb":"3335fdf2","models/weapons/spikey_mace.glb":"dcd43acd","models/buildings/alien_base_01.glb":"d9b9fd7f","models/towers/alien_tower_01.glb":"98d23375","models/streets/modular_streets_kit.glb":"6a4bcaa5","models/toon_city/impact_marks.json":"2b616620","models/toon_city/impact_marks_atlas.png":"490ed049","models/toon_city/toon_city_breakables.glb":"29bddbc8","models/toon_city/toon_city_collision.glb":"fb3a693f","models/toon_city/toon_city_obb.json":"81c18a47","models/toon_city/toon_city_visual.glb":"5df62285","models/toon_city/toon_city_visual_ktx2.glb":"cf080531","models/toon_city/weirdkit_tint.js":"f6e9d802","models/building_kit/building_kit_collision.glb":"cb0ddd7e","models/building_kit/building_kit_generated_visual.glb":"97cbdd9d","models/building_kit/building_kit_generated_visual_ktx2.glb":"64de1704","models/building_kit/building_kit_pieces.glb":"04974292","models/building_kit/building_kit_test_collision.glb":"98145534","models/building_kit/building_kit_test_visual.glb":"8458991d","models/building_kit/building_kit_test_visual_ktx2.glb":"1d453825","models/toon_city_kit/toon_city_collision.glb":"5540a364","models/toon_city_kit/toon_city_kit_buildings.glb":"590e53f0","models/toon_city_kit/toon_city_kit_buildings_ktx2.glb":"e6dff3a3","models/toon_city_kit/toon_city_kit_pieces.glb":"8232bd6f","models/toon_city_kit/toon_city_kit_twins.glb":"3b1cba2b","models/toon_city_kit/toon_city_visual.glb":"45cf2957","models/toon_city_kit/toon_city_visual_ktx2.glb":"f26a6984","models/toon_city_kit/weirdkit_detile.js":"dd05bd70","models/characters/morph/shapes.bin":"4e680384","models/characters/morph/shapes.json":"abfc949d","images/crack_sprite_01.png":"16b52e8c","images/fire_sprites_01.png":"f87e2696","images/fire_sprites_02.png":"b373a6fd","images/fire_sprites_03.png":"7eece336","images/geyser_sprites_01.png":"b6325470","images/hdri_game.png":"dac55f41","images/water_sprites_01.png":"31e12659","audio/blaster_sound_01.mp3":"40d99583","audio/blaster_sound_02.mp3":"4bd7bb7c","audio/box_break_01.mp3":"e4127980","audio/electricity_beam_01.mp3":"986db8c9","audio/explosion_small.mp3":"f154a537","audio/metal_clang_01.mp3":"a333bd27","audio/metal_clang_02.mp3":"1e3ebbd6","audio/metal_clang_03.mp3":"afe44812","audio/metal_ping_01.mp3":"8ffca1a0","audio/plasma_canon.mp3":"e32c324d","audio/powerup_01.mp3":"48fbbe08","audio/swoosh_01.mp3":"193db185","audio/swoosh_02.mp3":"19145e70","audio/swoosh_03.mp3":"544fdffb","audio/swoosh_04.mp3":"843bee5d","audio/plasma_sounds/plasma_01.mp3":"e71c010f","audio/plasma_sounds/plasma_02.mp3":"ac3b1c75","audio/plasma_sounds/plasma_03.mp3":"eaa59355","audio/plasma_sounds/plasma_04.mp3":"bc7865e0","audio/plasma_sounds/plasma_05.mp3":"1d821cd0","audio/plasma_sounds/plasma_06.mp3":"cb979fbe","audio/plasma_sounds/plasma_hit.mp3":"30e5af5c","audio/alien_orc_grunt_sounds/alien_orc_grunt_01.mp3":"d6f4b343","audio/alien_orc_grunt_sounds/alien_orc_grunt_02.mp3":"78afc603","audio/alien_orc_grunt_sounds/alien_orc_grunt_03.mp3":"972c524a","audio/alien_orc_grunt_sounds/alien_orc_grunt_04.mp3":"b0ce76eb","audio/alien_orc_grunt_sounds/alien_orc_grunt_05.mp3":"1f0ba1f4","audio/alien_orc_grunt_sounds/alien_orc_grunt_06.mp3":"4f749866","audio/alien_orc_grunt_sounds/alien_orc_grunt_07.mp3":"dcf75925","audio/hit_sounds/hit_sound_01.mp3":"befaa2be","audio/hit_sounds/hit_sound_02.mp3":"73bc4433","audio/hit_sounds/hit_sound_03.mp3":"24b181e4","audio/hit_sounds/hit_sound_gound_01.mp3":"86ee2674","audio/hit_sounds/hit_sound_ground_02.mp3":"8a7cac73","audio/hit_sounds/hit_sound_plasma_01.mp3":"9abc0202","audio/hit_sounds/hit_sound_plasma_02.mp3":"6aaf0fe5","audio/creature_noises/creature_noise_01.mp3":"cbcc6ee7","audio/creature_noises/creature_noise_02.mp3":"201a8247","audio/creature_noises/creature_noise_03.mp3":"97680811","audio/creature_noises/creature_noise_04.mp3":"6f734df2","audio/creature_noises/creature_noise_05.mp3":"6f736441","audio/creature_noises/creature_noise_06.mp3":"992712e9","audio/creature_noises/creature_noise_07.mp3":"d9ad04b3","audio/footsteps/footstep_2_l.mp3":"abeabfbe","audio/footsteps/footstep_2_r.mp3":"7dd16046","audio/footsteps/footstep_l.mp3":"b66e579b","audio/footsteps/footstep_r.mp3":"96e13433","models/portland/slice_downtown/slice_manifest.json":"f8355281","models/portland/slice_downtown/weirdport_slice_collision.glb":"b472a215","models/portland/slice_downtown/weirdport_slice_visual_draco.glb":"6890f840","models/portland/textures/weirdport_trim_basecolor.png":"5c964821","models/portland/textures/weirdport_trim_emissive.png":"4bb167f1","models/portland/textures/weirdport_trim_layout.json":"cba2f53f","models/portland/textures/weirdport_trim_tintmask.png":"229b845f","models/portland/three/weirdportCity.js":"56c8164c","models/props/prop_hydrant.glb":"f157fee9","models/props/prop_hydrant_collision.glb":"0bbfc4d2"};
 /* ASSETS:END */
@@ -17492,6 +17492,13 @@ function buildKit(g) {
     // HIS FIRE MARKERS (m192): the rooms a fire can start in, and where a truck parks and a hose
     // stands -- per building, by the prefix on the node's own name (`kit_000_room_...`, `BKG0_...`;
     // the test house's are bare, so it is `house`)
+    // HIS CONSTRUCTION YARD'S TRUCK SPOT (m240): any marker naming a truck or a depot that is not the
+    // fire station's -- `construction_truck_park`, `truck_depot`, `dump_truck_park` all land here
+    if (e.marker && /truck|depot/i.test(e.marker) && !/fire/i.test(e.marker) && !KDEPOT) {
+      o.updateWorldMatrix(true, false);
+      const w = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
+      KDEPOT = { x: w.x, z: w.z, yaw: (e.yaw_deg || 0) * Math.PI / 180 };
+    }
     if (e.marker === 'room' || e.marker === 'fire_truck_park' || e.marker === 'fire_hose_stand') {
       o.updateWorldMatrix(true, false);
       const w = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);
@@ -21654,14 +21661,23 @@ const TRUCK = {
   smoke: .09,             // a puff from each pipe this often while it drives
   rideRe: /truck|ride|riding|stand(ing)?_on/i, faceOff: 0,
   hop: 1.1,               // how far out from the stand point he lands when he gets off
+  // **m240: SMALLER, AND NOT IN YOUR FACE.** *"It's massive, and it's right in my view when the game
+  // starts."* `k` is a share of the worker's scale (1 = the scale they were authored at together) and
+  // is the tune panel's TRUCK size. It parks at his yard's marker when the export has one -- a node
+  // with `marker` containing "truck" or "depot" (not the fire station's), with `yaw_deg` -- and until
+  // then out of the opening shot: `hideR` metres from the spawn, BEHIND the lens.
+  k: .72, hideR: [35, 70],
+  takeK: .6,              // he only takes it if it is nearer than this share of the walk to the job
   up: 0, st: 'park',
 };
+let KDEPOT = null;        // his yard's truck spot, from the buildings' markers
 const truck = { g: null, j: {}, h: 0, v: 0, path: null, pi: 0, rider: null, t: 0, bed: 0, wb: 0, wf: 0,
                 rb: .33, rf: .28, sT: 0, stuckT: 0, lastD: 1e9, goal: null };
 const _tkV = new THREE.Vector3(), _tkQ = new THREE.Quaternion();
 function buildTruck(g) {
   if (!TRUCK.on) return;
-  const s = (WORKER.P && WORKER.P.scale) || 2;
+  const s = ((WORKER.P && WORKER.P.scale) || 2) * TRUCK.k;
+  TRUCK._k = TRUCK.k;
   const G = new THREE.Group(); G.name = 'dumpTruck';
   g.scene.scale.setScalar(s);
   G.add(g.scene);
@@ -21676,9 +21692,8 @@ function buildTruck(g) {
     if (w) w.traverse(o => { if (o.isMesh) { o.geometry.computeBoundingBox(); r = Math.max(r, o.geometry.boundingBox.max.y); } });
     return r > 0 ? r * .01 * s : def; };
   truck.rb = rad('wheels_back', .33 * s); truck.rf = rad('wheels_front', .28 * s);
-  // parked beside where the worker lives, on a spot with room for it
-  const home = (WORKER.at && WORKER.at[0]) || [0, 0];
-  const sp = truckSpot(home[0], home[1]);
+  // parked in his yard if the export says where, else out of the opening shot
+  const sp = KDEPOT ? { x: KDEPOT.x, z: KDEPOT.z, h: KDEPOT.yaw } : truckHide();
   G.position.set(sp.x, groundAt(sp.x, sp.z, 1, .6), sp.z);   // the street, never a roof
   truck.h = sp.h; G.rotation.y = truck.h;
   scene.add(G);
@@ -21703,6 +21718,37 @@ function buildTruck(g) {
   if (miss.length) note('TRUCK NO ' + miss.join(' '));
   console.log('[melee] truck: x' + s.toFixed(3) + ', wheels r ' + truck.rb.toFixed(2) + '/' + truck.rf.toFixed(2) +
               ' m, at ' + sp.x.toFixed(1) + ',' + sp.z.toFixed(1) + (miss.length ? ', MISSING ' + miss.join(' ') : ''));
+}
+// OUT OF THE OPENING SHOT: a clear spot `hideR` from the spawn, the one most BEHIND the lens
+function truckHide() {
+  const ox = player.pos.x, oz = player.pos.z;
+  const fx = Math.sin(cam.az || 0), fz = Math.cos(cam.az || 0);
+  let best = null, bs = -1e9;
+  for (let r = TRUCK.hideR[0]; r <= TRUCK.hideR[1]; r += 5) for (let k = 0; k < 24; k++) {
+    const a = k / 24 * Math.PI * 2, x = ox + Math.cos(a) * r, z = oz + Math.sin(a) * r;
+    if (!truckClear(x, z)) continue;
+    const sc = -(Math.cos(a) * fx + Math.sin(a) * fz) - r * .002;
+    if (sc > bs) { bs = sc; best = { x, z, h: Math.atan2(ox - x, oz - z) + Math.PI / 2 }; }
+  }
+  return best || truckSpot(ox, oz);
+}
+function truckClear(cx, cz) {
+  const L = 3.2;
+  const gy = groundAt(cx, cz, 1, .6);
+  for (const b of boxesNear(cx - L, cx + L, cz - L, cz + L, [])) {
+    if (b.dyn || b.maxy < gy + .4 || b.miny > gy + 3) continue;
+    if (b.maxx > cx - L && b.minx < cx + L && b.maxz > cz - L && b.minz < cz + L) return false;
+  }
+  return true;
+}
+// LIVE RESIZE from the tune panel: everything measured scales by the same ratio
+function truckRescale() {
+  if (!truck.g || !TRUCK._k) return;
+  const q = TRUCK.k / TRUCK._k; if (Math.abs(q - 1) < 1e-4) return;
+  TRUCK._k = TRUCK.k;
+  const sc = truck.g.children[0]; if (sc) sc.scale.multiplyScalar(q);
+  truck.rb *= q; truck.rf *= q;
+  const B = truck.box; if (B) { B.lx *= q; B.lz *= q; B.hx *= q; B.hz *= q; B.y0 *= q; B.y1 *= q; truckBox(); }
 }
 // a patch of ground with no box in a truck-sized footprint, searched outward from (x, z)
 function truckSpot(x, z) {
@@ -21954,8 +22000,9 @@ function workerAI(d, dt, t) {
       if (W) {
         d.job = W; d.spot = workerSpot(W); d.rst = 'go'; d.stuckT = 0; d.path = null; d.tries = 0; d.goal = null;
         // A FAR JOB AND A FREE TRUCK: walk to its running board first (m238)
-        if (TRUCK.up && !truck.rider && TRUCK.st !== 'drive' &&
-            Math.hypot(d.spot.x - p.x, d.spot.z - p.z) > TRUCK.useAt) {
+        const dJob = Math.hypot(d.spot.x - p.x, d.spot.z - p.z);
+        if (TRUCK.up && !truck.rider && TRUCK.st !== 'drive' && dJob > TRUCK.useAt && truck.g &&
+            Math.hypot(truck.g.position.x - p.x, truck.g.position.z - p.z) < dJob * TRUCK.takeK) {
           truckStand(_tkV);
           // a step out from the running board, clear of the truck's collider (m239)
           const lx = Math.cos(truck.h), lz = -Math.sin(truck.h);
@@ -24896,6 +24943,8 @@ const TUNE = [
   ['density',   FIRE, 'dens',     .1, 1.5, .05],
   ['max size',  FIRE, 'maxPx',   .05, 1, .01],
   ['up close',  FIRE, 'nearK',    .1, 1, .05],
+  ['TRUCK'],
+  ['size',      TRUCK, 'k',       .4, 1.2, .02, 'truck'],
   ['KERB'],
   ['ease on',   STEPUP, 'on',       0, 1, 1],
   ['ease time', STEPUP, 'hl',     .01, .2, .005],
@@ -24918,7 +24967,7 @@ function tuneSave() {
   const o = {}; TUNE.forEach(r => { if (r.length > 1) o[tuneKey(r)] = tuneGet(r[1], r[2]); });
   try { localStorage.setItem('mel.tune', JSON.stringify(o)); } catch (e) {}
 }
-function tuneRe(which) { if (which === 'dust') dustDrop(); else if (which === 'shaft') shaftDrop(); else if (which === 'detile') detileUse(); }
+function tuneRe(which) { if (which === 'dust') dustDrop(); else if (which === 'shaft') shaftDrop(); else if (which === 'detile') detileUse(); else if (which === 'truck') truckRescale(); }
 function tuneLoad() {
   let o = null; try { o = JSON.parse(localStorage.getItem('mel.tune') || 'null'); } catch (e) {}
   if (!o) return;

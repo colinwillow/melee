@@ -7,6 +7,22 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **THE TRUCK IS SMALLER AND PARKS OUT OF THE OPENING SHOT (m240, `TRUCK.k`, `truckHide`, `KDEPOT`).**
+  *"It's massive, and it's right in my view when the game starts."* `k` .72 of the worker's own scale
+  (tune: TRUCK size, live -- `truckRescale` scales the model, both wheel radii and the collider by the
+  same ratio). It parks at his yard's marker the moment an export carries one (any `marker` naming
+  "truck" or "depot" that is not the fire station's, with `yaw_deg`), and until then on the clear
+  spot 35-70 m from the spawn most BEHIND the starting lens. And the worker only takes it when it is
+  on the way (`takeK`: nearer than .6 of the walk to the job) -- parked out of sight, it was a longer
+  walk to the truck than to the wall.
+- **STREETS, HOMES, JOBS -- WHAT THE EXPORT SHOULD CARRY NEXT (his plan, m240).** The truck drives the
+  worker's A* path at its own width, which crosses lots and pavements. To drive the ROADS it needs
+  the roads as a graph: either centre-line curves exported as point chains (`lane_<n>` with ordered
+  `lane_<n>_<i>` empties, or one mesh edge-chain per lane), or empties at each junction plus the
+  links. Each job character's home base wants one marker per building (`home_construction`,
+  `home_police`, `home_fire`, `hangout_donut`) and per vehicle spot -- the same shape `nav_repair`
+  and `fire_truck_park` already have.
+
 - **THE TRUCK IS SOLID, THROUGH A DYNAMIC LIST EVERY QUERY SEES (m239, `BDYN`, `truckBox`).** The box
   grid is built once; a truck crosses it, and re-gridding 7,400 boxes a frame is not an option -- so
   `boxesNear` also tests `BDYN` directly. The player's resolver, `foeMove`, the bolts (`boxRay`,
