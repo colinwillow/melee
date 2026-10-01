@@ -29,7 +29,7 @@ import path from 'path';
 import zlib from 'zlib';
 import crypto from 'crypto';
 
-const V = 3;                                   // RAISE THIS WITH THE ART
+const V = 4;                                   // RAISE THIS WITH THE ART
 const OUT = 'icons';
 // 512 and 192 are the manifest's, 180 is the apple-touch-icon, 32 is the favicon. **NO 1024**:
 // nothing on a phone asks for one and a lossless 1024 of photographic art is two megabytes.
