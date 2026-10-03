@@ -7,6 +7,16 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **JACK SAYS HELLO (m246, `K.greet`, `greetStep`).** *"If you walk up to him, within like 10 or 15, he
+  looks at you and then waves."* Inside `r` (10 m) he drops whatever he is doing, turns to you with the
+  ordinary `faceTo` ease, and only once he is FACING you (`face` .35 rad) and `delay` has passed does he
+  wave -- `n` (2) plays of Colin's one-shot `waving`, replayed on its own clock and rewound on the state.
+  He keeps looking at you while you stay, waves again after `again` (14 s), and walking off past
+  `r * out` resets him so the next approach gets a fresh hello; leaving mid-wave hands him back to the
+  roam with a short wait so he does not stride off mid-gesture. Inside `foeWander` below the flee and
+  the unstick, so being hit still sends him running. Tune -> JACK (`hello range`, `waves`,
+  `wave again`); any pacifist kind can carry a `greet` block.
+
 - **JACK STANDS UP STRAIGHT AND HIS ARMS CLEAR HIS BODY (m245, `K.arms`, `armFix`/`armUndo`).** *"His
   arms go straight down in the idle and clip his body -- we adjusted his upper arms out and compensated
   down with his lower arms. And the idle he's doing looks mopy, hunched."* Measured on Colin's clips,
