@@ -7,6 +7,14 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **KIT CITY IS WHERE EVERY COLD START LANDS (m244, `WORLD`).** *"When I reloaded the game at one point
+  we didn't load the main world."* The world pick lived in `localStorage` with the TEST SITE as the
+  default: one tap of the world key stuck for every later launch, and a store iOS had cleared dropped
+  him on the test site. The default is `tkit` now, the key's pick is `sessionStorage` (survives the
+  reload the key does, nothing longer), the old persistent key is removed on boot, and `?w=` still
+  picks a world for one load. `npm run check:boot` now boots KIT CITY by default; `MEL_WORLD=test`
+  is the test site.
+
 - **JACK WAS DEALT LAST AND THE DEAL RAN OUT (m243, `spawnBeside`, `JACKK`).** *"I haven't been able to
   find him in the level anywhere."* m242 put him in `CIVILS` and let the crowd place him -- and
   `crowdDeal` is ROUND-ROBIN in roster order with him at the END, so any world whose sweep finds fewer

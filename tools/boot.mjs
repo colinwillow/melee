@@ -141,11 +141,14 @@ Object.defineProperty(globalThis, 'navigator', { configurable: true, writable: t
 // **AND THE GATE CAN BE POINTED AT EITHER WORLD (m124).** `MEL_WORLD=weirdport npm run
 // check:boot` takes the Weirdport branch, which is otherwise a path no gate has ever evaluated
 // -- and a `const` read above its own declaration in there is a blank page exactly as it is
-// anywhere else. Empty is the test site, so `npm run check` is unchanged.
+// anywhere else. Empty is the game's own default, which is KIT CITY since m244.
 const _w = process.env.MEL_WORLD || '';
 globalThis.location = { href: 'http://x/' + (_w ? '?w=' + _w : ''), pathname: '/',
   search: _w ? '?w=' + _w : '', hash: '', reload() {}, replace() {} };
 globalThis.localStorage = { _m: new Map(), getItem(k) { return this._m.has(k) ? this._m.get(k) : null; },
+  setItem(k, v) { this._m.set(k, String(v)); }, removeItem(k) { this._m.delete(k); } };
+// the world pick lives here since m244
+globalThis.sessionStorage = { _m: new Map(), getItem(k) { return this._m.has(k) ? this._m.get(k) : null; },
   setItem(k, v) { this._m.set(k, String(v)); }, removeItem(k) { this._m.delete(k); } };
 globalThis.addEventListener = () => {}; globalThis.removeEventListener = () => {};
 globalThis.requestAnimationFrame = () => 0; globalThis.cancelAnimationFrame = () => {};
