@@ -7,6 +7,41 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **COLIN IS THE HUMANOID DONOR, AND JACK IS THE FIRST TO WEAR HIM (m242, `COLIN`, `JACK`,
+  `npm run donor`, `buildDonor`, `K.legRef`).** *"Jack doesn't have any animations but he can borrow
+  them from my Colin GLB... idles, walks, runs, in-air pose, dances, get up, knockdown, take damage --
+  and other characters in the future."*
+  **JACK'S RIG IS COLIN'S FAMILY EXACTLY**: `Armature[0.01] > root > Hips`, the same 65 Mixamo bones,
+  bind pose **0.03 deg** off Colin's on every one -- so `bodyBorrow`'s single-delta retarget is exact
+  and the whole feature is a table plus a load line. (His file arrived at `models/jack.glb`; it lives
+  at `models/characters/jack.glb` now.)
+  **THE DONOR IS COLIN WITH THE CHARACTER TAKEN OUT.** A donor is read for his bind pose and his clips
+  and nothing else, so `npm run donor` writes `models/characters/donors/colin_anims.glb` from
+  Shredworld's `colin.glb`: no meshes, morphs, textures or materials, no scale tracks, no non-Hips
+  translation (all things `retarget` never reads), and no rifle/skate/bar clips (no NPC reaches them).
+  **10.17 MB -> 3.46 MB, 32 clips.** GLTFLoader still makes every joint a `Bone` because the SKIN names
+  them, mesh or no mesh -- checked by loading the file through the vendored loader (68 bones, 32 clips).
+  **RERUN `npm run donor <colin.glb>` WHEN HIS COLIN IS RE-EXPORTED.**
+  **A MESHLESS DONOR HAS NO HEIGHT TO MEASURE**, so `bodyProto` falls back to `K.authored` (1.3152,
+  printed by the tool off the draco geometry before it is dropped) -- the one typed number, measured.
+  **HIS REFERENCE SPEEDS ARE `npm run gait`'s**: planted foot 0.997 on `walk_fwd_neutral`, 2.935 on
+  `run_fwd`, both feet agreeing, `idle_neutral` 0.000 as the control.
+  **`K.legRef` MULTIPLIES A BORROWED REFERENCE BY THE RETARGET'S OWN `k`** (the Hips-height ratio, .913
+  for Jack): a stride is a leg length, and m144's factor of exactly 1 is only true inside one build of
+  body. Opt-in, so the fat six's tuned feet do not move.
+  **THE KNOCK-DOWN PAIRS WERE MEASURED, AND THEY AGREE** (hips->head bearing in plan): `fall_to_back`
+  ends 178 / `get_up_from_back` starts -176; `fall_to_face_down` -1 / `get_up_from_face` 0. So `flip: 0`
+  -- the default turns a body by pi between the front pair, which here would be a 180 on the floor.
+  `flying_*` END UPRIGHT IN MID-AIR (hips .46, head .90), so `flying_backwards` is his air pose and not
+  a landing.
+  **COLIN HAS NO HIT REACTIONS**, so `borrow: [COLIN, BIKER]` -- first donor with the name wins, and the
+  biker supplies `hit_take_damage_00/01` and the big one. The day Colin carries hits, they take over
+  with no edit.
+  **HIS FLOURISHES ARE COLIN'S DANCES**, and `foeWander` now holds a stop until a flourish FINISHES
+  (`roamT >= skinLen(look)`) -- for everybody, which also means the civils finish fanning themselves.
+  **A NEW CHARACTER WITH NO CLIPS IS NOW:** drop him in `models/characters/`, a `civil(...)` row with
+  `borrow: [COLIN, BIKER]` and Colin's clip names (JACK's table is the template), and a spot.
+
 - **THE TRUCK IS SMALLER AND PARKS OUT OF THE OPENING SHOT (m240, `TRUCK.k`, `truckHide`, `KDEPOT`).**
   *"It's massive, and it's right in my view when the game starts."* `k` .72 of the worker's own scale
   (tune: TRUCK size, live -- `truckRescale` scales the model, both wheel radii and the collider by the

@@ -20,7 +20,8 @@
     "hull": "node tools/hull.mjs",
     "lanes": "node tools/lanes.mjs",
     "ktx": "node tools/ktx.mjs",
-    "twins": "node tools/twins.mjs"
+    "twins": "node tools/twins.mjs",
+    "donor": "node tools/donor.mjs"
   },
   "type": "module",
   "devDependencies": {
