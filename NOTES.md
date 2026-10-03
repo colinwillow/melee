@@ -7,6 +7,21 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **JACK STANDS UP STRAIGHT AND HIS ARMS CLEAR HIS BODY (m245, `K.arms`, `armFix`/`armUndo`).** *"His
+  arms go straight down in the idle and clip his body -- we adjusted his upper arms out and compensated
+  down with his lower arms. And the idle he's doing looks mopy, hunched."* Measured on Colin's clips,
+  neck-over-hips lean: `idle_exhausted` **20 deg**, `idle_sad_kick` 15, `idle_neutral` **4** -- the two
+  sad ones are out of his pools. And `idle_neutral` holds the upper arm only **10-15 deg** off straight
+  down, which Colin's narrow frame clears and Jack's does not.
+  **THE FIX IS A PER-KIND POST-MIXER EDIT IN WORLD TERMS**, so no rig's local axes are assumed: each
+  upper arm turns `up` deg about `cross(shoulder->elbow, outward)` (away from the body), each forearm
+  `fore` deg about `cross(elbow->hand, down)` (back toward down), conjugated into the parent frame so it
+  stacks on the clip, weighted by how much of the pose is a clip in `on` (idle/walk/run -- a knock-down,
+  get-up or dance stays as authored). **Taken off again before the next mixer update** -- Shredworld's
+  c128 spine-unravel landmine. Probed through the vendored loader on the real donor skeleton: +14.0 deg
+  out on both arms symmetrically, hands ~6 cm off the body, forearms back down, and undo/reapply leaves
+  **0 drift**. Tune -> JACK (`arms out`, `forearms down`); any kind can carry an `arms` block.
+
 - **KIT CITY IS WHERE EVERY COLD START LANDS (m244, `WORLD`).** *"When I reloaded the game at one point
   we didn't load the main world."* The world pick lived in `localStorage` with the TEST SITE as the
   default: one tap of the world key stuck for every later launch, and a store iOS had cleared dropped
