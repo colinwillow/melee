@@ -7,6 +7,15 @@ landmine list, in the same shape: what he said, what was actually wrong, what wa
 
 ## Landmines
 
+- **JACK WAS DEALT LAST AND THE DEAL RAN OUT (m243, `spawnBeside`, `JACKK`).** *"I haven't been able to
+  find him in the level anywhere."* m242 put him in `CIVILS` and let the crowd place him -- and
+  `crowdDeal` is ROUND-ROBIN in roster order with him at the END, so any world whose sweep finds fewer
+  clear spots than it wants (`KIT CROWD n/m` in the chip) runs out before his turn and he is never
+  spawned. **A new character nobody can find is not in the game.** He is placed like Clancy now: the
+  nearest clear spot to the spawn from 4 m out, at least 2.5 m from Clancy, in every world (`spawnBeside`,
+  shared by both populates), and on the test site at (-1, 8), open ground in front of the spawn. He is
+  excluded from the deal and from `crowdWant`, so nobody else loses a spot to him.
+
 - **COLIN IS THE HUMANOID DONOR, AND JACK IS THE FIRST TO WEAR HIM (m242, `COLIN`, `JACK`,
   `npm run donor`, `buildDonor`, `K.legRef`).** *"Jack doesn't have any animations but he can borrow
   them from my Colin GLB... idles, walks, runs, in-air pose, dances, get up, knockdown, take damage --
